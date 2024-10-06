@@ -7,8 +7,7 @@ export type JtdForm =
   | JtdElementsForm
   | JtdPropertiesForm
   | JtdValuesForm
-  | JtdDiscriminatorForm
-  ;
+  | JtdDiscriminatorForm;
 
 export interface JtdFormBase {
   metadata?: Record<string, unknown>;
@@ -38,8 +37,7 @@ export type JtdType =
   | 'int32'
   | 'uint32'
   | 'string'
-  | 'timestamp'
-  ;
+  | 'timestamp';
 
 export interface JtdEnumForm extends JtdFormBase {
   enum: string[];

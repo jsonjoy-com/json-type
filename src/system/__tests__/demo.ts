@@ -4,21 +4,13 @@ const createTypes = (system: TypeSystem) => {
   const t = system.t;
 
   // prettier-ignore
-  const MuCollection = t.Object(
-    t.prop('id', t.str),
-    t.propOpt('name', t.str),
-  );
+  const MuCollection = t.Object(t.prop('id', t.str), t.propOpt('name', t.str));
 
   // prettier-ignore
-  const MuBlock = t.Object(
-    t.prop('id', t.str),
-    t.prop('data', t.any),
-  );
+  const MuBlock = t.Object(t.prop('id', t.str), t.prop('data', t.any));
 
   // prettier-ignore
-  const MuBlockCreateRequest = t.Object(
-    t.propOpt('id', t.str),
-  );
+  const MuBlockCreateRequest = t.Object(t.propOpt('id', t.str));
   const MuBlockCreateResponse = t.Object(t.prop('block', t.Ref<typeof MuBlock>('MuBlock')));
   const MuBlockNew = t.Function(MuBlockCreateRequest, MuBlockCreateResponse);
 

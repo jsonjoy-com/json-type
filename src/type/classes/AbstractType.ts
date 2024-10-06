@@ -1,7 +1,10 @@
 import type * as schema from '../../schema';
 import {RandomJson} from '@jsonjoy.com/util/lib/json-random';
 import type {Printable} from 'tree-dump/lib/types';
-import {ValidatorCodegenContext, type ValidatorCodegenContextOptions} from '../../codegen/validator/ValidatorCodegenContext';
+import {
+  ValidatorCodegenContext,
+  type ValidatorCodegenContextOptions,
+} from '../../codegen/validator/ValidatorCodegenContext';
 import type {JsonTypeValidator, ValidationPath} from '../../codegen/validator/types';
 import {
   JsonTextEncoderCodegenContext,

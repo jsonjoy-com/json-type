@@ -312,14 +312,13 @@ export type Schema = JsonSchema | RefSchema | OrSchema | AnySchema | FunctionSch
 
 export type NoT<T extends TType> = Omit<T, 'kind'>;
 
-export type TypeOf<T> =
-  T extends OrSchema<any>
-    ? TypeOfValue<T['types'][number]>
-    : T extends RefSchema<infer U>
-      ? TypeOf<U>
-      : T extends AnySchema
-        ? unknown
-        : TypeOfValue<T>;
+export type TypeOf<T> = T extends OrSchema<any>
+  ? TypeOfValue<T['types'][number]>
+  : T extends RefSchema<infer U>
+    ? TypeOf<U>
+    : T extends AnySchema
+      ? unknown
+      : TypeOfValue<T>;
 
 export type TypeOfValue<T> = T extends BooleanSchema
   ? boolean
