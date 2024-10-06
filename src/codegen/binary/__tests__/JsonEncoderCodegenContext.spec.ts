@@ -4,7 +4,7 @@ import {testBinaryCodegen} from './testBinaryCodegen';
 import {EncodingFormat} from '@jsonjoy.com/json-pack/lib/constants';
 import {JsonEncoder} from '@jsonjoy.com/json-pack/lib/json/JsonEncoder';
 import {Writer} from '@jsonjoy.com/util/lib/buffers/Writer';
-import {parse} from '../../../../json-binary';
+import {parse} from '@jsonjoy.com/json-pack/lib/json-binary';
 
 const encoder = new JsonEncoder(new Writer(16));
 

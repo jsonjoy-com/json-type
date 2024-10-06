@@ -1,4 +1,4 @@
-import {TypeSystem} from '../../json-type/system';
+import {TypeSystem} from '../../system';
 import {ObjectValue} from '../ObjectValue';
 
 test('can retrieve field as Value', () => {

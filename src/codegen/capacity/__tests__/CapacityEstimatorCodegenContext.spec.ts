@@ -1,4 +1,4 @@
-import {maxEncodingCapacity} from '../../../../json-size';
+import {maxEncodingCapacity} from '@jsonjoy.com/util/lib/json-size';
 import {TypeSystem} from '../../../system';
 
 describe('"any" type', () => {

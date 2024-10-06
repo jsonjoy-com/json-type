@@ -1,5 +1,5 @@
 import {t} from '..';
-import {parse} from '../../../json-binary';
+import {parse} from '@jsonjoy.com/json-pack/lib/json-binary';
 import {TypeSystem} from '../../system/TypeSystem';
 import {everyType, everyTypeValue} from './fixtures';
 
