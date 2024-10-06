@@ -1,4 +1,4 @@
-import {ObjectSchema, s} from '..';
+import {type ObjectSchema, s} from '..';
 
 test('can generate any type', () => {
   const address: ObjectSchema = {

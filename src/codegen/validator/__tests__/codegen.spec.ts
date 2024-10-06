@@ -1,7 +1,7 @@
 import {ValidationError} from '../../../constants';
-import {OrSchema, s, Schema} from '../../../schema';
+import {type OrSchema, s, type Schema} from '../../../schema';
 import {TypeSystem} from '../../../system';
-import {ValidatorCodegenContextOptions} from '../ValidatorCodegenContext';
+import type {ValidatorCodegenContextOptions} from '../ValidatorCodegenContext';
 
 const exec = (schema: Schema, json: unknown, error: any, options: Partial<ValidatorCodegenContextOptions> = {}) => {
   const system = new TypeSystem();
@@ -692,7 +692,7 @@ describe('custom validators', () => {
     });
     system.addCustomValidator({
       name: 'is-a',
-      fn: (value) => (value === 'a' ? false : true),
+      fn: (value) => value !== 'a',
     });
     const validator = type.validator('object');
     const res1 = validator('a');
@@ -715,11 +715,12 @@ describe('custom validators', () => {
     });
     system.addCustomValidator({
       name: 'is-ab',
+      // biome-ignore lint: this way is better
       fn: (value) => (value === 'a' || value === 'b' ? false : true),
     });
     system.addCustomValidator({
       name: 'is-a',
-      fn: (value) => (value === 'a' ? false : true),
+      fn: (value) => value !== 'a',
     });
     const validator = type.validator('object');
     const res1 = validator('a');

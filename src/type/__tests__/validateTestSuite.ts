@@ -1,4 +1,4 @@
-import {Type, t} from '..';
+import {type Type, t} from '..';
 import {TypeSystem} from '../../system/TypeSystem';
 
 export const validateTestSuite = (validate: (type: Type, value: unknown) => void) => {
@@ -104,8 +104,8 @@ export const validateTestSuite = (validate: (type: Type, value: unknown) => void
 
         test('cannot be Infinity', () => {
           const type = t.Number({format: 'i'});
-          expect(() => validate(type, Infinity)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
-          expect(() => validate(type, -Infinity)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
+          expect(() => validate(type, Number.POSITIVE_INFINITY)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
+          expect(() => validate(type, Number.NEGATIVE_INFINITY)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
         });
       });
 
@@ -120,8 +120,8 @@ export const validateTestSuite = (validate: (type: Type, value: unknown) => void
 
         test('cannot be Infinity', () => {
           const type = t.Number({format: 'u'});
-          expect(() => validate(type, Infinity)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
-          expect(() => validate(type, -Infinity)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
+          expect(() => validate(type, Number.POSITIVE_INFINITY)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
+          expect(() => validate(type, Number.NEGATIVE_INFINITY)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
         });
 
         test('cannot be negative', () => {
@@ -133,8 +133,8 @@ export const validateTestSuite = (validate: (type: Type, value: unknown) => void
       describe('f', () => {
         test('cannot be Infinity', () => {
           const type = t.Number({format: 'f'});
-          expect(() => validate(type, Infinity)).toThrowErrorMatchingInlineSnapshot(`"NUM"`);
-          expect(() => validate(type, -Infinity)).toThrowErrorMatchingInlineSnapshot(`"NUM"`);
+          expect(() => validate(type, Number.POSITIVE_INFINITY)).toThrowErrorMatchingInlineSnapshot(`"NUM"`);
+          expect(() => validate(type, Number.NEGATIVE_INFINITY)).toThrowErrorMatchingInlineSnapshot(`"NUM"`);
         });
       });
 
@@ -142,8 +142,8 @@ export const validateTestSuite = (validate: (type: Type, value: unknown) => void
         test('should be within bounds', () => {
           const type = t.Number({format: 'i8'});
           validate(type, 123);
-          expect(() => validate(type, Infinity)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
-          expect(() => validate(type, -Infinity)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
+          expect(() => validate(type, Number.POSITIVE_INFINITY)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
+          expect(() => validate(type, Number.NEGATIVE_INFINITY)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
           expect(() => validate(type, 128)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
           expect(() => validate(type, -129)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
         });
@@ -159,8 +159,8 @@ export const validateTestSuite = (validate: (type: Type, value: unknown) => void
         test('should be within bounds', () => {
           const type = t.Number({format: 'i16'});
           validate(type, 123);
-          expect(() => validate(type, Infinity)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
-          expect(() => validate(type, -Infinity)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
+          expect(() => validate(type, Number.POSITIVE_INFINITY)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
+          expect(() => validate(type, Number.NEGATIVE_INFINITY)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
           expect(() => validate(type, 33333)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
           expect(() => validate(type, -33333)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
         });
@@ -176,8 +176,8 @@ export const validateTestSuite = (validate: (type: Type, value: unknown) => void
         test('should be within bounds', () => {
           const type = t.Number({format: 'i32'});
           validate(type, 0xffff);
-          expect(() => validate(type, Infinity)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
-          expect(() => validate(type, -Infinity)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
+          expect(() => validate(type, Number.POSITIVE_INFINITY)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
+          expect(() => validate(type, Number.NEGATIVE_INFINITY)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
           expect(() => validate(type, 0xffffffaa)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
           expect(() => validate(type, -0xffffffab)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
         });
@@ -193,8 +193,8 @@ export const validateTestSuite = (validate: (type: Type, value: unknown) => void
         test('should be within bounds', () => {
           const type = t.Number({format: 'i64'});
           validate(type, 0xffffdfdf);
-          expect(() => validate(type, Infinity)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
-          expect(() => validate(type, -Infinity)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
+          expect(() => validate(type, Number.POSITIVE_INFINITY)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
+          expect(() => validate(type, Number.NEGATIVE_INFINITY)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
         });
 
         test('cannot be float', () => {
@@ -207,8 +207,8 @@ export const validateTestSuite = (validate: (type: Type, value: unknown) => void
         test('should be within bounds', () => {
           const type = t.Number({format: 'u8'});
           validate(type, 255);
-          expect(() => validate(type, Infinity)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
-          expect(() => validate(type, -Infinity)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
+          expect(() => validate(type, Number.POSITIVE_INFINITY)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
+          expect(() => validate(type, Number.NEGATIVE_INFINITY)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
           expect(() => validate(type, 256)).toThrowErrorMatchingInlineSnapshot(`"UINT"`);
           expect(() => validate(type, -1)).toThrowErrorMatchingInlineSnapshot(`"UINT"`);
         });
@@ -223,8 +223,8 @@ export const validateTestSuite = (validate: (type: Type, value: unknown) => void
         test('should be within bounds', () => {
           const type = t.Number({format: 'u16'});
           validate(type, 0xffff);
-          expect(() => validate(type, Infinity)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
-          expect(() => validate(type, -Infinity)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
+          expect(() => validate(type, Number.POSITIVE_INFINITY)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
+          expect(() => validate(type, Number.NEGATIVE_INFINITY)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
           expect(() => validate(type, 0xffff + 1)).toThrowErrorMatchingInlineSnapshot(`"UINT"`);
           expect(() => validate(type, -1)).toThrowErrorMatchingInlineSnapshot(`"UINT"`);
         });
@@ -239,8 +239,8 @@ export const validateTestSuite = (validate: (type: Type, value: unknown) => void
         test('should be within bounds', () => {
           const type = t.Number({format: 'u32'});
           validate(type, 0xffffffff);
-          expect(() => validate(type, Infinity)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
-          expect(() => validate(type, -Infinity)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
+          expect(() => validate(type, Number.POSITIVE_INFINITY)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
+          expect(() => validate(type, Number.NEGATIVE_INFINITY)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
           expect(() => validate(type, 0xffffffff + 1)).toThrowErrorMatchingInlineSnapshot(`"UINT"`);
           expect(() => validate(type, -1)).toThrowErrorMatchingInlineSnapshot(`"UINT"`);
         });
@@ -255,8 +255,8 @@ export const validateTestSuite = (validate: (type: Type, value: unknown) => void
         test('should be within bounds', () => {
           const type = t.Number({format: 'u64'});
           validate(type, 0xffffffffff);
-          expect(() => validate(type, Infinity)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
-          expect(() => validate(type, -Infinity)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
+          expect(() => validate(type, Number.POSITIVE_INFINITY)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
+          expect(() => validate(type, Number.NEGATIVE_INFINITY)).toThrowErrorMatchingInlineSnapshot(`"INT"`);
           expect(() => validate(type, -1)).toThrowErrorMatchingInlineSnapshot(`"UINT"`);
         });
 
@@ -270,8 +270,8 @@ export const validateTestSuite = (validate: (type: Type, value: unknown) => void
         test('should be within bounds', () => {
           const type = t.Number({format: 'f32'});
           validate(type, 1.123);
-          expect(() => validate(type, Infinity)).toThrowErrorMatchingInlineSnapshot(`"NUM"`);
-          expect(() => validate(type, -Infinity)).toThrowErrorMatchingInlineSnapshot(`"NUM"`);
+          expect(() => validate(type, Number.POSITIVE_INFINITY)).toThrowErrorMatchingInlineSnapshot(`"NUM"`);
+          expect(() => validate(type, Number.NEGATIVE_INFINITY)).toThrowErrorMatchingInlineSnapshot(`"NUM"`);
         });
       });
 
@@ -279,8 +279,8 @@ export const validateTestSuite = (validate: (type: Type, value: unknown) => void
         test('should be within bounds', () => {
           const type = t.Number({format: 'f64'});
           validate(type, 1.123);
-          expect(() => validate(type, Infinity)).toThrowErrorMatchingInlineSnapshot(`"NUM"`);
-          expect(() => validate(type, -Infinity)).toThrowErrorMatchingInlineSnapshot(`"NUM"`);
+          expect(() => validate(type, Number.POSITIVE_INFINITY)).toThrowErrorMatchingInlineSnapshot(`"NUM"`);
+          expect(() => validate(type, Number.NEGATIVE_INFINITY)).toThrowErrorMatchingInlineSnapshot(`"NUM"`);
         });
       });
     });

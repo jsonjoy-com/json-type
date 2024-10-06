@@ -27,12 +27,14 @@
 				"noParameterAssign": "off",
 				"noCommaOperator": "off",
 				"useSingleVarDeclarator": "off",
-				"noUnusedTemplateLiteral": "off"
+				"noUnusedTemplateLiteral": "off",
+				"useDefaultParameterLast": "off"
 			},
 			"suspicious": {
 				"noExplicitAny": "off",
 				"useIsArray": "off",
-				"noAssignInExpressions": "off"
+				"noAssignInExpressions": "off",
+				"noConfusingVoidType": "off"
 			},
 			"complexity": {
 				"noStaticOnlyClass": "off",

@@ -286,6 +286,7 @@ export interface FunctionStreamingSchema<Req extends TType = TType, Res extends 
 }
 
 export interface TypeSystemSchema {
+  // biome-ignore lint: fix this at some point...
   types: {
     // [alias: string]:
   };

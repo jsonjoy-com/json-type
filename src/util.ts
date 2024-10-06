@@ -1,4 +1,4 @@
-import {NumberSchema} from './schema';
+import type {NumberSchema} from './schema';
 
 export const UINTS: NumberSchema['format'][] = ['u', 'u8', 'u16', 'u32', 'u64'];
 export const INTS: NumberSchema['format'][] = ['i', 'i8', 'i16', 'i32', 'i64', ...UINTS];

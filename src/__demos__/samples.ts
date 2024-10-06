@@ -1,4 +1,4 @@
-import {CustomValidator, s} from '../../json-type';
+import {type CustomValidator, s} from '../../json-type';
 
 export const customValidators: CustomValidator[] = [
   {

@@ -3,7 +3,7 @@
 import {TypeSystem} from '..';
 import {CborEncoder} from '@jsonjoy.com/json-pack/lib/cbor/CborEncoder';
 import {JsonEncoder} from '@jsonjoy.com/json-pack/lib/json/JsonEncoder';
-import {CompiledBinaryEncoder} from '../codegen/types';
+import type {CompiledBinaryEncoder} from '../codegen/types';
 import {EncodingFormat} from '@jsonjoy.com/json-pack/lib/constants';
 import {Writer} from '@jsonjoy.com/util/lib/buffers/Writer';
 

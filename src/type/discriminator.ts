@@ -1,6 +1,6 @@
-import {Expr} from '@jsonjoy.com/json-expression';
-import {BooleanType, ConstType, NumberType, ObjectFieldType, ObjectType, StringType, TupleType} from './classes';
-import {Type} from './types';
+import type {Expr} from '@jsonjoy.com/json-expression';
+import {BooleanType, ConstType, NumberType, type ObjectFieldType, ObjectType, StringType, TupleType} from './classes';
+import type {Type} from './types';
 
 export class Discriminator {
   public static findConst(type: Type): Discriminator | undefined {

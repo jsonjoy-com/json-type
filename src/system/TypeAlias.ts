@@ -1,7 +1,7 @@
 import {printTree} from 'tree-dump/lib/printTree';
 import {ObjectType} from '../type/classes';
 import {toText} from '../typescript/toText';
-import {JsonSchemaGenericKeywords, JsonSchemaValueNode} from '../json-schema';
+import type {JsonSchemaGenericKeywords, JsonSchemaValueNode} from '../json-schema';
 import {TypeExportContext} from './TypeExportContext';
 import type {TypeSystem} from '.';
 import type {Type} from '../type';

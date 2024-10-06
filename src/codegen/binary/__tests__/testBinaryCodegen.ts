@@ -1,5 +1,5 @@
 import {TypeSystem} from '../../../system';
-import {Type} from '../../../type';
+import type {Type} from '../../../type';
 
 export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, value: unknown) => void) => {
   describe('"any" type', () => {
@@ -195,7 +195,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
       const system = new TypeSystem();
       const t = system.t;
       const type = t.obj;
-      const value: {} = {};
+      const value: any = {};
       expect(transcode(system, type, value)).toStrictEqual(value);
     });
 
@@ -203,9 +203,9 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
       const system = new TypeSystem();
       const t = system.t;
       const type = t.Object(t.propOpt('field1', t.str));
-      const value1: {} = {};
+      const value1: any = {};
       expect(transcode(system, type, value1)).toStrictEqual(value1);
-      const value2: {} = {field1: 'abc'};
+      const value2: any = {field1: 'abc'};
       expect(transcode(system, type, value2)).toStrictEqual(value2);
     });
 
@@ -213,7 +213,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
       const system = new TypeSystem();
       const t = system.t;
       const type = t.Object(t.prop('field1', t.str), t.prop('field2', t.num), t.prop('bool', t.bool));
-      const value: {} = {
+      const value: any = {
         field1: 'abc',
         field2: 123,
         bool: true,
@@ -225,7 +225,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
       const system = new TypeSystem();
       const t = system.t;
       const type = t.Object(t.prop('id', t.str), t.propOpt('name', t.str));
-      const value: {} = {
+      const value: any = {
         id: 'xxxxx',
         name: 'Go Lang',
       };
@@ -241,7 +241,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
         t.prop('age', t.num),
         t.propOpt('address', t.str),
       );
-      const value: {} = {
+      const value: any = {
         id: 'xxxxx',
         name: 'Go Lang',
         age: 30,
@@ -256,7 +256,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
       const type = t
         .Object(t.prop('id', t.str), t.propOpt('name', t.str), t.prop('age', t.num), t.propOpt('address', t.str))
         .options({encodeUnknownFields: true});
-      const value: {} = {
+      const value: any = {
         id: 'xxxxx',
         name: 'Go Lang',
         ____unknownField: 123,
@@ -320,7 +320,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
       const type = t
         .Object(t.propOpt('id', t.str), t.propOpt('name', t.str), t.propOpt('address', t.str))
         .options({encodeUnknownFields: true});
-      let value: {} = {
+      let value: any = {
         id: 'xxxxx',
         name: 'Go Lang',
         ____unknownField: 123,
@@ -347,7 +347,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
       const type = t
         .Object(t.propOpt('id', t.str), t.propOpt('name', t.str), t.propOpt('address', t.str))
         .options({encodeUnknownFields: false});
-      let value: {} = {
+      let value: any = {
         id: 'xxxxx',
         name: 'Go Lang',
         address: '123 Main St',
@@ -374,7 +374,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
       const system = new TypeSystem();
       const t = system.t;
       const type = t.map;
-      const value: {} = {};
+      const value: any = {};
       expect(transcode(system, type, value)).toStrictEqual(value);
     });
 
@@ -382,7 +382,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
       const system = new TypeSystem();
       const t = system.t;
       const type = t.map;
-      const value: {} = {a: 'asdf'};
+      const value: any = {a: 'asdf'};
       expect(transcode(system, type, value)).toStrictEqual(value);
     });
 
@@ -390,7 +390,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
       const system = new TypeSystem();
       const t = system.t;
       const type = t.Map(t.bool);
-      const value: {} = {x: true, y: false};
+      const value: any = {x: true, y: false};
       expect(transcode(system, type, value)).toStrictEqual(value);
     });
 
@@ -398,7 +398,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
       const system = new TypeSystem();
       const t = system.t;
       const type = t.Map(t.Map(t.bool));
-      const value: {} = {a: {x: true, y: false}};
+      const value: any = {a: {x: true, y: false}};
       expect(transcode(system, type, value)).toStrictEqual(value);
     });
   });

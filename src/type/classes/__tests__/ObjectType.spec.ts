@@ -1,5 +1,5 @@
 import {t} from '../..';
-import {ResolveType} from '../../../system';
+import type {ResolveType} from '../../../system';
 
 describe('.extend()', () => {
   test('can extend an object', () => {

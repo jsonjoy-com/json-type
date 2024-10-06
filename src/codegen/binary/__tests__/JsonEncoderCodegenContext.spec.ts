@@ -1,5 +1,5 @@
-import {TypeSystem} from '../../../system';
-import {Type} from '../../../type';
+import type {TypeSystem} from '../../../system';
+import type {Type} from '../../../type';
 import {testBinaryCodegen} from './testBinaryCodegen';
 import {EncodingFormat} from '@jsonjoy.com/json-pack/lib/constants';
 import {JsonEncoder} from '@jsonjoy.com/json-pack/lib/json/JsonEncoder';

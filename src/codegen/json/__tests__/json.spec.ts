@@ -1,4 +1,4 @@
-import {Schema, s} from '../../../schema';
+import {type Schema, s} from '../../../schema';
 import {TypeSystem} from '../../../system';
 
 const exec = (schema: Schema, json: unknown, expected: unknown = json) => {

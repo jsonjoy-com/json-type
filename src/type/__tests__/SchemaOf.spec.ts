@@ -1,6 +1,6 @@
 import {EMPTY} from 'rxjs';
-import {SchemaOf, t} from '..';
-import {TypeOf} from '../../schema';
+import {type SchemaOf, t} from '..';
+import type {TypeOf} from '../../schema';
 
 test('const', () => {
   const type = t.Const(<const>42);

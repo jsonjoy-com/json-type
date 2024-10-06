@@ -1,27 +1,27 @@
-import * as schema from '../../schema';
+import type * as schema from '../../schema';
 import {RandomJson} from '@jsonjoy.com/util/lib/json-random';
-import {Printable} from 'tree-dump/lib/types';
-import {ValidatorCodegenContext, ValidatorCodegenContextOptions} from '../../codegen/validator/ValidatorCodegenContext';
-import {JsonTypeValidator, ValidationPath} from '../../codegen/validator/types';
+import type {Printable} from 'tree-dump/lib/types';
+import {ValidatorCodegenContext, type ValidatorCodegenContextOptions} from '../../codegen/validator/ValidatorCodegenContext';
+import type {JsonTypeValidator, ValidationPath} from '../../codegen/validator/types';
 import {
   JsonTextEncoderCodegenContext,
-  JsonTextEncoderCodegenContextOptions,
-  JsonEncoderFn,
+  type JsonTextEncoderCodegenContextOptions,
+  type JsonEncoderFn,
 } from '../../codegen/json/JsonTextEncoderCodegenContext';
-import {CompiledBinaryEncoder} from '../../codegen/types';
+import type {CompiledBinaryEncoder} from '../../codegen/types';
 import {
   CborEncoderCodegenContext,
-  CborEncoderCodegenContextOptions,
+  type CborEncoderCodegenContextOptions,
 } from '../../codegen/binary/CborEncoderCodegenContext';
 import {
   JsonEncoderCodegenContext,
-  JsonEncoderCodegenContextOptions,
+  type JsonEncoderCodegenContextOptions,
 } from '../../codegen/binary/JsonEncoderCodegenContext';
 import {CborEncoder} from '@jsonjoy.com/json-pack/lib/cbor/CborEncoder';
 import {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
 import {
   MessagePackEncoderCodegenContext,
-  MessagePackEncoderCodegenContextOptions,
+  type MessagePackEncoderCodegenContextOptions,
 } from '../../codegen/binary/MessagePackEncoderCodegenContext';
 import {MsgPackEncoder} from '@jsonjoy.com/json-pack/lib/msgpack';
 import {lazy} from '@jsonjoy.com/util/lib/lazyFunction';
@@ -30,10 +30,10 @@ import {JsonEncoder} from '@jsonjoy.com/json-pack/lib/json/JsonEncoder';
 import {Writer} from '@jsonjoy.com/util/lib/buffers/Writer';
 import {
   CapacityEstimatorCodegenContext,
-  CapacityEstimatorCodegenContextOptions,
-  CompiledCapacityEstimator,
+  type CapacityEstimatorCodegenContextOptions,
+  type CompiledCapacityEstimator,
 } from '../../codegen/capacity/CapacityEstimatorCodegenContext';
-import {JsonValueCodec} from '@jsonjoy.com/json-pack/lib/codecs/types';
+import type {JsonValueCodec} from '@jsonjoy.com/json-pack/lib/codecs/types';
 import type * as jsonSchema from '../../json-schema';
 import type {BaseType} from '../types';
 import type {TypeSystem} from '../../system/TypeSystem';

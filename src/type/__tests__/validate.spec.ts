@@ -1,4 +1,4 @@
-import {Type, t} from '..';
+import {type Type, t} from '..';
 import {validateTestSuite} from './validateTestSuite';
 
 const validate = (type: Type, value: unknown) => {

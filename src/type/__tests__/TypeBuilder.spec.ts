@@ -1,5 +1,5 @@
-import {SchemaOf, t} from '..';
-import {TypeOf} from '../../schema';
+import {type SchemaOf, t} from '..';
+import type {TypeOf} from '../../schema';
 import {NumberType, ObjectFieldType, ObjectType, StringType} from '../classes';
 
 test('number', () => {

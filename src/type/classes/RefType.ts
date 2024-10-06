@@ -1,18 +1,18 @@
 import * as schema from '../../schema';
 import {validateTType} from '../../schema/validate';
-import {ValidatorCodegenContext} from '../../codegen/validator/ValidatorCodegenContext';
-import {ValidationPath} from '../../codegen/validator/types';
+import type {ValidatorCodegenContext} from '../../codegen/validator/ValidatorCodegenContext';
+import type {ValidationPath} from '../../codegen/validator/types';
 import {ValidationError} from '../../constants';
-import {JsonTextEncoderCodegenContext} from '../../codegen/json/JsonTextEncoderCodegenContext';
-import {CompiledBinaryEncoder} from '../../codegen/types';
+import type {JsonTextEncoderCodegenContext} from '../../codegen/json/JsonTextEncoderCodegenContext';
+import type {CompiledBinaryEncoder} from '../../codegen/types';
 import {CborEncoderCodegenContext} from '../../codegen/binary/CborEncoderCodegenContext';
 import {JsonEncoderCodegenContext} from '../../codegen/binary/JsonEncoderCodegenContext';
-import {BinaryEncoderCodegenContext} from '../../codegen/binary/BinaryEncoderCodegenContext';
-import {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
+import type {BinaryEncoderCodegenContext} from '../../codegen/binary/BinaryEncoderCodegenContext';
+import type {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
 import {MessagePackEncoderCodegenContext} from '../../codegen/binary/MessagePackEncoderCodegenContext';
 import {EncodingFormat} from '@jsonjoy.com/json-pack/lib/constants';
-import {BinaryJsonEncoder} from '@jsonjoy.com/json-pack/lib/types';
-import {CapacityEstimatorCodegenContext} from '../../codegen/capacity/CapacityEstimatorCodegenContext';
+import type {BinaryJsonEncoder} from '@jsonjoy.com/json-pack/lib/types';
+import type {CapacityEstimatorCodegenContext} from '../../codegen/capacity/CapacityEstimatorCodegenContext';
 import {AbstractType} from './AbstractType';
 import type * as jsonSchema from '../../json-schema';
 import type {SchemaOf, Type} from '../types';
@@ -64,7 +64,7 @@ export class RefType<T extends Type> extends AbstractType<schema.RefSchema<Schem
         case 'string': {
           return ctx.err(ValidationError.REF, [...path, {r: errorRegister}]);
         }
-        case 'object':
+        // case 'object':
         default: {
           return ctx.err(ValidationError.REF, [...path], {refId: this.schema.ref, refError: errorRegister});
         }

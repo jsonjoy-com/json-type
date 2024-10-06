@@ -89,7 +89,7 @@ export class ValidatorCodegenContext {
         }
         return out + "]'";
       }
-      case 'object':
+      // case 'object':
       default: {
         let out =
           '{code: ' +

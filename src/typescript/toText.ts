@@ -1,5 +1,5 @@
 import {wordWrap} from '@jsonjoy.com/util/lib/strings/wordWrap';
-import {TsIdentifier, TsNode, TsParameter} from './types';
+import type {TsIdentifier, TsNode, TsParameter} from './types';
 import {TAB, isSimpleType, normalizeKey} from './util';
 
 const formatComment = (comment: string | undefined, __: string): string => {

@@ -1,7 +1,7 @@
-import {TypeOf} from '../../schema';
-import {SchemaOf} from '../../type';
+import type {TypeOf} from '../../schema';
+import type {SchemaOf} from '../../type';
 import {TypeSystem} from '../TypeSystem';
-import {TypeOfAlias} from '../types';
+import type {TypeOfAlias} from '../types';
 
 test('can infer alias type', () => {
   const system = new TypeSystem();
