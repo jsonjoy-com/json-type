@@ -1,28 +1,34 @@
-/** Validation error codes. */
+/**
+ * Validation error codes.
+ * 
+ * ATTENTION: Only add new error codes at the end of the list !!!
+ * =========
+ */
 export enum ValidationError {
   STR = 0,
-  NUM = 1,
-  BOOL = 2,
-  ARR = 3,
-  TUP = 4,
-  OBJ = 5,
-  MAP = 6,
-  KEY = 7,
-  KEYS = 8,
-  BIN = 9,
-  OR = 10,
-  REF = 11,
-  ENUM = 12,
-  CONST = 13,
-  VALIDATION = 14,
-  INT = 15,
-  UINT = 16,
-  STR_LEN = 17,
-  ARR_LEN = 18,
-  GT = 19,
-  GTE = 20,
-  LT = 21,
-  LTE = 22,
+  NUM,
+  BOOL,
+  ARR,
+  TUP,
+  OBJ,
+  MAP,
+  KEY,
+  KEYS,
+  BIN,
+  OR,
+  REF,
+  ENUM,
+  CONST,
+  VALIDATION,
+  INT,
+  UINT,
+  STR_LEN,
+  ARR_LEN,
+  GT,
+  GTE,
+  LT,
+  LTE,
+  BIN_LEN,
 }
 
 /** Human-readable error messages by error code. */
@@ -45,6 +51,7 @@ export const ValidationErrorMessage = {
   [ValidationError.INT]: 'Not an integer.',
   [ValidationError.UINT]: 'Not an unsigned integer.',
   [ValidationError.STR_LEN]: 'Invalid string length.',
+  [ValidationError.BIN_LEN]: 'Invalid binary length.',
   [ValidationError.ARR_LEN]: 'Invalid array length.',
   [ValidationError.GT]: 'Value is too small.',
   [ValidationError.GTE]: 'Value is too small.',

@@ -1,3 +1,4 @@
+import {b} from '@jsonjoy.com/util/lib/buffers/b';
 import {ValidationError} from '../../../constants';
 import {type OrSchema, s, type Schema} from '../../../schema';
 import {TypeSystem} from '../../../system';
@@ -125,7 +126,7 @@ describe('"str" type', () => {
     exec(type, null, {code: 'STR', errno: ValidationError.STR, message: 'Not a string.', path: []});
   });
 
-  test('validates minLength', () => {
+  test('validates "min"', () => {
     const type = s.String({min: 3});
     exec(type, 'asdf', null);
     exec(type, '', {
@@ -142,7 +143,7 @@ describe('"str" type', () => {
     });
   });
 
-  test('validates maxLength', () => {
+  test('validates "max"', () => {
     const type = s.String({max: 5});
     exec(type, '', null);
     exec(type, 'asdf', null);
@@ -161,7 +162,7 @@ describe('"str" type', () => {
     });
   });
 
-  test('validates minLength and maxLength', () => {
+  test('validates "min" and "max"', () => {
     const type = s.String({min: 3, max: 5});
     exec(type, 'aaa', null);
     exec(type, 'bbbb', null);
@@ -182,6 +183,112 @@ describe('"str" type', () => {
       code: 'STR_LEN',
       errno: ValidationError.STR_LEN,
       message: 'Invalid string length.',
+      path: [],
+    });
+  });
+
+  test('validates "min" and "max" of equal size', () => {
+    const type = s.String({min: 4, max: 4});
+    exec(type, 'aaa', {
+      code: 'STR_LEN',
+      errno: ValidationError.STR_LEN,
+      message: 'Invalid string length.',
+      path: [],
+    });
+    exec(type, 'bbbb', null);
+    exec(type, 'vvvvv', {
+      code: 'STR_LEN',
+      errno: ValidationError.STR_LEN,
+      message: 'Invalid string length.',
+      path: [],
+    });
+    exec(type, '', {
+      code: 'STR_LEN',
+      errno: ValidationError.STR_LEN,
+      message: 'Invalid string length.',
+      path: [],
+    });
+    exec(type, 'asdfdf', {
+      code: 'STR_LEN',
+      errno: ValidationError.STR_LEN,
+      message: 'Invalid string length.',
+      path: [],
+    });
+    exec(type, 'aasdf sdfdf', {
+      code: 'STR_LEN',
+      errno: ValidationError.STR_LEN,
+      message: 'Invalid string length.',
+      path: [],
+    });
+  });
+});
+
+describe('"bin" type', () => {
+  test('validates a binary blob', () => {
+    const type = s.bin;
+    exec(type, b(), null);
+    exec(type, b(1, 2, 3), null);
+    exec(type, 123, {code: 'BIN', errno: ValidationError.BIN, message: 'Not a binary.', path: []});
+    exec(type, null, {code: 'BIN', errno: ValidationError.BIN, message: 'Not a binary.', path: []});
+  });
+
+  test('validates "min"', () => {
+    const type = s.Binary(s.any, {min: 3});
+    exec(type, b(1, 2, 3, 4), null);
+    exec(type, b(), {
+      code: 'BIN_LEN',
+      errno: ValidationError.BIN_LEN,
+      message: 'Invalid binary length.',
+      path: [],
+    });
+    exec(type, b(1, 2), {
+      code: 'BIN_LEN',
+      errno: ValidationError.BIN_LEN,
+      message: 'Invalid binary length.',
+      path: [],
+    });
+  });
+
+  test('validates "max"', () => {
+    const type = s.Binary(s.any, {max: 5});
+    exec(type, b(), null);
+    exec(type, b(1, 2, 3, 4), null);
+    exec(type, b(1, 2, 3, 4, 5), null);
+    exec(type, b(1, 2, 3, 4, 5, 6), {
+      code: 'BIN_LEN',
+      errno: ValidationError.BIN_LEN,
+      message: 'Invalid binary length.',
+      path: [],
+    });
+    exec(type, b(1, 2, 3, 4, 5, 6, 7, 8, 9), {
+      code: 'BIN_LEN',
+      errno: ValidationError.BIN_LEN,
+      message: 'Invalid binary length.',
+      path: [],
+    });
+  });
+
+  test('validates "min" and "max"', () => {
+    const type = s.Binary(s.any, {min: 3, max: 5});
+    exec(type, b(1, 2, 3), null);
+    exec(type, b(1, 2, 3, 4), null);
+    exec(type, b(1, 2, 3, 4, 5), null);
+    exec(type, b(), {
+      code: 'BIN_LEN',
+      errno: ValidationError.BIN_LEN,
+      message: 'Invalid binary length.',
+      path: [],
+    });
+    exec(type, b(1, 2, 3, 4, 5, 6), {
+      code: 'BIN_LEN',
+      errno: ValidationError.BIN_LEN,
+      message: 'Invalid binary length.',
+      path: [],
+    });
+    exec(type, b(1, 2, 3, 4, 5, 6, 7, 8, 9), {
+      code: 'BIN_LEN',
+      errno: ValidationError.BIN_LEN,
+      message: 'Invalid binary length.',
       path: [],
     });
   });

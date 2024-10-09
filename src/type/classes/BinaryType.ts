@@ -63,8 +63,22 @@ export class BinaryType<T extends Type> extends AbstractType<schema.BinarySchema
     const err = ctx.err(ValidationError.BIN, path);
     ctx.js(
       // prettier-ignore
-      /* js */ `if(!(${r} instanceof Uint8Array)${hasBuffer ? /* js */ ` && !Buffer.isBuffer(${r})` : ''}) return ${err};`,
+      `if(!(${r} instanceof Uint8Array)${hasBuffer ? ` && !Buffer.isBuffer(${r})` : ''}) return ${err};`,
     );
+    const {min, max} = this.schema;
+    if (typeof min === 'number' && min === max) {
+      const err = ctx.err(ValidationError.BIN_LEN, path);
+      ctx.js(`if(${r}.length !== ${min}) return ${err};`);
+    } else {
+      if (typeof min === 'number') {
+        const err = ctx.err(ValidationError.BIN_LEN, path);
+        ctx.js(`if(${r}.length < ${min}) return ${err};`);
+      }
+      if (typeof max === 'number') {
+        const err = ctx.err(ValidationError.BIN_LEN, path);
+        ctx.js(`if(${r}.length > ${max}) return ${err};`);
+      }
+    }
     ctx.emitCustomValidators(this, path, r);
   }
 

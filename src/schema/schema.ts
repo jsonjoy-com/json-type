@@ -142,10 +142,18 @@ export interface StringSchema extends TType<string>, WithValidator {
  */
 export interface BinarySchema<T extends TType = any> extends TType, WithValidator {
   kind: 'bin';
+
   /** Type of value encoded in the binary data. */
   type: T;
+
   /** Codec used for encoding the binary data. */
   format?: 'json' | 'cbor' | 'msgpack' | 'resp3' | 'ion' | 'bson' | 'ubjson' | 'bencode';
+
+  /** Minimum size in octets. */
+  min?: number;
+
+  /** Maximum size in octets. */
+  max?: number;
 }
 
 /**

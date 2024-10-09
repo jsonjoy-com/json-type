@@ -88,7 +88,8 @@ export class SchemaBuilder {
     return {kind: 'str', ...(a || {})};
   }
 
-  public Binary<T extends Schema>(type: T, options: Optional<BinarySchema> = {}): BinarySchema {
+  // public Binary<T extends Schema>(options: Optional<BinarySchema<T>> & Pick<BinarySchema<T>, 'type'>): BinarySchema<T>;
+  public Binary<T extends Schema>(type: T, options: Optional<Omit<BinarySchema, 'type'>> = {}): BinarySchema<T> {
     return {
       kind: 'bin',
       type,
