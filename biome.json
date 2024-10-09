@@ -28,7 +28,8 @@
 				"noCommaOperator": "off",
 				"useSingleVarDeclarator": "off",
 				"noUnusedTemplateLiteral": "off",
-				"useDefaultParameterLast": "off"
+				"useDefaultParameterLast": "off",
+				"useEnumInitializers": "off"
 			},
 			"suspicious": {
 				"noExplicitAny": "off",

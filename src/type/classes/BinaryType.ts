@@ -4,7 +4,7 @@ import {printTree} from 'tree-dump/lib/printTree';
 import * as schema from '../../schema';
 import {RandomJson} from '@jsonjoy.com/util/lib/json-random';
 import {stringifyBinary} from '@jsonjoy.com/json-pack/lib/json-binary';
-import {validateTType} from '../../schema/validate';
+import {validateMinMax, validateTType} from '../../schema/validate';
 import type {ValidatorCodegenContext} from '../../codegen/validator/ValidatorCodegenContext';
 import type {ValidationPath} from '../../codegen/validator/types';
 import {ValidationError} from '../../constants';
@@ -22,6 +22,17 @@ import type {TypeSystem} from '../../system/TypeSystem';
 import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
 import type * as ts from '../../typescript/types';
 import type {TypeExportContext} from '../../system/TypeExportContext';
+
+const formats = new Set<schema.BinarySchema['format']>([
+  'bencode',
+  'bson',
+  'cbor',
+  'ion',
+  'json',
+  'msgpack',
+  'resp3',
+  'ubjson',
+]);
 
 export class BinaryType<T extends Type> extends AbstractType<schema.BinarySchema> {
   protected schema: schema.BinarySchema;
@@ -54,7 +65,13 @@ export class BinaryType<T extends Type> extends AbstractType<schema.BinarySchema
   }
 
   public validateSchema(): void {
-    validateTType(this.getSchema(), 'bin');
+    const schema = this.getSchema();
+    validateTType(schema, 'bin');
+    const {min, max, format} = schema;
+    validateMinMax(min, max);
+    if (format !== undefined) {
+      if (!formats.has(format)) throw new Error('FORMAT');
+    }
     this.type.validateSchema();
   }
 
@@ -63,8 +80,22 @@ export class BinaryType<T extends Type> extends AbstractType<schema.BinarySchema
     const err = ctx.err(ValidationError.BIN, path);
     ctx.js(
       // prettier-ignore
-      /* js */ `if(!(${r} instanceof Uint8Array)${hasBuffer ? /* js */ ` && !Buffer.isBuffer(${r})` : ''}) return ${err};`,
+      `if(!(${r} instanceof Uint8Array)${hasBuffer ? ` && !Buffer.isBuffer(${r})` : ''}) return ${err};`,
     );
+    const {min, max} = this.schema;
+    if (typeof min === 'number' && min === max) {
+      const err = ctx.err(ValidationError.BIN_LEN, path);
+      ctx.js(`if(${r}.length !== ${min}) return ${err};`);
+    } else {
+      if (typeof min === 'number') {
+        const err = ctx.err(ValidationError.BIN_LEN, path);
+        ctx.js(`if(${r}.length < ${min}) return ${err};`);
+      }
+      if (typeof max === 'number') {
+        const err = ctx.err(ValidationError.BIN_LEN, path);
+        ctx.js(`if(${r}.length > ${max}) return ${err};`);
+      }
+    }
     ctx.emitCustomValidators(this, path, r);
   }
 
