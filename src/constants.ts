@@ -1,6 +1,6 @@
 /**
  * Validation error codes.
- * 
+ *
  * ATTENTION: Only add new error codes at the end of the list !!!
  * =========
  */
