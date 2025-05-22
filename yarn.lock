@@ -799,15 +799,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jsonjoy.com/json-expression@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "@jsonjoy.com/json-expression@npm:1.0.1"
+"@jsonjoy.com/json-expression@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@jsonjoy.com/json-expression@npm:1.1.0"
   dependencies:
     "@jsonjoy.com/json-pointer": "npm:^1.0.0"
-    "@jsonjoy.com/util": "npm:^1.3.0"
+    "@jsonjoy.com/util": "npm:^1.6.0"
   peerDependencies:
     tslib: 2
-  checksum: 10c0/079cc30941692674b736cf4bbf1d5b9656c6d08264a39fe8e1110ecf82baae36c1c3d70fe8b72a313044266e07f32dfcf3f4d113cbef9013f561cb5d1bea0afc
+  checksum: 10c0/e8e3248a9ad7881c110923809322f23cf5b126c6f92deaccb0908adea7dbc46b6ec59a91e8b1bc12425f5fdff767f9c9054cae20fa6cf7eed76a7fcf4f5e78a5
   languageName: node
   linkType: hard
 
@@ -841,7 +841,7 @@ __metadata:
   resolution: "@jsonjoy.com/json-type@workspace:."
   dependencies:
     "@biomejs/biome": "npm:^1.9.3"
-    "@jsonjoy.com/json-expression": "npm:^1.0.1"
+    "@jsonjoy.com/json-expression": "npm:^1.1.0"
     "@jsonjoy.com/json-pack": "npm:^1.2.0"
     "@jsonjoy.com/util": "npm:^1.6.0"
     "@types/benchmark": "npm:^2.1.5"
@@ -1538,9 +1538,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.5.149":
-  version: 1.5.155
-  resolution: "electron-to-chromium@npm:1.5.155"
-  checksum: 10c0/aee32a0b03282e488352370f6a910de37788b814031020a0e244943450e844e8a41f741d6e5ec70d553dfa4382ef80088034ddc400b48f45de95de331b9ec178
+  version: 1.5.156
+  resolution: "electron-to-chromium@npm:1.5.156"
+  checksum: 10c0/19f331fd7cb6e52bac9e778f688f996d40e54ce2b1f6db209fb5a59f805fa431d4bda6c714148dea1571d2af6f014ea7ccc6585adda7448d5d6ce20499fcf383
   languageName: node
   linkType: hard
 

@@ -56,7 +56,7 @@
     "tslib": "2"
   },
   "dependencies": {
-    "@jsonjoy.com/json-expression": "^1.0.1",
+    "@jsonjoy.com/json-expression": "^1.1.0",
     "@jsonjoy.com/json-pack": "^1.2.0",
     "@jsonjoy.com/util": "^1.6.0",
     "sonic-forest": "^1.2.0",
