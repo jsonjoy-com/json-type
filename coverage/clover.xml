@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1728474716691" clover="3.2.0">
-  <project timestamp="1728474716691" name="All files">
+<coverage generated="1747951833149" clover="3.2.0">
+  <project timestamp="1747951833149" name="All files">
     <metrics statements="2788" coveredstatements="2485" conditionals="665" coveredconditionals="452" methods="850" coveredmethods="765" elements="4303" coveredelements="3702" complexity="0" loc="2788" ncloc="2788" packages="14" files="44" classes="44"/>
     <package name="src">
       <metrics statements="33" coveredstatements="33" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="1"/>
@@ -1732,12 +1732,12 @@
       </file>
       <file name="ConstType.ts" path="/home/runner/work/json-type/json-type/src/type/classes/ConstType.ts">
         <metrics statements="60" coveredstatements="42" conditionals="22" coveredconditionals="7" methods="18" coveredmethods="15"/>
+        <line num="1" count="25" type="stmt"/>
         <line num="2" count="25" type="stmt"/>
         <line num="3" count="25" type="stmt"/>
+        <line num="4" count="25" type="stmt"/>
+        <line num="5" count="25" type="stmt"/>
         <line num="6" count="25" type="stmt"/>
-        <line num="7" count="25" type="stmt"/>
-        <line num="16" count="25" type="stmt"/>
-        <line num="17" count="25" type="stmt"/>
         <line num="25" count="25" type="stmt"/>
         <line num="28" count="110" type="stmt"/>
         <line num="29" count="110" type="stmt"/>
