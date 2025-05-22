@@ -1,10 +1,12 @@
-import type * as schema from '../../schema';
 import {cloneBinary} from '@jsonjoy.com/util/lib/json-clone';
 import {validateTType} from '../../schema/validate';
+import {ValidationError} from '../../constants';
+import {maxEncodingCapacity} from '@jsonjoy.com/util/lib/json-size';
+import {AbstractType} from './AbstractType';
+import {deepEqualCodegen} from '@jsonjoy.com/util/lib/json-equal/deepEqualCodegen';
+import type * as schema from '../../schema';
 import type {ValidatorCodegenContext} from '../../codegen/validator/ValidatorCodegenContext';
 import type {ValidationPath} from '../../codegen/validator/types';
-import {ValidationError} from '../../constants';
-import {$$deepEqual} from '@jsonjoy.com/util/lib/json-equal/$$deepEqual';
 import type {JsonTextEncoderCodegenContext} from '../../codegen/json/JsonTextEncoderCodegenContext';
 import type {CborEncoderCodegenContext} from '../../codegen/binary/CborEncoderCodegenContext';
 import type {JsonEncoderCodegenContext} from '../../codegen/binary/JsonEncoderCodegenContext';
@@ -13,8 +15,6 @@ import type {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression
 import type {MessagePackEncoderCodegenContext} from '../../codegen/binary/MessagePackEncoderCodegenContext';
 import type {BinaryJsonEncoder} from '@jsonjoy.com/json-pack/lib/types';
 import type {CapacityEstimatorCodegenContext} from '../../codegen/capacity/CapacityEstimatorCodegenContext';
-import {maxEncodingCapacity} from '@jsonjoy.com/util/lib/json-size';
-import {AbstractType} from './AbstractType';
 import type * as jsonSchema from '../../json-schema';
 import type {TypeSystem} from '../../system/TypeSystem';
 import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
@@ -54,7 +54,7 @@ export class ConstType<V = any> extends AbstractType<schema.ConstSchema<V>> {
 
   public codegenValidator(ctx: ValidatorCodegenContext, path: ValidationPath, r: string): void {
     const value = this.schema.value;
-    const equals = $$deepEqual(value);
+    const equals = deepEqualCodegen(value);
     const fn = ctx.codegen.addConstant(equals);
     ctx.js(`if (!${fn}(${r})) return ${ctx.err(ValidationError.CONST, path)}`);
     ctx.emitCustomValidators(this, path, r);
