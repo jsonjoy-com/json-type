@@ -21,7 +21,7 @@ export const isAscii = (str: string): boolean => {
  * Validates if a string represents valid UTF-8 when encoded.
  * JavaScript strings are UTF-16, but we need to validate they don't contain
  * invalid Unicode sequences that would produce invalid UTF-8.
- * 
+ *
  * This checks for:
  * - Unpaired surrogates (invalid UTF-16 sequences)
  * - Characters that would produce invalid UTF-8
@@ -30,19 +30,19 @@ export const isUtf8 = (str: string): boolean => {
   const length = str.length;
   for (let i = 0; i < length; i++) {
     const code = str.charCodeAt(i);
-    
+
     // Check for high surrogate
-    if (code >= 0xD800 && code <= 0xDBFF) {
+    if (code >= 0xd800 && code <= 0xdbff) {
       // High surrogate must be followed by low surrogate
       if (i + 1 >= length) {
         return false; // Unpaired high surrogate at end
       }
       const nextCode = str.charCodeAt(i + 1);
-      if (nextCode < 0xDC00 || nextCode > 0xDFFF) {
+      if (nextCode < 0xdc00 || nextCode > 0xdfff) {
         return false; // High surrogate not followed by low surrogate
       }
       i++; // Skip the low surrogate
-    } else if (code >= 0xDC00 && code <= 0xDFFF) {
+    } else if (code >= 0xdc00 && code <= 0xdfff) {
       // Low surrogate without preceding high surrogate
       return false;
     }

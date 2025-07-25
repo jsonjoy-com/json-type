@@ -91,7 +91,7 @@ export class StringType extends AbstractType<schema.StringSchema> {
         ctx.js(/* js */ `if(${r}.length > ${max}) return ${err};`);
       }
     }
-    
+
     if (format) {
       const formatErr = ctx.err(ValidationError.STR, path);
       if (format === 'ascii') {
@@ -106,7 +106,7 @@ export class StringType extends AbstractType<schema.StringSchema> {
       const validateFn = ctx.codegen.linkDependency(isAscii);
       ctx.js(/* js */ `if(!${validateFn}(${r})) return ${asciiErr};`);
     }
-    
+
     ctx.emitCustomValidators(this, path, r);
   }
 

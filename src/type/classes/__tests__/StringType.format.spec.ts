@@ -25,7 +25,7 @@ describe('StringType format validation', () => {
     test('works with min/max length', () => {
       const type = t.String({format: 'ascii', min: 2, max: 5});
       const validator = type.validator('boolean');
-      
+
       expect(validator('ab')).toBe(false); // Valid ASCII, correct length
       expect(validator('abcde')).toBe(false); // Valid ASCII, correct length
       expect(validator('a')).toBe(true); // Too short
@@ -51,9 +51,9 @@ describe('StringType format validation', () => {
     test('rejects strings with unpaired surrogates', () => {
       const validator = utf8Type.validator('boolean');
       // Create strings with unpaired surrogates
-      const highSurrogate = String.fromCharCode(0xD800); // High surrogate without low
-      const lowSurrogate = String.fromCharCode(0xDC00); // Low surrogate without high
-      
+      const highSurrogate = String.fromCharCode(0xd800); // High surrogate without low
+      const lowSurrogate = String.fromCharCode(0xdc00); // Low surrogate without high
+
       expect(validator(highSurrogate)).toBe(true); // Unpaired high surrogate
       expect(validator(lowSurrogate)).toBe(true); // Orphaned low surrogate
       expect(validator('hello' + highSurrogate)).toBe(true); // High surrogate at end
@@ -72,7 +72,7 @@ describe('StringType format validation', () => {
     test('ascii: true behaves like format: "ascii"', () => {
       const asciiType = t.String({ascii: true});
       const validator = asciiType.validator('boolean');
-      
+
       expect(validator('hello')).toBe(false); // Valid ASCII
       expect(validator('héllo')).toBe(true); // Non-ASCII
     });
@@ -80,7 +80,7 @@ describe('StringType format validation', () => {
     test('format takes precedence over ascii boolean', () => {
       const type = t.String({format: 'utf8', ascii: true});
       const validator = type.validator('boolean');
-      
+
       // Should behave as UTF-8 validation, allowing non-ASCII
       expect(validator('héllo')).toBe(false); // Should pass UTF-8 validation
     });

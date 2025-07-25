@@ -42,42 +42,42 @@ describe('String format validation utilities', () => {
     });
 
     test('returns false for unpaired high surrogates', () => {
-      const highSurrogate = String.fromCharCode(0xD800);
+      const highSurrogate = String.fromCharCode(0xd800);
       expect(isUtf8(highSurrogate)).toBe(false);
       expect(isUtf8('hello' + highSurrogate)).toBe(false);
       expect(isUtf8(highSurrogate + 'world')).toBe(false);
     });
 
     test('returns false for orphaned low surrogates', () => {
-      const lowSurrogate = String.fromCharCode(0xDC00);
+      const lowSurrogate = String.fromCharCode(0xdc00);
       expect(isUtf8(lowSurrogate)).toBe(false);
       expect(isUtf8('hello' + lowSurrogate)).toBe(false);
       expect(isUtf8(lowSurrogate + 'world')).toBe(false);
     });
 
     test('returns false for high surrogate not followed by low surrogate', () => {
-      const highSurrogate = String.fromCharCode(0xD800);
-      const notLowSurrogate = String.fromCharCode(0xE000); // Outside surrogate range
+      const highSurrogate = String.fromCharCode(0xd800);
+      const notLowSurrogate = String.fromCharCode(0xe000); // Outside surrogate range
       expect(isUtf8(highSurrogate + notLowSurrogate)).toBe(false);
       expect(isUtf8(highSurrogate + 'a')).toBe(false);
     });
 
     test('returns true for valid surrogate pairs', () => {
       // Create a valid surrogate pair manually
-      const highSurrogate = String.fromCharCode(0xD800);
-      const lowSurrogate = String.fromCharCode(0xDC00);
+      const highSurrogate = String.fromCharCode(0xd800);
+      const lowSurrogate = String.fromCharCode(0xdc00);
       expect(isUtf8(highSurrogate + lowSurrogate)).toBe(true);
-      
+
       // Test with real emoji
       expect(isUtf8('👨‍💻')).toBe(true); // Complex emoji with ZWJ
       expect(isUtf8('🏳️‍🌈')).toBe(true); // Rainbow flag emoji
     });
 
     test('handles sequences correctly', () => {
-      const highSurrogate = String.fromCharCode(0xD800);
-      const lowSurrogate = String.fromCharCode(0xDC00);
+      const highSurrogate = String.fromCharCode(0xd800);
+      const lowSurrogate = String.fromCharCode(0xdc00);
       const validPair = highSurrogate + lowSurrogate;
-      
+
       expect(isUtf8(validPair + validPair)).toBe(true); // Two valid pairs
       expect(isUtf8(validPair + highSurrogate)).toBe(false); // Valid pair + unpaired high
       expect(isUtf8('hello' + validPair + 'world')).toBe(true); // Valid pair in middle
@@ -93,7 +93,7 @@ describe('String format validation utilities', () => {
     test('delegates to isUtf8 for utf8 format', () => {
       expect(validateStringFormat('hello', 'utf8')).toBe(true);
       expect(validateStringFormat('héllo', 'utf8')).toBe(true);
-      expect(validateStringFormat(String.fromCharCode(0xD800), 'utf8')).toBe(false);
+      expect(validateStringFormat(String.fromCharCode(0xd800), 'utf8')).toBe(false);
     });
 
     test('returns true for invalid format (defensive)', () => {
