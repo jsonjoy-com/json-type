@@ -88,10 +88,6 @@ export class ConstType<V = any> extends AbstractType<schema.ConstSchema<V>> {
     ctx.inc(maxEncodingCapacity(this.value()));
   }
 
-  public random(): unknown {
-    return cloneBinary(this.schema.value);
-  }
-
   public toTypeScriptAst() {
     const value = this.schema.value;
     if (value === null) {

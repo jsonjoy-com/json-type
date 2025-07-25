@@ -105,10 +105,6 @@ export class AnyType extends AbstractType<schema.AnySchema> {
     );
   }
 
-  public random(): unknown {
-    return RandomJson.generate({nodeCount: 5});
-  }
-
   public toTypeScriptAst(): ts.TsType {
     return {node: 'AnyKeyword'};
   }

@@ -57,10 +57,6 @@ export class FunctionType<Req extends Type, Res extends Type> extends AbstractTy
     this.res.validateSchema();
   }
 
-  public random(): unknown {
-    return async () => this.res.random();
-  }
-
   public singleton?: FunctionImpl<Req, Res, any> = undefined;
 
   public implement<Ctx = unknown>(singleton: FunctionImpl<Req, Res, Ctx>): this {
@@ -134,10 +130,6 @@ export class FunctionStreamingType<Req extends Type, Res extends Type> extends A
     validateTType(schema, 'fn$');
     this.req.validateSchema();
     this.res.validateSchema();
-  }
-
-  public random(): unknown {
-    return async () => this.res.random();
   }
 
   public singleton?: FunctionStreamingImpl<Req, Res, any> = undefined;

@@ -184,16 +184,6 @@ export class ArrayType<T extends Type> extends AbstractType<schema.ArraySchema<S
     }
   }
 
-  public random(): unknown[] {
-    let length = Math.round(Math.random() * 10);
-    const {min, max} = this.schema;
-    if (min !== undefined && length < min) length = min + length;
-    if (max !== undefined && length > max) length = max;
-    const arr = [];
-    for (let i = 0; i < length; i++) arr.push(this.type.random());
-    return arr;
-  }
-
   public toTypeScriptAst(): ts.TsArrayType {
     return {
       node: 'ArrayType',

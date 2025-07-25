@@ -67,10 +67,6 @@ export class BooleanType extends AbstractType<schema.BooleanSchema> {
     ctx.inc(MaxEncodingOverhead.Boolean);
   }
 
-  public random(): boolean {
-    return RandomJson.genBoolean();
-  }
-
   public toTypeScriptAst(): ts.TsBooleanKeyword {
     return {node: 'BooleanKeyword'};
   }
