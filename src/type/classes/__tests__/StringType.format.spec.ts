@@ -31,6 +31,7 @@ describe('StringType format validation', () => {
       expect(validator('a')).toBe(true); // Too short
       expect(validator('abcdef')).toBe(true); // Too long
       expect(validator('ñ')).toBe(true); // Non-ASCII (but would also be too short)
+      expect(validator('ñoño')).toBe(true); // Good length, but not ASCII
     });
   });
 

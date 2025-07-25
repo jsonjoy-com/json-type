@@ -8,7 +8,8 @@
  * This is highly optimized for performance.
  */
 export const isAscii = (str: string): boolean => {
-  for (let i = 0; i < str.length; i++) {
+  const length = str.length;
+  for (let i = 0; i < length; i++) {
     if (str.charCodeAt(i) > 127) {
       return false;
     }
@@ -25,14 +26,15 @@ export const isAscii = (str: string): boolean => {
  * - Unpaired surrogates (invalid UTF-16 sequences)
  * - Characters that would produce invalid UTF-8
  */
-export const isValidUtf8 = (str: string): boolean => {
-  for (let i = 0; i < str.length; i++) {
+export const isUtf8 = (str: string): boolean => {
+  const length = str.length;
+  for (let i = 0; i < length; i++) {
     const code = str.charCodeAt(i);
     
     // Check for high surrogate
     if (code >= 0xD800 && code <= 0xDBFF) {
       // High surrogate must be followed by low surrogate
-      if (i + 1 >= str.length) {
+      if (i + 1 >= length) {
         return false; // Unpaired high surrogate at end
       }
       const nextCode = str.charCodeAt(i + 1);
@@ -57,7 +59,7 @@ export const validateStringFormat = (str: string, format: 'ascii' | 'utf8'): boo
     case 'ascii':
       return isAscii(str);
     case 'utf8':
-      return isValidUtf8(str);
+      return isUtf8(str);
     default:
       return true;
   }

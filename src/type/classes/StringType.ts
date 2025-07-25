@@ -21,7 +21,7 @@ import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
 import type * as ts from '../../typescript/types';
 import type {TypeExportContext} from '../../system/TypeExportContext';
 import type * as jtd from '../../jtd/types';
-import {validateStringFormat} from '../../util/stringFormats';
+import {isAscii, isUtf8} from '../../util/stringFormats';
 
 export class StringType extends AbstractType<schema.StringSchema> {
   constructor(protected schema: schema.StringSchema) {
@@ -92,16 +92,19 @@ export class StringType extends AbstractType<schema.StringSchema> {
       }
     }
     
-    // Handle format validation
     if (format) {
       const formatErr = ctx.err(ValidationError.STR, path);
-      const validateFn = ctx.codegen.linkDependency(validateStringFormat);
-      ctx.js(/* js */ `if(!${validateFn}(${r}, "${format}")) return ${formatErr};`);
+      if (format === 'ascii') {
+        const validateFn = ctx.codegen.linkDependency(isAscii);
+        ctx.js(/* js */ `if(!${validateFn}(${r})) return ${formatErr};`);
+      } else if (format === 'utf8') {
+        const validateFn = ctx.codegen.linkDependency(isUtf8);
+        ctx.js(/* js */ `if(!${validateFn}(${r})) return ${formatErr};`);
+      }
     } else if (ascii) {
-      // Backward compatibility: use ASCII validation if ascii=true and no format specified
       const asciiErr = ctx.err(ValidationError.STR, path);
-      const validateFn = ctx.codegen.linkDependency(validateStringFormat);
-      ctx.js(/* js */ `if(!${validateFn}(${r}, "ascii")) return ${asciiErr};`);
+      const validateFn = ctx.codegen.linkDependency(isAscii);
+      ctx.js(/* js */ `if(!${validateFn}(${r})) return ${asciiErr};`);
     }
     
     ctx.emitCustomValidators(this, path, r);

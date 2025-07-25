@@ -1,4 +1,4 @@
-import {isAscii, isValidUtf8, validateStringFormat} from '../stringFormats';
+import {isAscii, isUtf8, validateStringFormat} from '../stringFormats';
 
 describe('String format validation utilities', () => {
   describe('isAscii', () => {
@@ -30,47 +30,47 @@ describe('String format validation utilities', () => {
     });
   });
 
-  describe('isValidUtf8', () => {
+  describe('isUtf8', () => {
     test('returns true for valid UTF-8 strings', () => {
-      expect(isValidUtf8('')).toBe(true);
-      expect(isValidUtf8('hello')).toBe(true);
-      expect(isValidUtf8('héllo')).toBe(true);
-      expect(isValidUtf8('🚀')).toBe(true);
-      expect(isValidUtf8('中文')).toBe(true);
-      expect(isValidUtf8('русский')).toBe(true);
-      expect(isValidUtf8('👍💖🎉')).toBe(true); // Multiple emojis with surrogate pairs
+      expect(isUtf8('')).toBe(true);
+      expect(isUtf8('hello')).toBe(true);
+      expect(isUtf8('héllo')).toBe(true);
+      expect(isUtf8('🚀')).toBe(true);
+      expect(isUtf8('中文')).toBe(true);
+      expect(isUtf8('русский')).toBe(true);
+      expect(isUtf8('👍💖🎉')).toBe(true); // Multiple emojis with surrogate pairs
     });
 
     test('returns false for unpaired high surrogates', () => {
       const highSurrogate = String.fromCharCode(0xD800);
-      expect(isValidUtf8(highSurrogate)).toBe(false);
-      expect(isValidUtf8('hello' + highSurrogate)).toBe(false);
-      expect(isValidUtf8(highSurrogate + 'world')).toBe(false);
+      expect(isUtf8(highSurrogate)).toBe(false);
+      expect(isUtf8('hello' + highSurrogate)).toBe(false);
+      expect(isUtf8(highSurrogate + 'world')).toBe(false);
     });
 
     test('returns false for orphaned low surrogates', () => {
       const lowSurrogate = String.fromCharCode(0xDC00);
-      expect(isValidUtf8(lowSurrogate)).toBe(false);
-      expect(isValidUtf8('hello' + lowSurrogate)).toBe(false);
-      expect(isValidUtf8(lowSurrogate + 'world')).toBe(false);
+      expect(isUtf8(lowSurrogate)).toBe(false);
+      expect(isUtf8('hello' + lowSurrogate)).toBe(false);
+      expect(isUtf8(lowSurrogate + 'world')).toBe(false);
     });
 
     test('returns false for high surrogate not followed by low surrogate', () => {
       const highSurrogate = String.fromCharCode(0xD800);
       const notLowSurrogate = String.fromCharCode(0xE000); // Outside surrogate range
-      expect(isValidUtf8(highSurrogate + notLowSurrogate)).toBe(false);
-      expect(isValidUtf8(highSurrogate + 'a')).toBe(false);
+      expect(isUtf8(highSurrogate + notLowSurrogate)).toBe(false);
+      expect(isUtf8(highSurrogate + 'a')).toBe(false);
     });
 
     test('returns true for valid surrogate pairs', () => {
       // Create a valid surrogate pair manually
       const highSurrogate = String.fromCharCode(0xD800);
       const lowSurrogate = String.fromCharCode(0xDC00);
-      expect(isValidUtf8(highSurrogate + lowSurrogate)).toBe(true);
+      expect(isUtf8(highSurrogate + lowSurrogate)).toBe(true);
       
       // Test with real emoji
-      expect(isValidUtf8('👨‍💻')).toBe(true); // Complex emoji with ZWJ
-      expect(isValidUtf8('🏳️‍🌈')).toBe(true); // Rainbow flag emoji
+      expect(isUtf8('👨‍💻')).toBe(true); // Complex emoji with ZWJ
+      expect(isUtf8('🏳️‍🌈')).toBe(true); // Rainbow flag emoji
     });
 
     test('handles sequences correctly', () => {
@@ -78,9 +78,9 @@ describe('String format validation utilities', () => {
       const lowSurrogate = String.fromCharCode(0xDC00);
       const validPair = highSurrogate + lowSurrogate;
       
-      expect(isValidUtf8(validPair + validPair)).toBe(true); // Two valid pairs
-      expect(isValidUtf8(validPair + highSurrogate)).toBe(false); // Valid pair + unpaired high
-      expect(isValidUtf8('hello' + validPair + 'world')).toBe(true); // Valid pair in middle
+      expect(isUtf8(validPair + validPair)).toBe(true); // Two valid pairs
+      expect(isUtf8(validPair + highSurrogate)).toBe(false); // Valid pair + unpaired high
+      expect(isUtf8('hello' + validPair + 'world')).toBe(true); // Valid pair in middle
     });
   });
 
@@ -90,7 +90,7 @@ describe('String format validation utilities', () => {
       expect(validateStringFormat('héllo', 'ascii')).toBe(false);
     });
 
-    test('delegates to isValidUtf8 for utf8 format', () => {
+    test('delegates to isUtf8 for utf8 format', () => {
       expect(validateStringFormat('hello', 'utf8')).toBe(true);
       expect(validateStringFormat('héllo', 'utf8')).toBe(true);
       expect(validateStringFormat(String.fromCharCode(0xD800), 'utf8')).toBe(false);
