@@ -41,103 +41,86 @@ test('can print a type', () => {
     .options({unknownFields: true});
   // console.log(JSON.stringify(type.toJsonSchema(), null, 2));
   expect(type.toJsonSchema()).toMatchInlineSnapshot(`
-    {
-      "properties": {
-        "arrayProperty": {
-          "items": {
-            "type": [
-              "string",
-              "number",
-              "boolean",
-              "null",
-              "array",
-              "object",
-            ],
-          },
-          "type": "array",
-        },
-        "binaryOperation": {
-          "type": "binary",
-        },
-        "binaryProperty": {
-          "type": "binary",
-        },
-        "booleanProperty": {
-          "type": "boolean",
-        },
-        "enumAsConst": {
-          "anyOf": [
-            {
-              "const": "a",
-              "type": "string",
-            },
-            {
-              "const": "b",
-              "type": "string",
-            },
-            {
-              "const": "c",
-              "type": "string",
-            },
-          ],
-        },
-        "id": {
+{
+  "properties": {
+    "arrayProperty": {
+      "items": {
+        "type": [
+          "string",
+          "number",
+          "boolean",
+          "null",
+          "array",
+          "object",
+        ],
+      },
+      "type": "array",
+    },
+    "binaryOperation": {
+      "type": "binary",
+    },
+    "binaryProperty": {
+      "type": "binary",
+    },
+    "booleanProperty": {
+      "type": "boolean",
+    },
+    "enumAsConst": {
+      "anyOf": [
+        {
+          "const": "a",
           "type": "string",
         },
-        "map": {
-          "patternProperties": {
-            ".*": {
-              "type": "string",
-            },
-          },
-          "type": "object",
+        {
+          "const": "b",
+          "type": "string",
         },
-        "numberProperty": {
-          "exclusiveMinimum": 3.14,
-          "type": "number",
+        {
+          "const": "c",
+          "type": "string",
         },
-        "objectProperty": {
-          "properties": {
-            "id": {
-              "maxLength": 128,
-              "minLength": 3,
-              "type": "string",
-            },
-          },
-          "required": [
-            "id",
-          ],
-          "type": "object",
+      ],
+    },
+    "id": {
+      "type": "string",
+    },
+    "map": {
+      "patternProperties": {
+        ".*": {
+          "type": "string",
         },
-        "operation": {
-          "properties": {
-            "path": {
-              "type": "string",
-            },
-            "type": {
-              "const": "replace",
-              "title": "Always use replace",
-              "type": "string",
-            },
-            "value": {
-              "type": [
-                "string",
-                "number",
-                "boolean",
-                "null",
-                "array",
-                "object",
-              ],
-            },
-          },
-          "required": [
-            "type",
-            "path",
-            "value",
-          ],
-          "type": "object",
+      },
+      "type": "object",
+    },
+    "numberProperty": {
+      "exclusiveMinimum": 3.14,
+      "type": "number",
+    },
+    "objectProperty": {
+      "properties": {
+        "id": {
+          "maxLength": 128,
+          "minLength": 3,
+          "pattern": "^[\\x00-\\x7F]*$",
+          "type": "string",
         },
-        "optional": {
+      },
+      "required": [
+        "id",
+      ],
+      "type": "object",
+    },
+    "operation": {
+      "properties": {
+        "path": {
+          "type": "string",
+        },
+        "type": {
+          "const": "replace",
+          "title": "Always use replace",
+          "type": "string",
+        },
+        "value": {
           "type": [
             "string",
             "number",
@@ -147,51 +130,69 @@ test('can print a type', () => {
             "object",
           ],
         },
-        "refField": {
-          "$ref": "#/$defs/refId",
-        },
-        "tags": {
-          "items": {
-            "type": "string",
-          },
-          "title": "Tags",
-          "type": "array",
-        },
-        "und": {
-          "const": undefined,
-          "type": "undefined",
-        },
-        "unionProperty": {
-          "anyOf": [
-            {
-              "type": "string",
-            },
-            {
-              "type": "number",
-            },
-            {
-              "const": null,
-              "type": "object",
-            },
-          ],
-        },
       },
       "required": [
-        "id",
-        "tags",
-        "booleanProperty",
-        "numberProperty",
-        "binaryProperty",
-        "arrayProperty",
-        "objectProperty",
-        "unionProperty",
-        "operation",
-        "binaryOperation",
-        "map",
+        "type",
+        "path",
+        "value",
       ],
       "type": "object",
-    }
-  `);
+    },
+    "optional": {
+      "type": [
+        "string",
+        "number",
+        "boolean",
+        "null",
+        "array",
+        "object",
+      ],
+    },
+    "refField": {
+      "$ref": "#/$defs/refId",
+    },
+    "tags": {
+      "items": {
+        "type": "string",
+      },
+      "title": "Tags",
+      "type": "array",
+    },
+    "und": {
+      "const": undefined,
+      "type": "undefined",
+    },
+    "unionProperty": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "number",
+        },
+        {
+          "const": null,
+          "type": "object",
+        },
+      ],
+    },
+  },
+  "required": [
+    "id",
+    "tags",
+    "booleanProperty",
+    "numberProperty",
+    "binaryProperty",
+    "arrayProperty",
+    "objectProperty",
+    "unionProperty",
+    "operation",
+    "binaryOperation",
+    "map",
+  ],
+  "type": "object",
+}
+`);
 });
 
 test('exports "ref" type to JSON Schema "$defs"', () => {

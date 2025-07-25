@@ -16,6 +16,7 @@ export interface JsonSchemaString extends JsonSchemaGenericKeywords {
   type: 'string';
   const?: string;
   format?: string;
+  pattern?: string;
   minLength?: number;
   maxLength?: number;
 }

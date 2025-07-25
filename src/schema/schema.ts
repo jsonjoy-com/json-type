@@ -117,9 +117,20 @@ export interface StringSchema extends TType<string>, WithValidator {
   kind: 'str';
 
   /**
+   * String format specification. When set, the string value will be validated
+   * according to the specified format for maximum performance.
+   * 
+   * - "ascii" - Only ASCII characters (0-127) are allowed
+   * - "utf8" - Valid UTF-8 encoded strings are allowed
+   */
+  format?: 'ascii' | 'utf8';
+
+  /**
    * When set to true, means that the string can contain only ASCII characters.
    * This enables a range of optimizations, such as using a faster JSON
    * serialization, faster binary serialization.
+   * 
+   * @deprecated Use `format: 'ascii'` instead.
    */
   ascii?: boolean;
 

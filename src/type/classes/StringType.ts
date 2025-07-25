@@ -21,6 +21,7 @@ import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
 import type * as ts from '../../typescript/types';
 import type {TypeExportContext} from '../../system/TypeExportContext';
 import type * as jtd from '../../jtd/types';
+import {validateStringFormat} from '../../util/stringFormats';
 
 export class StringType extends AbstractType<schema.StringSchema> {
   constructor(protected schema: schema.StringSchema) {
@@ -35,6 +36,18 @@ export class StringType extends AbstractType<schema.StringSchema> {
     };
     if (schema.min !== undefined) jsonSchema.minLength = schema.min;
     if (schema.max !== undefined) jsonSchema.maxLength = schema.max;
+    // Add format to JSON Schema if specified
+    if (schema.format) {
+      if (schema.format === 'ascii') {
+        // JSON Schema doesn't have an "ascii" format, but we can use a pattern
+        // ASCII characters are from 0x00 to 0x7F (0-127)
+        jsonSchema.pattern = '^[\\x00-\\x7F]*$';
+      }
+      // UTF-8 is the default for JSON Schema strings, so we don't need to add anything special
+    } else if (schema.ascii) {
+      // Backward compatibility: if ascii=true, add pattern
+      jsonSchema.pattern = '^[\\x00-\\x7F]*$';
+    }
     return jsonSchema;
   }
 
@@ -42,7 +55,7 @@ export class StringType extends AbstractType<schema.StringSchema> {
     const schema = this.getSchema();
     validateTType(schema, 'str');
     validateWithValidator(schema);
-    const {min, max, ascii, noJsonEscape} = schema;
+    const {min, max, ascii, noJsonEscape, format} = schema;
     validateMinMax(min, max);
     if (ascii !== undefined) {
       if (typeof ascii !== 'boolean') throw new Error('ASCII');
@@ -50,12 +63,21 @@ export class StringType extends AbstractType<schema.StringSchema> {
     if (noJsonEscape !== undefined) {
       if (typeof noJsonEscape !== 'boolean') throw new Error('NO_JSON_ESCAPE_TYPE');
     }
+    if (format !== undefined) {
+      if (format !== 'ascii' && format !== 'utf8') {
+        throw new Error('INVALID_STRING_FORMAT');
+      }
+      // If both format and ascii are specified, they should be consistent
+      if (ascii !== undefined && format === 'ascii' && !ascii) {
+        throw new Error('FORMAT_ASCII_MISMATCH');
+      }
+    }
   }
 
   public codegenValidator(ctx: ValidatorCodegenContext, path: ValidationPath, r: string): void {
     const error = ctx.err(ValidationError.STR, path);
     ctx.js(/* js */ `if(typeof ${r} !== "string") return ${error};`);
-    const {min, max} = this.schema;
+    const {min, max, format, ascii} = this.schema;
     if (typeof min === 'number' && min === max) {
       const err = ctx.err(ValidationError.STR_LEN, path);
       ctx.js(/* js */ `if(${r}.length !== ${min}) return ${err};`);
@@ -69,6 +91,19 @@ export class StringType extends AbstractType<schema.StringSchema> {
         ctx.js(/* js */ `if(${r}.length > ${max}) return ${err};`);
       }
     }
+    
+    // Handle format validation
+    if (format) {
+      const formatErr = ctx.err(ValidationError.STR, path);
+      const validateFn = ctx.codegen.linkDependency(validateStringFormat);
+      ctx.js(/* js */ `if(!${validateFn}(${r}, "${format}")) return ${formatErr};`);
+    } else if (ascii) {
+      // Backward compatibility: use ASCII validation if ascii=true and no format specified
+      const asciiErr = ctx.err(ValidationError.STR, path);
+      const validateFn = ctx.codegen.linkDependency(validateStringFormat);
+      ctx.js(/* js */ `if(!${validateFn}(${r}, "ascii")) return ${asciiErr};`);
+    }
+    
     ctx.emitCustomValidators(this, path, r);
   }
 
@@ -81,9 +116,11 @@ export class StringType extends AbstractType<schema.StringSchema> {
   }
 
   private codegenBinaryEncoder(ctx: BinaryEncoderCodegenContext<BinaryJsonEncoder>, value: JsExpression): void {
-    const ascii = this.schema.ascii;
+    const {ascii, format} = this.schema;
     const v = value.use();
-    if (ascii) ctx.js(/* js */ `encoder.writeAsciiStr(${v});`);
+    // Use ASCII encoding if format is 'ascii' or ascii=true (backward compatibility)
+    const useAscii = format === 'ascii' || ascii;
+    if (useAscii) ctx.js(/* js */ `encoder.writeAsciiStr(${v});`);
     else ctx.js(/* js */ `encoder.writeStr(${v});`);
   }
 
