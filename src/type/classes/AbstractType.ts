@@ -99,7 +99,10 @@ export abstract class AbstractType<S extends schema.Schema> implements BaseType<
   }
 
   /** Validates own schema, throws on errors. */
-  public abstract validateSchema(): void;
+  public validateSchema(): void {
+    const {validateSchema} = require('../../schema/validate');
+    validateSchema(this.getSchema());
+  }
 
   public validate(value: unknown): void {
     const validator = this.validator('string');

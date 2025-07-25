@@ -1,6 +1,5 @@
 import type * as schema from '../../schema';
 import {RandomJson} from '@jsonjoy.com/util/lib/json-random';
-import {validateTType} from '../../schema/validate';
 import type {ValidatorCodegenContext} from '../../codegen/validator/ValidatorCodegenContext';
 import type {ValidationPath} from '../../codegen/validator/types';
 import type {JsonTextEncoderCodegenContext} from '../../codegen/json/JsonTextEncoderCodegenContext';
@@ -28,10 +27,6 @@ export class AnyType extends AbstractType<schema.AnySchema> {
       type: ['string', 'number', 'boolean', 'null', 'array', 'object'],
       ...super.toJsonSchema(ctx),
     };
-  }
-
-  public validateSchema(): void {
-    validateTType(this.getSchema(), 'any');
   }
 
   public codegenValidator(ctx: ValidatorCodegenContext, path: ValidationPath, r: string): void {
