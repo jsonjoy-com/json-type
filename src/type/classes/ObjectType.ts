@@ -2,7 +2,6 @@ import {normalizeAccessor} from '@jsonjoy.com/util/lib/codegen/util/normalizeAcc
 import {MaxEncodingOverhead, maxEncodingCapacity} from '@jsonjoy.com/util/lib/json-size';
 import {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
 import {asString} from '@jsonjoy.com/util/lib/strings/asString';
-import {RandomJson} from '@jsonjoy.com/util/lib/json-random';
 import {printTree} from 'tree-dump/lib/printTree';
 import * as schema from '../../schema';
 import {validateTType, validateWithValidator} from '../../schema/validate';
@@ -519,15 +518,7 @@ if (${rLength}) {
     }
   }
 
-  public random(): Record<string, unknown> {
-    const schema = this.schema;
-    const obj: Record<string, unknown> = schema.unknownFields ? <Record<string, unknown>>RandomJson.genObject() : {};
-    for (const field of this.fields) {
-      if (field instanceof ObjectOptionalFieldType) if (Math.random() > 0.5) continue;
-      obj[field.key] = field.value.random();
-    }
-    return obj;
-  }
+
 
   public toTypeScriptAst(): ts.TsTypeLiteral {
     const node: ts.TsTypeLiteral = {

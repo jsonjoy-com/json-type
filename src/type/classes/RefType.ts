@@ -136,11 +136,7 @@ export class RefType<T extends Type> extends AbstractType<schema.RefSchema<Schem
     ctx.codegen.js(`size += ${d}(${value.use()});`);
   }
 
-  public random(): unknown {
-    if (!this.system) throw new Error('NO_SYSTEM');
-    const alias = this.system.resolve(this.schema.ref);
-    return alias.type.random();
-  }
+
 
   public toTypeScriptAst(): ts.TsGenericTypeAnnotation {
     return {

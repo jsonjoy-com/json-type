@@ -1,5 +1,4 @@
 import type * as schema from '../../schema';
-import {RandomJson} from '@jsonjoy.com/util/lib/json-random';
 import {asString} from '@jsonjoy.com/util/lib/strings/asString';
 import {validateMinMax, validateTType, validateWithValidator} from '../../schema/validate';
 import type {ValidatorCodegenContext} from '../../codegen/validator/ValidatorCodegenContext';
@@ -144,13 +143,7 @@ export class StringType extends AbstractType<schema.StringSchema> {
     ctx.codegen.js(`size += ${MaxEncodingOverhead.StringLengthMultiplier} * ${value.use()}.length;`);
   }
 
-  public random(): string {
-    let length = Math.round(Math.random() * 10);
-    const {min, max} = this.schema;
-    if (min !== undefined && length < min) length = min + length;
-    if (max !== undefined && length > max) length = max;
-    return RandomJson.genString(length);
-  }
+
 
   public toTypeScriptAst(): ts.TsStringKeyword {
     return {node: 'StringKeyword'};

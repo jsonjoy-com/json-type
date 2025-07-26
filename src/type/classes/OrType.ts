@@ -160,11 +160,7 @@ export class OrType<T extends Type[]> extends AbstractType<schema.OrSchema<{[K i
     );
   }
 
-  public random(): unknown {
-    const types = this.types;
-    const index = Math.floor(Math.random() * types.length);
-    return types[index].random();
-  }
+
 
   public toTypeScriptAst(): ts.TsUnionType {
     const node: ts.TsUnionType = {
