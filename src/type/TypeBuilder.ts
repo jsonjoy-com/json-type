@@ -64,7 +64,7 @@ export class TypeBuilder {
     return type;
   }
 
-  public Const<V>(value: V, options?: schema.Optional<schema.ConstSchema>) {
+  public Const<V>(value: schema.Narrow<V>, options?: schema.Optional<schema.ConstSchema>) {
     type V2 = string extends V
       ? never
       : number extends V

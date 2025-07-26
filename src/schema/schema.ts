@@ -496,3 +496,8 @@ export type OptionalProps<T extends object> = Exclude<
 
 export type Optional<T extends object> = Pick<T, OptionalProps<T>>;
 export type Required<T extends object> = Omit<T, OptionalProps<T>>;
+
+export type Narrow<T> =
+  | (T extends infer U ? U : never)
+  | Extract<T, number | string | boolean | bigint | symbol | null | undefined | []>
+  | ([T] extends [[]] ? [] : { [K in keyof T]: Narrow<T[K]> });
