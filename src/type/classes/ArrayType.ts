@@ -11,18 +11,19 @@ import {CborEncoderCodegenContext} from '../../codegen/binary/CborEncoderCodegen
 import type {JsonEncoderCodegenContext} from '../../codegen/binary/JsonEncoderCodegenContext';
 import type {BinaryEncoderCodegenContext} from '../../codegen/binary/BinaryEncoderCodegenContext';
 import {MessagePackEncoderCodegenContext} from '../../codegen/binary/MessagePackEncoderCodegenContext';
-import type {CapacityEstimatorCodegenContext} from '../../codegen/capacity/CapacityEstimatorCodegenContext';
-import {MaxEncodingOverhead} from '@jsonjoy.com/util/lib/json-size';
 import {AbstractType} from './AbstractType';
-import {ConstType} from './ConstType';
-import {BooleanType} from './BooleanType';
-import {NumberType} from './NumberType';
 import type * as jsonSchema from '../../json-schema';
 import type {SchemaOf, Type} from '../types';
 import type {TypeSystem} from '../../system/TypeSystem';
 import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
 import type * as ts from '../../typescript/types';
 import type {TypeExportContext} from '../../system/TypeExportContext';
+import type {CapacityEstimatorCodegenContext} from '../../codegen/capacity/CapacityEstimatorCodegenContext';
+import {ConstType} from './ConstType';
+import {BooleanType} from './BooleanType';
+import {NumberType} from './NumberType';
+import {MaxEncodingOverhead} from '../../codegen/capacity/constants';
+import type * as jtd from '../../jtd/types';
 
 export class ArrayType<T extends Type> extends AbstractType<schema.ArraySchema<SchemaOf<T>>> {
   protected schema: schema.ArraySchema<any>;
@@ -40,18 +41,6 @@ export class ArrayType<T extends Type> extends AbstractType<schema.ArraySchema<S
       ...this.schema,
       type: this.type.getSchema(ctx) as any,
     };
-  }
-
-  public toJsonSchema(): jsonSchema.JsonSchemaArray {
-    const schema = this.getSchema();
-    const jsonSchema = <jsonSchema.JsonSchemaArray>{
-      type: 'array',
-      items: this.type.toJsonSchema(),
-      ...super.toJsonSchema(),
-    };
-    if (schema.min !== undefined) jsonSchema.minItems = schema.min;
-    if (schema.max !== undefined) jsonSchema.maxItems = schema.max;
-    return jsonSchema;
   }
 
   public getOptions(): schema.Optional<schema.ArraySchema<SchemaOf<T>>> {
@@ -182,6 +171,7 @@ export class ArrayType<T extends Type> extends AbstractType<schema.ArraySchema<S
       const ri = codegen.getRegister();
       codegen.js(`for(var ${ri} = ${rLen}; ${ri}-- !== 0;) size += ${rFn}(${r}[${ri}]);`);
     }
+  }
   }
 
   public toTypeScriptAst(): ts.TsArrayType {

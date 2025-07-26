@@ -36,6 +36,7 @@ import {
   type CapacityEstimatorCodegenContextOptions,
   type CompiledCapacityEstimator,
 } from '../../codegen/capacity/CapacityEstimatorCodegenContext';
+import {generate} from '../../codegen/capacity/estimators';
 import type {JsonValueCodec} from '@jsonjoy.com/json-pack/lib/codecs/types';
 import type * as jsonSchema from '../../json-schema';
 import type {BaseType} from '../types';
@@ -81,12 +82,9 @@ export abstract class AbstractType<S extends schema.Schema> implements BaseType<
   }
 
   public toJsonSchema(ctx?: TypeExportContext): jsonSchema.JsonSchemaNode {
-    const schema = this.getSchema();
-    const jsonSchema = <jsonSchema.JsonSchemaGenericKeywords>{};
-    if (schema.title) jsonSchema.title = schema.title;
-    if (schema.description) jsonSchema.description = schema.description;
-    if (schema.examples) jsonSchema.examples = schema.examples.map((example: schema.TExample) => example.value);
-    return jsonSchema;
+    // Use dynamic import to avoid circular dependency
+    const converter = require('../../json-schema/converter');
+    return converter.typeToJsonSchema(this, ctx);
   }
 
   public options(options: schema.Optional<S>): this {
@@ -266,12 +264,9 @@ export abstract class AbstractType<S extends schema.Schema> implements BaseType<
     });
     const r = ctx.codegen.options.args[0];
     const value = new JsExpression(() => r);
-    this.codegenCapacityEstimator(ctx, value);
+    // Use the centralized router instead of the abstract method
+    generate(ctx, value, this as any);
     return ctx.compile();
-  }
-
-  public codegenCapacityEstimator(ctx: CapacityEstimatorCodegenContext, value: JsExpression): void {
-    throw new Error(`${this.toStringName()}.codegenCapacityEstimator() not implemented`);
   }
 
   private __capacityEstimator: CompiledCapacityEstimator | undefined;

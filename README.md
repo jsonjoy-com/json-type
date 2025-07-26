@@ -54,3 +54,324 @@ const type = t.Object([
   ),
 ]);
 ```
+
+## Node Types
+
+JSON Type provides a comprehensive set of node types for modeling JSON-like data structures. Each node type has a `kind` property that identifies its type, along with specific properties and constraints.
+
+### Core Types
+
+#### AnySchema (`any`)
+Represents data of unknown type.
+
+```ts
+interface AnySchema {
+  kind: 'any';
+  validator?: string | string[];  // Custom validation rules
+  metadata?: Record<string, unknown>;  // Custom metadata
+}
+```
+
+**Example:**
+```ts
+s.Any()  // { kind: 'any' }
+```
+
+#### BooleanSchema (`bool`)
+Represents a JSON boolean value.
+
+```ts
+interface BooleanSchema {
+  kind: 'bool';
+  validator?: string | string[];  // Custom validation rules
+}
+```
+
+**Example:**
+```ts
+s.Boolean()  // { kind: 'bool' }
+```
+
+#### NumberSchema (`num`)
+Represents a JSON number with optional format and range constraints.
+
+```ts
+interface NumberSchema {
+  kind: 'num';
+  format?: 'i' | 'u' | 'f' | 'i8' | 'i16' | 'i32' | 'i64' | 'u8' | 'u16' | 'u32' | 'u64' | 'f32' | 'f64';
+  gt?: number;      // Greater than (exclusive)
+  gte?: number;     // Greater than or equal to
+  lt?: number;      // Less than (exclusive) 
+  lte?: number;     // Less than or equal to
+  validator?: string | string[];
+}
+```
+
+**Format options:**
+- `i*` - Signed integers (i8, i16, i32, i64)
+- `u*` - Unsigned integers (u8, u16, u32, u64)  
+- `f*` - Floating point (f32, f64)
+
+**Examples:**
+```ts
+s.Number()                           // { kind: 'num' }
+s.Number({format: 'u32'})           // 32-bit unsigned integer
+s.Number({gte: 0, lte: 100})        // Number between 0 and 100
+```
+
+#### StringSchema (`str`)
+Represents a JSON string with optional format and length constraints.
+
+```ts
+interface StringSchema {
+  kind: 'str';
+  format?: 'ascii' | 'utf8';        // Character encoding format
+  ascii?: boolean;                   // @deprecated Use format: 'ascii'
+  noJsonEscape?: boolean;            // Skip JSON escaping for performance
+  min?: number;                      // Minimum length
+  max?: number;                      // Maximum length  
+  validator?: string | string[];
+}
+```
+
+**Examples:**
+```ts
+s.String()                                    // { kind: 'str' }
+s.String({format: 'ascii'})                  // ASCII-only string
+s.String({min: 1, max: 50})                  // String with length constraints
+s.String({format: 'ascii', noJsonEscape: true})  // Optimized ASCII string
+```
+
+#### BinarySchema (`bin`)
+Represents binary data with an encoded type.
+
+```ts
+interface BinarySchema {
+  kind: 'bin';
+  type: TType;                       // Type of value encoded in binary
+  format?: 'json' | 'cbor' | 'msgpack' | 'resp3' | 'ion' | 'bson' | 'ubjson' | 'bencode';
+  min?: number;                      // Minimum size in bytes
+  max?: number;                      // Maximum size in bytes
+  validator?: string | string[];
+}
+```
+
+**Examples:**
+```ts
+s.Binary(s.String())                         // Binary-encoded string
+s.Binary(s.Object(), {format: 'cbor'})      // CBOR-encoded object
+```
+
+### Composite Types
+
+#### ArraySchema (`arr`)  
+Represents a JSON array with elements of a specific type.
+
+```ts
+interface ArraySchema {
+  kind: 'arr';
+  type: TType;                       // Type of array elements
+  min?: number;                      // Minimum number of elements
+  max?: number;                      // Maximum number of elements
+  validator?: string | string[];
+}
+```
+
+**Examples:**
+```ts
+s.Array(s.String())                  // Array of strings
+s.Array(s.Number(), {min: 1, max: 10})  // Array with 1-10 numbers
+```
+
+#### TupleSchema (`tup`)
+Represents a fixed-length array with specific types for each position.
+
+```ts
+interface TupleSchema {
+  kind: 'tup';
+  types: TType[];                    // Types for each position
+  validator?: string | string[];
+}
+```
+
+**Example:**
+```ts
+s.Tuple(s.String(), s.Number(), s.Boolean())  // [string, number, boolean]
+```
+
+#### ObjectSchema (`obj`)
+Represents a JSON object with defined fields.
+
+```ts
+interface ObjectSchema {
+  kind: 'obj';
+  fields: ObjectFieldSchema[];       // Defined object fields
+  unknownFields?: boolean;           // @deprecated Allow undefined fields  
+  encodeUnknownFields?: boolean;     // Include unknown fields in output
+  validator?: string | string[];
+}
+```
+
+**Examples:**
+```ts
+s.Object([
+  s.prop('name', s.String()),
+  s.propOpt('age', s.Number())       // Optional field
+])
+```
+
+#### ObjectFieldSchema (`field`)
+Represents a single field in an object.
+
+```ts
+interface ObjectFieldSchema {
+  kind: 'field';
+  key: string;                       // Field name
+  type: TType;                       // Field value type
+  optional?: boolean;                // Whether field is optional
+}
+```
+
+**Examples:**
+```ts
+s.prop('id', s.String())             // Required field
+s.propOpt('description', s.String()) // Optional field  
+```
+
+#### MapSchema (`map`)
+Represents an object treated as a map with string keys and uniform value types.
+
+```ts
+interface MapSchema {
+  kind: 'map';
+  type: TType;                       // Type of all values
+  validator?: string | string[];  
+}
+```
+
+**Example:**
+```ts
+s.Map(s.Number())                    // Object with number values
+```
+
+### Advanced Types
+
+#### ConstSchema (`const`)
+Represents a constant value.
+
+```ts
+interface ConstSchema {
+  kind: 'const';
+  value: any;                        // The constant value
+  validator?: string | string[];
+}
+```
+
+**Examples:**
+```ts
+s.Const('hello' as const)            // Constant string
+s.Const(42 as const)                 // Constant number
+s.Const(null)                        // Null constant
+```
+
+#### RefSchema (`ref`)  
+References another type by ID.
+
+```ts
+interface RefSchema {
+  kind: 'ref';
+  ref: string;                       // ID of referenced type
+}
+```
+
+**Example:**
+```ts
+s.Ref('UserType')                    // Reference to type with ID 'UserType'
+```
+
+#### OrSchema (`or`)
+Represents a union type (one of multiple possible types).
+
+```ts
+interface OrSchema {
+  kind: 'or';
+  types: TType[];                    // Possible types
+  discriminator: Expr;               // Expression to determine type
+}
+```
+
+**Example:**
+```ts
+s.Or(s.String(), s.Number())         // String or number
+```
+
+#### FunctionSchema (`fn`)
+Represents a function type with request and response.
+
+```ts  
+interface FunctionSchema {
+  kind: 'fn';
+  req: TType;                        // Request type
+  res: TType;                        // Response type
+}
+```
+
+**Example:**
+```ts
+s.Function(s.String(), s.Number())   // Function: string -> number
+```
+
+#### FunctionStreamingSchema (`fn$`)
+Represents a streaming function type.
+
+```ts
+interface FunctionStreamingSchema {
+  kind: 'fn$';
+  req: TType;                        // Request stream type  
+  res: TType;                        // Response stream type
+}
+```
+
+**Example:**
+```ts
+s.Function$(s.String(), s.Number())  // Streaming function
+```
+
+### Common Properties
+
+All node types extend the base `TType` interface with these common properties:
+
+```ts
+interface TType {
+  kind: string;                      // Node type identifier
+  
+  // Display properties
+  title?: string;                    // Human-readable title
+  intro?: string;                    // Short description
+  description?: string;              // Long description (may include Markdown)
+  
+  // Metadata
+  id?: string;                       // Unique identifier
+  meta?: Record<string, unknown>;    // Custom metadata
+  examples?: TExample[];             // Usage examples
+  
+  // Deprecation
+  deprecated?: {
+    description?: string;            // Deprecation reason and alternative
+  };
+}
+```
+
+### Validation
+
+Many types support custom validation through the `validator` property:
+
+```ts
+// Single validator
+{ validator: 'email' }
+
+// Multiple validators  
+{ validator: ['required', 'email'] }
+```
+
+Validation rules are applied using the JSON Expression language for flexible custom constraints.

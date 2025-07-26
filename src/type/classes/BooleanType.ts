@@ -26,13 +26,6 @@ export class BooleanType extends AbstractType<schema.BooleanSchema> {
     super();
   }
 
-  public toJsonSchema(ctx?: TypeExportContext): jsonSchema.JsonSchemaBoolean {
-    return <jsonSchema.JsonSchemaBoolean>{
-      type: 'boolean',
-      ...super.toJsonSchema(ctx),
-    };
-  }
-
   public validateSchema(): void {
     validateTType(this.getSchema(), 'bool');
   }

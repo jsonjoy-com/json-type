@@ -111,22 +111,6 @@ export class ObjectType<F extends ObjectFieldType<any, any>[] = ObjectFieldType<
     };
   }
 
-  public toJsonSchema(ctx?: TypeExportContext): jsonSchema.JsonSchemaObject {
-    const jsonSchema = <jsonSchema.JsonSchemaObject>{
-      type: 'object',
-      properties: {},
-      ...super.toJsonSchema(ctx),
-    };
-    const required = [];
-    for (const field of this.fields) {
-      jsonSchema.properties![field.key] = field.value.toJsonSchema(ctx);
-      if (!(field instanceof ObjectOptionalFieldType)) required.push(field.key);
-    }
-    if (required.length) jsonSchema.required = required;
-    if (this.schema.unknownFields === false) jsonSchema.additionalProperties = false;
-    return jsonSchema;
-  }
-
   public getOptions(): schema.Optional<schema.ObjectSchema<SchemaOfObjectFields<F>>> {
     const {kind, fields, ...options} = this.schema;
     return options as any;

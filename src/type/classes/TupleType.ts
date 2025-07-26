@@ -37,16 +37,6 @@ export class TupleType<T extends Type[]> extends AbstractType<schema.TupleSchema
     };
   }
 
-  public toJsonSchema(ctx?: TypeExportContext): jsonSchema.JsonSchemaArray {
-    const jsonSchema = <jsonSchema.JsonSchemaArray>{
-      type: 'array',
-      prefixItems: this.types.map((type) => type.toJsonSchema(ctx)),
-      items: false,
-      ...super.toJsonSchema(ctx),
-    };
-    return jsonSchema;
-  }
-
   public getOptions(): schema.Optional<schema.TupleSchema<{[K in keyof T]: SchemaOf<T[K]>}>> {
     const {kind, types, ...options} = this.schema;
     return options as any;

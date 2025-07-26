@@ -27,29 +27,6 @@ export class StringType extends AbstractType<schema.StringSchema> {
     super();
   }
 
-  public toJsonSchema(ctx?: TypeExportContext): jsonSchema.JsonSchemaString {
-    const schema = this.getSchema();
-    const jsonSchema = <jsonSchema.JsonSchemaString>{
-      type: 'string',
-      ...super.toJsonSchema(ctx),
-    };
-    if (schema.min !== undefined) jsonSchema.minLength = schema.min;
-    if (schema.max !== undefined) jsonSchema.maxLength = schema.max;
-    // Add format to JSON Schema if specified
-    if (schema.format) {
-      if (schema.format === 'ascii') {
-        // JSON Schema doesn't have an "ascii" format, but we can use a pattern
-        // ASCII characters are from 0x00 to 0x7F (0-127)
-        jsonSchema.pattern = '^[\\x00-\\x7F]*$';
-      }
-      // UTF-8 is the default for JSON Schema strings, so we don't need to add anything special
-    } else if (schema.ascii) {
-      // Backward compatibility: if ascii=true, add pattern
-      jsonSchema.pattern = '^[\\x00-\\x7F]*$';
-    }
-    return jsonSchema;
-  }
-
   public validateSchema(): void {
     const schema = this.getSchema();
     validateTType(schema, 'str');

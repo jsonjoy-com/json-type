@@ -103,20 +103,20 @@ describe('StringType format validation', () => {
   describe('JSON Schema export', () => {
     test('ASCII format adds pattern', () => {
       const type = t.String({format: 'ascii'});
-      const jsonSchema = type.toJsonSchema();
-      expect(jsonSchema.pattern).toBe('^[\\x00-\\x7F]*$');
+      const jsonSchema_result = type.toJsonSchema();
+      expect((jsonSchema_result as any).pattern).toBe('^[\\x00-\\x7F]*$');
     });
 
     test('UTF-8 format does not add pattern', () => {
       const type = t.String({format: 'utf8'});
-      const jsonSchema = type.toJsonSchema();
-      expect(jsonSchema.pattern).toBeUndefined();
+      const jsonSchema_result = type.toJsonSchema();
+      expect((jsonSchema_result as any).pattern).toBeUndefined();
     });
 
     test('backward compatibility with ascii boolean', () => {
       const type = t.String({ascii: true});
-      const jsonSchema = type.toJsonSchema();
-      expect(jsonSchema.pattern).toBe('^[\\x00-\\x7F]*$');
+      const jsonSchema_result = type.toJsonSchema();
+      expect((jsonSchema_result as any).pattern).toBe('^[\\x00-\\x7F]*$');
     });
   });
 });

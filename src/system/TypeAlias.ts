@@ -2,6 +2,7 @@ import {printTree} from 'tree-dump/lib/printTree';
 import {ObjectType} from '../type/classes';
 import {toText} from '../typescript/toText';
 import type {JsonSchemaGenericKeywords, JsonSchemaValueNode} from '../json-schema';
+import {typeToJsonSchema} from '../json-schema';
 import {TypeExportContext} from './TypeExportContext';
 import type {TypeSystem} from '.';
 import type {Type} from '../type';
@@ -61,11 +62,11 @@ export class TypeAlias<K extends string, T extends Type> implements Printable {
     };
     const ctx = new TypeExportContext();
     ctx.visitRef(this.id);
-    node.$defs![this.id] = this.type.toJsonSchema(ctx) as JsonSchemaValueNode;
+    node.$defs![this.id] = typeToJsonSchema(this.type, ctx) as JsonSchemaValueNode;
     let ref: string | undefined;
     while ((ref = ctx.nextMentionedRef())) {
       ctx.visitRef(ref);
-      node.$defs![ref] = this.system.resolve(ref).type.toJsonSchema(ctx) as JsonSchemaValueNode;
+      node.$defs![ref] = typeToJsonSchema(this.system.resolve(ref).type, ctx) as JsonSchemaValueNode;
     }
     return node;
   }
