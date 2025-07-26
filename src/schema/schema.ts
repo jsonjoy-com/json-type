@@ -17,6 +17,13 @@ export interface TType<Value = unknown> extends Display, Partial<Identifiable> {
   meta?: Record<string, unknown>;
 
   /**
+   * Default value for this type. This may be used when the value is not provided
+   * during validation or serialization. The default value should match the
+   * type of this schema node.
+   */
+  default?: Value;
+
+  /**
    * List of example usages of this type.
    */
   examples?: TExample<Value>[];

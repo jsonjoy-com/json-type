@@ -50,4 +50,29 @@ test('can use convenience methods to define type schema fields', () => {
     min: 5,
     max: 10,
   });
+  binary.default(new Uint8Array([1, 2, 3]));
+  expect(binary.getSchema()).toEqual({
+    kind: 'bin',
+    type: {kind: 'any'},
+    title: 'My Binary',
+    intro: 'This is a binary type',
+    description: 'A detailed description of the binary type',
+    format: 'json',
+    min: 5,
+    max: 10,
+    default: new Uint8Array([1, 2, 3]),
+  });
+  binary.example(new Uint8Array([4, 5, 6]), 'Example Binary', {description: 'An example binary value'});
+  expect(binary.getSchema()).toEqual({
+    kind: 'bin',
+    type: {kind: 'any'},
+    title: 'My Binary',
+    intro: 'This is a binary type',
+    description: 'A detailed description of the binary type',
+    format: 'json',
+    min: 5,
+    max: 10,
+    default: new Uint8Array([1, 2, 3]),
+    examples: [{value: new Uint8Array([4, 5, 6]), title: 'Example Binary', description: 'An example binary value'}],
+  });
 });

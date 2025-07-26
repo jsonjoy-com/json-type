@@ -4,6 +4,6 @@ export * from './common';
 export * from './schema';
 
 /**
- * JSON Type AST builder.
+ * JSON Type default AST builder.
  */
 export const s = new SchemaBuilder();

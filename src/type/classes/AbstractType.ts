@@ -37,6 +37,7 @@ import {
   type CompiledCapacityEstimator,
 } from '../../codegen/capacity/CapacityEstimatorCodegenContext';
 import {generate} from '../../codegen/capacity/estimators';
+import {TExample} from '../../schema';
 import type {JsonValueCodec} from '@jsonjoy.com/json-pack/lib/codecs/types';
 import type * as jsonSchema from '../../json-schema';
 import type {BaseType} from '../types';
@@ -103,6 +104,19 @@ export abstract class AbstractType<S extends schema.Schema> implements BaseType<
 
   public description(description: string): this {
     this.schema.description = description;
+    return this;
+  }
+
+  public default(value: schema.Schema['default']): this {
+    this.schema.default = value;
+    return this;
+  }
+
+  public example(value: schema.TypeOf<S>, title?: TExample['title'], options?: Omit<TExample, 'value' | 'title'>): this {
+    const examples = (this.schema.examples ??= []);
+    const example: TExample = {...options, value};
+    if (typeof title === 'string') example.title = title;
+    examples.push(example);
     return this;
   }
 
