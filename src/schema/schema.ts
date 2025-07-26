@@ -52,6 +52,15 @@ export interface WithValidator {
 
 /**
  * Represents something of which type is not known.
+ * Example:
+ * ```json
+ * {
+ *   "kind": "any",
+ *   "metadata": {
+ *     "description": "Any type"
+ *   }
+ * }
+ * ```
  */
 export interface AnySchema extends TType<unknown>, WithValidator {
   kind: 'any';
@@ -65,6 +74,15 @@ export interface AnySchema extends TType<unknown>, WithValidator {
 
 /**
  * Represents a JSON boolean.
+ * Example:
+ * ```json
+ * {
+ *   "kind": "bool",
+ *   "meta": {
+ *     "description": "A boolean value"
+ *   }
+ * }
+ * ```
  */
 export interface BooleanSchema extends TType<boolean>, WithValidator {
   kind: 'bool';
@@ -72,6 +90,15 @@ export interface BooleanSchema extends TType<boolean>, WithValidator {
 
 /**
  * Represents a JSON number.
+ * Example:
+ * ```json
+ * {
+ *   "kind": "num",
+ *   "format": "i32",
+ *   "gte": 0,
+ *   "lte": 100
+ * }
+ * ```
  */
 export interface NumberSchema extends TType<number>, WithValidator {
   kind: 'num';
@@ -112,6 +139,15 @@ export interface NumberSchema extends TType<number>, WithValidator {
 
 /**
  * Represents a JSON string.
+ * Example:
+ * ```json
+ * {
+ *   "kind": "str",
+ *   "format": "utf8",
+ *   "min": 1,
+ *   "max": 255
+ * }
+ * ```
  */
 export interface StringSchema extends TType<string>, WithValidator {
   kind: 'str';
@@ -150,6 +186,18 @@ export interface StringSchema extends TType<string>, WithValidator {
 
 /**
  * Represents a binary type.
+ * Example:
+ * ```json
+ * {
+ *   "kind": "bin",
+ *   "type": {
+ *     "kind": "str"
+ *   },
+ *   "format": "json",
+ *   "min": 10,
+ *   "max": 1024
+ * }
+ * ```
  */
 export interface BinarySchema<T extends TType = any> extends TType, WithValidator {
   kind: 'bin';
@@ -169,6 +217,17 @@ export interface BinarySchema<T extends TType = any> extends TType, WithValidato
 
 /**
  * Represents a JSON array.
+ * Example:
+ * ```json
+ * {
+ *   "kind": "arr",
+ *   "type": {
+ *     "kind": "num"
+ *   },
+ *   "min": 1,
+ *   "max": 10
+ * }
+ * ```
  */
 export interface ArraySchema<T extends TType = any> extends TType<Array<unknown>>, WithValidator {
   kind: 'arr';
@@ -182,6 +241,13 @@ export interface ArraySchema<T extends TType = any> extends TType<Array<unknown>
 
 /**
  * Represents a constant value.
+ * Example:
+ * ```json
+ * {
+ *   "kind": "const",
+ *   "value": 42
+ * }
+ * ```
  */
 export interface ConstSchema<V = any> extends TType, WithValidator {
   /** @todo Rename to "con". */
@@ -202,6 +268,32 @@ export interface TupleSchema<T extends TType[] = any> extends TType, WithValidat
 /**
  * Represents a JSON object type, the "object" type excluding "null" in JavaScript,
  * the "object" type in JSON Schema, and the "obj" type in MessagePack.
+ * Example:
+ * ```json
+ * {
+ *   "kind": "obj",
+ *   "fields": [
+ *     {
+ *       "kind": "field",
+ *       "key": "name",
+ *       "type": {
+ *         "kind": "str"
+ *       },
+ *       "optional": false
+ *     },
+ *     {
+ *       "kind": "field",
+ *       "key": "age",
+ *       "type": {
+ *         "kind": "num",
+ *         "gte": 0
+ *       },
+ *       "optional": true
+ *     }
+ *   ],
+ *   "unknownFields": false
+ * }
+ * ```
  */
 export interface ObjectSchema<
   Fields extends ObjectFieldSchema<string, TType>[] | readonly ObjectFieldSchema<string, TType>[] = any,
