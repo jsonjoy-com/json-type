@@ -1,6 +1,5 @@
 import type * as schema from '../../schema';
 import {RandomJson} from '@jsonjoy.com/util/lib/json-random';
-import {validateTType} from '../../schema/validate';
 import type {ValidatorCodegenContext} from '../../codegen/validator/ValidatorCodegenContext';
 import type {ValidationPath} from '../../codegen/validator/types';
 import type {JsonTextEncoderCodegenContext} from '../../codegen/json/JsonTextEncoderCodegenContext';
@@ -21,10 +20,6 @@ import type * as jtd from '../../jtd/types';
 export class AnyType extends AbstractType<schema.AnySchema> {
   constructor(protected schema: schema.AnySchema) {
     super();
-  }
-
-  public validateSchema(): void {
-    validateTType(this.getSchema(), 'any');
   }
 
   public codegenValidator(ctx: ValidatorCodegenContext, path: ValidationPath, r: string): void {

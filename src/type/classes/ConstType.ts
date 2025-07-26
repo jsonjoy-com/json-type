@@ -1,5 +1,4 @@
 import {cloneBinary} from '@jsonjoy.com/util/lib/json-clone';
-import {validateTType} from '../../schema/validate';
 import {ValidationError} from '../../constants';
 import {maxEncodingCapacity} from '@jsonjoy.com/util/lib/json-size';
 import {AbstractType} from './AbstractType';
@@ -37,10 +36,6 @@ export class ConstType<V = any> extends AbstractType<schema.ConstSchema<V>> {
   public getOptions(): schema.Optional<schema.ConstSchema<V>> {
     const {kind, value, ...options} = this.schema;
     return options as any;
-  }
-
-  public validateSchema(): void {
-    validateTType(this.getSchema(), 'const');
   }
 
   public codegenValidator(ctx: ValidatorCodegenContext, path: ValidationPath, r: string): void {

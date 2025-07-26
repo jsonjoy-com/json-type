@@ -4,7 +4,6 @@ import {printTree} from 'tree-dump/lib/printTree';
 import * as schema from '../../schema';
 import {RandomJson} from '@jsonjoy.com/util/lib/json-random';
 import {stringifyBinary} from '@jsonjoy.com/json-pack/lib/json-binary';
-import {validateMinMax, validateTType} from '../../schema/validate';
 import type {ValidatorCodegenContext} from '../../codegen/validator/ValidatorCodegenContext';
 import type {ValidationPath} from '../../codegen/validator/types';
 import {ValidationError} from '../../constants';
@@ -55,17 +54,6 @@ export class BinaryType<T extends Type> extends AbstractType<schema.BinarySchema
   public getOptions(): schema.Optional<schema.ArraySchema<SchemaOf<T>>> {
     const {kind, type, ...options} = this.schema;
     return options as any;
-  }
-
-  public validateSchema(): void {
-    const schema = this.getSchema();
-    validateTType(schema, 'bin');
-    const {min, max, format} = schema;
-    validateMinMax(min, max);
-    if (format !== undefined) {
-      if (!formats.has(format)) throw new Error('FORMAT');
-    }
-    this.type.validateSchema();
   }
 
   public codegenValidator(ctx: ValidatorCodegenContext, path: ValidationPath, r: string): void {
