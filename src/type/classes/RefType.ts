@@ -126,8 +126,6 @@ export class RefType<T extends Type> extends AbstractType<schema.RefSchema<Schem
     ctx.codegen.js(`size += ${d}(${value.use()});`);
   }
 
-
-
   public toTypeScriptAst(): ts.TsGenericTypeAnnotation {
     return {
       node: 'GenericTypeAnnotation',

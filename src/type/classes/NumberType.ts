@@ -156,8 +156,6 @@ export class NumberType extends AbstractType<schema.NumberSchema> {
     ctx.inc(MaxEncodingOverhead.Number);
   }
 
-
-
   public toTypeScriptAst(): ts.TsNumberKeyword {
     return {node: 'NumberKeyword'};
   }

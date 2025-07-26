@@ -502,8 +502,6 @@ if (${rLength}) {
     }
   }
 
-
-
   public toTypeScriptAst(): ts.TsTypeLiteral {
     const node: ts.TsTypeLiteral = {
       node: 'TypeLiteral',

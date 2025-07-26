@@ -12,6 +12,7 @@ import {MessagePackEncoderCodegenContext} from '../../codegen/binary/MessagePack
 import {EncodingFormat} from '@jsonjoy.com/json-pack/lib/constants';
 import type {BinaryJsonEncoder} from '@jsonjoy.com/json-pack/lib/types';
 import type {CapacityEstimatorCodegenContext} from '../../codegen/capacity/CapacityEstimatorCodegenContext';
+import {maxEncodingCapacity} from '@jsonjoy.com/util/lib/json-size';
 import {AbstractType} from './AbstractType';
 import type * as jsonSchema from '../../json-schema';
 import type * as ts from '../../typescript/types';
@@ -96,7 +97,6 @@ export class AnyType extends AbstractType<schema.AnySchema> {
         ctx.codegen.js(`size += maxEncodingCapacity(${r});`);
       },
     );
-  }
   }
 
   public toTypeScriptAst(): ts.TsType {

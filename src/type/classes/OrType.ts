@@ -154,8 +154,6 @@ export class OrType<T extends Type[]> extends AbstractType<schema.OrSchema<{[K i
     );
   }
 
-
-
   public toTypeScriptAst(): ts.TsUnionType {
     const node: ts.TsUnionType = {
       node: 'UnionType',

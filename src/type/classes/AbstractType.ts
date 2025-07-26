@@ -254,6 +254,11 @@ export abstract class AbstractType<S extends schema.Schema> implements BaseType<
     throw new Error(`${this.toStringName()}.codegenJsonEncoder() not implemented`);
   }
 
+  public codegenCapacityEstimator(ctx: CapacityEstimatorCodegenContext, value: JsExpression): void {
+    // Use the centralized router function
+    generate(ctx, value, this as any);
+  }
+
   public compileCapacityEstimator(
     options: Omit<CapacityEstimatorCodegenContextOptions, 'type'>,
   ): CompiledCapacityEstimator {

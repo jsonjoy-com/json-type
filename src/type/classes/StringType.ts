@@ -120,8 +120,6 @@ export class StringType extends AbstractType<schema.StringSchema> {
     ctx.codegen.js(`size += ${MaxEncodingOverhead.StringLengthMultiplier} * ${value.use()}.length;`);
   }
 
-
-
   public toTypeScriptAst(): ts.TsStringKeyword {
     return {node: 'StringKeyword'};
   }

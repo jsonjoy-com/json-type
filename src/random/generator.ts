@@ -21,7 +21,7 @@ import * as gen from './generators';
  */
 export function random(type: AbstractType<any>): unknown {
   const kind = type.getTypeName();
-  
+
   switch (kind) {
     case 'any':
       return gen.any(type as AnyType);

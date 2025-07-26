@@ -22,7 +22,7 @@ import type {CapacityEstimatorCodegenContext} from '../../codegen/capacity/Capac
 import {ConstType} from './ConstType';
 import {BooleanType} from './BooleanType';
 import {NumberType} from './NumberType';
-import {MaxEncodingOverhead} from '../../codegen/capacity/constants';
+import {MaxEncodingOverhead} from '@jsonjoy.com/util/lib/json-size';
 import type * as jtd from '../../jtd/types';
 
 export class ArrayType<T extends Type> extends AbstractType<schema.ArraySchema<SchemaOf<T>>> {
@@ -171,7 +171,6 @@ export class ArrayType<T extends Type> extends AbstractType<schema.ArraySchema<S
       const ri = codegen.getRegister();
       codegen.js(`for(var ${ri} = ${rLen}; ${ri}-- !== 0;) size += ${rFn}(${r}[${ri}]);`);
     }
-  }
   }
 
   public toTypeScriptAst(): ts.TsArrayType {

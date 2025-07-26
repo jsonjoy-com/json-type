@@ -111,10 +111,7 @@ describe('random generators', () => {
       });
 
       test('obj generates valid objects', () => {
-        const type = t.Object(
-          t.prop('id', t.String()),
-          t.prop('count', t.Number()),
-        );
+        const type = t.Object(t.prop('id', t.String()), t.prop('count', t.Number()));
         for (let i = 0; i < 10; i++) {
           const value = gen.obj(type);
           expect(typeof value).toBe('object');
@@ -153,13 +150,13 @@ describe('random generators', () => {
       test('or generates values from union types', () => {
         const type = t.Or(t.String(), t.Number());
         const generatedTypes = new Set<string>();
-        
+
         for (let i = 0; i < 20; i++) {
           const value = gen.or(type);
           generatedTypes.add(typeof value);
           type.validate(value);
         }
-        
+
         // Should generate at least one of each type over multiple iterations
         expect(generatedTypes.size).toBeGreaterThan(0);
       });
@@ -168,7 +165,7 @@ describe('random generators', () => {
         const type = t.Function(t.num, t.String());
         const value = gen.fn(type);
         expect(typeof value).toBe('function');
-        
+
         // Test that the function is async and returns the expected type
         const result = await (value as () => Promise<unknown>)();
         expect(typeof result).toBe('string');
@@ -178,58 +175,61 @@ describe('random generators', () => {
 
   describe('main router function', () => {
     test('dispatches to correct generators for all types', () => {
-      Object.entries(schemaCategories.primitives).forEach(([name, schema]) => {
+      for (const [name, schema] of Object.entries(schemaCategories.primitives)) {
         const type = t.from(schema);
         for (let i = 0; i < 5; i++) {
           const value = random(type);
           expect(() => type.validate(value)).not.toThrow();
         }
-      });
+      }
 
-      Object.entries(schemaCategories.composites).forEach(([name, schema]) => {
+      for (const [name, schema] of Object.entries(schemaCategories.composites)) {
         const type = t.from(schema);
         for (let i = 0; i < 5; i++) {
           const value = random(type);
           expect(() => type.validate(value)).not.toThrow();
         }
-      });
+      }
     });
   });
 
   describe('comprehensive schema validation', () => {
     test('generated values pass validation for all fixture schemas', () => {
-      Object.entries(allSchemas).forEach(([name, schema]) => {
+      for (const [name, schema] of Object.entries(allSchemas)) {
         const type = t.from(schema);
-        
+
         // Test multiple random generations for each schema
         for (let i = 0; i < 10; i++) {
           const randomValue = type.random();
-          
+
           // Test using both validate methods
           expect(() => type.validate(randomValue)).not.toThrow();
-          
+
           // Test using compiled validator
           const validator = type.compileValidator({errors: 'object'});
           const error = validator(randomValue);
           expect(error).toBe(null);
         }
-      });
+      }
     });
 
     test('handles nested complex structures', () => {
       const complexType = t.Object(
-        t.prop('users', t.Array(t.Object(
-          t.prop('id', t.Number()),
-          t.prop('profile', t.Object(
-            t.prop('name', t.String()),
-            t.prop('preferences', t.Map(t.Or(t.String(), t.Boolean()))),
-          )),
-          t.propOpt('tags', t.Array(t.String())),
-        ))),
+        t.prop(
+          'users',
+          t.Array(
+            t.Object(
+              t.prop('id', t.Number()),
+              t.prop(
+                'profile',
+                t.Object(t.prop('name', t.String()), t.prop('preferences', t.Map(t.Or(t.String(), t.Boolean())))),
+              ),
+              t.propOpt('tags', t.Array(t.String())),
+            ),
+          ),
+        ),
         t.prop('metadata', t.Map(t.Any())),
-        t.prop('config', t.Tuple(t.String(), t.Number(), t.Object(
-          t.prop('enabled', t.Boolean()),
-        ))),
+        t.prop('config', t.Tuple(t.String(), t.Number(), t.Object(t.prop('enabled', t.Boolean())))),
       );
 
       for (let i = 0; i < 5; i++) {
@@ -272,7 +272,7 @@ describe('random generators', () => {
         const type = t.String({min: 5, max: 5});
         const value1 = type.random();
         const value2 = type.random();
-        
+
         // With fixed random, string generation should be consistent
         expect(value1).toBe(value2);
         expect(value1).toHaveLength(5);

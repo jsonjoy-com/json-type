@@ -149,8 +149,6 @@ export class TupleType<T extends Type[]> extends AbstractType<schema.TupleSchema
     }
   }
 
-
-
   public toTypeScriptAst(): ts.TsTupleType {
     return {
       node: 'TupleType',
