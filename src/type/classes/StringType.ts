@@ -1,5 +1,4 @@
 import type * as schema from '../../schema';
-import {RandomJson} from '@jsonjoy.com/util/lib/json-random';
 import {asString} from '@jsonjoy.com/util/lib/strings/asString';
 import type {ValidatorCodegenContext} from '../../codegen/validator/ValidatorCodegenContext';
 import type {ValidationPath} from '../../codegen/validator/types';
@@ -90,14 +89,6 @@ export class StringType extends AbstractType<schema.StringSchema> {
 
   public codegenJsonEncoder(ctx: JsonEncoderCodegenContext, value: JsExpression): void {
     this.codegenBinaryEncoder(ctx, value);
-  }
-
-  public random(): string {
-    let length = Math.round(Math.random() * 10);
-    const {min, max} = this.schema;
-    if (min !== undefined && length < min) length = min + length;
-    if (max !== undefined && length > max) length = max;
-    return RandomJson.genString(length);
   }
 
   public toTypeScriptAst(): ts.TsStringKeyword {

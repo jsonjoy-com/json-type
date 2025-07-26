@@ -52,10 +52,6 @@ export class BooleanType extends AbstractType<schema.BooleanSchema> {
     this.codegenBinaryEncoder(ctx, value);
   }
 
-  public random(): boolean {
-    return RandomJson.genBoolean();
-  }
-
   public toTypeScriptAst(): ts.TsBooleanKeyword {
     return {node: 'BooleanKeyword'};
   }

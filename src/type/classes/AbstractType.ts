@@ -46,6 +46,7 @@ import type * as ts from '../../typescript/types';
 import type {TypeExportContext} from '../../system/TypeExportContext';
 import type {Validators} from './types';
 import type * as jtd from '../../jtd/types';
+import {random} from '../../random/generator';
 
 export abstract class AbstractType<S extends schema.Schema> implements BaseType<S>, Printable {
   /** Default type system to use, if any. */
@@ -256,6 +257,11 @@ export abstract class AbstractType<S extends schema.Schema> implements BaseType<
     throw new Error(`${this.toStringName()}.codegenJsonEncoder() not implemented`);
   }
 
+  public codegenCapacityEstimator(ctx: CapacityEstimatorCodegenContext, value: JsExpression): void {
+    // Use the centralized router function
+    generate(ctx, value, this as any);
+  }
+
   public compileCapacityEstimator(
     options: Omit<CapacityEstimatorCodegenContextOptions, 'type'>,
   ): CompiledCapacityEstimator {
@@ -280,7 +286,7 @@ export abstract class AbstractType<S extends schema.Schema> implements BaseType<
   }
 
   public random(): unknown {
-    return RandomJson.generate({nodeCount: 5});
+    return random(this);
   }
 
   public toTypeScriptAst(): ts.TsNode {

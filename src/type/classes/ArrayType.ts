@@ -17,6 +17,12 @@ import type {TypeSystem} from '../../system/TypeSystem';
 import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
 import type * as ts from '../../typescript/types';
 import type {TypeExportContext} from '../../system/TypeExportContext';
+import type {CapacityEstimatorCodegenContext} from '../../codegen/capacity/CapacityEstimatorCodegenContext';
+import {ConstType} from './ConstType';
+import {BooleanType} from './BooleanType';
+import {NumberType} from './NumberType';
+import {MaxEncodingOverhead} from '@jsonjoy.com/util/lib/json-size';
+import type * as jtd from '../../jtd/types';
 
 export class ArrayType<T extends Type> extends AbstractType<schema.ArraySchema<SchemaOf<T>>> {
   protected schema: schema.ArraySchema<any>;
@@ -135,16 +141,6 @@ export class ArrayType<T extends Type> extends AbstractType<schema.ArraySchema<S
         encoder.writeEndArr();
       }),
     );
-  }
-
-  public random(): unknown[] {
-    let length = Math.round(Math.random() * 10);
-    const {min, max} = this.schema;
-    if (min !== undefined && length < min) length = min + length;
-    if (max !== undefined && length > max) length = max;
-    const arr = [];
-    for (let i = 0; i < length; i++) arr.push(this.type.random());
-    return arr;
   }
 
   public toTypeScriptAst(): ts.TsArrayType {

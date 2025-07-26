@@ -103,13 +103,6 @@ export class BinaryType<T extends Type> extends AbstractType<schema.BinarySchema
     this.codegenBinaryEncoder(ctx, value);
   }
 
-  public random(): Uint8Array {
-    const octets = RandomJson.genString()
-      .split('')
-      .map((c) => c.charCodeAt(0));
-    return new Uint8Array(octets);
-  }
-
   public toTypeScriptAst(): ts.TsGenericTypeAnnotation {
     return {
       node: 'GenericTypeAnnotation',

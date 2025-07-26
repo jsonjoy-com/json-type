@@ -122,10 +122,6 @@ export class TupleType<T extends Type[]> extends AbstractType<schema.TupleSchema
     );
   }
 
-  public random(): unknown[] {
-    return this.types.map((type) => type.random());
-  }
-
   public toTypeScriptAst(): ts.TsTupleType {
     return {
       node: 'TupleType',

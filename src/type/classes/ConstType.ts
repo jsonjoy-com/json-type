@@ -70,10 +70,6 @@ export class ConstType<V = any> extends AbstractType<schema.ConstSchema<V>> {
     this.codegenBinaryEncoder(ctx, value);
   }
 
-  public random(): unknown {
-    return cloneBinary(this.schema.value);
-  }
-
   public toTypeScriptAst() {
     const value = this.schema.value;
     if (value === null) {

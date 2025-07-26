@@ -134,13 +134,6 @@ export class MapType<T extends Type> extends AbstractType<schema.MapSchema<Schem
     ctx.blob(objEndBlob);
   }
 
-  public random(): Record<string, unknown> {
-    const length = Math.round(Math.random() * 10);
-    const res: Record<string, unknown> = {};
-    for (let i = 0; i < length; i++) res[RandomJson.genString(length)] = this.type.random();
-    return res;
-  }
-
   public toTypeScriptAst(): ts.TsTypeReference {
     const node: ts.TsTypeReference = {
       node: 'TypeReference',
