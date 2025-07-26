@@ -36,16 +36,6 @@ export class TupleType<T extends Type[]> extends AbstractType<schema.TupleSchema
     };
   }
 
-  public toJsonSchema(ctx?: TypeExportContext): jsonSchema.JsonSchemaArray {
-    const jsonSchema = <jsonSchema.JsonSchemaArray>{
-      type: 'array',
-      prefixItems: this.types.map((type) => type.toJsonSchema(ctx)),
-      items: false,
-      ...super.toJsonSchema(ctx),
-    };
-    return jsonSchema;
-  }
-
   public getOptions(): schema.Optional<schema.TupleSchema<{[K in keyof T]: SchemaOf<T[K]>}>> {
     const {kind, types, ...options} = this.schema;
     return options as any;
@@ -130,23 +120,6 @@ export class TupleType<T extends Type[]> extends AbstractType<schema.TupleSchema
         encoder.writeEndArr();
       }),
     );
-  }
-
-  public codegenCapacityEstimator(ctx: CapacityEstimatorCodegenContext, value: JsExpression): void {
-    const codegen = ctx.codegen;
-    const r = codegen.var(value.use());
-    const types = this.types;
-    const overhead = MaxEncodingOverhead.Array + MaxEncodingOverhead.ArrayElement * types.length;
-    ctx.inc(overhead);
-    for (let i = 0; i < types.length; i++) {
-      const type = types[i];
-      const fn = type.compileCapacityEstimator({
-        system: ctx.options.system,
-        name: ctx.options.name,
-      });
-      const rFn = codegen.linkDependency(fn);
-      codegen.js(`size += ${rFn}(${r}[${i}]);`);
-    }
   }
 
   public random(): unknown[] {

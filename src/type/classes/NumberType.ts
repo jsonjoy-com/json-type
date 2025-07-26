@@ -25,20 +25,6 @@ export class NumberType extends AbstractType<schema.NumberSchema> {
     super();
   }
 
-  public toJsonSchema(ctx?: TypeExportContext): jsonSchema.JsonSchemaNumber {
-    const schema = this.getSchema();
-    const jsonSchema = <jsonSchema.JsonSchemaNumber>{
-      type: 'number',
-      ...super.toJsonSchema(ctx),
-    };
-    if (schema.format && ints.has(schema.format)) jsonSchema.type = 'integer';
-    if (schema.gt !== undefined) jsonSchema.exclusiveMinimum = schema.gt;
-    if (schema.gte !== undefined) jsonSchema.minimum = schema.gte;
-    if (schema.lt !== undefined) jsonSchema.exclusiveMaximum = schema.lt;
-    if (schema.lte !== undefined) jsonSchema.maximum = schema.lte;
-    return jsonSchema;
-  }
-
   public codegenValidator(ctx: ValidatorCodegenContext, path: ValidationPath, r: string): void {
     const {format, gt, gte, lt, lte} = this.schema;
     if (format && ints.has(format)) {
@@ -126,10 +112,6 @@ export class NumberType extends AbstractType<schema.NumberSchema> {
 
   public codegenJsonEncoder(ctx: JsonEncoderCodegenContext, value: JsExpression): void {
     this.codegenBinaryEncoder(ctx, value);
-  }
-
-  public codegenCapacityEstimator(ctx: CapacityEstimatorCodegenContext, value: JsExpression): void {
-    ctx.inc(MaxEncodingOverhead.Number);
   }
 
   public random(): number {

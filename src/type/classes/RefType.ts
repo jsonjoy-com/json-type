@@ -32,16 +32,6 @@ export class RefType<T extends Type> extends AbstractType<schema.RefSchema<Schem
     return this.schema.ref;
   }
 
-  public toJsonSchema(ctx?: TypeExportContext): jsonSchema.JsonSchemaRef {
-    const ref = this.schema.ref;
-    if (ctx) ctx.mentionRef(ref);
-    const jsonSchema = <jsonSchema.JsonSchemaRef>{
-      $ref: `#/$defs/${ref}`,
-      ...super.toJsonSchema(ctx),
-    };
-    return jsonSchema;
-  }
-
   public getOptions(): schema.Optional<schema.RefSchema<SchemaOf<T>>> {
     const {kind, ref, ...options} = this.schema;
     return options as any;
@@ -117,14 +107,6 @@ export class RefType<T extends Type> extends AbstractType<schema.RefSchema<Schem
 
   public codegenJsonEncoder(ctx: JsonEncoderCodegenContext, value: JsExpression): void {
     this.codegenBinaryEncoder(ctx, value);
-  }
-
-  public codegenCapacityEstimator(ctx: CapacityEstimatorCodegenContext, value: JsExpression): void {
-    const system = ctx.options.system || this.system;
-    if (!system) throw new Error('NO_SYSTEM');
-    const estimator = system.resolve(this.schema.ref).type.capacityEstimator();
-    const d = ctx.codegen.linkDependency(estimator);
-    ctx.codegen.js(`size += ${d}(${value.use()});`);
   }
 
   public random(): unknown {

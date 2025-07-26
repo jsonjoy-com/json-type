@@ -51,13 +51,6 @@ export class BinaryType<T extends Type> extends AbstractType<schema.BinarySchema
     };
   }
 
-  public toJsonSchema(ctx?: TypeExportContext): jsonSchema.JsonSchemaBinary {
-    return <jsonSchema.JsonSchemaBinary>{
-      type: 'binary',
-      ...super.toJsonSchema(ctx),
-    };
-  }
-
   public getOptions(): schema.Optional<schema.ArraySchema<SchemaOf<T>>> {
     const {kind, type, ...options} = this.schema;
     return options as any;
@@ -108,11 +101,6 @@ export class BinaryType<T extends Type> extends AbstractType<schema.BinarySchema
 
   public codegenJsonEncoder(ctx: JsonEncoderCodegenContext, value: JsExpression): void {
     this.codegenBinaryEncoder(ctx, value);
-  }
-
-  public codegenCapacityEstimator(ctx: CapacityEstimatorCodegenContext, value: JsExpression): void {
-    ctx.inc(MaxEncodingOverhead.Binary);
-    ctx.codegen.js(`size += ${MaxEncodingOverhead.BinaryLengthMultiplier} * ${value.use()}.length;`);
   }
 
   public random(): Uint8Array {

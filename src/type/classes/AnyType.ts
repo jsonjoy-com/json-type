@@ -22,13 +22,6 @@ export class AnyType extends AbstractType<schema.AnySchema> {
     super();
   }
 
-  public toJsonSchema(ctx?: TypeExportContext): jsonSchema.JsonSchemaAny {
-    return <jsonSchema.JsonSchemaAny>{
-      type: ['string', 'number', 'boolean', 'null', 'array', 'object'],
-      ...super.toJsonSchema(ctx),
-    };
-  }
-
   public codegenValidator(ctx: ValidatorCodegenContext, path: ValidationPath, r: string): void {
     ctx.emitCustomValidators(this, path, r);
   }
@@ -75,29 +68,6 @@ export class AnyType extends AbstractType<schema.AnySchema> {
 
   public codegenJsonEncoder(ctx: JsonEncoderCodegenContext, value: JsExpression): void {
     this.codegenBinaryEncoder(ctx, value);
-  }
-
-  public codegenCapacityEstimator(ctx: CapacityEstimatorCodegenContext, value: JsExpression): void {
-    const codegen = ctx.codegen;
-    codegen.link('Value');
-    const r = codegen.var(value.use());
-    codegen.if(
-      `${r} instanceof Value`,
-      () => {
-        codegen.if(
-          `${r}.type`,
-          () => {
-            ctx.codegen.js(`size += ${r}.type.capacityEstimator()(${r}.data);`);
-          },
-          () => {
-            ctx.codegen.js(`size += maxEncodingCapacity(${r}.data);`);
-          },
-        );
-      },
-      () => {
-        ctx.codegen.js(`size += maxEncodingCapacity(${r});`);
-      },
-    );
   }
 
   public random(): unknown {

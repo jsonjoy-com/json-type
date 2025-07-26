@@ -102,22 +102,6 @@ export class ObjectType<F extends ObjectFieldType<any, any>[] = ObjectFieldType<
     };
   }
 
-  public toJsonSchema(ctx?: TypeExportContext): jsonSchema.JsonSchemaObject {
-    const jsonSchema = <jsonSchema.JsonSchemaObject>{
-      type: 'object',
-      properties: {},
-      ...super.toJsonSchema(ctx),
-    };
-    const required = [];
-    for (const field of this.fields) {
-      jsonSchema.properties![field.key] = field.value.toJsonSchema(ctx);
-      if (!(field instanceof ObjectOptionalFieldType)) required.push(field.key);
-    }
-    if (required.length) jsonSchema.required = required;
-    if (this.schema.unknownFields === false) jsonSchema.additionalProperties = false;
-    return jsonSchema;
-  }
-
   public getOptions(): schema.Optional<schema.ObjectSchema<SchemaOfObjectFields<F>>> {
     const {kind, fields, ...options} = this.schema;
     return options as any;
@@ -474,28 +458,6 @@ if (${rLength}) {
       emitOptionalFields();
       emitUnknownFields();
       emitEnding();
-    }
-  }
-
-  public codegenCapacityEstimator(ctx: CapacityEstimatorCodegenContext, value: JsExpression): void {
-    const codegen = ctx.codegen;
-    const r = codegen.var(value.use());
-    const encodeUnknownFields = !!this.schema.encodeUnknownFields;
-    if (encodeUnknownFields) {
-      codegen.js(`size += maxEncodingCapacity(${r});`);
-      return;
-    }
-    const fields = this.fields;
-    const overhead = MaxEncodingOverhead.Object + fields.length * MaxEncodingOverhead.ObjectElement;
-    ctx.inc(overhead);
-    for (const field of fields) {
-      ctx.inc(maxEncodingCapacity(field.key));
-      const accessor = normalizeAccessor(field.key);
-      const isOptional = field instanceof ObjectOptionalFieldType;
-      const block = () => field.value.codegenCapacityEstimator(ctx, new JsExpression(() => `${r}${accessor}`));
-      if (isOptional) {
-        codegen.if(`${r}${accessor} !== undefined`, block);
-      } else block();
     }
   }
 

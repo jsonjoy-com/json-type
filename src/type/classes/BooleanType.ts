@@ -26,13 +26,6 @@ export class BooleanType extends AbstractType<schema.BooleanSchema> {
     super();
   }
 
-  public toJsonSchema(ctx?: TypeExportContext): jsonSchema.JsonSchemaBoolean {
-    return <jsonSchema.JsonSchemaBoolean>{
-      type: 'boolean',
-      ...super.toJsonSchema(ctx),
-    };
-  }
-
   public codegenValidator(ctx: ValidatorCodegenContext, path: ValidationPath, r: string): void {
     const err = ctx.err(ValidationError.BOOL, path);
     ctx.js(/* js */ `if(typeof ${r} !== "boolean") return ${err};`);
@@ -57,10 +50,6 @@ export class BooleanType extends AbstractType<schema.BooleanSchema> {
 
   public codegenJsonEncoder(ctx: JsonEncoderCodegenContext, value: JsExpression): void {
     this.codegenBinaryEncoder(ctx, value);
-  }
-
-  public codegenCapacityEstimator(ctx: CapacityEstimatorCodegenContext, value: JsExpression): void {
-    ctx.inc(MaxEncodingOverhead.Boolean);
   }
 
   public random(): boolean {

@@ -45,12 +45,6 @@ export class OrType<T extends Type[]> extends AbstractType<schema.OrSchema<{[K i
     };
   }
 
-  public toJsonSchema(ctx?: TypeExportContext): jsonSchema.JsonSchemaOr {
-    return <jsonSchema.JsonSchemaOr>{
-      anyOf: this.types.map((type) => type.toJsonSchema(ctx)),
-    };
-  }
-
   public getOptions(): schema.Optional<schema.OrSchema<{[K in keyof T]: SchemaOf<T[K]>}>> {
     const {kind, types, ...options} = this.schema;
     return options as any;
@@ -131,22 +125,6 @@ export class OrType<T extends Type[]> extends AbstractType<schema.OrSchema<{[K i
 
   public codegenJsonEncoder(ctx: JsonEncoderCodegenContext, value: JsExpression): void {
     this.codegenBinaryEncoder(ctx, value);
-  }
-
-  public codegenCapacityEstimator(ctx: CapacityEstimatorCodegenContext, value: JsExpression): void {
-    const codegen = ctx.codegen;
-    const discriminator = this.discriminator();
-    const d = codegen.linkDependency(discriminator);
-    const types = this.types;
-    codegen.switch(
-      `${d}(${value.use()})`,
-      types.map((type, index) => [
-        index,
-        () => {
-          type.codegenCapacityEstimator(ctx, value);
-        },
-      ]),
-    );
   }
 
   public random(): unknown {
