@@ -23,3 +23,5 @@ export type ResolveType<T> = T extends TypeAlias<any, infer T>
     : T extends Schema
       ? TypeOf<T>
       : never;
+
+export type infer<T> = ResolveType<T>;
