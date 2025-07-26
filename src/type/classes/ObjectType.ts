@@ -105,11 +105,33 @@ export class ObjectType<F extends ObjectFieldType<any, any>[] = ObjectFieldType<
     super();
   }
 
-  public prop<K extends string, V extends Type>(key: K, value: V, options?: schema.Optional<schema.ObjectFieldSchema<K, SchemaOf<V>>>): ObjectType<[...F, ObjectFieldType<K, V>]> {
-    const field = new ObjectFieldType<K, V>(key, value);
+  private _field(field: ObjectFieldType<any, any>, options?: schema.Optional<schema.ObjectFieldSchema<any, any>>): void {
     if (options) field.options(options);
     field.system = this.system;
     this.fields.push(field as any);
+  }
+
+  /**
+   * Adds a property to the object type.
+   * @param key The key of the property.
+   * @param value The value type of the property.
+   * @param options Optional schema options for the property.
+   * @returns A new object type with the added property.
+   */
+  public prop<K extends string, V extends Type>(key: K, value: V, options?: schema.Optional<schema.ObjectFieldSchema<K, SchemaOf<V>>>): ObjectType<[...F, ObjectFieldType<K, V>]> {
+    this._field(new ObjectFieldType<K, V>(key, value), options);
+    return <any>this;
+  }
+
+  /**
+   * Adds an optional property to the object type.
+   * @param key The key of the property.
+   * @param value The value type of the property.
+   * @param options Optional schema options for the property.
+   * @returns A new object type with the added property.
+   */
+  public opt<K extends string, V extends Type>(key: K, value: V, options?: schema.Optional<schema.ObjectFieldSchema<K, SchemaOf<V>>>): ObjectType<[...F, ObjectOptionalFieldType<K, V>]> {
+    this._field(new ObjectOptionalFieldType<K, V>(key, value), options);
     return <any>this;
   }
 
