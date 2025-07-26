@@ -34,14 +34,7 @@ export class ConstType<V = any> extends AbstractType<schema.ConstSchema<V>> {
     return this.schema.value;
   }
 
-  public toJsonSchema(ctx?: TypeExportContext): jsonSchema.JsonSchemaValueNode {
-    const schema = this.schema;
-    return <jsonSchema.JsonSchemaValueNode>{
-      type: typeof this.schema.value as any,
-      const: schema.value,
-      ...super.toJsonSchema(ctx),
-    };
-  }
+
 
   public getOptions(): schema.Optional<schema.ConstSchema<V>> {
     const {kind, value, ...options} = this.schema;

@@ -23,12 +23,7 @@ export class AnyType extends AbstractType<schema.AnySchema> {
     super();
   }
 
-  public toJsonSchema(ctx?: TypeExportContext): jsonSchema.JsonSchemaAny {
-    return <jsonSchema.JsonSchemaAny>{
-      type: ['string', 'number', 'boolean', 'null', 'array', 'object'],
-      ...super.toJsonSchema(ctx),
-    };
-  }
+
 
   public validateSchema(): void {
     validateTType(this.getSchema(), 'any');

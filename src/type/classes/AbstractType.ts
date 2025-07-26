@@ -80,13 +80,11 @@ export abstract class AbstractType<S extends schema.Schema> implements BaseType<
   }
 
   public toJsonSchema(ctx?: TypeExportContext): jsonSchema.JsonSchemaNode {
-    const schema = this.getSchema();
-    const jsonSchema = <jsonSchema.JsonSchemaGenericKeywords>{};
-    if (schema.title) jsonSchema.title = schema.title;
-    if (schema.description) jsonSchema.description = schema.description;
-    if (schema.examples) jsonSchema.examples = schema.examples.map((example: schema.TExample) => example.value);
-    return jsonSchema;
+    const {typeToJsonSchema} = require('../../json-schema');
+    return typeToJsonSchema(this, ctx);
   }
+
+
 
   public options(options: schema.Optional<S>): this {
     Object.assign(this.schema, options);

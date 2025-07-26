@@ -41,15 +41,7 @@ export class MapType<T extends Type> extends AbstractType<schema.MapSchema<Schem
     };
   }
 
-  public toJsonSchema(): jsonSchema.JsonSchemaObject {
-    const jsonSchema = <jsonSchema.JsonSchemaObject>{
-      type: 'object',
-      patternProperties: {
-        '.*': this.type.toJsonSchema(),
-      },
-    };
-    return jsonSchema;
-  }
+
 
   public getOptions(): schema.Optional<schema.MapSchema<SchemaOf<T>>> {
     const {kind, type, ...options} = this.schema;
