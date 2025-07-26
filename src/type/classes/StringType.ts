@@ -28,8 +28,6 @@ export class StringType extends AbstractType<schema.StringSchema> {
     super();
   }
 
-
-
   public validateSchema(): void {
     const schema = this.getSchema();
     validateTType(schema, 'str');

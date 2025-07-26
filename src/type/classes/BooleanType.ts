@@ -26,8 +26,6 @@ export class BooleanType extends AbstractType<schema.BooleanSchema> {
     super();
   }
 
-
-
   public validateSchema(): void {
     validateTType(this.getSchema(), 'bool');
   }

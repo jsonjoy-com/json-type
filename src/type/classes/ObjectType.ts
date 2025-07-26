@@ -112,8 +112,6 @@ export class ObjectType<F extends ObjectFieldType<any, any>[] = ObjectFieldType<
     };
   }
 
-
-
   public getOptions(): schema.Optional<schema.ObjectSchema<SchemaOfObjectFields<F>>> {
     const {kind, fields, ...options} = this.schema;
     return options as any;

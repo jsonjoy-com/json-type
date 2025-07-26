@@ -26,8 +26,6 @@ export class NumberType extends AbstractType<schema.NumberSchema> {
     super();
   }
 
-
-
   public validateSchema(): void {
     const schema = this.getSchema();
     validateTType(schema, 'num');

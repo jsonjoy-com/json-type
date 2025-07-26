@@ -80,11 +80,10 @@ export abstract class AbstractType<S extends schema.Schema> implements BaseType<
   }
 
   public toJsonSchema(ctx?: TypeExportContext): jsonSchema.JsonSchemaNode {
-    const {typeToJsonSchema} = require('../../json-schema');
-    return typeToJsonSchema(this, ctx);
+    // Use dynamic import to avoid circular dependency
+    const converter = require('../../json-schema/converter');
+    return converter.typeToJsonSchema(this, ctx);
   }
-
-
 
   public options(options: schema.Optional<S>): this {
     Object.assign(this.schema, options);

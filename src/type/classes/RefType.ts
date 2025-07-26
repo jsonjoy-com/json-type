@@ -33,8 +33,6 @@ export class RefType<T extends Type> extends AbstractType<schema.RefSchema<Schem
     return this.schema.ref;
   }
 
-
-
   public getOptions(): schema.Optional<schema.RefSchema<SchemaOf<T>>> {
     const {kind, ref, ...options} = this.schema;
     return options as any;

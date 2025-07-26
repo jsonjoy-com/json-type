@@ -37,8 +37,6 @@ export class TupleType<T extends Type[]> extends AbstractType<schema.TupleSchema
     };
   }
 
-
-
   public getOptions(): schema.Optional<schema.TupleSchema<{[K in keyof T]: SchemaOf<T[K]>}>> {
     const {kind, types, ...options} = this.schema;
     return options as any;

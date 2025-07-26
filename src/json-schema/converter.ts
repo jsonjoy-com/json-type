@@ -14,7 +14,7 @@ import type {TupleType} from '../type/classes/TupleType';
 import type {TypeExportContext} from '../system/TypeExportContext';
 import type * as schema from '../schema';
 import type {
-  JsonSchemaNode, 
+  JsonSchemaNode,
   JsonSchemaGenericKeywords,
   JsonSchemaAny,
   JsonSchemaArray,
@@ -25,7 +25,7 @@ import type {
   JsonSchemaObject,
   JsonSchemaRef,
   JsonSchemaOr,
-  JsonSchemaNull
+  JsonSchemaNull,
 } from './types';
 
 /**
@@ -35,13 +35,13 @@ import type {
 function getBaseJsonSchema(type: AbstractType<any>, ctx?: TypeExportContext): JsonSchemaGenericKeywords {
   const typeSchema = type.getSchema();
   const jsonSchema: JsonSchemaGenericKeywords = {};
-  
+
   if (typeSchema.title) jsonSchema.title = typeSchema.title;
   if (typeSchema.description) jsonSchema.description = typeSchema.description;
   if (typeSchema.examples) {
     jsonSchema.examples = typeSchema.examples.map((example: schema.TExample) => example.value);
   }
-  
+
   return jsonSchema;
 }
 
@@ -51,7 +51,7 @@ function getBaseJsonSchema(type: AbstractType<any>, ctx?: TypeExportContext): Js
  */
 export function typeToJsonSchema(type: AbstractType<any>, ctx?: TypeExportContext): JsonSchemaNode {
   const typeName = type.getTypeName();
-  
+
   switch (typeName) {
     case 'any':
       return anyToJsonSchema(type as AnyType, ctx);
@@ -90,10 +90,10 @@ function anyToJsonSchema(type: AnyType, ctx?: TypeExportContext): JsonSchemaAny 
   const result: JsonSchemaAny = {
     type: ['string', 'number', 'boolean', 'null', 'array', 'object'] as const,
   };
-  
+
   // Add base properties
   Object.assign(result, baseSchema);
-  
+
   return result;
 }
 
@@ -104,13 +104,13 @@ function arrayToJsonSchema(type: ArrayType<any>, ctx?: TypeExportContext): JsonS
     type: 'array',
     items: typeToJsonSchema((type as any).type, ctx),
   };
-  
+
   // Add base properties
   Object.assign(result, baseSchema);
-  
+
   if (schema.min !== undefined) result.minItems = schema.min;
   if (schema.max !== undefined) result.maxItems = schema.max;
-  
+
   return result;
 }
 
@@ -119,10 +119,10 @@ function binaryToJsonSchema(type: BinaryType<any>, ctx?: TypeExportContext): Jso
   const result: JsonSchemaBinary = {
     type: 'binary' as any,
   };
-  
+
   // Add base properties
   Object.assign(result, baseSchema);
-  
+
   return result;
 }
 
@@ -131,10 +131,10 @@ function booleanToJsonSchema(type: BooleanType, ctx?: TypeExportContext): JsonSc
   const result: JsonSchemaBoolean = {
     type: 'boolean',
   };
-  
+
   // Add base properties
   Object.assign(result, baseSchema);
-  
+
   return result;
 }
 
@@ -142,7 +142,7 @@ function constToJsonSchema(type: ConstType<any>, ctx?: TypeExportContext): JsonS
   const schema = type.getSchema();
   const baseSchema = getBaseJsonSchema(type, ctx);
   const value = schema.value;
-  
+
   if (typeof value === 'string') {
     const result: JsonSchemaString = {
       type: 'string',
@@ -195,7 +195,7 @@ function constToJsonSchema(type: ConstType<any>, ctx?: TypeExportContext): JsonS
     Object.assign(result, baseSchema);
     return result;
   }
-  
+
   return baseSchema;
 }
 
@@ -207,10 +207,10 @@ function mapToJsonSchema(type: MapType<any>, ctx?: TypeExportContext): JsonSchem
       '.*': typeToJsonSchema((type as any).type, ctx),
     },
   };
-  
+
   // Add base properties
   Object.assign(result, baseSchema);
-  
+
   return result;
 }
 
@@ -220,21 +220,21 @@ function numberToJsonSchema(type: NumberType, ctx?: TypeExportContext): JsonSche
   const result: JsonSchemaNumber = {
     type: 'number',
   };
-  
-  // Check if it's an integer format  
+
+  // Check if it's an integer format
   const ints = new Set(['i8', 'i16', 'i32', 'u8', 'u16', 'u32']);
   if (schema.format && ints.has(schema.format)) {
     result.type = 'integer';
   }
-  
+
   // Add base properties
   Object.assign(result, baseSchema);
-  
+
   if (schema.gt !== undefined) result.exclusiveMinimum = schema.gt;
   if (schema.gte !== undefined) result.minimum = schema.gte;
   if (schema.lt !== undefined) result.exclusiveMaximum = schema.lt;
   if (schema.lte !== undefined) result.maximum = schema.lte;
-  
+
   return result;
 }
 
@@ -245,22 +245,22 @@ function objectToJsonSchema(type: ObjectType<any>, ctx?: TypeExportContext): Jso
     type: 'object',
     properties: {},
   };
-  
+
   const required = [];
   const fields = (type as any).fields;
   for (const field of fields) {
     result.properties![field.key] = typeToJsonSchema(field.value, ctx);
-    if (!(field.constructor.name.includes('Optional'))) {
+    if (!field.constructor.name.includes('Optional')) {
       required.push(field.key);
     }
   }
-  
+
   if (required.length) result.required = required;
   if (schema.unknownFields === false) result.additionalProperties = false;
-  
+
   // Add base properties
   Object.assign(result, baseSchema);
-  
+
   return result;
 }
 
@@ -270,10 +270,10 @@ function orToJsonSchema(type: OrType<any>, ctx?: TypeExportContext): JsonSchemaO
   const result: JsonSchemaOr = {
     anyOf: types.map((t: any) => typeToJsonSchema(t, ctx)),
   };
-  
+
   // Add base properties
   Object.assign(result, baseSchema);
-  
+
   return result;
 }
 
@@ -281,16 +281,16 @@ function refToJsonSchema(type: RefType<any>, ctx?: TypeExportContext): JsonSchem
   const schema = type.getSchema();
   const baseSchema = getBaseJsonSchema(type, ctx);
   const ref = schema.ref;
-  
+
   if (ctx) ctx.mentionRef(ref);
-  
+
   const result: JsonSchemaRef = {
     $ref: `#/$defs/${ref}`,
   };
-  
+
   // Add base properties
   Object.assign(result, baseSchema);
-  
+
   return result;
 }
 
@@ -300,10 +300,10 @@ function stringToJsonSchema(type: StringType, ctx?: TypeExportContext): JsonSche
   const result: JsonSchemaString = {
     type: 'string',
   };
-  
+
   if (schema.min !== undefined) result.minLength = schema.min;
   if (schema.max !== undefined) result.maxLength = schema.max;
-  
+
   // Add format to JSON Schema if specified
   if (schema.format) {
     if (schema.format === 'ascii') {
@@ -316,10 +316,10 @@ function stringToJsonSchema(type: StringType, ctx?: TypeExportContext): JsonSche
     // Backward compatibility: if ascii=true, add pattern
     result.pattern = '^[\\x00-\\x7F]*$';
   }
-  
+
   // Add base properties
   Object.assign(result, baseSchema);
-  
+
   return result;
 }
 
@@ -331,9 +331,9 @@ function tupleToJsonSchema(type: TupleType<any>, ctx?: TypeExportContext): JsonS
     items: false,
     prefixItems: types.map((t: any) => typeToJsonSchema(t, ctx)),
   };
-  
+
   // Add base properties
   Object.assign(result, baseSchema);
-  
+
   return result;
 }

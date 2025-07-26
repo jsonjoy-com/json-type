@@ -23,8 +23,6 @@ export class AnyType extends AbstractType<schema.AnySchema> {
     super();
   }
 
-
-
   public validateSchema(): void {
     validateTType(this.getSchema(), 'any');
   }
