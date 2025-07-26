@@ -22,6 +22,17 @@ import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
 import type * as ts from '../../typescript/types';
 import type {TypeExportContext} from '../../system/TypeExportContext';
 
+const formats = new Set<schema.BinarySchema['format']>([
+  'bencode',
+  'bson',
+  'cbor',
+  'ion',
+  'json',
+  'msgpack',
+  'resp3',
+  'ubjson',
+]);
+
 export class BinaryType<T extends Type> extends AbstractType<schema.BinarySchema> {
   protected schema: schema.BinarySchema;
 

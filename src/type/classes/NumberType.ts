@@ -1,6 +1,5 @@
 import type * as schema from '../../schema';
 import {floats, ints, uints} from '../../util';
-import {validateTType, validateWithValidator} from '../../schema/validate';
 import type {ValidatorCodegenContext} from '../../codegen/validator/ValidatorCodegenContext';
 import type {ValidationPath} from '../../codegen/validator/types';
 import {ValidationError} from '../../constants';
@@ -38,43 +37,6 @@ export class NumberType extends AbstractType<schema.NumberSchema> {
     if (schema.lt !== undefined) jsonSchema.exclusiveMaximum = schema.lt;
     if (schema.lte !== undefined) jsonSchema.maximum = schema.lte;
     return jsonSchema;
-  }
-
-  public validateSchema(): void {
-    const schema = this.getSchema();
-    validateTType(schema, 'num');
-    validateWithValidator(schema);
-    const {format, gt, gte, lt, lte} = schema;
-    if (gt !== undefined && typeof gt !== 'number') throw new Error('GT_TYPE');
-    if (gte !== undefined && typeof gte !== 'number') throw new Error('GTE_TYPE');
-    if (lt !== undefined && typeof lt !== 'number') throw new Error('LT_TYPE');
-    if (lte !== undefined && typeof lte !== 'number') throw new Error('LTE_TYPE');
-    if (gt !== undefined && gte !== undefined) throw new Error('GT_GTE');
-    if (lt !== undefined && lte !== undefined) throw new Error('LT_LTE');
-    if ((gt !== undefined || gte !== undefined) && (lt !== undefined || lte !== undefined))
-      if ((gt ?? gte)! > (lt ?? lte)!) throw new Error('GT_LT');
-    if (format !== undefined) {
-      if (typeof format !== 'string') throw new Error('FORMAT_TYPE');
-      if (!format) throw new Error('FORMAT_EMPTY');
-      switch (format) {
-        case 'i':
-        case 'u':
-        case 'f':
-        case 'i8':
-        case 'i16':
-        case 'i32':
-        case 'i64':
-        case 'u8':
-        case 'u16':
-        case 'u32':
-        case 'u64':
-        case 'f32':
-        case 'f64':
-          break;
-        default:
-          throw new Error('FORMAT_INVALID');
-      }
-    }
   }
 
   public codegenValidator(ctx: ValidatorCodegenContext, path: ValidationPath, r: string): void {

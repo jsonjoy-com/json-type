@@ -1,6 +1,5 @@
 import * as schema from '../../schema';
 import {printTree} from 'tree-dump/lib/printTree';
-import {validateTType} from '../../schema/validate';
 import type {ValidatorCodegenContext} from '../../codegen/validator/ValidatorCodegenContext';
 import type {ValidationPath} from '../../codegen/validator/types';
 import {ValidationError} from '../../constants';
@@ -50,15 +49,6 @@ export class TupleType<T extends Type[]> extends AbstractType<schema.TupleSchema
   public getOptions(): schema.Optional<schema.TupleSchema<{[K in keyof T]: SchemaOf<T[K]>}>> {
     const {kind, types, ...options} = this.schema;
     return options as any;
-  }
-
-  public validateSchema(): void {
-    const schema = this.getSchema();
-    validateTType(schema, 'tup');
-    const {types} = schema;
-    if (!Array.isArray(types)) throw new Error('TYPES_TYPE');
-    if (!types.length) throw new Error('TYPES_LENGTH');
-    for (const type of this.types) type.validateSchema();
   }
 
   public codegenValidator(ctx: ValidatorCodegenContext, path: ValidationPath, r: string): void {

@@ -45,7 +45,7 @@ export const validateMinMax = (min: number | undefined, max: number | undefined)
   if (min !== undefined && max !== undefined && min > max) throw new Error('MIN_MAX');
 };
 
-// Individual schema validation functions for each node type
+// Individual schema validation functions for each type
 
 const validateAnySchema = (schema: any): void => {
   validateTType(schema, 'any');
@@ -119,7 +119,7 @@ const validateStringSchema = (schema: any): void => {
 
 const binaryFormats = new Set([
   'bencode',
-  'bson',
+  'bson', 
   'cbor',
   'ion',
   'json',
@@ -168,6 +168,9 @@ const validateObjectSchema = (schema: any, validateChildSchema: (schema: Schema)
 
 const validateFieldSchema = (schema: any, validateChildSchema: (schema: Schema) => void): void => {
   validateTType(schema, 'field');
+  const {key, optional} = schema;
+  if (typeof key !== 'string') throw new Error('KEY_TYPE');
+  if (optional !== undefined && typeof optional !== 'boolean') throw new Error('OPTIONAL_TYPE');
   validateChildSchema(schema.type);
 };
 
