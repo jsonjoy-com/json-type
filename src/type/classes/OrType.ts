@@ -46,12 +46,6 @@ export class OrType<T extends Type[]> extends AbstractType<schema.OrSchema<{[K i
     };
   }
 
-  public toJsonSchema(ctx?: TypeExportContext): jsonSchema.JsonSchemaOr {
-    return <jsonSchema.JsonSchemaOr>{
-      anyOf: this.types.map((type) => type.toJsonSchema(ctx)),
-    };
-  }
-
   public getOptions(): schema.Optional<schema.OrSchema<{[K in keyof T]: SchemaOf<T[K]>}>> {
     const {kind, types, ...options} = this.schema;
     return options as any;

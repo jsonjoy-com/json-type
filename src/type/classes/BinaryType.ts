@@ -52,13 +52,6 @@ export class BinaryType<T extends Type> extends AbstractType<schema.BinarySchema
     };
   }
 
-  public toJsonSchema(ctx?: TypeExportContext): jsonSchema.JsonSchemaBinary {
-    return <jsonSchema.JsonSchemaBinary>{
-      type: 'binary',
-      ...super.toJsonSchema(ctx),
-    };
-  }
-
   public getOptions(): schema.Optional<schema.ArraySchema<SchemaOf<T>>> {
     const {kind, type, ...options} = this.schema;
     return options as any;

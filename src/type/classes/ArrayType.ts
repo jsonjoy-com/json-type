@@ -37,18 +37,6 @@ export class ArrayType<T extends Type> extends AbstractType<schema.ArraySchema<S
     };
   }
 
-  public toJsonSchema(): jsonSchema.JsonSchemaArray {
-    const schema = this.getSchema();
-    const jsonSchema = <jsonSchema.JsonSchemaArray>{
-      type: 'array',
-      items: this.type.toJsonSchema(),
-      ...super.toJsonSchema(),
-    };
-    if (schema.min !== undefined) jsonSchema.minItems = schema.min;
-    if (schema.max !== undefined) jsonSchema.maxItems = schema.max;
-    return jsonSchema;
-  }
-
   public getOptions(): schema.Optional<schema.ArraySchema<SchemaOf<T>>> {
     const {kind, type, ...options} = this.schema;
     return options as any;

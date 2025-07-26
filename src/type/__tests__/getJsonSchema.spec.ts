@@ -172,7 +172,7 @@ test('can print a type', () => {
         },
         {
           "const": null,
-          "type": "object",
+          "type": "null",
         },
       ],
     },
