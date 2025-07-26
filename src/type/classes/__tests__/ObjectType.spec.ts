@@ -1,6 +1,35 @@
 import {t} from '../..';
 import type {ResolveType} from '../../../system';
 
+describe('.prop()', () => {
+  test('can add a property to an object', () => {
+    const obj1 = t.Object(t.prop('a', t.str));
+    const obj2 = obj1.prop('b', t.num);
+    const val1: ResolveType<typeof obj1> = {
+      a: 'hello',
+    };
+    const val2: ResolveType<typeof obj2> = {
+      a: 'hello',
+      b: 123,
+    };
+  });
+
+  test('can create an object using .prop() fields', () => {
+    const object = t.obj
+      .prop('a', t.str)
+      .prop('b', t.num, {title: 'B'})
+      .prop('c', t.bool, {description: 'C'})
+    expect(object.getSchema()).toMatchObject({
+      kind: 'obj',
+      fields: [
+        {kind: 'field', key: 'a', type: {kind: 'str'}},
+        {kind: 'field', key: 'b', type: {kind: 'num'}, title: 'B'},
+        {kind: 'field', key: 'c', type: {kind: 'bool'}, description: 'C'},
+      ],
+    });
+  });
+});
+
 describe('.extend()', () => {
   test('can extend an object', () => {
     const obj1 = t.Object(t.prop('a', t.str));

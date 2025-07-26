@@ -105,6 +105,14 @@ export class ObjectType<F extends ObjectFieldType<any, any>[] = ObjectFieldType<
     super();
   }
 
+  public prop<K extends string, V extends Type>(key: K, value: V, options?: schema.Optional<schema.ObjectFieldSchema<K, SchemaOf<V>>>): ObjectType<[...F, ObjectFieldType<K, V>]> {
+    const field = new ObjectFieldType<K, V>(key, value);
+    if (options) field.options(options);
+    field.system = this.system;
+    this.fields.push(field as any);
+    return <any>this;
+  }
+
   public getSchema(): schema.ObjectSchema<SchemaOfObjectFields<F>> {
     return {
       ...this.schema,
