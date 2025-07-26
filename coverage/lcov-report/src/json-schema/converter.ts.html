@@ -3,15 +3,15 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for src/type/classes/AbstractType.ts</title>
+    <title>Code coverage report for src/json-schema/converter.ts</title>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="../../../prettify.css" />
-    <link rel="stylesheet" href="../../../base.css" />
-    <link rel="shortcut icon" type="image/x-icon" href="../../../favicon.png" />
+    <link rel="stylesheet" href="../../prettify.css" />
+    <link rel="stylesheet" href="../../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../../favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style type='text/css'>
         .coverage-summary .sorter {
-            background-image: url(../../../sort-arrow-sprite.png);
+            background-image: url(../../sort-arrow-sprite.png);
         }
     </style>
 </head>
@@ -19,34 +19,34 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/type/classes</a> AbstractType.ts</h1>
+        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/json-schema</a> converter.ts</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">81.96% </span>
+                <span class="strong">77.7% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>100/122</span>
+                <span class='fraction'>115/148</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">83.33% </span>
+                <span class="strong">64.58% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>20/24</span>
+                <span class='fraction'>31/48</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">72.72% </span>
+                <span class="strong">82.35% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>32/44</span>
+                <span class='fraction'>14/17</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">80.9% </span>
+                <span class="strong">81.34% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>89/110</span>
+                <span class='fraction'>109/134</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line medium'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -379,45 +379,30 @@
 <a name='L314'></a><a href='#L314'>314</a>
 <a name='L315'></a><a href='#L315'>315</a>
 <a name='L316'></a><a href='#L316'>316</a>
-<a name='L317'></a><a href='#L317'>317</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">26x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">26x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">26x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">26x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">26x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">26x</span>
-<span class="cline-any cline-yes">26x</span>
-<span class="cline-any cline-yes">26x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">26x</span>
-<span class="cline-any cline-yes">26x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">26x</span>
-<span class="cline-any cline-yes">26x</span>
-<span class="cline-any cline-yes">26x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">26x</span>
+<a name='L317'></a><a href='#L317'>317</a>
+<a name='L318'></a><a href='#L318'>318</a>
+<a name='L319'></a><a href='#L319'>319</a>
+<a name='L320'></a><a href='#L320'>320</a>
+<a name='L321'></a><a href='#L321'>321</a>
+<a name='L322'></a><a href='#L322'>322</a>
+<a name='L323'></a><a href='#L323'>323</a>
+<a name='L324'></a><a href='#L324'>324</a>
+<a name='L325'></a><a href='#L325'>325</a>
+<a name='L326'></a><a href='#L326'>326</a>
+<a name='L327'></a><a href='#L327'>327</a>
+<a name='L328'></a><a href='#L328'>328</a>
+<a name='L329'></a><a href='#L329'>329</a>
+<a name='L330'></a><a href='#L330'>330</a>
+<a name='L331'></a><a href='#L331'>331</a>
+<a name='L332'></a><a href='#L332'>332</a>
+<a name='L333'></a><a href='#L333'>333</a>
+<a name='L334'></a><a href='#L334'>334</a>
+<a name='L335'></a><a href='#L335'>335</a>
+<a name='L336'></a><a href='#L336'>336</a>
+<a name='L337'></a><a href='#L337'>337</a>
+<a name='L338'></a><a href='#L338'>338</a>
+<a name='L339'></a><a href='#L339'>339</a>
+<a name='L340'></a><a href='#L340'>340</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -428,13 +413,178 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">26x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1994x</span>
-<span class="cline-any cline-yes">1994x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">46x</span>
+<span class="cline-any cline-yes">46x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">46x</span>
+<span class="cline-any cline-yes">46x</span>
+<span class="cline-any cline-yes">46x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">46x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19x</span>
+<span class="cline-any cline-yes">46x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">46x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -442,574 +592,493 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">630x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">501x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1350x</span>
-<span class="cline-any cline-yes">1350x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">28x</span>
+<span class="cline-any cline-yes">28x</span>
 <span class="cline-any cline-yes">23x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">264x</span>
-<span class="cline-any cline-yes">264x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">36x</span>
-<span class="cline-any cline-yes">36x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">329x</span>
-<span class="cline-any cline-yes">329x</span>
-<span class="cline-any cline-yes">326x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">979x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">979x</span>
-<span class="cline-any cline-yes">978x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">149x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">507x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">43x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">43x</span>
-<span class="cline-any cline-yes">43x</span>
-<span class="cline-any cline-yes">43x</span>
-<span class="cline-any cline-yes">43x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">47x</span>
-<span class="cline-any cline-yes">43x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">117x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">39x</span>
-<span class="cline-any cline-yes">39x</span>
-<span class="cline-any cline-yes">39x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">39x</span>
-<span class="cline-any cline-yes">39x</span>
-<span class="cline-any cline-yes">39x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">39x</span>
-<span class="cline-any cline-yes">39x</span>
-<span class="cline-any cline-yes">39x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">234x</span>
-<span class="cline-any cline-yes">234x</span>
-<span class="cline-any cline-yes">234x</span>
-<span class="cline-any cline-yes">117x</span>
-<span class="cline-any cline-yes">117x</span>
-<span class="cline-any cline-yes">117x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">39x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">39x</span>
-<span class="cline-any cline-yes">39x</span>
-<span class="cline-any cline-yes">39x</span>
-<span class="cline-any cline-yes">39x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">39x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">39x</span>
-<span class="cline-any cline-yes">39x</span>
-<span class="cline-any cline-yes">39x</span>
-<span class="cline-any cline-yes">39x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">39x</span>
-<span class="cline-any cline-yes">39x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">39x</span>
-<span class="cline-any cline-yes">39x</span>
-<span class="cline-any cline-yes">39x</span>
-<span class="cline-any cline-yes">39x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">219x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">219x</span>
-<span class="cline-any cline-yes">219x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">219x</span>
-<span class="cline-any cline-yes">219x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">123x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">120x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">77x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">124x</span>
-<span class="cline-any cline-yes">124x</span>
-<span class="cline-any cline-yes">124x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">117x</span>
-<span class="cline-any cline-yes">117x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import type * as schema from '../../schema';
-import {RandomJson} from '@jsonjoy.com/util/lib/json-random';
-import type {Printable} from 'tree-dump/lib/types';
-import {
-  ValidatorCodegenContext,
-  type ValidatorCodegenContextOptions,
-} from '../../codegen/validator/ValidatorCodegenContext';
-import type {JsonTypeValidator, ValidationPath} from '../../codegen/validator/types';
-import {
-  JsonTextEncoderCodegenContext,
-  type JsonTextEncoderCodegenContextOptions,
-  type JsonEncoderFn,
-} from '../../codegen/json/JsonTextEncoderCodegenContext';
-import type {CompiledBinaryEncoder} from '../../codegen/types';
-import {
-  CborEncoderCodegenContext,
-  type CborEncoderCodegenContextOptions,
-} from '../../codegen/binary/CborEncoderCodegenContext';
-import {
-  JsonEncoderCodegenContext,
-  type JsonEncoderCodegenContextOptions,
-} from '../../codegen/binary/JsonEncoderCodegenContext';
-import {CborEncoder} from '@jsonjoy.com/json-pack/lib/cbor/CborEncoder';
-import {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
-import {
-  MessagePackEncoderCodegenContext,
-  type MessagePackEncoderCodegenContextOptions,
-} from '../../codegen/binary/MessagePackEncoderCodegenContext';
-import {MsgPackEncoder} from '@jsonjoy.com/json-pack/lib/msgpack';
-import {lazy} from '@jsonjoy.com/util/lib/lazyFunction';
-import {EncodingFormat} from '@jsonjoy.com/json-pack/lib/constants';
-import {JsonEncoder} from '@jsonjoy.com/json-pack/lib/json/JsonEncoder';
-import {Writer} from '@jsonjoy.com/util/lib/buffers/Writer';
-import {
-  CapacityEstimatorCodegenContext,
-  type CapacityEstimatorCodegenContextOptions,
-  type CompiledCapacityEstimator,
-} from '../../codegen/capacity/CapacityEstimatorCodegenContext';
-import {generate} from '../../codegen/capacity/estimators';
-import type {JsonValueCodec} from '@jsonjoy.com/json-pack/lib/codecs/types';
-import type * as jsonSchema from '../../json-schema';
-import type {BaseType} from '../types';
-import type {TypeSystem} from '../../system/TypeSystem';
-import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
-import type * as ts from '../../typescript/types';
-import type {TypeExportContext} from '../../system/TypeExportContext';
-import type {Validators} from './types';
-import type * as jtd from '../../jtd/types';
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import type {AbstractType} from '../type/classes/AbstractType';
+import type {AnyType} from '../type/classes/AnyType';
+import type {ArrayType} from '../type/classes/ArrayType';
+import type {BinaryType} from '../type/classes/BinaryType';
+import type {BooleanType} from '../type/classes/BooleanType';
+import type {ConstType} from '../type/classes/ConstType';
+import type {MapType} from '../type/classes/MapType';
+import type {NumberType} from '../type/classes/NumberType';
+import type {ObjectType} from '../type/classes/ObjectType';
+import type {OrType} from '../type/classes/OrType';
+import type {RefType} from '../type/classes/RefType';
+import type {StringType} from '../type/classes/StringType';
+import type {TupleType} from '../type/classes/TupleType';
+import type {TypeExportContext} from '../system/TypeExportContext';
+import type * as schema from '../schema';
+import type {
+  JsonSchemaNode,
+  JsonSchemaGenericKeywords,
+  JsonSchemaAny,
+  JsonSchemaArray,
+  JsonSchemaBinary,
+  JsonSchemaBoolean,
+  JsonSchemaString,
+  JsonSchemaNumber,
+  JsonSchemaObject,
+  JsonSchemaRef,
+  JsonSchemaOr,
+  JsonSchemaNull,
+} from './types';
 &nbsp;
-export abstract class AbstractType&lt;S extends schema.Schema&gt; implements BaseType&lt;S&gt;, Printable {
-  /** Default type system to use, if any. */
-  public system?: TypeSystem;
+/**
+ * Extracts the base JSON Schema properties that are common to all types.
+ * This replaces the logic from AbstractType.toJsonSchema().
+ */
+function getBaseJsonSchema(type: AbstractType&lt;any&gt;, ctx?: TypeExportContext): JsonSchemaGenericKeywords {
+  const typeSchema = type.getSchema();
+  const jsonSchema: JsonSchemaGenericKeywords = {};
 &nbsp;
-  protected validators: Validators = {};
-  protected encoders = new Map&lt;EncodingFormat, CompiledBinaryEncoder&gt;();
-&nbsp;
-  /** @todo Retype this to `Schema`. */
-  protected abstract schema: S;
-&nbsp;
-  public <span class="fstat-no" title="function not covered" >getSystem(</span>): TypeSystem {
-    const system = <span class="cstat-no" title="statement not covered" >this.system;</span>
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!system) <span class="cstat-no" title="statement not covered" >throw new Error('NO_SYSTEM');</span></span>
-<span class="cstat-no" title="statement not covered" >    return system;</span>
+  if (typeSchema.title) jsonSchema.title = typeSchema.title;
+  <span class="missing-if-branch" title="if path not taken" >I</span>if (typeSchema.description) <span class="cstat-no" title="statement not covered" >jsonSchema.description = typeSchema.description;</span>
+  <span class="missing-if-branch" title="if path not taken" >I</span>if (typeSchema.examples) {
+<span class="cstat-no" title="statement not covered" >    jsonSchema.examples = typeSchema.examples.map(<span class="fstat-no" title="function not covered" >(e</span>xample: schema.TExample) =&gt; <span class="cstat-no" title="statement not covered" >example.value)</span>;</span>
   }
 &nbsp;
-  public getTypeName(): S['kind'] {
-    return this.schema.kind;
+  return jsonSchema;
+}
+&nbsp;
+/**
+ * Main router function that converts a type to JSON Schema using a switch statement.
+ * This replaces the individual toJsonSchema() methods on each type class.
+ */
+export function typeToJsonSchema(type: AbstractType&lt;any&gt;, ctx?: TypeExportContext): JsonSchemaNode {
+  const typeName = type.getTypeName();
+&nbsp;
+  switch (typeName) {
+    case 'any':
+      return anyToJsonSchema(type as AnyType, ctx);
+    case 'arr':
+      return arrayToJsonSchema(type as ArrayType&lt;any&gt;, ctx);
+    case 'bin':
+      return binaryToJsonSchema(type as BinaryType&lt;any&gt;, ctx);
+    case 'bool':
+      return booleanToJsonSchema(type as BooleanType, ctx);
+    case 'const':
+      return constToJsonSchema(type as ConstType&lt;any&gt;, ctx);
+    case 'map':
+      return mapToJsonSchema(type as MapType&lt;any&gt;, ctx);
+    case 'num':
+      return numberToJsonSchema(type as NumberType, ctx);
+    case 'obj':
+      return objectToJsonSchema(type as ObjectType&lt;any&gt;, ctx);
+    case 'or':
+      return orToJsonSchema(type as OrType&lt;any&gt;, ctx);
+    case 'ref':
+      return refToJsonSchema(type as RefType&lt;any&gt;, ctx);
+    case 'str':
+      return stringToJsonSchema(type as StringType, ctx);
+<span class="branch-11 cbranch-no" title="branch not covered" >    case 'tup':</span>
+<span class="cstat-no" title="statement not covered" >      return tupleToJsonSchema(type as TupleType&lt;any&gt;, ctx);</span>
+<span class="branch-12 cbranch-no" title="branch not covered" >    default:</span>
+      // Fallback to base implementation for unknown types
+<span class="cstat-no" title="statement not covered" >      return getBaseJsonSchema(type, ctx);</span>
+  }
+}
+&nbsp;
+// Individual converter functions for each type
+&nbsp;
+function anyToJsonSchema(type: AnyType, ctx?: TypeExportContext): JsonSchemaAny {
+  const baseSchema = getBaseJsonSchema(type, ctx);
+  const result: JsonSchemaAny = {
+    type: ['string', 'number', 'boolean', 'null', 'array', 'object'] as const,
+  };
+&nbsp;
+  // Add base properties
+  Object.assign(result, baseSchema);
+&nbsp;
+  return result;
+}
+&nbsp;
+function arrayToJsonSchema(type: ArrayType&lt;any&gt;, ctx?: TypeExportContext): JsonSchemaArray {
+  const schema = type.getSchema();
+  const baseSchema = getBaseJsonSchema(type, ctx);
+  const result: JsonSchemaArray = {
+    type: 'array',
+    items: typeToJsonSchema((type as any).type, ctx),
+  };
+&nbsp;
+  // Add base properties
+  Object.assign(result, baseSchema);
+&nbsp;
+  <span class="missing-if-branch" title="if path not taken" >I</span>if (schema.min !== undefined) <span class="cstat-no" title="statement not covered" >result.minItems = schema.min;</span>
+  <span class="missing-if-branch" title="if path not taken" >I</span>if (schema.max !== undefined) <span class="cstat-no" title="statement not covered" >result.maxItems = schema.max;</span>
+&nbsp;
+  return result;
+}
+&nbsp;
+function binaryToJsonSchema(type: BinaryType&lt;any&gt;, ctx?: TypeExportContext): JsonSchemaBinary {
+  const baseSchema = getBaseJsonSchema(type, ctx);
+  const result: JsonSchemaBinary = {
+    type: 'binary' as any,
+  };
+&nbsp;
+  // Add base properties
+  Object.assign(result, baseSchema);
+&nbsp;
+  return result;
+}
+&nbsp;
+function booleanToJsonSchema(type: BooleanType, ctx?: TypeExportContext): JsonSchemaBoolean {
+  const baseSchema = getBaseJsonSchema(type, ctx);
+  const result: JsonSchemaBoolean = {
+    type: 'boolean',
+  };
+&nbsp;
+  // Add base properties
+  Object.assign(result, baseSchema);
+&nbsp;
+  return result;
+}
+&nbsp;
+function constToJsonSchema(type: ConstType&lt;any&gt;, ctx?: TypeExportContext): JsonSchemaNode {
+  const schema = type.getSchema();
+  const baseSchema = getBaseJsonSchema(type, ctx);
+  const value = schema.value;
+&nbsp;
+  if (typeof value === 'string') {
+    const result: JsonSchemaString = {
+      type: 'string',
+      const: value,
+    };
+    Object.assign(result, baseSchema);
+    return result;
+  } else <span class="missing-if-branch" title="if path not taken" >I</span>if (typeof value === 'number') {
+    const result: JsonSchemaNumber = <span class="cstat-no" title="statement not covered" >{</span>
+      type: 'number',
+      const: value,
+    };
+<span class="cstat-no" title="statement not covered" >    Object.assign(result, baseSchema);</span>
+<span class="cstat-no" title="statement not covered" >    return result;</span>
+  } else <span class="missing-if-branch" title="if path not taken" >I</span>if (typeof value === 'boolean') {
+    const result: JsonSchemaBoolean = <span class="cstat-no" title="statement not covered" >{</span>
+      type: 'boolean',
+      const: value,
+    };
+<span class="cstat-no" title="statement not covered" >    Object.assign(result, baseSchema);</span>
+<span class="cstat-no" title="statement not covered" >    return result;</span>
+  } else if (value === null) {
+    const result: any = {
+      type: 'null',
+      const: null,
+    };
+    Object.assign(result, baseSchema);
+    return result;
+  } else if (typeof value === 'undefined') {
+    // For undefined values, we return a special schema
+    const result: any = {
+      type: 'undefined',
+      const: undefined,
+    };
+    Object.assign(result, baseSchema);
+    return result;
+  } else <span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="else path not taken" >E</span>if (Array.isArray(value)) {</span>
+    const result: JsonSchemaArray = <span class="cstat-no" title="statement not covered" >{</span>
+      type: 'array',
+      const: value,
+      items: false,
+    };
+<span class="cstat-no" title="statement not covered" >    Object.assign(result, baseSchema);</span>
+<span class="cstat-no" title="statement not covered" >    return result;</span>
+  } else <span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>if (typeof value === 'object') {</span>
+    const result: JsonSchemaObject = <span class="cstat-no" title="statement not covered" >{</span>
+      type: 'object',
+      const: value,
+    };
+<span class="cstat-no" title="statement not covered" >    Object.assign(result, baseSchema);</span>
+<span class="cstat-no" title="statement not covered" >    return result;</span>
   }
 &nbsp;
-  /**
-   * @todo Add ability to export the whole schema, including aliases.
-   */
-  public getSchema(): S {
-    return this.schema;
+<span class="cstat-no" title="statement not covered" >  return baseSchema;</span>
+}
+&nbsp;
+function mapToJsonSchema(type: MapType&lt;any&gt;, ctx?: TypeExportContext): JsonSchemaObject {
+  const baseSchema = getBaseJsonSchema(type, ctx);
+  const result: JsonSchemaObject = {
+    type: 'object',
+    patternProperties: {
+      '.*': typeToJsonSchema((type as any).type, ctx),
+    },
+  };
+&nbsp;
+  // Add base properties
+  Object.assign(result, baseSchema);
+&nbsp;
+  return result;
+}
+&nbsp;
+function numberToJsonSchema(type: NumberType, ctx?: TypeExportContext): JsonSchemaNumber {
+  const schema = type.getSchema();
+  const baseSchema = getBaseJsonSchema(type, ctx);
+  const result: JsonSchemaNumber = {
+    type: 'number',
+  };
+&nbsp;
+  // Check if it's an integer format
+  const ints = new Set(['i8', 'i16', 'i32', 'u8', 'u16', 'u32']);
+  <span class="missing-if-branch" title="if path not taken" >I</span>if (schema.format &amp;&amp; ints.has(schema.format)) {
+<span class="cstat-no" title="statement not covered" >    result.type = 'integer';</span>
   }
 &nbsp;
-  public getValidatorNames(): string[] {
-    const {validator} = this.schema as schema.WithValidator;
-    if (!validator) return [];
-    return Array.isArray(validator) ? validator : [validator];
-  }
+  // Add base properties
+  Object.assign(result, baseSchema);
 &nbsp;
-  public toJsonSchema(ctx?: TypeExportContext): jsonSchema.JsonSchemaNode {
-    // Use dynamic import to avoid circular dependency
-    const converter = require('../../json-schema/converter');
-    return converter.typeToJsonSchema(this, ctx);
-  }
+  if (schema.gt !== undefined) result.exclusiveMinimum = schema.gt;
+  <span class="missing-if-branch" title="if path not taken" >I</span>if (schema.gte !== undefined) <span class="cstat-no" title="statement not covered" >result.minimum = schema.gte;</span>
+  <span class="missing-if-branch" title="if path not taken" >I</span>if (schema.lt !== undefined) <span class="cstat-no" title="statement not covered" >result.exclusiveMaximum = schema.lt;</span>
+  <span class="missing-if-branch" title="if path not taken" >I</span>if (schema.lte !== undefined) <span class="cstat-no" title="statement not covered" >result.maximum = schema.lte;</span>
 &nbsp;
-  public options(options: schema.Optional&lt;S&gt;): this {
-    Object.assign(this.schema, options);
-    return this;
-  }
+  return result;
+}
 &nbsp;
-  public getOptions(): schema.Optional&lt;S&gt; {
-    const {kind, ...options} = this.schema;
-    return options as any;
-  }
+function objectToJsonSchema(type: ObjectType&lt;any&gt;, ctx?: TypeExportContext): JsonSchemaObject {
+  const schema = type.getSchema();
+  const baseSchema = getBaseJsonSchema(type, ctx);
+  const result: JsonSchemaObject = {
+    type: 'object',
+    properties: {},
+  };
 &nbsp;
-  /** Validates own schema, throws on errors. */
-  public abstract validateSchema(): void;
-&nbsp;
-  public validate(value: unknown): void {
-    const validator = this.validator('string');
-    const err = validator(value);
-    if (err) throw new Error(JSON.parse(err as string)[0]);
-  }
-&nbsp;
-  public compileValidator(options: Partial&lt;Omit&lt;ValidatorCodegenContextOptions, 'type'&gt;&gt;): JsonTypeValidator {
-    const ctx = new ValidatorCodegenContext({
-      system: this.system,
-      errors: 'object',
-      ...options,
-      type: this as any,
-    });
-    this.codegenValidator(ctx, [], ctx.codegen.options.args[0]);
-    return ctx.compile();
-  }
-&nbsp;
-  private __compileValidator(kind: keyof Validators): JsonTypeValidator {
-    return (this.validators[kind] = this.compileValidator({
-      errors: kind,
-      system: this.system,
-      skipObjectExtraFieldsCheck: kind === 'boolean',
-      unsafeMode: kind === 'boolean',
-    }));
-  }
-&nbsp;
-  public validator(kind: keyof Validators): JsonTypeValidator {
-    return this.validators[kind] || lazy(() =&gt; this.__compileValidator(kind));
-  }
-&nbsp;
-  protected compileJsonTextEncoder(options: Omit&lt;JsonTextEncoderCodegenContextOptions, 'type'&gt;): JsonEncoderFn {
-    const ctx = new JsonTextEncoderCodegenContext({
-      ...options,
-      system: this.system,
-      type: this as any,
-    });
-    const r = ctx.codegen.options.args[0];
-    const value = new JsExpression(() =&gt; r);
-    this.codegenJsonTextEncoder(ctx, value);
-    return ctx.compile();
-  }
-&nbsp;
-  public <span class="fstat-no" title="function not covered" >codegenJsonTextEncoder(</span>ctx: JsonTextEncoderCodegenContext, value: JsExpression): void {
-<span class="cstat-no" title="statement not covered" >    throw new Error(`${this.toStringName()}.codegenJsonTextEncoder() not implemented`);</span>
-  }
-&nbsp;
-  private __jsonEncoder: JsonEncoderFn | undefined;
-  public jsonTextEncoder(): JsonEncoderFn {
-    return (
-      this.__jsonEncoder || (this.__jsonEncoder = lazy(() =&gt; (this.__jsonEncoder = this.compileJsonTextEncoder({}))))
-    );
-  }
-&nbsp;
-  public compileEncoder(format: EncodingFormat, name?: string): CompiledBinaryEncoder {
-    switch (format) {
-      case EncodingFormat.Cbor: {
-        const encoder = this.compileCborEncoder({name});
-        this.encoders.set(EncodingFormat.Cbor, encoder);
-        return encoder;
-      }
-      case EncodingFormat.MsgPack: {
-        const encoder = this.compileMessagePackEncoder({name});
-        this.encoders.set(EncodingFormat.MsgPack, encoder);
-        return encoder;
-      }
-      case EncodingFormat.Json: {
-        const encoder = this.compileJsonEncoder({name});
-        this.encoders.set(EncodingFormat.Json, encoder);
-        return encoder;
-      }
-<span class="branch-3 cbranch-no" title="branch not covered" >      default:</span>
-<span class="cstat-no" title="statement not covered" >        throw new Error(`Unsupported encoding format: ${format}`);</span>
+  const required = [];
+  const fields = (type as any).fields;
+  for (const field of fields) {
+    result.properties![field.key] = typeToJsonSchema(field.value, ctx);
+    if (!field.constructor.name.includes('Optional')) {
+      required.push(field.key);
     }
   }
 &nbsp;
-  public encoder(kind: EncodingFormat): CompiledBinaryEncoder {
-    const encoders = this.encoders;
-    const cachedEncoder = encoders.get(kind);
-    if (cachedEncoder) return cachedEncoder;
-    const temporaryWrappedEncoder = lazy(() =&gt; this.compileEncoder(kind));
-    encoders.set(kind, temporaryWrappedEncoder);
-    return temporaryWrappedEncoder;
+  if (required.length) result.required = required;
+  <span class="missing-if-branch" title="if path not taken" >I</span>if (schema.unknownFields === false) <span class="cstat-no" title="statement not covered" >result.additionalProperties = false;</span>
+&nbsp;
+  // Add base properties
+  Object.assign(result, baseSchema);
+&nbsp;
+  return result;
+}
+&nbsp;
+function orToJsonSchema(type: OrType&lt;any&gt;, ctx?: TypeExportContext): JsonSchemaOr {
+  const baseSchema = getBaseJsonSchema(type, ctx);
+  const types = (type as any).types;
+  const result: JsonSchemaOr = {
+    anyOf: types.map((t: any) =&gt; typeToJsonSchema(t, ctx)),
+  };
+&nbsp;
+  // Add base properties
+  Object.assign(result, baseSchema);
+&nbsp;
+  return result;
+}
+&nbsp;
+function refToJsonSchema(type: RefType&lt;any&gt;, ctx?: TypeExportContext): JsonSchemaRef {
+  const schema = type.getSchema();
+  const baseSchema = getBaseJsonSchema(type, ctx);
+  const ref = schema.ref;
+&nbsp;
+  if (ctx) ctx.mentionRef(ref);
+&nbsp;
+  const result: JsonSchemaRef = {
+    $ref: `#/$defs/${ref}`,
+  };
+&nbsp;
+  // Add base properties
+  Object.assign(result, baseSchema);
+&nbsp;
+  return result;
+}
+&nbsp;
+function stringToJsonSchema(type: StringType, ctx?: TypeExportContext): JsonSchemaString {
+  const schema = type.getSchema();
+  const baseSchema = getBaseJsonSchema(type, ctx);
+  const result: JsonSchemaString = {
+    type: 'string',
+  };
+&nbsp;
+  if (schema.min !== undefined) result.minLength = schema.min;
+  if (schema.max !== undefined) result.maxLength = schema.max;
+&nbsp;
+  // Add format to JSON Schema if specified
+  if (schema.format) {
+    if (schema.format === 'ascii') {
+      // JSON Schema doesn't have an "ascii" format, but we can use a pattern
+      // ASCII characters are from 0x00 to 0x7F (0-127)
+      result.pattern = '^[\\x00-\\x7F]*$';
+    }
+    // UTF-8 is the default for JSON Schema strings, so we don't need to add anything special
+  } else if (schema.ascii) {
+    // Backward compatibility: if ascii=true, add pattern
+    result.pattern = '^[\\x00-\\x7F]*$';
   }
 &nbsp;
-  public <span class="fstat-no" title="function not covered" >encode(</span>codec: JsonValueCodec, value: unknown): Uint8Array {
-    const encoder = <span class="cstat-no" title="statement not covered" >this.encoder(codec.format);</span>
-    const writer = <span class="cstat-no" title="statement not covered" >codec.encoder.writer;</span>
-<span class="cstat-no" title="statement not covered" >    writer.reset();</span>
-<span class="cstat-no" title="statement not covered" >    encoder(value, codec.encoder);</span>
-<span class="cstat-no" title="statement not covered" >    return writer.flush();</span>
-  }
+  // Add base properties
+  Object.assign(result, baseSchema);
 &nbsp;
-  public <span class="fstat-no" title="function not covered" >codegenValidator(</span>ctx: ValidatorCodegenContext, path: ValidationPath, r: string): void {
-<span class="cstat-no" title="statement not covered" >    throw new Error(`${this.toStringName()}.codegenValidator() not implemented`);</span>
-  }
+  return result;
+}
 &nbsp;
-  public compileCborEncoder(
-    options: Omit&lt;CborEncoderCodegenContextOptions, 'type' | 'encoder'&gt;,
-  ): CompiledBinaryEncoder {
-    const ctx = new CborEncoderCodegenContext({
-      system: this.system,
-      encoder: new CborEncoder(),
-      ...options,
-      type: this as any,
-    });
-    const r = ctx.codegen.options.args[0];
-    const value = new JsExpression(() =&gt; r);
-    this.codegenCborEncoder(ctx, value);
-    return ctx.compile();
-  }
+function <span class="fstat-no" title="function not covered" >tupleToJsonSchema(</span>type: TupleType&lt;any&gt;, ctx?: TypeExportContext): JsonSchemaArray {
+  const baseSchema = <span class="cstat-no" title="statement not covered" >getBaseJsonSchema(type, ctx);</span>
+  const types = (<span class="cstat-no" title="statement not covered" >type as any).types;</span>
+  const result: JsonSchemaArray = <span class="cstat-no" title="statement not covered" >{</span>
+    type: 'array',
+    items: false,
+    prefixItems: types.map(<span class="fstat-no" title="function not covered" >(t</span>: any) =&gt; <span class="cstat-no" title="statement not covered" >typeToJsonSchema(t, ctx))</span>,
+  };
 &nbsp;
-  public <span class="fstat-no" title="function not covered" >codegenCborEncoder(</span>ctx: CborEncoderCodegenContext, value: JsExpression): void {
-<span class="cstat-no" title="statement not covered" >    throw new Error(`${this.toStringName()}.codegenCborEncoder() not implemented`);</span>
-  }
+  // Add base properties
+<span class="cstat-no" title="statement not covered" >  Object.assign(result, baseSchema);</span>
 &nbsp;
-  public compileMessagePackEncoder(
-    options: Omit&lt;MessagePackEncoderCodegenContextOptions, 'type' | 'encoder'&gt;,
-  ): CompiledBinaryEncoder {
-    const ctx = new MessagePackEncoderCodegenContext({
-      system: this.system,
-      encoder: new MsgPackEncoder(),
-      ...options,
-      type: this as any,
-    });
-    const r = ctx.codegen.options.args[0];
-    const value = new JsExpression(() =&gt; r);
-    this.codegenMessagePackEncoder(ctx, value);
-    return ctx.compile();
-  }
-&nbsp;
-  public <span class="fstat-no" title="function not covered" >codegenMessagePackEncoder(</span>ctx: MessagePackEncoderCodegenContext, value: JsExpression): void {
-<span class="cstat-no" title="statement not covered" >    throw new Error(`${this.toStringName()}.codegenMessagePackEncoder() not implemented`);</span>
-  }
-&nbsp;
-  public compileJsonEncoder(
-    options: Omit&lt;JsonEncoderCodegenContextOptions, 'type' | 'encoder'&gt;,
-  ): CompiledBinaryEncoder {
-    const writer = new Writer();
-    const ctx = new JsonEncoderCodegenContext({
-      system: this.system,
-      encoder: new JsonEncoder(writer),
-      ...options,
-      type: this as any,
-    });
-    const r = ctx.codegen.options.args[0];
-    const value = new JsExpression(() =&gt; r);
-    this.codegenJsonEncoder(ctx, value);
-    return ctx.compile();
-  }
-&nbsp;
-  public <span class="fstat-no" title="function not covered" >codegenJsonEncoder(</span>ctx: JsonEncoderCodegenContext, value: JsExpression): void {
-<span class="cstat-no" title="statement not covered" >    throw new Error(`${this.toStringName()}.codegenJsonEncoder() not implemented`);</span>
-  }
-&nbsp;
-  public compileCapacityEstimator(
-    options: Omit&lt;CapacityEstimatorCodegenContextOptions, 'type'&gt;,
-  ): CompiledCapacityEstimator {
-    const ctx = new CapacityEstimatorCodegenContext({
-      system: this.system,
-      ...options,
-      type: this as any,
-    });
-    const r = ctx.codegen.options.args[0];
-    const value = new JsExpression(() =&gt; r);
-    // Use the centralized router instead of the abstract method
-    generate(ctx, value, this as any);
-    return ctx.compile();
-  }
-&nbsp;
-  private __capacityEstimator: CompiledCapacityEstimator | undefined;
-  public capacityEstimator(): CompiledCapacityEstimator {
-    return (
-      this.__capacityEstimator ||
-      (this.__capacityEstimator = lazy(() =&gt; (this.__capacityEstimator = this.compileCapacityEstimator({}))))
-    );
-  }
-&nbsp;
-  public <span class="fstat-no" title="function not covered" >random(</span>): unknown {
-<span class="cstat-no" title="statement not covered" >    return RandomJson.generate({nodeCount: 5});</span>
-  }
-&nbsp;
-  public <span class="fstat-no" title="function not covered" >toTypeScriptAst(</span>): ts.TsNode {
-    const node: ts.TsUnknownKeyword = <span class="cstat-no" title="statement not covered" >{node: 'UnknownKeyword'};</span>
-<span class="cstat-no" title="statement not covered" >    return node;</span>
-  }
-&nbsp;
-  public <span class="fstat-no" title="function not covered" >toJson(</span>value: unknown, system: TypeSystem | undefined = <span class="branch-0 cbranch-no" title="branch not covered" >this.system)</span>: json_string&lt;unknown&gt; {
-<span class="cstat-no" title="statement not covered" >    return JSON.stringify(value) as json_string&lt;schema.TypeOf&lt;S&gt;&gt;;</span>
-  }
-&nbsp;
-  protected toStringTitle(): string {
-    return this.getTypeName();
-  }
-&nbsp;
-  protected toStringOptions(): string {
-    const options = this.getOptions() as schema.Display;
-    const title = options.title || options.intro || options.description;
-    if (!title) return '';
-    return JSON.stringify(title);
-  }
-&nbsp;
-  protected <span class="fstat-no" title="function not covered" >toStringName(</span>): string {
-<span class="cstat-no" title="statement not covered" >    return 'AbstractType';</span>
-  }
-&nbsp;
-  public toString(tab: string = <span class="branch-0 cbranch-no" title="branch not covered" >'')</span>: string {
-    const options = this.toStringOptions();
-    return this.toStringTitle() + (options ? ` ${options}` : '');
-  }
-&nbsp;
-  public <span class="fstat-no" title="function not covered" >toJtdForm(</span>): jtd.JtdForm {
-    const form: jtd.JtdEmptyForm = <span class="cstat-no" title="statement not covered" >{nullable: false};</span>
-<span class="cstat-no" title="statement not covered" >    return form;</span>
-  }
+<span class="cstat-no" title="statement not covered" >  return result;</span>
 }
 &nbsp;</pre></td></tr></table></pre>
 
@@ -1020,14 +1089,14 @@ export abstract class AbstractType&lt;S extends schema.Schema&gt; implements Bas
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
                 at 2025-07-26T11:48:38.120Z
             </div>
-        <script src="../../../prettify.js"></script>
+        <script src="../../prettify.js"></script>
         <script>
             window.onload = function () {
                 prettyPrint();
             };
         </script>
-        <script src="../../../sorter.js"></script>
-        <script src="../../../block-navigation.js"></script>
+        <script src="../../sorter.js"></script>
+        <script src="../../block-navigation.js"></script>
     </body>
 </html>
     

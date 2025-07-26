@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">68.18% </span>
+                <span class="strong">68.08% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>105/154</span>
+                <span class='fraction'>96/141</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">59.8% </span>
+                <span class="strong">61.05% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>61/102</span>
+                <span class='fraction'>58/95</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">84.61% </span>
+                <span class="strong">83.33% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>11/13</span>
+                <span class='fraction'>10/12</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">72.51% </span>
+                <span class="strong">70.73% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>95/131</span>
+                <span class='fraction'>87/123</span>
             </div>
         
             
@@ -299,21 +299,7 @@
 <a name='L234'></a><a href='#L234'>234</a>
 <a name='L235'></a><a href='#L235'>235</a>
 <a name='L236'></a><a href='#L236'>236</a>
-<a name='L237'></a><a href='#L237'>237</a>
-<a name='L238'></a><a href='#L238'>238</a>
-<a name='L239'></a><a href='#L239'>239</a>
-<a name='L240'></a><a href='#L240'>240</a>
-<a name='L241'></a><a href='#L241'>241</a>
-<a name='L242'></a><a href='#L242'>242</a>
-<a name='L243'></a><a href='#L243'>243</a>
-<a name='L244'></a><a href='#L244'>244</a>
-<a name='L245'></a><a href='#L245'>245</a>
-<a name='L246'></a><a href='#L246'>246</a>
-<a name='L247'></a><a href='#L247'>247</a>
-<a name='L248'></a><a href='#L248'>248</a>
-<a name='L249'></a><a href='#L249'>249</a>
-<a name='L250'></a><a href='#L250'>250</a>
-<a name='L251'></a><a href='#L251'>251</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L237'></a><a href='#L237'>237</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">26x</span>
 <span class="cline-any cline-yes">26x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -339,20 +325,6 @@
 <span class="cline-any cline-yes">26x</span>
 <span class="cline-any cline-yes">360x</span>
 <span class="cline-any cline-yes">360x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -591,20 +563,6 @@ export class NumberType extends AbstractType&lt;schema.NumberSchema&gt; {
     super();
   }
 &nbsp;
-  public toJsonSchema(ctx?: TypeExportContext): jsonSchema.JsonSchemaNumber {
-    const schema = this.getSchema();
-    const jsonSchema = &lt;jsonSchema.JsonSchemaNumber&gt;{
-      type: 'number',
-      ...super.toJsonSchema(ctx),
-    };
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (schema.format &amp;&amp; ints.has(schema.format)) <span class="cstat-no" title="statement not covered" >jsonSchema.type = 'integer';</span>
-    if (schema.gt !== undefined) jsonSchema.exclusiveMinimum = schema.gt;
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (schema.gte !== undefined) <span class="cstat-no" title="statement not covered" >jsonSchema.minimum = schema.gte;</span>
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (schema.lt !== undefined) <span class="cstat-no" title="statement not covered" >jsonSchema.exclusiveMaximum = schema.lt;</span>
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (schema.lte !== undefined) <span class="cstat-no" title="statement not covered" >jsonSchema.maximum = schema.lte;</span>
-    return jsonSchema;
-  }
-&nbsp;
   public validateSchema(): void {
     const schema = this.getSchema();
     validateTType(schema, 'num');
@@ -820,7 +778,7 @@ export class NumberType extends AbstractType&lt;schema.NumberSchema&gt; {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-26T10:06:32.985Z
+                at 2025-07-26T11:48:38.120Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>
