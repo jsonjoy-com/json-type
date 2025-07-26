@@ -215,3 +215,46 @@ describe('or', () => {
     expect(estimator([1, 2, 3])).toBe(maxEncodingCapacity([1, 2, 3]));
   });
 });
+
+describe('standalone codegen function', () => {
+  test('generates capacity estimator equivalent to compileCapacityEstimator', () => {
+    const system = new TypeSystem();
+    const type = system.t.Array(system.t.str);
+
+    // Compare standalone codegen function with the class method
+    const {codegen} = require('../estimators');
+    const standaloneEstimator = codegen(type, {});
+    const classEstimator = type.compileCapacityEstimator({});
+
+    const testData = ['hello', 'world', 'test'];
+    expect(standaloneEstimator(testData)).toBe(classEstimator(testData));
+    expect(standaloneEstimator(testData)).toBe(maxEncodingCapacity(testData));
+  });
+
+  test('works with complex nested types', () => {
+    const system = new TypeSystem();
+    const type = system.t.Object(
+      system.t.prop('name', system.t.str),
+      system.t.prop('items', system.t.Array(system.t.num)),
+    );
+
+    const {codegen} = require('../estimators');
+    const standaloneEstimator = codegen(type, {});
+    const classEstimator = type.compileCapacityEstimator({});
+
+    const testData = {name: 'test', items: [1, 2, 3, 4, 5]};
+    expect(standaloneEstimator(testData)).toBe(classEstimator(testData));
+    expect(standaloneEstimator(testData)).toBe(maxEncodingCapacity(testData));
+  });
+
+  test('works with const types', () => {
+    const system = new TypeSystem();
+    const type = system.t.Const('hello world');
+
+    const {codegen} = require('../estimators');
+    const standaloneEstimator = codegen(type, {});
+
+    // For const types, the value doesn't matter
+    expect(standaloneEstimator(null)).toBe(maxEncodingCapacity('hello world'));
+  });
+});

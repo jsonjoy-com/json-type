@@ -84,10 +84,6 @@ export class ConstType<V = any> extends AbstractType<schema.ConstSchema<V>> {
     this.codegenBinaryEncoder(ctx, value);
   }
 
-  public codegenCapacityEstimator(ctx: CapacityEstimatorCodegenContext, value: JsExpression): void {
-    ctx.inc(maxEncodingCapacity(this.value()));
-  }
-
   public random(): unknown {
     return cloneBinary(this.schema.value);
   }

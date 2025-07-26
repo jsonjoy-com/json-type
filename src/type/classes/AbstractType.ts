@@ -36,6 +36,7 @@ import {
   type CapacityEstimatorCodegenContextOptions,
   type CompiledCapacityEstimator,
 } from '../../codegen/capacity/CapacityEstimatorCodegenContext';
+import {generate} from '../../codegen/capacity/estimators';
 import type {JsonValueCodec} from '@jsonjoy.com/json-pack/lib/codecs/types';
 import type * as jsonSchema from '../../json-schema';
 import type {BaseType} from '../types';
@@ -265,12 +266,9 @@ export abstract class AbstractType<S extends schema.Schema> implements BaseType<
     });
     const r = ctx.codegen.options.args[0];
     const value = new JsExpression(() => r);
-    this.codegenCapacityEstimator(ctx, value);
+    // Use the centralized router instead of the abstract method
+    generate(ctx, value, this as any);
     return ctx.compile();
-  }
-
-  public codegenCapacityEstimator(ctx: CapacityEstimatorCodegenContext, value: JsExpression): void {
-    throw new Error(`${this.toStringName()}.codegenCapacityEstimator() not implemented`);
   }
 
   private __capacityEstimator: CompiledCapacityEstimator | undefined;

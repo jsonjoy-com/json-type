@@ -151,30 +151,6 @@ export class MapType<T extends Type> extends AbstractType<schema.MapSchema<Schem
     ctx.blob(objEndBlob);
   }
 
-  public codegenCapacityEstimator(ctx: CapacityEstimatorCodegenContext, value: JsExpression): void {
-    const codegen = ctx.codegen;
-    ctx.inc(MaxEncodingOverhead.Object);
-    const r = codegen.var(value.use());
-    const rKeys = codegen.var(`Object.keys(${r})`);
-    const rKey = codegen.var();
-    const rLen = codegen.var(`${rKeys}.length`);
-    codegen.js(`size += ${MaxEncodingOverhead.ObjectElement} * ${rLen}`);
-    const type = this.type;
-    const fn = type.compileCapacityEstimator({
-      system: ctx.options.system,
-      name: ctx.options.name,
-    });
-    const rFn = codegen.linkDependency(fn);
-    const ri = codegen.var('0');
-    codegen.js(`for (; ${ri} < ${rLen}; ${ri}++) {`);
-    codegen.js(`${rKey} = ${rKeys}[${ri}];`);
-    codegen.js(
-      `size += ${MaxEncodingOverhead.String} + ${MaxEncodingOverhead.StringLengthMultiplier} * ${rKey}.length;`,
-    );
-    codegen.js(`size += ${rFn}(${r}[${rKey}]);`);
-    codegen.js(`}`);
-  }
-
   public random(): Record<string, unknown> {
     const length = Math.round(Math.random() * 10);
     const res: Record<string, unknown> = {};
