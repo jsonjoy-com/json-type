@@ -152,10 +152,6 @@ export class NumberType extends AbstractType<schema.NumberSchema> {
     this.codegenBinaryEncoder(ctx, value);
   }
 
-  public codegenCapacityEstimator(ctx: CapacityEstimatorCodegenContext, value: JsExpression): void {
-    ctx.inc(MaxEncodingOverhead.Number);
-  }
-
   public toTypeScriptAst(): ts.TsNumberKeyword {
     return {node: 'NumberKeyword'};
   }

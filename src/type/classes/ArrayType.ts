@@ -152,27 +152,6 @@ export class ArrayType<T extends Type> extends AbstractType<schema.ArraySchema<S
     );
   }
 
-  public codegenCapacityEstimator(ctx: CapacityEstimatorCodegenContext, value: JsExpression): void {
-    const codegen = ctx.codegen;
-    ctx.inc(MaxEncodingOverhead.Array);
-    const rLen = codegen.var(`${value.use()}.length`);
-    const type = this.type;
-    codegen.js(`size += ${MaxEncodingOverhead.ArrayElement} * ${rLen}`);
-    const fn = type.compileCapacityEstimator({
-      system: ctx.options.system,
-      name: ctx.options.name,
-    });
-    const isConstantSizeType = type instanceof ConstType || type instanceof BooleanType || type instanceof NumberType;
-    if (isConstantSizeType) {
-      codegen.js(`size += ${rLen} * ${fn(null)};`);
-    } else {
-      const r = codegen.var(value.use());
-      const rFn = codegen.linkDependency(fn);
-      const ri = codegen.getRegister();
-      codegen.js(`for(var ${ri} = ${rLen}; ${ri}-- !== 0;) size += ${rFn}(${r}[${ri}]);`);
-    }
-  }
-
   public toTypeScriptAst(): ts.TsArrayType {
     return {
       node: 'ArrayType',

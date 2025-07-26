@@ -480,28 +480,6 @@ if (${rLength}) {
     }
   }
 
-  public codegenCapacityEstimator(ctx: CapacityEstimatorCodegenContext, value: JsExpression): void {
-    const codegen = ctx.codegen;
-    const r = codegen.var(value.use());
-    const encodeUnknownFields = !!this.schema.encodeUnknownFields;
-    if (encodeUnknownFields) {
-      codegen.js(`size += maxEncodingCapacity(${r});`);
-      return;
-    }
-    const fields = this.fields;
-    const overhead = MaxEncodingOverhead.Object + fields.length * MaxEncodingOverhead.ObjectElement;
-    ctx.inc(overhead);
-    for (const field of fields) {
-      ctx.inc(maxEncodingCapacity(field.key));
-      const accessor = normalizeAccessor(field.key);
-      const isOptional = field instanceof ObjectOptionalFieldType;
-      const block = () => field.value.codegenCapacityEstimator(ctx, new JsExpression(() => `${r}${accessor}`));
-      if (isOptional) {
-        codegen.if(`${r}${accessor} !== undefined`, block);
-      } else block();
-    }
-  }
-
   public toTypeScriptAst(): ts.TsTypeLiteral {
     const node: ts.TsTypeLiteral = {
       node: 'TypeLiteral',

@@ -138,22 +138,6 @@ export class OrType<T extends Type[]> extends AbstractType<schema.OrSchema<{[K i
     this.codegenBinaryEncoder(ctx, value);
   }
 
-  public codegenCapacityEstimator(ctx: CapacityEstimatorCodegenContext, value: JsExpression): void {
-    const codegen = ctx.codegen;
-    const discriminator = this.discriminator();
-    const d = codegen.linkDependency(discriminator);
-    const types = this.types;
-    codegen.switch(
-      `${d}(${value.use()})`,
-      types.map((type, index) => [
-        index,
-        () => {
-          type.codegenCapacityEstimator(ctx, value);
-        },
-      ]),
-    );
-  }
-
   public toTypeScriptAst(): ts.TsUnionType {
     const node: ts.TsUnionType = {
       node: 'UnionType',

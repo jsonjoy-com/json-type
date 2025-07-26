@@ -115,11 +115,6 @@ export class StringType extends AbstractType<schema.StringSchema> {
     this.codegenBinaryEncoder(ctx, value);
   }
 
-  public codegenCapacityEstimator(ctx: CapacityEstimatorCodegenContext, value: JsExpression): void {
-    ctx.inc(MaxEncodingOverhead.String);
-    ctx.codegen.js(`size += ${MaxEncodingOverhead.StringLengthMultiplier} * ${value.use()}.length;`);
-  }
-
   public toTypeScriptAst(): ts.TsStringKeyword {
     return {node: 'StringKeyword'};
   }

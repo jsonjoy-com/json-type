@@ -132,23 +132,6 @@ export class TupleType<T extends Type[]> extends AbstractType<schema.TupleSchema
     );
   }
 
-  public codegenCapacityEstimator(ctx: CapacityEstimatorCodegenContext, value: JsExpression): void {
-    const codegen = ctx.codegen;
-    const r = codegen.var(value.use());
-    const types = this.types;
-    const overhead = MaxEncodingOverhead.Array + MaxEncodingOverhead.ArrayElement * types.length;
-    ctx.inc(overhead);
-    for (let i = 0; i < types.length; i++) {
-      const type = types[i];
-      const fn = type.compileCapacityEstimator({
-        system: ctx.options.system,
-        name: ctx.options.name,
-      });
-      const rFn = codegen.linkDependency(fn);
-      codegen.js(`size += ${rFn}(${r}[${i}]);`);
-    }
-  }
-
   public toTypeScriptAst(): ts.TsTupleType {
     return {
       node: 'TupleType',

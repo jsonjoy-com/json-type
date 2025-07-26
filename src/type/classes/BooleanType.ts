@@ -56,10 +56,6 @@ export class BooleanType extends AbstractType<schema.BooleanSchema> {
     this.codegenBinaryEncoder(ctx, value);
   }
 
-  public codegenCapacityEstimator(ctx: CapacityEstimatorCodegenContext, value: JsExpression): void {
-    ctx.inc(MaxEncodingOverhead.Boolean);
-  }
-
   public toTypeScriptAst(): ts.TsBooleanKeyword {
     return {node: 'BooleanKeyword'};
   }

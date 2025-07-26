@@ -75,10 +75,6 @@ export class ConstType<V = any> extends AbstractType<schema.ConstSchema<V>> {
     this.codegenBinaryEncoder(ctx, value);
   }
 
-  public codegenCapacityEstimator(ctx: CapacityEstimatorCodegenContext, value: JsExpression): void {
-    ctx.inc(maxEncodingCapacity(this.value()));
-  }
-
   public toTypeScriptAst() {
     const value = this.schema.value;
     if (value === null) {
