@@ -166,10 +166,6 @@ export class NumberType extends AbstractType<schema.NumberSchema> {
     this.codegenBinaryEncoder(ctx, value);
   }
 
-  public codegenCapacityEstimator(ctx: CapacityEstimatorCodegenContext, value: JsExpression): void {
-    ctx.inc(MaxEncodingOverhead.Number);
-  }
-
   public random(): number {
     let num = Math.random();
     let min = Number.MIN_SAFE_INTEGER;

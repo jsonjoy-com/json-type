@@ -128,14 +128,6 @@ export class RefType<T extends Type> extends AbstractType<schema.RefSchema<Schem
     this.codegenBinaryEncoder(ctx, value);
   }
 
-  public codegenCapacityEstimator(ctx: CapacityEstimatorCodegenContext, value: JsExpression): void {
-    const system = ctx.options.system || this.system;
-    if (!system) throw new Error('NO_SYSTEM');
-    const estimator = system.resolve(this.schema.ref).type.capacityEstimator();
-    const d = ctx.codegen.linkDependency(estimator);
-    ctx.codegen.js(`size += ${d}(${value.use()});`);
-  }
-
   public random(): unknown {
     if (!this.system) throw new Error('NO_SYSTEM');
     const alias = this.system.resolve(this.schema.ref);

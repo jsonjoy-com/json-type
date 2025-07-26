@@ -122,11 +122,6 @@ export class BinaryType<T extends Type> extends AbstractType<schema.BinarySchema
     this.codegenBinaryEncoder(ctx, value);
   }
 
-  public codegenCapacityEstimator(ctx: CapacityEstimatorCodegenContext, value: JsExpression): void {
-    ctx.inc(MaxEncodingOverhead.Binary);
-    ctx.codegen.js(`size += ${MaxEncodingOverhead.BinaryLengthMultiplier} * ${value.use()}.length;`);
-  }
-
   public random(): Uint8Array {
     const octets = RandomJson.genString()
       .split('')

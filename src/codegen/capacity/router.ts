@@ -1,4 +1,4 @@
-import {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
+import type {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
 import type {CapacityEstimatorCodegenContext} from './CapacityEstimatorCodegenContext';
 import type {Type} from '../../type';
 import {

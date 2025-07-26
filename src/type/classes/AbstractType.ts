@@ -267,7 +267,7 @@ export abstract class AbstractType<S extends schema.Schema> implements BaseType<
     const r = ctx.codegen.options.args[0];
     const value = new JsExpression(() => r);
     // Use the centralized router instead of the abstract method
-    estimateCapacity(ctx, value, this);
+    estimateCapacity(ctx, value, this as any);
     return ctx.compile();
   }
 

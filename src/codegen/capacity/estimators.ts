@@ -2,9 +2,6 @@ import {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
 import {MaxEncodingOverhead, maxEncodingCapacity} from '@jsonjoy.com/util/lib/json-size';
 import type {CapacityEstimatorCodegenContext} from './CapacityEstimatorCodegenContext';
 import type {Type} from '../../type';
-import {ConstType} from '../../type/classes/ConstType';
-import {BooleanType} from '../../type/classes/BooleanType';
-import {NumberType} from '../../type/classes/NumberType';
 
 type EstimatorFunction = (ctx: CapacityEstimatorCodegenContext, value: JsExpression, type: Type) => void;
 
@@ -73,7 +70,7 @@ export function estimateArrayCapacity(ctx: CapacityEstimatorCodegenContext, valu
     system: ctx.options.system,
     name: ctx.options.name,
   });
-  const isConstantSizeType = elementType instanceof ConstType || elementType instanceof BooleanType || elementType instanceof NumberType;
+  const isConstantSizeType = ['const', 'bool', 'num'].includes(elementType.getTypeName());
   if (isConstantSizeType) {
     const rFn = codegen.linkDependency(fn);
     codegen.js(`size += ${rLen} * ${rFn}(${elementType.random()});`);

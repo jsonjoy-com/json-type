@@ -82,29 +82,6 @@ export class AnyType extends AbstractType<schema.AnySchema> {
     this.codegenBinaryEncoder(ctx, value);
   }
 
-  public codegenCapacityEstimator(ctx: CapacityEstimatorCodegenContext, value: JsExpression): void {
-    const codegen = ctx.codegen;
-    codegen.link('Value');
-    const r = codegen.var(value.use());
-    codegen.if(
-      `${r} instanceof Value`,
-      () => {
-        codegen.if(
-          `${r}.type`,
-          () => {
-            ctx.codegen.js(`size += ${r}.type.capacityEstimator()(${r}.data);`);
-          },
-          () => {
-            ctx.codegen.js(`size += maxEncodingCapacity(${r}.data);`);
-          },
-        );
-      },
-      () => {
-        ctx.codegen.js(`size += maxEncodingCapacity(${r});`);
-      },
-    );
-  }
-
   public random(): unknown {
     return RandomJson.generate({nodeCount: 5});
   }
