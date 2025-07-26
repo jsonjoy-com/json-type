@@ -271,8 +271,6 @@ export abstract class AbstractType<S extends schema.Schema> implements BaseType<
     return ctx.compile();
   }
 
-
-
   private __capacityEstimator: CompiledCapacityEstimator | undefined;
   public capacityEstimator(): CompiledCapacityEstimator {
     return (

@@ -1,7 +1,10 @@
 import {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
 import {MaxEncodingOverhead, maxEncodingCapacity} from '@jsonjoy.com/util/lib/json-size';
 import {CapacityEstimatorCodegenContext} from './CapacityEstimatorCodegenContext';
-import type {CapacityEstimatorCodegenContextOptions, CompiledCapacityEstimator} from './CapacityEstimatorCodegenContext';
+import type {
+  CapacityEstimatorCodegenContextOptions,
+  CompiledCapacityEstimator,
+} from './CapacityEstimatorCodegenContext';
 import type {Type} from '../../type';
 
 type EstimatorFunction = (ctx: CapacityEstimatorCodegenContext, value: JsExpression, type: Type) => void;
@@ -102,7 +105,12 @@ export const tup = (ctx: CapacityEstimatorCodegenContext, value: JsExpression, t
   }
 };
 
-export const obj = (ctx: CapacityEstimatorCodegenContext, value: JsExpression, type: Type, estimateCapacityFn: EstimatorFunction): void => {
+export const obj = (
+  ctx: CapacityEstimatorCodegenContext,
+  value: JsExpression,
+  type: Type,
+  estimateCapacityFn: EstimatorFunction,
+): void => {
   const codegen = ctx.codegen;
   const r = codegen.var(value.use());
   const objectType = type as any; // ObjectType
@@ -117,7 +125,7 @@ export const obj = (ctx: CapacityEstimatorCodegenContext, value: JsExpression, t
   for (const field of fields) {
     ctx.inc(maxEncodingCapacity(field.key));
     const accessor = normalizeAccessor(field.key);
-    const isOptional = field.optional || (field.constructor?.name === 'ObjectOptionalFieldType');
+    const isOptional = field.optional || field.constructor?.name === 'ObjectOptionalFieldType';
     const block = () => estimateCapacityFn(ctx, new JsExpression(() => `${r}${accessor}`), field.value);
     if (isOptional) {
       codegen.if(`${r}${accessor} !== undefined`, block);
@@ -156,7 +164,12 @@ export const ref = (ctx: CapacityEstimatorCodegenContext, value: JsExpression, t
   ctx.codegen.js(`size += ${d}(${value.use()});`);
 };
 
-export const or = (ctx: CapacityEstimatorCodegenContext, value: JsExpression, type: Type, estimateCapacityFn: EstimatorFunction): void => {
+export const or = (
+  ctx: CapacityEstimatorCodegenContext,
+  value: JsExpression,
+  type: Type,
+  estimateCapacityFn: EstimatorFunction,
+): void => {
   const codegen = ctx.codegen;
   const orType = type as any; // OrType
   const discriminator = orType.discriminator();
@@ -179,7 +192,7 @@ export const or = (ctx: CapacityEstimatorCodegenContext, value: JsExpression, ty
  */
 export const generate = (ctx: CapacityEstimatorCodegenContext, value: JsExpression, type: Type): void => {
   const kind = type.getTypeName();
-  
+
   switch (kind) {
     case 'any':
       any(ctx, value, type);
