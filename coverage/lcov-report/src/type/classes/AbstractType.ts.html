@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">80% </span>
+                <span class="strong">80.76% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>104/130</span>
+                <span class='fraction'>105/130</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">69.56% </span>
+                <span class="strong">71.11% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>32/46</span>
+                <span class='fraction'>32/45</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">80.7% </span>
+                <span class="strong">81.57% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>92/114</span>
+                <span class='fraction'>93/114</span>
             </div>
         
             
@@ -382,9 +382,7 @@
 <a name='L317'></a><a href='#L317'>317</a>
 <a name='L318'></a><a href='#L318'>318</a>
 <a name='L319'></a><a href='#L319'>319</a>
-<a name='L320'></a><a href='#L320'>320</a>
-<a name='L321'></a><a href='#L321'>321</a>
-<a name='L322'></a><a href='#L322'>322</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L320'></a><a href='#L320'>320</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">26x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">26x</span>
@@ -422,6 +420,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">26x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -436,8 +435,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1985x</span>
-<span class="cline-any cline-yes">1985x</span>
+<span class="cline-any cline-yes">1994x</span>
+<span class="cline-any cline-yes">1994x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -449,7 +448,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">147x</span>
+<span class="cline-any cline-yes">584x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -644,19 +643,16 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">213x</span>
+<span class="cline-any cline-yes">219x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">213x</span>
-<span class="cline-any cline-yes">213x</span>
-<span class="cline-any cline-yes">213x</span>
-<span class="cline-any cline-yes">213x</span>
+<span class="cline-any cline-yes">219x</span>
+<span class="cline-any cline-yes">219x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">219x</span>
+<span class="cline-any cline-yes">219x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -743,6 +739,7 @@ import {
   type CapacityEstimatorCodegenContextOptions,
   type CompiledCapacityEstimator,
 } from '../../codegen/capacity/CapacityEstimatorCodegenContext';
+import {generate} from '../../codegen/capacity/estimators';
 import type {JsonValueCodec} from '@jsonjoy.com/json-pack/lib/codecs/types';
 import type * as jsonSchema from '../../json-schema';
 import type {BaseType} from '../types';
@@ -972,12 +969,9 @@ export abstract class AbstractType&lt;S extends schema.Schema&gt; implements Bas
     });
     const r = ctx.codegen.options.args[0];
     const value = new JsExpression(() =&gt; r);
-    this.codegenCapacityEstimator(ctx, value);
+    // Use the centralized router instead of the abstract method
+    generate(ctx, value, this as any);
     return ctx.compile();
-  }
-&nbsp;
-  public <span class="fstat-no" title="function not covered" >codegenCapacityEstimator(</span>ctx: CapacityEstimatorCodegenContext, value: JsExpression): void {
-<span class="cstat-no" title="statement not covered" >    throw new Error(`${this.toStringName()}.codegenCapacityEstimator() not implemented`);</span>
   }
 &nbsp;
   private __capacityEstimator: CompiledCapacityEstimator | undefined;
@@ -1033,7 +1027,7 @@ export abstract class AbstractType&lt;S extends schema.Schema&gt; implements Bas
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-25T18:46:03.707Z
+                at 2025-07-26T10:06:32.985Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

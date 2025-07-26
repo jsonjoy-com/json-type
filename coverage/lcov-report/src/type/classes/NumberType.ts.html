@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">60% </span>
+                <span class="strong">68.18% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>93/155</span>
+                <span class='fraction'>105/154</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">58.82% </span>
+                <span class="strong">59.8% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>60/102</span>
+                <span class='fraction'>61/102</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">78.57% </span>
+                <span class="strong">84.61% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>11/14</span>
+                <span class='fraction'>11/13</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">63.63% </span>
+                <span class="strong">72.51% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>84/132</span>
+                <span class='fraction'>95/131</span>
             </div>
         
             
@@ -313,11 +313,7 @@
 <a name='L248'></a><a href='#L248'>248</a>
 <a name='L249'></a><a href='#L249'>249</a>
 <a name='L250'></a><a href='#L250'>250</a>
-<a name='L251'></a><a href='#L251'>251</a>
-<a name='L252'></a><a href='#L252'>252</a>
-<a name='L253'></a><a href='#L253'>253</a>
-<a name='L254'></a><a href='#L254'>254</a>
-<a name='L255'></a><a href='#L255'>255</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L251'></a><a href='#L251'>251</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">26x</span>
 <span class="cline-any cline-yes">26x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -341,8 +337,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">26x</span>
-<span class="cline-any cline-yes">359x</span>
-<span class="cline-any cline-yes">359x</span>
+<span class="cline-any cline-yes">360x</span>
+<span class="cline-any cline-yes">360x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -486,18 +482,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">53x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -536,10 +528,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -739,19 +731,15 @@ export class NumberType extends AbstractType&lt;schema.NumberSchema&gt; {
     this.codegenBinaryEncoder(ctx, value);
   }
 &nbsp;
-  public codegenCapacityEstimator(ctx: CapacityEstimatorCodegenContext, value: JsExpression): void {
-    ctx.inc(MaxEncodingOverhead.Number);
-  }
-&nbsp;
-  public <span class="fstat-no" title="function not covered" >random(</span>): number {
-    let num = <span class="cstat-no" title="statement not covered" >Math.random();</span>
-    let min = <span class="cstat-no" title="statement not covered" >Number.MIN_SAFE_INTEGER;</span>
-    let max = <span class="cstat-no" title="statement not covered" >Number.MAX_SAFE_INTEGER;</span>
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (this.schema.gt !== undefined) <span class="cstat-no" title="statement not covered" >min = this.schema.gt;</span></span>
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (this.schema.gte !== undefined) <span class="cstat-no" title="statement not covered" >min = this.schema.gte + 0.000000000000001;</span></span>
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (this.schema.lt !== undefined) <span class="cstat-no" title="statement not covered" >max = this.schema.lt;</span></span>
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (this.schema.lte !== undefined) <span class="cstat-no" title="statement not covered" >max = this.schema.lte - 0.000000000000001;</span></span>
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (this.schema.format) {</span>
+  public random(): number {
+    let num = Math.random();
+    let min = Number.MIN_SAFE_INTEGER;
+    let max = Number.MAX_SAFE_INTEGER;
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (this.schema.gt !== undefined) <span class="cstat-no" title="statement not covered" >min = this.schema.gt;</span>
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (this.schema.gte !== undefined) <span class="cstat-no" title="statement not covered" >min = this.schema.gte + 0.000000000000001;</span>
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (this.schema.lt !== undefined) <span class="cstat-no" title="statement not covered" >max = this.schema.lt;</span>
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (this.schema.lte !== undefined) <span class="cstat-no" title="statement not covered" >max = this.schema.lte - 0.000000000000001;</span>
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (this.schema.format) {
 <span class="cstat-no" title="statement not covered" >      switch (this.schema.format) {</span>
         case 'i8':
 <span class="cstat-no" title="statement not covered" >          min = Math.max(min, -0x80);</span>
@@ -790,10 +778,10 @@ export class NumberType extends AbstractType&lt;schema.NumberSchema&gt; {
       }
 <span class="cstat-no" title="statement not covered" >      return Math.round(num * (max - min)) + min;</span>
     }
-<span class="cstat-no" title="statement not covered" >    num = num * (max - min) + min;</span>
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (Math.random() &gt; 0.7) <span class="cstat-no" title="statement not covered" >num = Math.round(num);</span></span>
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (num === 0) <span class="cstat-no" title="statement not covered" >return 0;</span></span>
-<span class="cstat-no" title="statement not covered" >    return num;</span>
+    num = num * (max - min) + min;
+    if (Math.random() &gt; 0.7) num = Math.round(num);
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (num === 0) <span class="cstat-no" title="statement not covered" >return 0;</span>
+    return num;
   }
 &nbsp;
   public toTypeScriptAst(): ts.TsNumberKeyword {
@@ -832,7 +820,7 @@ export class NumberType extends AbstractType&lt;schema.NumberSchema&gt; {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-25T18:46:03.707Z
+                at 2025-07-26T10:06:32.985Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>
