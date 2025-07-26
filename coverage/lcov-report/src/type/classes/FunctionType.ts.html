@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">64.58% </span>
+                <span class="strong">76.92% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>31/48</span>
+                <span class='fraction'>30/39</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">55% </span>
+                <span class="strong">61.11% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>11/20</span>
+                <span class='fraction'>11/18</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">67.39% </span>
+                <span class="strong">81.08% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>31/46</span>
+                <span class='fraction'>30/37</span>
             </div>
         
             
@@ -233,23 +233,7 @@
 <a name='L168'></a><a href='#L168'>168</a>
 <a name='L169'></a><a href='#L169'>169</a>
 <a name='L170'></a><a href='#L170'>170</a>
-<a name='L171'></a><a href='#L171'>171</a>
-<a name='L172'></a><a href='#L172'>172</a>
-<a name='L173'></a><a href='#L173'>173</a>
-<a name='L174'></a><a href='#L174'>174</a>
-<a name='L175'></a><a href='#L175'>175</a>
-<a name='L176'></a><a href='#L176'>176</a>
-<a name='L177'></a><a href='#L177'>177</a>
-<a name='L178'></a><a href='#L178'>178</a>
-<a name='L179'></a><a href='#L179'>179</a>
-<a name='L180'></a><a href='#L180'>180</a>
-<a name='L181'></a><a href='#L181'>181</a>
-<a name='L182'></a><a href='#L182'>182</a>
-<a name='L183'></a><a href='#L183'>183</a>
-<a name='L184'></a><a href='#L184'>184</a>
-<a name='L185'></a><a href='#L185'>185</a>
-<a name='L186'></a><a href='#L186'>186</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">26x</span>
-<span class="cline-any cline-yes">26x</span>
+<a name='L171'></a><a href='#L171'>171</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">26x</span>
 <span class="cline-any cline-yes">26x</span>
 <span class="cline-any cline-yes">26x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -298,13 +282,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -377,13 +354,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -435,7 +405,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import {printTree} from 'tree-dump/lib/printTree';
 import * as schema from '../../schema';
-import {validateTType} from '../../schema/validate';
 import {AbstractType} from './AbstractType';
 import type {SchemaOf, Type} from '../types';
 import type * as ts from '../../typescript/types';
@@ -483,13 +452,6 @@ export class FunctionType&lt;Req extends Type, Res extends Type&gt; extends Abst
       req: this.req.getSchema() as SchemaOf&lt;Req&gt;,
       res: this.res.getSchema() as SchemaOf&lt;Res&gt;,
     };
-  }
-&nbsp;
-  public <span class="fstat-no" title="function not covered" >validateSchema(</span>): void {
-    const schema = <span class="cstat-no" title="statement not covered" >this.getSchema();</span>
-<span class="cstat-no" title="statement not covered" >    validateTType(schema, 'fn');</span>
-<span class="cstat-no" title="statement not covered" >    this.req.validateSchema();</span>
-<span class="cstat-no" title="statement not covered" >    this.res.validateSchema();</span>
   }
 &nbsp;
   public <span class="fstat-no" title="function not covered" >random(</span>): unknown {
@@ -564,13 +526,6 @@ export class FunctionStreamingType&lt;Req extends Type, Res extends Type&gt; ext
     };
   }
 &nbsp;
-  public <span class="fstat-no" title="function not covered" >validateSchema(</span>): void {
-    const schema = <span class="cstat-no" title="statement not covered" >this.getSchema();</span>
-<span class="cstat-no" title="statement not covered" >    validateTType(schema, 'fn$');</span>
-<span class="cstat-no" title="statement not covered" >    this.req.validateSchema();</span>
-<span class="cstat-no" title="statement not covered" >    this.res.validateSchema();</span>
-  }
-&nbsp;
   public <span class="fstat-no" title="function not covered" >random(</span>): unknown {
 <span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >async </span>() =&gt; <span class="cstat-no" title="statement not covered" >this.res.random();</span></span>
   }
@@ -625,7 +580,7 @@ export class FunctionStreamingType&lt;Req extends Type, Res extends Type&gt; ext
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-26T12:06:13.051Z
+                at 2025-07-26T22:56:32.461Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

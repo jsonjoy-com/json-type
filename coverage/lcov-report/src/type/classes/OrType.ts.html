@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">86.58% </span>
+                <span class="strong">88.57% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>71/82</span>
+                <span class='fraction'>62/70</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">57.14% </span>
+                <span class="strong">66.66% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>12/21</span>
+                <span class='fraction'>10/15</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">88.46% </span>
+                <span class="strong">88% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>23/26</span>
+                <span class='fraction'>22/25</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">90% </span>
+                <span class="strong">88.7% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>63/70</span>
+                <span class='fraction'>55/62</span>
             </div>
         
             
@@ -214,19 +214,7 @@
 <a name='L149'></a><a href='#L149'>149</a>
 <a name='L150'></a><a href='#L150'>150</a>
 <a name='L151'></a><a href='#L151'>151</a>
-<a name='L152'></a><a href='#L152'>152</a>
-<a name='L153'></a><a href='#L153'>153</a>
-<a name='L154'></a><a href='#L154'>154</a>
-<a name='L155'></a><a href='#L155'>155</a>
-<a name='L156'></a><a href='#L156'>156</a>
-<a name='L157'></a><a href='#L157'>157</a>
-<a name='L158'></a><a href='#L158'>158</a>
-<a name='L159'></a><a href='#L159'>159</a>
-<a name='L160'></a><a href='#L160'>160</a>
-<a name='L161'></a><a href='#L161'>161</a>
-<a name='L162'></a><a href='#L162'>162</a>
-<a name='L163'></a><a href='#L163'>163</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">26x</span>
-<span class="cline-any cline-yes">26x</span>
+<a name='L152'></a><a href='#L152'>152</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">26x</span>
 <span class="cline-any cline-yes">26x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -294,16 +282,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">22x</span>
 <span class="cline-any cline-yes">90x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -389,7 +367,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import * as schema from '../../schema';
 import {printTree} from 'tree-dump/lib/printTree';
-import {validateTType} from '../../schema/validate';
 import type {ValidatorCodegenContext} from '../../codegen/validator/ValidatorCodegenContext';
 import type {ValidationPath} from '../../codegen/validator/types';
 import {ValidationError} from '../../constants';
@@ -456,16 +433,6 @@ export class OrType&lt;T extends Type[]&gt; extends AbstractType&lt;schema.OrSch
     });
     const fn = codegen.run().compile();
     return (this.__discriminator = (data: unknown) =&gt; +(fn(new Vars(data)) as any));
-  }
-&nbsp;
-  public validateSchema(): void {
-    const schema = this.getSchema();
-    validateTType(schema, 'or');
-    const {types, discriminator} = schema;
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (!discriminator || (discriminator[0] === 'num' &amp;&amp; <span class="branch-2 cbranch-no" title="branch not covered" >discriminator[1] === -1)</span>) <span class="cstat-no" title="statement not covered" >throw new Error('DISCRIMINATOR');</span>
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (!Array.isArray(types)) <span class="cstat-no" title="statement not covered" >throw new Error('TYPES_TYPE');</span>
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (!types.length) <span class="cstat-no" title="statement not covered" >throw new Error('TYPES_LENGTH');</span>
-    for (const type of this.types) type.validateSchema();
   }
 &nbsp;
   public codegenValidator(ctx: ValidatorCodegenContext, path: ValidationPath, r: string): void {
@@ -556,7 +523,7 @@ export class OrType&lt;T extends Type[]&gt; extends AbstractType&lt;schema.OrSch
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-26T12:06:13.051Z
+                at 2025-07-26T22:56:32.461Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>
