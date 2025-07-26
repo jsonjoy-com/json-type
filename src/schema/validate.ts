@@ -59,7 +59,7 @@ const validateNumberSchema = (schema: any): void => {
   validateTType(schema, 'num');
   validateWithValidator(schema);
   const {format, gt, gte, lt, lte} = schema;
-  
+
   if (gt !== undefined && typeof gt !== 'number') throw new Error('GT_TYPE');
   if (gte !== undefined && typeof gte !== 'number') throw new Error('GTE_TYPE');
   if (lt !== undefined && typeof lt !== 'number') throw new Error('LT_TYPE');
@@ -68,7 +68,7 @@ const validateNumberSchema = (schema: any): void => {
   if (lt !== undefined && lte !== undefined) throw new Error('LT_LTE');
   if ((gt !== undefined || gte !== undefined) && (lt !== undefined || lte !== undefined))
     if ((gt ?? gte)! > (lt ?? lte)!) throw new Error('GT_LT');
-  
+
   if (format !== undefined) {
     if (typeof format !== 'string') throw new Error('FORMAT_TYPE');
     if (!format) throw new Error('FORMAT_EMPTY');
@@ -97,9 +97,9 @@ const validateStringSchema = (schema: any): void => {
   validateTType(schema, 'str');
   validateWithValidator(schema);
   const {min, max, ascii, noJsonEscape, format} = schema;
-  
+
   validateMinMax(min, max);
-  
+
   if (ascii !== undefined) {
     if (typeof ascii !== 'boolean') throw new Error('ASCII');
   }
@@ -117,16 +117,7 @@ const validateStringSchema = (schema: any): void => {
   }
 };
 
-const binaryFormats = new Set([
-  'bencode',
-  'bson', 
-  'cbor',
-  'ion',
-  'json',
-  'msgpack',
-  'resp3',
-  'ubjson',
-]);
+const binaryFormats = new Set(['bencode', 'bson', 'cbor', 'ion', 'json', 'msgpack', 'resp3', 'ubjson']);
 
 const validateBinarySchema = (schema: any, validateChildSchema: (schema: Schema) => void): void => {
   validateTType(schema, 'bin');
