@@ -91,6 +91,21 @@ export abstract class AbstractType<S extends schema.Schema> implements BaseType<
     return this;
   }
 
+  public title(title: string): this {
+    this.schema.title = title;
+    return this;
+  }
+
+  public intro(intro: string): this {
+    this.schema.intro = intro;
+    return this;
+  }
+
+  public description(description: string): this {
+    this.schema.description = description;
+    return this;
+  }
+
   public getOptions(): schema.Optional<S> {
     const {kind, ...options} = this.schema;
     return options as any;

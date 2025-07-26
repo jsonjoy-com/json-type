@@ -52,7 +52,9 @@ export interface WithValidator {
 
 /**
  * Represents something of which type is not known.
+ *
  * Example:
+ *
  * ```json
  * {
  *   "kind": "any",
@@ -74,7 +76,9 @@ export interface AnySchema extends TType<unknown>, WithValidator {
 
 /**
  * Represents a JSON boolean.
+ *
  * Example:
+ *
  * ```json
  * {
  *   "kind": "bool",
@@ -90,7 +94,9 @@ export interface BooleanSchema extends TType<boolean>, WithValidator {
 
 /**
  * Represents a JSON number.
+ *
  * Example:
+ *
  * ```json
  * {
  *   "kind": "num",
@@ -139,7 +145,9 @@ export interface NumberSchema extends TType<number>, WithValidator {
 
 /**
  * Represents a JSON string.
+ *
  * Example:
+ *
  * ```json
  * {
  *   "kind": "str",
@@ -186,7 +194,9 @@ export interface StringSchema extends TType<string>, WithValidator {
 
 /**
  * Represents a binary type.
+ *
  * Example:
+ *
  * ```json
  * {
  *   "kind": "bin",
@@ -217,7 +227,9 @@ export interface BinarySchema<T extends TType = any> extends TType, WithValidato
 
 /**
  * Represents a JSON array.
+ *
  * Example:
+ *
  * ```json
  * {
  *   "kind": "arr",

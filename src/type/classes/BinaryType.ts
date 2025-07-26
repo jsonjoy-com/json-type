@@ -1,27 +1,23 @@
-import type {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
-import type {BinaryJsonEncoder} from '@jsonjoy.com/json-pack/lib/types';
 import {printTree} from 'tree-dump/lib/printTree';
 import * as schema from '../../schema';
 import {RandomJson} from '@jsonjoy.com/util/lib/json-random';
 import {stringifyBinary} from '@jsonjoy.com/json-pack/lib/json-binary';
 import {validateMinMax, validateTType} from '../../schema/validate';
+import {AbstractType} from './AbstractType';
+import {ValidationError} from '../../constants';
+import type {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
+import type {BinaryJsonEncoder} from '@jsonjoy.com/json-pack/lib/types';
 import type {ValidatorCodegenContext} from '../../codegen/validator/ValidatorCodegenContext';
 import type {ValidationPath} from '../../codegen/validator/types';
-import {ValidationError} from '../../constants';
 import type {JsonTextEncoderCodegenContext} from '../../codegen/json/JsonTextEncoderCodegenContext';
 import type {CborEncoderCodegenContext} from '../../codegen/binary/CborEncoderCodegenContext';
 import type {JsonEncoderCodegenContext} from '../../codegen/binary/JsonEncoderCodegenContext';
 import type {BinaryEncoderCodegenContext} from '../../codegen/binary/BinaryEncoderCodegenContext';
 import type {MessagePackEncoderCodegenContext} from '../../codegen/binary/MessagePackEncoderCodegenContext';
-import type {CapacityEstimatorCodegenContext} from '../../codegen/capacity/CapacityEstimatorCodegenContext';
-import {MaxEncodingOverhead} from '@jsonjoy.com/util/lib/json-size';
-import {AbstractType} from './AbstractType';
-import type * as jsonSchema from '../../json-schema';
 import type {SchemaOf, Type} from '../types';
 import type {TypeSystem} from '../../system/TypeSystem';
 import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
 import type * as ts from '../../typescript/types';
-import type {TypeExportContext} from '../../system/TypeExportContext';
 
 const formats = new Set<schema.BinarySchema['format']>([
   'bencode',
@@ -43,6 +39,21 @@ export class BinaryType<T extends Type> extends AbstractType<schema.BinarySchema
   ) {
     super();
     this.schema = schema.s.Binary(schema.s.any, options);
+  }
+
+  public format(format: schema.BinarySchema['format']): this {
+    this.schema.format = format;
+    return this;
+  }
+
+  public min(min: schema.BinarySchema['min']): this {
+    this.schema.min = min;
+    return this;
+  }
+
+  public max(max: schema.BinarySchema['max']): this {
+    this.schema.max = max;
+    return this;
   }
 
   public getSchema(): schema.BinarySchema<SchemaOf<T>> {

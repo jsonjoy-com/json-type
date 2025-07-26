@@ -1,5 +1,52 @@
 import {t} from '../../..';
 
+test('can use helper functions to define type schema fields', () => {
+  const string = t.String();
+  expect(string.getSchema()).toEqual({kind: 'str'});
+  string.title('My String');
+  expect(string.getSchema()).toEqual({kind: 'str', title: 'My String'});
+  string.intro('This is a string type');
+  expect(string.getSchema()).toEqual({
+    kind: 'str',
+    title: 'My String',
+    intro: 'This is a string type',
+  });
+  string.description('A detailed description of the string type');
+  expect(string.getSchema()).toEqual({
+    kind: 'str',
+    title: 'My String',
+    intro: 'This is a string type',
+    description: 'A detailed description of the string type',
+  });
+  string.min(5);
+  expect(string.getSchema()).toEqual({
+    kind: 'str',
+    title: 'My String',
+    intro: 'This is a string type',
+    description: 'A detailed description of the string type',
+    min: 5,
+  });
+  string.max(10);
+  expect(string.getSchema()).toEqual({
+    kind: 'str',
+    title: 'My String',
+    intro: 'This is a string type',
+    description: 'A detailed description of the string type',
+    min: 5,
+    max: 10,
+  });
+  string.format('ascii');
+  expect(string.getSchema()).toEqual({
+    kind: 'str',
+    title: 'My String',
+    intro: 'This is a string type',
+    description: 'A detailed description of the string type',
+    min: 5,
+    max: 10,
+    format: 'ascii',
+  });
+});
+
 describe('StringType format validation', () => {
   describe('ASCII format', () => {
     const asciiType = t.String({format: 'ascii'});
