@@ -132,7 +132,5 @@ export class StringType extends AbstractType<schema.StringSchema> {
     return <json_string<string>>(this.schema.noJsonEscape ? '"' + value + '"' : asString(value as string));
   }
 
-  public toJtdForm(): jtd.JtdTypeForm {
-    return {type: 'string'};
-  }
+
 }

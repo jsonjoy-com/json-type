@@ -117,27 +117,5 @@ export class ConstType<V = any> extends AbstractType<schema.ConstSchema<V>> {
     return `${super.toString(tab)} → ${JSON.stringify(this.schema.value)}`;
   }
 
-  public toJtdForm(): jtd.JtdForm {
-    const value = this.value();
-    const type = typeof value;
-    switch (type) {
-      case 'boolean':
-      case 'string':
-        return {type};
-      case 'number': {
-        if (value !== Math.round(value)) return {type: 'float64'};
-        if (value >= 0) {
-          if (value <= 255) return {type: 'uint8'};
-          if (value <= 65535) return {type: 'uint16'};
-          if (value <= 4294967295) return {type: 'uint32'};
-        } else {
-          if (value >= -128) return {type: 'int8'};
-          if (value >= -32768) return {type: 'int16'};
-          if (value >= -2147483648) return {type: 'int32'};
-        }
-        return {type: 'float64'};
-      }
-    }
-    return super.toJtdForm();
-  }
+
 }
