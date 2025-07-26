@@ -1,6 +1,5 @@
 import type * as schema from '../../schema';
 import {asString} from '@jsonjoy.com/util/lib/strings/asString';
-import {validateMinMax, validateTType, validateWithValidator} from '../../schema/validate';
 import type {ValidatorCodegenContext} from '../../codegen/validator/ValidatorCodegenContext';
 import type {ValidationPath} from '../../codegen/validator/types';
 import {ValidationError} from '../../constants';
@@ -25,29 +24,6 @@ import {isAscii, isUtf8} from '../../util/stringFormats';
 export class StringType extends AbstractType<schema.StringSchema> {
   constructor(protected schema: schema.StringSchema) {
     super();
-  }
-
-  public validateSchema(): void {
-    const schema = this.getSchema();
-    validateTType(schema, 'str');
-    validateWithValidator(schema);
-    const {min, max, ascii, noJsonEscape, format} = schema;
-    validateMinMax(min, max);
-    if (ascii !== undefined) {
-      if (typeof ascii !== 'boolean') throw new Error('ASCII');
-    }
-    if (noJsonEscape !== undefined) {
-      if (typeof noJsonEscape !== 'boolean') throw new Error('NO_JSON_ESCAPE_TYPE');
-    }
-    if (format !== undefined) {
-      if (format !== 'ascii' && format !== 'utf8') {
-        throw new Error('INVALID_STRING_FORMAT');
-      }
-      // If both format and ascii are specified, they should be consistent
-      if (ascii !== undefined && format === 'ascii' && !ascii) {
-        throw new Error('FORMAT_ASCII_MISMATCH');
-      }
-    }
   }
 
   public codegenValidator(ctx: ValidatorCodegenContext, path: ValidationPath, r: string): void {
