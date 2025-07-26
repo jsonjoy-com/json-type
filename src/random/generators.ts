@@ -1,0 +1,151 @@
+import {RandomJson} from '@jsonjoy.com/util/lib/json-random';
+import {cloneBinary} from '@jsonjoy.com/util/lib/json-clone';
+import type {AbstractType} from '../type/classes/AbstractType';
+import type {AnyType} from '../type/classes/AnyType';
+import type {ArrayType} from '../type/classes/ArrayType';
+import type {BinaryType} from '../type/classes/BinaryType';
+import type {BooleanType} from '../type/classes/BooleanType';
+import type {ConstType} from '../type/classes/ConstType';
+import type {FunctionType} from '../type/classes/FunctionType';
+import type {MapType} from '../type/classes/MapType';
+import type {NumberType} from '../type/classes/NumberType';
+import type {ObjectType} from '../type/classes/ObjectType';
+import type {OrType} from '../type/classes/OrType';
+import type {RefType} from '../type/classes/RefType';
+import type {StringType} from '../type/classes/StringType';
+import type {TupleType} from '../type/classes/TupleType';
+
+export const any = (type: AnyType): unknown => {
+  return RandomJson.generate({nodeCount: 5});
+};
+
+export const arr = (type: ArrayType<any>): unknown[] => {
+  let length = Math.round(Math.random() * 10);
+  const schema = type.getSchema();
+  const {min, max} = schema;
+  if (min !== undefined && length < min) length = min + length;
+  if (max !== undefined && length > max) length = max;
+  const result: unknown[] = [];
+  for (let i = 0; i < length; i++) {
+    result.push((type as any).type.random());
+  }
+  return result;
+};
+
+export const bin = (type: BinaryType<any>): Uint8Array => {
+  const octets = RandomJson.genString()
+    .split('')
+    .map((c) => c.charCodeAt(0));
+  return new Uint8Array(octets);
+};
+
+export const bool = (type: BooleanType): boolean => {
+  return RandomJson.genBoolean();
+};
+
+export const const_ = (type: ConstType): unknown => {
+  return cloneBinary(type.getSchema().value);
+};
+
+export const fn = (type: FunctionType<any, any>): unknown => {
+  return async () => type.res.random();
+};
+
+export const map = (type: MapType<any>): Record<string, unknown> => {
+  const length = Math.round(Math.random() * 10);
+  const res: Record<string, unknown> = {};
+  for (let i = 0; i < length; i++) {
+    res[RandomJson.genString(length)] = (type as any).type.random();
+  }
+  return res;
+};
+
+export const num = (type: NumberType): number => {
+  let num = Math.random();
+  let min = Number.MIN_SAFE_INTEGER;
+  let max = Number.MAX_SAFE_INTEGER;
+  const schema = type.getSchema();
+  if (schema.gt !== undefined) min = schema.gt;
+  if (schema.gte !== undefined) min = schema.gte + 0.000000000000001;
+  if (schema.lt !== undefined) max = schema.lt;
+  if (schema.lte !== undefined) max = schema.lte - 0.000000000000001;
+  if (schema.format) {
+    switch (schema.format) {
+      case 'i8':
+        min = Math.max(min, -0x80);
+        max = Math.min(max, 0x7f);
+        break;
+      case 'i16':
+        min = Math.max(min, -0x8000);
+        max = Math.min(max, 0x7fff);
+        break;
+      case 'i32':
+        min = Math.max(min, -0x80000000);
+        max = Math.min(max, 0x7fffffff);
+        break;
+      case 'i64':
+      case 'i':
+        min = Math.max(min, -0x8000000000);
+        max = Math.min(max, 0x7fffffffff);
+        break;
+      case 'u8':
+        min = Math.max(min, 0);
+        max = Math.min(max, 0xff);
+        break;
+      case 'u16':
+        min = Math.max(min, 0);
+        max = Math.min(max, 0xffff);
+        break;
+      case 'u32':
+        min = Math.max(min, 0);
+        max = Math.min(max, 0xffffffff);
+        break;
+      case 'u64':
+      case 'u':
+        min = Math.max(min, 0);
+        max = Math.min(max, 0xffffffffffff);
+        break;
+    }
+    return Math.round(num * (max - min)) + min;
+  }
+  num = num * (max - min) + min;
+  if (Math.random() > 0.7) num = Math.round(num);
+  if (num === 0) return 0;
+  return num;
+};
+
+export const obj = (type: ObjectType<any>): Record<string, unknown> => {
+  const schema = type.getSchema();
+  const obj: Record<string, unknown> = schema.unknownFields ? <Record<string, unknown>>RandomJson.genObject() : {};
+  // Use runtime check to avoid circular import with ObjectOptionalFieldType
+  for (const field of (type as any).fields) {
+    if (field.constructor.name === 'ObjectOptionalFieldType') if (Math.random() > 0.5) continue;
+    obj[field.key] = field.value.random();
+  }
+  return obj;
+};
+
+export const or = (type: OrType<any>): unknown => {
+  const types = (type as any).types;
+  const index = Math.floor(Math.random() * types.length);
+  return types[index].random();
+};
+
+export const ref = (type: RefType<any>): unknown => {
+  if (!type.system) throw new Error('NO_SYSTEM');
+  const alias = type.system.resolve(type.getSchema().ref);
+  return alias.type.random();
+};
+
+export const str = (type: StringType): string => {
+  let length = Math.round(Math.random() * 10);
+  const schema = type.getSchema();
+  const {min, max} = schema;
+  if (min !== undefined && length < min) length = min + length;
+  if (max !== undefined && length > max) length = max;
+  return RandomJson.genString(length);
+};
+
+export const tup = (type: TupleType<any>): unknown[] => {
+  return (type as any).types.map((subType: any) => subType.random());
+};

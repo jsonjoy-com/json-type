@@ -13,57 +13,45 @@ import type {RefType} from '../type/classes/RefType';
 import type {StringType} from '../type/classes/StringType';
 import type {TupleType} from '../type/classes/TupleType';
 
-import {randomAny} from './any';
-import {randomArray} from './array';
-import {randomBinary} from './binary';
-import {randomBoolean} from './boolean';
-import {randomConst} from './const';
-import {randomFunction} from './function';
-import {randomMap} from './map';
-import {randomNumber} from './number';
-import {randomObject} from './object';
-import {randomOr} from './or';
-import {randomRef} from './ref';
-import {randomString} from './string';
-import {randomTuple} from './tuple';
+import * as gen from './generators';
 
 /**
  * Main router function that dispatches to the correct random generator based on the type's kind.
  * This replaces the individual random() methods in each type class.
  */
-export function generateRandom(type: AbstractType<any>): unknown {
+export function random(type: AbstractType<any>): unknown {
   const kind = type.getTypeName();
   
   switch (kind) {
     case 'any':
-      return randomAny(type as AnyType);
+      return gen.any(type as AnyType);
     case 'arr':
-      return randomArray(type as ArrayType<any>);
+      return gen.arr(type as ArrayType<any>);
     case 'bin':
-      return randomBinary(type as BinaryType<any>);
+      return gen.bin(type as BinaryType<any>);
     case 'bool':
-      return randomBoolean(type as BooleanType);
+      return gen.bool(type as BooleanType);
     case 'const':
-      return randomConst(type as ConstType);
+      return gen.const_(type as ConstType);
     case 'fn':
     case 'fn$':
-      return randomFunction(type as FunctionType<any, any>);
+      return gen.fn(type as FunctionType<any, any>);
     case 'map':
-      return randomMap(type as MapType<any>);
+      return gen.map(type as MapType<any>);
     case 'num':
-      return randomNumber(type as NumberType);
+      return gen.num(type as NumberType);
     case 'obj':
-      return randomObject(type as ObjectType<any>);
+      return gen.obj(type as ObjectType<any>);
     case 'or':
-      return randomOr(type as OrType<any>);
+      return gen.or(type as OrType<any>);
     case 'ref':
-      return randomRef(type as RefType<any>);
+      return gen.ref(type as RefType<any>);
     case 'str':
-      return randomString(type as StringType);
+      return gen.str(type as StringType);
     case 'tup':
-      return randomTuple(type as TupleType<any>);
+      return gen.tup(type as TupleType<any>);
     default:
       // Fallback to generic random JSON for unknown types
-      return randomAny(type);
+      return gen.any(type as AnyType);
   }
 }

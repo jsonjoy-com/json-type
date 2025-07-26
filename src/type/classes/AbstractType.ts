@@ -45,7 +45,7 @@ import type * as ts from '../../typescript/types';
 import type {TypeExportContext} from '../../system/TypeExportContext';
 import type {Validators} from './types';
 import type * as jtd from '../../jtd/types';
-import {generateRandom} from '../../random/generator';
+import {random} from '../../random/generator';
 
 export abstract class AbstractType<S extends schema.Schema> implements BaseType<S>, Printable {
   /** Default type system to use, if any. */
@@ -283,7 +283,7 @@ export abstract class AbstractType<S extends schema.Schema> implements BaseType<
   }
 
   public random(): unknown {
-    return generateRandom(this);
+    return random(this);
   }
 
   public toTypeScriptAst(): ts.TsNode {
