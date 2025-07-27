@@ -81,7 +81,9 @@ export const types = {
   'pubsub.channel.Channel': s.Object(
     [
       s.prop('id', s.str, {title: 'ID of the user'}),
-      s.prop('payload', s.Ref('pubsub.channel.PayloadType'), {description: 'Yup, the payload.'}),
+      s.prop('payload', s.Ref('pubsub.channel.PayloadType'), {
+        description: 'Yup, the payload.',
+      }),
       s.prop('meta', s.Object([s.Field('description', s.str)])),
     ],
     {description: 'A channel'},

@@ -1,5 +1,4 @@
 import type * as schema from '../../schema';
-import {RandomJson} from '@jsonjoy.com/util/lib/json-random';
 import type {Printable} from 'tree-dump/lib/types';
 import {
   ValidatorCodegenContext,
@@ -348,7 +347,8 @@ export abstract class AbstractType<S extends schema.Schema> implements BaseType<
   }
 
   public toJtdForm(): jtd.JtdForm {
-    const form: jtd.JtdEmptyForm = {nullable: false};
-    return form;
+    // Use dynamic import to avoid circular dependency
+    const converter = require('../../jtd/converter');
+    return converter.toJtdForm(this.getSchema());
   }
 }

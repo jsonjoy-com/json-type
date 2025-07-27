@@ -47,7 +47,10 @@ export class RefType<T extends Type> extends AbstractType<schema.RefSchema<Schem
         }
         // case 'object':
         default: {
-          return ctx.err(ValidationError.REF, [...path], {refId: this.schema.ref, refError: errorRegister});
+          return ctx.err(ValidationError.REF, [...path], {
+            refId: this.schema.ref,
+            refError: errorRegister,
+          });
         }
       }
     };

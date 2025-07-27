@@ -233,7 +233,13 @@ describe('validateSchema()', () => {
     const type = t.import({
       kind: 'obj',
       description: 'An object',
-      fields: [{kind: 'field', key: 'id', type: {kind: 'str', ascii: 'bytes'} as any}],
+      fields: [
+        {
+          kind: 'field',
+          key: 'id',
+          type: {kind: 'str', ascii: 'bytes'} as any,
+        },
+      ],
     });
     expect(() => type.validateSchema()).toThrow(new Error('ASCII'));
   });
@@ -242,7 +248,14 @@ describe('validateSchema()', () => {
     const type = t.import({
       kind: 'obj',
       description: 'An object',
-      fields: [{kind: 'field', key: 'id', optional: 123, type: {kind: 'str'}} as any],
+      fields: [
+        {
+          kind: 'field',
+          key: 'id',
+          optional: 123,
+          type: {kind: 'str'},
+        } as any,
+      ],
     });
     expect(() => type.validateSchema()).toThrow(new Error('OPTIONAL_TYPE'));
   });

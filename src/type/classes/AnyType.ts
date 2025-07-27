@@ -74,9 +74,4 @@ export class AnyType extends AbstractType<schema.AnySchema> {
   public toTypeScriptAst(): ts.TsType {
     return {node: 'AnyKeyword'};
   }
-
-  public toJtdForm(): jtd.JtdEmptyForm {
-    const form: jtd.JtdEmptyForm = {nullable: true};
-    return form;
-  }
 }

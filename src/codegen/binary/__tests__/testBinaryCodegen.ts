@@ -409,7 +409,9 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
       const t = system.t;
       system.alias('Obj', t.Object(t.prop('foo', t.str)));
       const type = t.Ref('Obj');
-      expect(transcode(system, type, {foo: 'bar'})).toStrictEqual({foo: 'bar'});
+      expect(transcode(system, type, {foo: 'bar'})).toStrictEqual({
+        foo: 'bar',
+      });
     });
   });
 

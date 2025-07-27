@@ -13,7 +13,9 @@ export type UnObjectValue<T> = T extends ObjectValue<infer U> ? U : never;
 export type UnObjectFieldTypeVal<T> = T extends classes.ObjectFieldType<any, infer U> ? U : never;
 export type ObjectFieldToTuple<F> = F extends classes.ObjectFieldType<infer K, infer V> ? [K, V] : never;
 export type ToObject<T> = T extends [string, unknown][] ? {[K in T[number] as K[0]]: K[1]} : never;
-export type ObjectValueToTypeMap<F> = ToObject<{[K in keyof F]: ObjectFieldToTuple<F[K]>}>;
+export type ObjectValueToTypeMap<F> = ToObject<{
+  [K in keyof F]: ObjectFieldToTuple<F[K]>;
+}>;
 export type TuplesToFields<T> = T extends PropDefinition<infer K, infer V>[] ? classes.ObjectFieldType<K, V>[] : never;
 
 // export type MergeObjectsTypes<A, B> =

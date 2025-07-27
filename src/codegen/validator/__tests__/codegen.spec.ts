@@ -77,10 +77,34 @@ test('can have array of unknown elements', () => {
   exec(type, [1, 2, 3], null);
   exec(type, [1, 'adsf'], null);
   exec(type, [1, {}], null);
-  exec(type, {}, {code: 'ARR', errno: ValidationError.ARR, message: 'Not an array.', path: []});
-  exec(type, null, {code: 'ARR', errno: ValidationError.ARR, message: 'Not an array.', path: []});
-  exec(type, 123, {code: 'ARR', errno: ValidationError.ARR, message: 'Not an array.', path: []});
-  exec(type, 'asdf', {code: 'ARR', errno: ValidationError.ARR, message: 'Not an array.', path: []});
+  exec(
+    type,
+    {},
+    {
+      code: 'ARR',
+      errno: ValidationError.ARR,
+      message: 'Not an array.',
+      path: [],
+    },
+  );
+  exec(type, null, {
+    code: 'ARR',
+    errno: ValidationError.ARR,
+    message: 'Not an array.',
+    path: [],
+  });
+  exec(type, 123, {
+    code: 'ARR',
+    errno: ValidationError.ARR,
+    message: 'Not an array.',
+    path: [],
+  });
+  exec(type, 'asdf', {
+    code: 'ARR',
+    errno: ValidationError.ARR,
+    message: 'Not an array.',
+    path: [],
+  });
 });
 
 test('object can have a field of any type', () => {
@@ -90,7 +114,16 @@ test('object can have a field of any type', () => {
   exec(type, {foo: 123}, null);
   exec(type, {foo: null}, null);
   exec(type, {foo: 'asdf'}, null);
-  exec(type, {}, {code: 'KEY', errno: ValidationError.KEY, message: 'Missing key.', path: ['foo']});
+  exec(
+    type,
+    {},
+    {
+      code: 'KEY',
+      errno: ValidationError.KEY,
+      message: 'Missing key.',
+      path: ['foo'],
+    },
+  );
 });
 
 test('can detect extra properties in object', () => {
@@ -102,7 +135,12 @@ test('can detect extra properties in object', () => {
   exec(
     type,
     {foo: 123, bar: 'asdf'},
-    {code: 'KEYS', errno: ValidationError.KEYS, message: 'Too many or missing object keys.', path: ['bar']},
+    {
+      code: 'KEYS',
+      errno: ValidationError.KEYS,
+      message: 'Too many or missing object keys.',
+      path: ['bar'],
+    },
     undefined,
   );
 });
@@ -112,9 +150,15 @@ test('can disable extra property check', () => {
     fields: [s.Field('foo', s.any), s.FieldOpt('zup', s.any)],
   });
   exec(type, {foo: 123}, null, {skipObjectExtraFieldsCheck: true});
-  exec(type, {foo: 123, zup: 'asdf'}, null, {skipObjectExtraFieldsCheck: true});
-  exec(type, {foo: 123, bar: 'asdf'}, null, {skipObjectExtraFieldsCheck: true});
-  exec(type, {foo: 123, zup: '1', bar: 'asdf'}, null, {skipObjectExtraFieldsCheck: true});
+  exec(type, {foo: 123, zup: 'asdf'}, null, {
+    skipObjectExtraFieldsCheck: true,
+  });
+  exec(type, {foo: 123, bar: 'asdf'}, null, {
+    skipObjectExtraFieldsCheck: true,
+  });
+  exec(type, {foo: 123, zup: '1', bar: 'asdf'}, null, {
+    skipObjectExtraFieldsCheck: true,
+  });
 });
 
 describe('"str" type', () => {
@@ -122,8 +166,18 @@ describe('"str" type', () => {
     const type = s.str;
     exec(type, '', null);
     exec(type, 'asdf', null);
-    exec(type, 123, {code: 'STR', errno: ValidationError.STR, message: 'Not a string.', path: []});
-    exec(type, null, {code: 'STR', errno: ValidationError.STR, message: 'Not a string.', path: []});
+    exec(type, 123, {
+      code: 'STR',
+      errno: ValidationError.STR,
+      message: 'Not a string.',
+      path: [],
+    });
+    exec(type, null, {
+      code: 'STR',
+      errno: ValidationError.STR,
+      message: 'Not a string.',
+      path: [],
+    });
   });
 
   test('validates "min"', () => {
@@ -228,8 +282,18 @@ describe('"bin" type', () => {
     const type = s.bin;
     exec(type, b(), null);
     exec(type, b(1, 2, 3), null);
-    exec(type, 123, {code: 'BIN', errno: ValidationError.BIN, message: 'Not a binary.', path: []});
-    exec(type, null, {code: 'BIN', errno: ValidationError.BIN, message: 'Not a binary.', path: []});
+    exec(type, 123, {
+      code: 'BIN',
+      errno: ValidationError.BIN,
+      message: 'Not a binary.',
+      path: [],
+    });
+    exec(type, null, {
+      code: 'BIN',
+      errno: ValidationError.BIN,
+      message: 'Not a binary.',
+      path: [],
+    });
   });
 
   test('validates "min"', () => {
@@ -335,11 +399,36 @@ describe('"num" type', () => {
     exec(type, 123, null);
     exec(type, -123, null);
     exec(type, 0, null);
-    exec(type, '123', {code: 'NUM', errno: ValidationError.NUM, message: 'Not a number.', path: []});
-    exec(type, '-123', {code: 'NUM', errno: ValidationError.NUM, message: 'Not a number.', path: []});
-    exec(type, '0', {code: 'NUM', errno: ValidationError.NUM, message: 'Not a number.', path: []});
-    exec(type, '', {code: 'NUM', errno: ValidationError.NUM, message: 'Not a number.', path: []});
-    exec(type, null, {code: 'NUM', errno: ValidationError.NUM, message: 'Not a number.', path: []});
+    exec(type, '123', {
+      code: 'NUM',
+      errno: ValidationError.NUM,
+      message: 'Not a number.',
+      path: [],
+    });
+    exec(type, '-123', {
+      code: 'NUM',
+      errno: ValidationError.NUM,
+      message: 'Not a number.',
+      path: [],
+    });
+    exec(type, '0', {
+      code: 'NUM',
+      errno: ValidationError.NUM,
+      message: 'Not a number.',
+      path: [],
+    });
+    exec(type, '', {
+      code: 'NUM',
+      errno: ValidationError.NUM,
+      message: 'Not a number.',
+      path: [],
+    });
+    exec(type, null, {
+      code: 'NUM',
+      errno: ValidationError.NUM,
+      message: 'Not a number.',
+      path: [],
+    });
   });
 
   test('validates integer type', () => {
@@ -347,17 +436,42 @@ describe('"num" type', () => {
     exec(type, 123, null);
     exec(type, -123, null);
     exec(type, 0, null);
-    exec(type, 123.4, {code: 'INT', errno: ValidationError.INT, message: 'Not an integer.', path: []});
-    exec(type, -1.1, {code: 'INT', errno: ValidationError.INT, message: 'Not an integer.', path: []});
+    exec(type, 123.4, {
+      code: 'INT',
+      errno: ValidationError.INT,
+      message: 'Not an integer.',
+      path: [],
+    });
+    exec(type, -1.1, {
+      code: 'INT',
+      errno: ValidationError.INT,
+      message: 'Not an integer.',
+      path: [],
+    });
   });
 
   test('validates unsigned integer type', () => {
     const type = s.Number({format: 'u'});
     exec(type, 123, null);
     exec(type, 0, null);
-    exec(type, -123, {code: 'UINT', errno: ValidationError.UINT, message: 'Not an unsigned integer.', path: []});
-    exec(type, 123.4, {code: 'INT', errno: ValidationError.INT, message: 'Not an integer.', path: []});
-    exec(type, -1.1, {code: 'INT', errno: ValidationError.INT, message: 'Not an integer.', path: []});
+    exec(type, -123, {
+      code: 'UINT',
+      errno: ValidationError.UINT,
+      message: 'Not an unsigned integer.',
+      path: [],
+    });
+    exec(type, 123.4, {
+      code: 'INT',
+      errno: ValidationError.INT,
+      message: 'Not an integer.',
+      path: [],
+    });
+    exec(type, -1.1, {
+      code: 'INT',
+      errno: ValidationError.INT,
+      message: 'Not an integer.',
+      path: [],
+    });
   });
 
   test('validates i8', () => {
@@ -368,20 +482,45 @@ describe('"num" type', () => {
     exec(type, 127, null);
     exec(type, -127, null);
     exec(type, -128, null);
-    exec(type, 128, {code: 'INT', errno: ValidationError.INT, message: 'Not an integer.', path: []});
-    exec(type, -129, {code: 'INT', errno: ValidationError.INT, message: 'Not an integer.', path: []});
+    exec(type, 128, {
+      code: 'INT',
+      errno: ValidationError.INT,
+      message: 'Not an integer.',
+      path: [],
+    });
+    exec(type, -129, {
+      code: 'INT',
+      errno: ValidationError.INT,
+      message: 'Not an integer.',
+      path: [],
+    });
   });
 
   test('validates u8', () => {
     const type = s.Number({format: 'u8'});
     exec(type, 123, null);
     exec(type, 0, null);
-    exec(type, -12, {code: 'UINT', errno: ValidationError.UINT, message: 'Not an unsigned integer.', path: []});
+    exec(type, -12, {
+      code: 'UINT',
+      errno: ValidationError.UINT,
+      message: 'Not an unsigned integer.',
+      path: [],
+    });
     exec(type, 127, null);
     exec(type, 222, null);
     exec(type, 255, null);
-    exec(type, 256, {code: 'UINT', errno: ValidationError.UINT, message: 'Not an unsigned integer.', path: []});
-    exec(type, 333, {code: 'UINT', errno: ValidationError.UINT, message: 'Not an unsigned integer.', path: []});
+    exec(type, 256, {
+      code: 'UINT',
+      errno: ValidationError.UINT,
+      message: 'Not an unsigned integer.',
+      path: [],
+    });
+    exec(type, 333, {
+      code: 'UINT',
+      errno: ValidationError.UINT,
+      message: 'Not an unsigned integer.',
+      path: [],
+    });
   });
 
   test('validates i16', () => {
@@ -395,10 +534,20 @@ describe('"num" type', () => {
     exec(type, -44, null);
     exec(type, 0x7fff - 1, null);
     exec(type, 0x7fff, null);
-    exec(type, 0x7fff + 1, {code: 'INT', errno: ValidationError.INT, message: 'Not an integer.', path: []});
+    exec(type, 0x7fff + 1, {
+      code: 'INT',
+      errno: ValidationError.INT,
+      message: 'Not an integer.',
+      path: [],
+    });
     exec(type, -0x8000 + 1, null);
     exec(type, -0x8000, null);
-    exec(type, -0x8000 - 1, {code: 'INT', errno: ValidationError.INT, message: 'Not an integer.', path: []});
+    exec(type, -0x8000 - 1, {
+      code: 'INT',
+      errno: ValidationError.INT,
+      message: 'Not an integer.',
+      path: [],
+    });
   });
 
   test('validates u16', () => {
@@ -419,7 +568,12 @@ describe('"num" type', () => {
       path: [],
     });
     exec(type, 0, null);
-    exec(type, -44, {code: 'UINT', errno: ValidationError.UINT, message: 'Not an unsigned integer.', path: []});
+    exec(type, -44, {
+      code: 'UINT',
+      errno: ValidationError.UINT,
+      message: 'Not an unsigned integer.',
+      path: [],
+    });
     exec(type, 0x7fff - 1, null);
     exec(type, 0x7fff, null);
     exec(type, 0xffff - 1, null);
@@ -459,10 +613,20 @@ describe('"num" type', () => {
     exec(type, -44, null);
     exec(type, 0x7fffffff - 1, null);
     exec(type, 0x7fffffff, null);
-    exec(type, 0x7fffffff + 1, {code: 'INT', errno: ValidationError.INT, message: 'Not an integer.', path: []});
+    exec(type, 0x7fffffff + 1, {
+      code: 'INT',
+      errno: ValidationError.INT,
+      message: 'Not an integer.',
+      path: [],
+    });
     exec(type, -0x80000000 + 1, null);
     exec(type, -0x80000000, null);
-    exec(type, -0x80000000 - 1, {code: 'INT', errno: ValidationError.INT, message: 'Not an integer.', path: []});
+    exec(type, -0x80000000 - 1, {
+      code: 'INT',
+      errno: ValidationError.INT,
+      message: 'Not an integer.',
+      path: [],
+    });
   });
 
   test('validates u32', () => {
@@ -483,7 +647,12 @@ describe('"num" type', () => {
       path: [],
     });
     exec(type, 0, null);
-    exec(type, -44, {code: 'UINT', errno: ValidationError.UINT, message: 'Not an unsigned integer.', path: []});
+    exec(type, -44, {
+      code: 'UINT',
+      errno: ValidationError.UINT,
+      message: 'Not an unsigned integer.',
+      path: [],
+    });
     exec(type, 0x7fff - 1, null);
     exec(type, 0x7fff, null);
     exec(type, 0xffff - 1, null);
@@ -525,8 +694,18 @@ describe('"num" type', () => {
     exec(type, -0x3333333333, null);
     exec(type, -0x333333333333, null);
     exec(type, 0, null);
-    exec(type, -44.123, {code: 'INT', errno: ValidationError.INT, message: 'Not an integer.', path: []});
-    exec(type, 1.1, {code: 'INT', errno: ValidationError.INT, message: 'Not an integer.', path: []});
+    exec(type, -44.123, {
+      code: 'INT',
+      errno: ValidationError.INT,
+      message: 'Not an integer.',
+      path: [],
+    });
+    exec(type, 1.1, {
+      code: 'INT',
+      errno: ValidationError.INT,
+      message: 'Not an integer.',
+      path: [],
+    });
   });
 
   test('validates u64', () => {
@@ -575,8 +754,18 @@ describe('"num" type', () => {
       path: [],
     });
     exec(type, 0, null);
-    exec(type, -44.123, {code: 'INT', errno: ValidationError.INT, message: 'Not an integer.', path: []});
-    exec(type, 1.1, {code: 'INT', errno: ValidationError.INT, message: 'Not an integer.', path: []});
+    exec(type, -44.123, {
+      code: 'INT',
+      errno: ValidationError.INT,
+      message: 'Not an integer.',
+      path: [],
+    });
+    exec(type, 1.1, {
+      code: 'INT',
+      errno: ValidationError.INT,
+      message: 'Not an integer.',
+      path: [],
+    });
   });
 });
 
@@ -597,7 +786,16 @@ describe('"or" type', () => {
     });
     exec(type, {foo: 123}, null);
     exec(type, {foo: '123'}, null);
-    exec(type, {foo: false}, {code: 'OR', errno: ValidationError.OR, message: 'None of types matched.', path: ['foo']});
+    exec(
+      type,
+      {foo: false},
+      {
+        code: 'OR',
+        errno: ValidationError.OR,
+        message: 'None of types matched.',
+        path: ['foo'],
+      },
+    );
   });
 
   test('array can be of multiple types', () => {
@@ -624,7 +822,12 @@ describe('"or" type', () => {
     exec(
       type,
       {gg: [1, '3', false]},
-      {code: 'OR', errno: ValidationError.OR, message: 'None of types matched.', path: ['gg', 2]},
+      {
+        code: 'OR',
+        errno: ValidationError.OR,
+        message: 'None of types matched.',
+        path: ['gg', 2],
+      },
     );
   });
 
@@ -642,8 +845,18 @@ describe('"or" type', () => {
     exec(type, 'asdf', null);
     exec(type, {}, null);
     exec(type, {foo: 'bar'}, null);
-    exec(type, [], {code: 'OR', errno: ValidationError.OR, message: 'None of types matched.', path: []});
-    exec(type, null, {code: 'OR', errno: ValidationError.OR, message: 'None of types matched.', path: []});
+    exec(type, [], {
+      code: 'OR',
+      errno: ValidationError.OR,
+      message: 'None of types matched.',
+      path: [],
+    });
+    exec(type, null, {
+      code: 'OR',
+      errno: ValidationError.OR,
+      message: 'None of types matched.',
+      path: [],
+    });
   });
 });
 
@@ -656,7 +869,12 @@ describe('"obj" type', () => {
 
   test('"null" is not of type "obj"', () => {
     const type = s.obj;
-    exec(type, null, {code: 'OBJ', errno: ValidationError.OBJ, message: 'Not an object.', path: []});
+    exec(type, null, {
+      code: 'OBJ',
+      errno: ValidationError.OBJ,
+      message: 'Not an object.',
+      path: [],
+    });
   });
 });
 
@@ -664,7 +882,12 @@ describe('single root element', () => {
   test('null', () => {
     const type = s.nil;
     exec(type, null, null);
-    exec(type, '123', {code: 'CONST', errno: ValidationError.CONST, message: 'Invalid constant.', path: []});
+    exec(type, '123', {
+      code: 'CONST',
+      errno: ValidationError.CONST,
+      message: 'Invalid constant.',
+      path: [],
+    });
   });
 
   test('number', () => {
@@ -673,7 +896,12 @@ describe('single root element', () => {
     exec(type, 1.123, null);
     exec(type, -123, null);
     exec(type, -5.5, null);
-    exec(type, '123', {code: 'NUM', errno: ValidationError.NUM, message: 'Not a number.', path: []});
+    exec(type, '123', {
+      code: 'NUM',
+      errno: ValidationError.NUM,
+      message: 'Not a number.',
+      path: [],
+    });
   });
 
   test('const number', () => {
@@ -703,7 +931,12 @@ describe('single root element', () => {
     exec(type, '', null);
     exec(type, 'a', null);
     exec(type, 'asdf', null);
-    exec(type, 123, {code: 'STR', errno: ValidationError.STR, message: 'Not a string.', path: []});
+    exec(type, 123, {
+      code: 'STR',
+      errno: ValidationError.STR,
+      message: 'Not a string.',
+      path: [],
+    });
   });
 
   test('const string', () => {
@@ -744,7 +977,12 @@ describe('single root element', () => {
     const type = s.bool;
     exec(type, true, null);
     exec(type, false, null);
-    exec(type, 123, {code: 'BOOL', errno: ValidationError.BOOL, message: 'Not a boolean.', path: []});
+    exec(type, 123, {
+      code: 'BOOL',
+      errno: ValidationError.BOOL,
+      message: 'Not a boolean.',
+      path: [],
+    });
   });
 
   test('const boolean', () => {

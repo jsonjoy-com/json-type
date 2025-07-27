@@ -110,7 +110,11 @@ export class SchemaBuilder {
     c?: Omit<NoT<ArraySchema<T>>, 'id' | 'type'>,
   ): ArraySchema<T> {
     if (typeof a === 'string') return this.Array(b as T, {id: a, ...(c || {})});
-    return {kind: 'arr', ...(b as Omit<NoT<ArraySchema<T>>, 'id' | 'type'>), type: a as T};
+    return {
+      kind: 'arr',
+      ...(b as Omit<NoT<ArraySchema<T>>, 'id' | 'type'>),
+      type: a as T,
+    };
   }
 
   /**
@@ -162,7 +166,10 @@ export class SchemaBuilder {
     )
       return {kind: 'obj', ...(first as NoT<ObjectSchema<F>>)};
     if (args.length >= 1 && args[0] instanceof Array)
-      return this.Object({fields: args[0] as F, ...(args[1] as Optional<ObjectSchema<F>>)});
+      return this.Object({
+        fields: args[0] as F,
+        ...(args[1] as Optional<ObjectSchema<F>>),
+      });
     return this.Object({fields: args as F});
   }
 

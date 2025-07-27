@@ -117,7 +117,14 @@ describe('"obj" type', () => {
     exec(type, {a: 123, b: 'asdf'});
     exec(type, {a: 123, b: 'asdf', c: 'qwerty'});
     exec(type, {a: 123, d: 4343.3, b: 'asdf', c: 'qwerty', e: 'asdf'});
-    exec(type, {a: 123, d: 4343.3, b: 'asdf', c: 'qwerty', e: 'asdf', z: true});
+    exec(type, {
+      a: 123,
+      d: 4343.3,
+      b: 'asdf',
+      c: 'qwerty',
+      e: 'asdf',
+      z: true,
+    });
   });
 });
 
