@@ -70,6 +70,7 @@ test('can build type using lowercase shortcuts', () => {
     coordinates: t.tuple(t.number(), t.number()),
     verified: t.boolean(),
     offsets: t.array(t.number()),
+    optional: t.maybe(t.string()),
   }).opt('description', t.string());
   const MyObject2 = t.obj
     .prop('type', t.Const('user'))
@@ -79,6 +80,7 @@ test('can build type using lowercase shortcuts', () => {
     .prop('coordinates', t.Tuple(t.num, t.num))
     .prop('verified', t.bool)
     .prop('offsets', t.array(t.num))
+    .prop('optional', t.Or(t.str, t.undef))
     .opt('description', t.str);
   expect(MyObject.getSchema()).toEqual(MyObject2.getSchema());
   type ObjectType = t.infer<typeof MyObject>;

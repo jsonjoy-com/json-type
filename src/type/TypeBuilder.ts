@@ -101,6 +101,13 @@ export class TypeBuilder {
     return obj;
   };
 
+  /**
+   * Creates a type that represents a value that may be present or absent. The
+   * value is `undefined` if absent. This is a shorthand for `t.Or(type, t.undef)`.
+   */
+  public readonly maybe = <T extends Type>(type: T) =>
+    this.Or(type, this.undef);
+
   public Any(options?: schema.Optional<schema.AnySchema>) {
     const type = new classes.AnyType(s.Any(options));
     type.system = this.system;
