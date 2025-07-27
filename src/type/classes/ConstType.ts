@@ -14,7 +14,6 @@ import type {BinaryJsonEncoder} from '@jsonjoy.com/json-pack/lib/types';
 import type {TypeSystem} from '../../system/TypeSystem';
 import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
 import type * as ts from '../../typescript/types';
-import type * as jtd from '../../jtd/types';
 
 export class ConstType<V = any> extends AbstractType<schema.ConstSchema<V>> {
   private __json: json_string<V>;
