@@ -106,7 +106,7 @@ export const num = (type: NumberType): number => {
         max = Math.min(max, 0xffffffffffff);
         break;
     }
-    return Math.round(num * (max - min)) + min;
+    return Math.min(max, Math.max(min, Math.round(num * (max - min)) + min));
   }
   num = num * (max - min) + min;
   if (Math.random() > 0.7) num = Math.round(num);
