@@ -63,21 +63,35 @@ test('can construct a realistic object', () => {
 
 test('can build type using lowercase shortcuts', () => {
   const MyObject = t.object({
+    type: t.literal('user'),
     id: t.string(),
     name: t.string(),
-    age: t.bigint(),
+    age: t.number(),
+    coordinates: t.tuple(t.number(), t.number()),
     verified: t.boolean(),
     offsets: t.array(t.number()),
-  });
+  }).opt('description', t.string());
   const MyObject2 = t.obj
+    .prop('type', t.Const('user'))
     .prop('id', t.str)
     .prop('name', t.str)
-    .prop('age', t.bigint())
+    .prop('age', t.num)
+    .prop('coordinates', t.Tuple(t.num, t.num))
     .prop('verified', t.bool)
-    .prop('offsets', t.array(t.num));
+    .prop('offsets', t.array(t.num))
+    .opt('description', t.str);
   expect(MyObject.getSchema()).toEqual(MyObject2.getSchema());
-
-  console.log(MyObject + '');
+  type ObjectType = t.infer<typeof MyObject>;
+  type ObjectType2 = t.infer<typeof MyObject2>;
+  const obj: ObjectType = {
+  type: 'user',
+    id: '123',
+    name: 'Test',
+    coordinates: [1.23, 4.56],
+    age: 30,
+    verified: true,
+    offsets: [1, 2, 3],
+  } as ObjectType2;
 });
 
 describe('import()', () => {

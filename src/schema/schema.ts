@@ -357,8 +357,14 @@ export interface ObjectFieldSchema<K extends string = string, V extends TType = 
   kind: 'field';
   /** Key name of the field. */
   key: K;
-  /** One or more "one-of" types of the field. */
+
+  /**
+   * One or more "one-of" types of the field.
+   *
+   * @todo Rename to `val`.
+   */
   type: V;
+
   optional?: boolean;
 }
 
@@ -373,7 +379,11 @@ export interface ObjectOptionalFieldSchema<K extends string = string, V extends 
  */
 export interface MapSchema<T extends TType = any> extends TType<Record<string, unknown>>, WithValidator {
   kind: 'map';
-  /** Type of all values in the map. */
+  /**
+   * Type of all values in the map.
+   *
+   * @todo Rename to `val`. And add `key` field for the key type. Make `key` default to `str`.
+   */
   type: T;
 }
 
@@ -410,6 +420,7 @@ export interface FunctionSchema<Req extends TType = TType, Res extends TType = T
 export type FunctionStreamingValue<Req, Res, Ctx = unknown> = (req: Observable<Req>, ctx?: Ctx) => Observable<Res>;
 
 export interface FunctionStreamingSchema<Req extends TType = TType, Res extends TType = TType> extends TType {
+  /** @todo Rename to `fn`. Make it a property on the schema instead. */
   kind: 'fn$';
   req: Req;
   res: Res;

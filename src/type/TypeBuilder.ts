@@ -1,6 +1,6 @@
 import * as schema from '../schema';
 import * as classes from './classes';
-import type {SchemaOf, Type} from './types';
+import type {Type} from './types';
 import type {TypeSystem} from '../system/TypeSystem';
 import type {TypeAlias} from '../system/TypeAlias';
 import type {TypeOfAlias} from '../system/types';
@@ -81,11 +81,17 @@ export class TypeBuilder {
   public readonly null = () => this.nil;
   public readonly boolean = () => this.bool;
   public readonly number = () => this.num;
-  public readonly bigint = () => this.Number({format: 'i64'});
+  // public readonly bigint = () => this.Number({format: 'i64'});
   public readonly string = () => this.str;
+  public readonly binary = () => this.bin;
+
+  public readonly literal = <V>(value: schema.Narrow<V>, options?: schema.Optional<schema.ConstSchema>) =>
+    this.Const(value, options);
 
   public readonly array = <T>(type?: T, options?: schema.Optional<schema.ArraySchema>) =>
     this.Array<T extends Type ? T : classes.AnyType>((type ?? this.any) as T extends Type ? T : classes.AnyType, options);
+
+  public readonly tuple = <F extends Type[]>(...types: F) => this.Tuple(...types);
 
   public readonly object = <R extends Record<string, Type>>(record: R): classes.ObjectType<RecordToFields<R>> => {
     const fields: classes.ObjectFieldType<any, any>[] = [];
@@ -170,8 +176,8 @@ export class TypeBuilder {
     return field;
   }
 
-  public Map<T extends Type>(type: T, options?: schema.Optional<schema.MapSchema>) {
-    const map = new classes.MapType<T>(type, options);
+  public Map<T extends Type>(val: T, options?: schema.Optional<schema.MapSchema>) {
+    const map = new classes.MapType<T>(val, options);
     map.system = this.system;
     return map;
   }
