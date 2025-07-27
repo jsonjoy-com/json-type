@@ -1,10 +1,10 @@
-import {MsgPackEncoder} from '@jsonjoy.com/json-pack/lib/msgpack/MsgPackEncoder';
-import {MsgPackDecoder} from '@jsonjoy.com/json-pack/lib/msgpack/MsgPackDecoder';
-import {testBinaryCodegen} from './testBinaryCodegen';
-import {EncodingFormat} from '@jsonjoy.com/json-pack/lib/constants';
-import {Writer} from '@jsonjoy.com/util/lib/buffers/Writer';
-import type {Type} from '../../../type';
-import type {TypeSystem} from '../../../system';
+import { MsgPackEncoder } from "@jsonjoy.com/json-pack/lib/msgpack/MsgPackEncoder";
+import { MsgPackDecoder } from "@jsonjoy.com/json-pack/lib/msgpack/MsgPackDecoder";
+import { testBinaryCodegen } from "./testBinaryCodegen";
+import { EncodingFormat } from "@jsonjoy.com/json-pack/lib/constants";
+import { Writer } from "@jsonjoy.com/util/lib/buffers/Writer";
+import type { Type } from "../../../type";
+import type { TypeSystem } from "../../../system";
 
 const writer = new Writer(64);
 const encoder = new MsgPackEncoder(writer);

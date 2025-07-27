@@ -1,6 +1,6 @@
-import type {TypeOf} from '../schema';
-import type {SchemaOf} from '../type';
-import type {TypeAlias, TypeOfAlias, TypeSystem} from '.';
+import type { TypeOf } from "../schema";
+import type { SchemaOf } from "../type";
+import type { TypeAlias, TypeOfAlias, TypeSystem } from ".";
 
 export class Method<
   ID extends string,

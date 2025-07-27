@@ -1,8 +1,8 @@
-import type * as classes from '../type/classes';
-import {TypeSystem} from './TypeSystem';
-import {toText} from '../typescript/toText';
-import type * as ts from '../typescript/types';
-import type {TypeBuilder} from '../type/TypeBuilder';
+import type * as classes from "../type/classes";
+import { TypeSystem } from "./TypeSystem";
+import { toText } from "../typescript/toText";
+import type * as ts from "../typescript/types";
+import type { TypeBuilder } from "../type/TypeBuilder";
 
 export interface TypeRouterOptions<R extends RoutesBase> {
   system: TypeSystem;
@@ -32,7 +32,9 @@ export class TypeRouter<Routes extends RoutesBase> {
     // this.system.importTypes(this.routes);
   }
 
-  protected merge<Router extends TypeRouter<any>>(router: Router): TypeRouter<Routes & TypeRouterRoutes<Router>> {
+  protected merge<Router extends TypeRouter<any>>(
+    router: Router,
+  ): TypeRouter<Routes & TypeRouterRoutes<Router>> {
     return new TypeRouter({
       system: this.system,
       routes: {
@@ -42,36 +44,41 @@ export class TypeRouter<Routes extends RoutesBase> {
     });
   }
 
-  public extend<NewRoutes extends RoutesBase>(routes: (t: this) => NewRoutes): TypeRouter<Routes & NewRoutes> {
-    const router = new TypeRouter({system: this.system, routes: routes(this)});
+  public extend<NewRoutes extends RoutesBase>(
+    routes: (t: this) => NewRoutes,
+  ): TypeRouter<Routes & NewRoutes> {
+    const router = new TypeRouter({
+      system: this.system,
+      routes: routes(this),
+    });
     return this.merge(router);
   }
 
   public fn<K extends string, R extends classes.FunctionType<any, any>>(
     name: K,
     type: R,
-  ): TypeRouter<Routes & {[KK in K]: R}> {
+  ): TypeRouter<Routes & { [KK in K]: R }> {
     this.routes[name] = <any>type;
     return <any>this;
   }
 
-  public fn$<K extends string, R extends classes.FunctionStreamingType<any, any>>(
-    name: K,
-    type: R,
-  ): TypeRouter<Routes & {[KK in K]: R}> {
+  public fn$<
+    K extends string,
+    R extends classes.FunctionStreamingType<any, any>,
+  >(name: K, type: R): TypeRouter<Routes & { [KK in K]: R }> {
     this.routes[name] = <any>type;
     return <any>this;
   }
 
   public toTypeScriptAst(): ts.TsTypeLiteral {
     const node: ts.TsTypeLiteral = {
-      node: 'TypeLiteral',
+      node: "TypeLiteral",
       members: [],
     };
     for (const [name, type] of Object.entries(this.routes)) {
       const schema = type.getSchema();
       const property: ts.TsPropertySignature = {
-        node: 'PropertySignature',
+        node: "PropertySignature",
         name,
         type: type.toTypeScriptAst(),
       };
@@ -83,19 +90,20 @@ export class TypeRouter<Routes extends RoutesBase> {
 
   public toTypeScriptModuleAst(): ts.TsModuleDeclaration {
     const node: ts.TsModuleDeclaration = {
-      node: 'ModuleDeclaration',
-      name: 'Router',
+      node: "ModuleDeclaration",
+      name: "Router",
       export: true,
       statements: [
         {
-          node: 'TypeAliasDeclaration',
-          name: 'Routes',
+          node: "TypeAliasDeclaration",
+          name: "Routes",
           type: this.toTypeScriptAst(),
           export: true,
         },
       ],
     };
-    for (const alias of this.system.aliases.values()) node.statements.push({...alias.toTypeScriptAst(), export: true});
+    for (const alias of this.system.aliases.values())
+      node.statements.push({ ...alias.toTypeScriptAst(), export: true });
     return node;
   }
 
@@ -104,5 +112,9 @@ export class TypeRouter<Routes extends RoutesBase> {
   }
 }
 
-export type RoutesBase = Record<string, classes.FunctionType<any, any> | classes.FunctionStreamingType<any, any>>;
-type TypeRouterRoutes<R extends TypeRouter<any>> = R extends TypeRouter<infer R2> ? R2 : never;
+export type RoutesBase = Record<
+  string,
+  classes.FunctionType<any, any> | classes.FunctionStreamingType<any, any>
+>;
+type TypeRouterRoutes<R extends TypeRouter<any>> =
+  R extends TypeRouter<infer R2> ? R2 : never;

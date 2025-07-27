@@ -1,8 +1,8 @@
-import {Codegen, CodegenStepExecJs} from '@jsonjoy.com/util/lib/codegen';
-import {maxEncodingCapacity} from '@jsonjoy.com/util/lib/json-size';
-import {Value} from '../../value/Value';
-import type {TypeSystem} from '../../system';
-import type {Type} from '../../type';
+import { Codegen, CodegenStepExecJs } from "@jsonjoy.com/util/lib/codegen";
+import { maxEncodingCapacity } from "@jsonjoy.com/util/lib/json-size";
+import { Value } from "../../value/Value";
+import type { TypeSystem } from "../../system";
+import type { Type } from "../../type";
 
 export type CompiledCapacityEstimator = (value: any) => number;
 
@@ -26,8 +26,8 @@ export class CapacityEstimatorCodegenContext {
 
   constructor(public readonly options: CapacityEstimatorCodegenContextOptions) {
     this.codegen = new Codegen({
-      name: 'approxSize' + (options.name ? '_' + options.name : ''),
-      args: ['r0'],
+      name: "approxSize" + (options.name ? "_" + options.name : ""),
+      args: ["r0"],
       prologue: /* js */ `var size = 0;`,
       epilogue: /* js */ `return size;`,
       linkable: {
@@ -39,13 +39,15 @@ export class CapacityEstimatorCodegenContext {
           const step = steps[i];
           if (step instanceof CodegenStepExecJs) stepsJoined.push(step);
           else if (step instanceof IncrementSizeStep) {
-            stepsJoined.push(new CodegenStepExecJs(/* js */ `size += ${step.inc};`));
+            stepsJoined.push(
+              new CodegenStepExecJs(/* js */ `size += ${step.inc};`),
+            );
           }
         }
         return stepsJoined;
       },
     });
-    this.codegen.linkDependency(maxEncodingCapacity, 'maxEncodingCapacity');
+    this.codegen.linkDependency(maxEncodingCapacity, "maxEncodingCapacity");
   }
 
   public inc(inc: number): void {

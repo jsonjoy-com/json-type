@@ -54,11 +54,14 @@ export const isUtf8 = (str: string): boolean => {
 /**
  * Validates a string according to the specified format.
  */
-export const validateStringFormat = (str: string, format: 'ascii' | 'utf8'): boolean => {
+export const validateStringFormat = (
+  str: string,
+  format: "ascii" | "utf8",
+): boolean => {
   switch (format) {
-    case 'ascii':
+    case "ascii":
       return isAscii(str);
-    case 'utf8':
+    case "utf8":
       return isUtf8(str);
     default:
       return true;

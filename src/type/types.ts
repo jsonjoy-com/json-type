@@ -1,7 +1,7 @@
-import type * as schema from '../schema';
-import type * as classes from './classes';
+import type * as schema from "../schema";
+import type * as classes from "./classes";
 
-export type * from './classes';
+export type * from "./classes";
 
 export interface BaseType<S extends schema.TType> {
   getSchema(): S;
@@ -23,18 +23,24 @@ export type Type =
   | classes.FunctionType<any, any>
   | classes.FunctionStreamingType<any, any>;
 
-export type SchemaOf<T extends Type | Type[]> = T extends BaseType<infer U> ? U : never;
-export type SchemaOfMap<M extends Record<string, Type>> = {[K in keyof M]: SchemaOf<M[K]>};
+export type SchemaOf<T extends Type | Type[]> =
+  T extends BaseType<infer U> ? U : never;
+export type SchemaOfMap<M extends Record<string, Type>> = {
+  [K in keyof M]: SchemaOf<M[K]>;
+};
 
-export type SchemaOfObjectFieldType<F> = F extends classes.ObjectOptionalFieldType<infer K, infer V>
-  ? schema.ObjectOptionalFieldSchema<K, SchemaOf<V>>
-  : F extends classes.ObjectFieldType<infer K, infer V>
-    ? schema.ObjectFieldSchema<K, SchemaOf<V>>
-    : never;
+export type SchemaOfObjectFieldType<F> =
+  F extends classes.ObjectOptionalFieldType<infer K, infer V>
+    ? schema.ObjectOptionalFieldSchema<K, SchemaOf<V>>
+    : F extends classes.ObjectFieldType<infer K, infer V>
+      ? schema.ObjectFieldSchema<K, SchemaOf<V>>
+      : never;
 
-export type SchemaOfObjectFields<F> = {[K in keyof F]: SchemaOfObjectFieldType<F[K]>};
+export type SchemaOfObjectFields<F> = {
+  [K in keyof F]: SchemaOfObjectFieldType<F[K]>;
+};
 
-export type TypeMap = {[name: string]: schema.Schema};
+export type TypeMap = { [name: string]: schema.Schema };
 
 export type FilterFunctions<T> = {
   [K in keyof T as T[K] extends classes.FunctionType<any, any>

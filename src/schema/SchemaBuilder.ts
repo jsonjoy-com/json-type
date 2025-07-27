@@ -19,7 +19,7 @@ import type {
   FunctionSchema,
   FunctionStreamingSchema,
   TType,
-} from '.';
+} from ".";
 
 export class SchemaBuilder {
   get str() {
@@ -70,28 +70,40 @@ export class SchemaBuilder {
     return this.Function$(this.any, this.any);
   }
 
-  public Boolean(id: string, options?: Omit<NoT<BooleanSchema>, 'id'>): BooleanSchema;
+  public Boolean(
+    id: string,
+    options?: Omit<NoT<BooleanSchema>, "id">,
+  ): BooleanSchema;
   public Boolean(options?: NoT<BooleanSchema>): BooleanSchema;
-  public Boolean(a?: string | NoT<BooleanSchema>, b?: NoT<BooleanSchema> | void): BooleanSchema {
-    if (typeof a === 'string') return this.Boolean({id: a, ...(b || {})});
-    return {kind: 'bool', ...(a || {})};
+  public Boolean(
+    a?: string | NoT<BooleanSchema>,
+    b?: NoT<BooleanSchema> | void,
+  ): BooleanSchema {
+    if (typeof a === "string") return this.Boolean({ id: a, ...(b || {}) });
+    return { kind: "bool", ...(a || {}) };
   }
 
   public Number(options?: NoT<NumberSchema>): NumberSchema {
-    return {kind: 'num', ...options};
+    return { kind: "num", ...options };
   }
 
   public String(id: string, options?: NoT<StringSchema>): StringSchema;
   public String(options?: NoT<StringSchema>): StringSchema;
-  public String(a?: string | NoT<StringSchema>, b?: NoT<StringSchema>): StringSchema {
-    if (typeof a === 'string') return this.String({id: a, ...(b || {})});
-    return {kind: 'str', ...(a || {})};
+  public String(
+    a?: string | NoT<StringSchema>,
+    b?: NoT<StringSchema>,
+  ): StringSchema {
+    if (typeof a === "string") return this.String({ id: a, ...(b || {}) });
+    return { kind: "str", ...(a || {}) };
   }
 
   // public Binary<T extends Schema>(options: Optional<BinarySchema<T>> & Pick<BinarySchema<T>, 'type'>): BinarySchema<T>;
-  public Binary<T extends Schema>(type: T, options: Optional<Omit<BinarySchema, 'type'>> = {}): BinarySchema<T> {
+  public Binary<T extends Schema>(
+    type: T,
+    options: Optional<Omit<BinarySchema, "type">> = {},
+  ): BinarySchema<T> {
     return {
-      kind: 'bin',
+      kind: "bin",
       type,
       ...options,
     };
@@ -100,16 +112,24 @@ export class SchemaBuilder {
   public Array<T extends Schema>(
     id: string,
     type: T,
-    options?: Omit<NoT<ArraySchema<T>>, 'id' | 'type'>,
+    options?: Omit<NoT<ArraySchema<T>>, "id" | "type">,
   ): ArraySchema<T>;
-  public Array<T extends Schema>(type: T, options?: Omit<NoT<ArraySchema<T>>, 'type'>): ArraySchema<T>;
+  public Array<T extends Schema>(
+    type: T,
+    options?: Omit<NoT<ArraySchema<T>>, "type">,
+  ): ArraySchema<T>;
   public Array<T extends Schema>(
     a: string | T,
-    b?: T | Omit<NoT<ArraySchema<T>>, 'type'>,
-    c?: Omit<NoT<ArraySchema<T>>, 'id' | 'type'>,
+    b?: T | Omit<NoT<ArraySchema<T>>, "type">,
+    c?: Omit<NoT<ArraySchema<T>>, "id" | "type">,
   ): ArraySchema<T> {
-    if (typeof a === 'string') return this.Array(b as T, {id: a, ...(c || {})});
-    return {kind: 'arr', ...(b as Omit<NoT<ArraySchema<T>>, 'id' | 'type'>), type: a as T};
+    if (typeof a === "string")
+      return this.Array(b as T, { id: a, ...(c || {}) });
+    return {
+      kind: "arr",
+      ...(b as Omit<NoT<ArraySchema<T>>, "id" | "type">),
+      type: a as T,
+    };
   }
 
   /**
@@ -126,53 +146,79 @@ export class SchemaBuilder {
     value: V,
     options?: Optional<ConstSchema<V>>,
   ): ConstSchema<
-    string extends V ? never : number extends V ? never : boolean extends V ? never : any[] extends V ? never : V
+    string extends V
+      ? never
+      : number extends V
+        ? never
+        : boolean extends V
+          ? never
+          : any[] extends V
+            ? never
+            : V
   > {
-    return {kind: 'const', value: value as any, ...options};
+    return { kind: "const", value: value as any, ...options };
   }
 
   public Tuple<T extends Schema[]>(...types: T): TupleSchema<T> {
-    return {kind: 'tup', types};
+    return { kind: "tup", types };
   }
 
-  public fields<F extends ObjectFieldSchema<any, any>[]>(...fields: ObjectSchema<F>['fields']): F {
+  public fields<F extends ObjectFieldSchema<any, any>[]>(
+    ...fields: ObjectSchema<F>["fields"]
+  ): F {
     return fields;
   }
 
-  public Object<F extends ObjectFieldSchema<string, Schema>[] | readonly ObjectFieldSchema<string, Schema>[]>(
-    options: NoT<ObjectSchema<F>>,
-  ): ObjectSchema<F>;
-  public Object<F extends ObjectFieldSchema<string, Schema>[] | readonly ObjectFieldSchema<string, Schema>[]>(
-    fields: ObjectSchema<F>['fields'],
+  public Object<
+    F extends
+      | ObjectFieldSchema<string, Schema>[]
+      | readonly ObjectFieldSchema<string, Schema>[],
+  >(options: NoT<ObjectSchema<F>>): ObjectSchema<F>;
+  public Object<
+    F extends
+      | ObjectFieldSchema<string, Schema>[]
+      | readonly ObjectFieldSchema<string, Schema>[],
+  >(
+    fields: ObjectSchema<F>["fields"],
     options?: Optional<ObjectSchema<F>>,
   ): ObjectSchema<F>;
-  public Object<F extends ObjectFieldSchema<string, Schema>[] | readonly ObjectFieldSchema<string, Schema>[]>(
-    ...fields: ObjectSchema<F>['fields']
-  ): ObjectSchema<F>;
-  public Object<F extends ObjectFieldSchema<string, Schema>[] | readonly ObjectFieldSchema<string, Schema>[]>(
-    ...args: unknown[]
-  ): ObjectSchema<F> {
+  public Object<
+    F extends
+      | ObjectFieldSchema<string, Schema>[]
+      | readonly ObjectFieldSchema<string, Schema>[],
+  >(...fields: ObjectSchema<F>["fields"]): ObjectSchema<F>;
+  public Object<
+    F extends
+      | ObjectFieldSchema<string, Schema>[]
+      | readonly ObjectFieldSchema<string, Schema>[],
+  >(...args: unknown[]): ObjectSchema<F> {
     const first = args[0];
     if (
       args.length === 1 &&
       first &&
-      typeof first === 'object' &&
+      typeof first === "object" &&
       (first as NoT<ObjectSchema<F>>).fields instanceof Array
     )
-      return {kind: 'obj', ...(first as NoT<ObjectSchema<F>>)};
+      return { kind: "obj", ...(first as NoT<ObjectSchema<F>>) };
     if (args.length >= 1 && args[0] instanceof Array)
-      return this.Object({fields: args[0] as F, ...(args[1] as Optional<ObjectSchema<F>>)});
-    return this.Object({fields: args as F});
+      return this.Object({
+        fields: args[0] as F,
+        ...(args[1] as Optional<ObjectSchema<F>>),
+      });
+    return this.Object({ fields: args as F });
   }
 
   /** @deprecated Use `.prop`. */
   public Field<K extends string, V extends Schema>(
     key: K,
     type: V,
-    options: Omit<NoT<ObjectFieldSchema<K, V>>, 'key' | 'type' | 'optional'> = {},
+    options: Omit<
+      NoT<ObjectFieldSchema<K, V>>,
+      "key" | "type" | "optional"
+    > = {},
   ): ObjectFieldSchema<K, V> {
     return {
-      kind: 'field',
+      kind: "field",
       key,
       type,
       ...options,
@@ -183,10 +229,13 @@ export class SchemaBuilder {
   public FieldOpt<K extends string, V extends Schema>(
     key: K,
     type: V,
-    options: Omit<NoT<ObjectFieldSchema<K, V>>, 'key' | 'type' | 'optional'> = {},
+    options: Omit<
+      NoT<ObjectFieldSchema<K, V>>,
+      "key" | "type" | "optional"
+    > = {},
   ): ObjectOptionalFieldSchema<K, V> {
     return {
-      kind: 'field',
+      kind: "field",
       key,
       type,
       ...options,
@@ -198,10 +247,13 @@ export class SchemaBuilder {
   public prop<K extends string, V extends Schema>(
     key: K,
     type: V,
-    options: Omit<NoT<ObjectFieldSchema<K, V>>, 'key' | 'type' | 'optional'> = {},
+    options: Omit<
+      NoT<ObjectFieldSchema<K, V>>,
+      "key" | "type" | "optional"
+    > = {},
   ): ObjectFieldSchema<K, V> {
     return {
-      kind: 'field',
+      kind: "field",
       key,
       type,
       ...options,
@@ -212,10 +264,13 @@ export class SchemaBuilder {
   public propOpt<K extends string, V extends Schema>(
     key: K,
     type: V,
-    options: Omit<NoT<ObjectFieldSchema<K, V>>, 'key' | 'type' | 'optional'> = {},
+    options: Omit<
+      NoT<ObjectFieldSchema<K, V>>,
+      "key" | "type" | "optional"
+    > = {},
   ): ObjectOptionalFieldSchema<K, V> {
     return {
-      kind: 'field',
+      kind: "field",
       key,
       type,
       ...options,
@@ -223,43 +278,52 @@ export class SchemaBuilder {
     };
   }
 
-  public Map<T extends Schema>(type: T, options?: Omit<NoT<MapSchema<T>>, 'type'>): MapSchema<T> {
-    return {kind: 'map', type, ...options};
+  public Map<T extends Schema>(
+    type: T,
+    options?: Omit<NoT<MapSchema<T>>, "type">,
+  ): MapSchema<T> {
+    return { kind: "map", type, ...options };
   }
 
   public Any(options: NoT<AnySchema> = {}): AnySchema {
     return {
-      kind: 'any',
+      kind: "any",
       ...options,
     };
   }
 
   public Ref<T extends TType = any>(ref: string): RefSchema<T> {
     return {
-      kind: 'ref',
+      kind: "ref",
       ref: ref as string & T,
     };
   }
 
   public Or<T extends Schema[]>(...types: T): OrSchema<T> {
     return {
-      kind: 'or',
+      kind: "or",
       types,
-      discriminator: ['num', -1],
+      discriminator: ["num", -1],
     };
   }
 
-  public Function<Req extends Schema, Res extends Schema>(req: Req, res: Res): FunctionSchema<Req, Res> {
+  public Function<Req extends Schema, Res extends Schema>(
+    req: Req,
+    res: Res,
+  ): FunctionSchema<Req, Res> {
     return {
-      kind: 'fn',
+      kind: "fn",
       req,
       res,
     };
   }
 
-  public Function$<Req extends Schema, Res extends Schema>(req: Req, res: Res): FunctionStreamingSchema<Req, Res> {
+  public Function$<Req extends Schema, Res extends Schema>(
+    req: Req,
+    res: Res,
+  ): FunctionStreamingSchema<Req, Res> {
     return {
-      kind: 'fn$',
+      kind: "fn$",
       req,
       res,
     };

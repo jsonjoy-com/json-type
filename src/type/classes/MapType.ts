@@ -1,29 +1,31 @@
-import {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
-import type {BinaryJsonEncoder} from '@jsonjoy.com/json-pack/lib/types';
-import {asString} from '@jsonjoy.com/util/lib/strings/asString';
-import {printTree} from 'tree-dump/lib/printTree';
-import * as schema from '../../schema';
-import {RandomJson} from '@jsonjoy.com/util/lib/json-random';
-import {validateTType} from '../../schema/validate';
-import type {ValidatorCodegenContext} from '../../codegen/validator/ValidatorCodegenContext';
-import type {ValidationPath} from '../../codegen/validator/types';
-import {ValidationError} from '../../constants';
-import type {JsonTextEncoderCodegenContext} from '../../codegen/json/JsonTextEncoderCodegenContext';
-import {CborEncoderCodegenContext} from '../../codegen/binary/CborEncoderCodegenContext';
-import type {JsonEncoderCodegenContext} from '../../codegen/binary/JsonEncoderCodegenContext';
-import type {BinaryEncoderCodegenContext} from '../../codegen/binary/BinaryEncoderCodegenContext';
-import {MessagePackEncoderCodegenContext} from '../../codegen/binary/MessagePackEncoderCodegenContext';
-import type {CapacityEstimatorCodegenContext} from '../../codegen/capacity/CapacityEstimatorCodegenContext';
-import {MaxEncodingOverhead} from '@jsonjoy.com/util/lib/json-size';
-import {AbstractType} from './AbstractType';
-import type * as jsonSchema from '../../json-schema';
-import type {SchemaOf, Type} from '../types';
-import type {TypeSystem} from '../../system/TypeSystem';
-import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
-import type * as ts from '../../typescript/types';
-import type {TypeExportContext} from '../../system/TypeExportContext';
+import { JsExpression } from "@jsonjoy.com/util/lib/codegen/util/JsExpression";
+import type { BinaryJsonEncoder } from "@jsonjoy.com/json-pack/lib/types";
+import { asString } from "@jsonjoy.com/util/lib/strings/asString";
+import { printTree } from "tree-dump/lib/printTree";
+import * as schema from "../../schema";
+import { RandomJson } from "@jsonjoy.com/util/lib/json-random";
+import { validateTType } from "../../schema/validate";
+import type { ValidatorCodegenContext } from "../../codegen/validator/ValidatorCodegenContext";
+import type { ValidationPath } from "../../codegen/validator/types";
+import { ValidationError } from "../../constants";
+import type { JsonTextEncoderCodegenContext } from "../../codegen/json/JsonTextEncoderCodegenContext";
+import { CborEncoderCodegenContext } from "../../codegen/binary/CborEncoderCodegenContext";
+import type { JsonEncoderCodegenContext } from "../../codegen/binary/JsonEncoderCodegenContext";
+import type { BinaryEncoderCodegenContext } from "../../codegen/binary/BinaryEncoderCodegenContext";
+import { MessagePackEncoderCodegenContext } from "../../codegen/binary/MessagePackEncoderCodegenContext";
+import type { CapacityEstimatorCodegenContext } from "../../codegen/capacity/CapacityEstimatorCodegenContext";
+import { MaxEncodingOverhead } from "@jsonjoy.com/util/lib/json-size";
+import { AbstractType } from "./AbstractType";
+import type * as jsonSchema from "../../json-schema";
+import type { SchemaOf, Type } from "../types";
+import type { TypeSystem } from "../../system/TypeSystem";
+import type { json_string } from "@jsonjoy.com/util/lib/json-brand";
+import type * as ts from "../../typescript/types";
+import type { TypeExportContext } from "../../system/TypeExportContext";
 
-export class MapType<T extends Type> extends AbstractType<schema.MapSchema<SchemaOf<T>>> {
+export class MapType<T extends Type> extends AbstractType<
+  schema.MapSchema<SchemaOf<T>>
+> {
   protected schema: schema.MapSchema<any>;
 
   constructor(
@@ -42,19 +44,25 @@ export class MapType<T extends Type> extends AbstractType<schema.MapSchema<Schem
   }
 
   public getOptions(): schema.Optional<schema.MapSchema<SchemaOf<T>>> {
-    const {kind, type, ...options} = this.schema;
+    const { kind, type, ...options } = this.schema;
     return options as any;
   }
 
   public validateSchema(): void {
     const schema = this.getSchema();
-    validateTType(schema, 'map');
+    validateTType(schema, "map");
     this.type.validateSchema();
   }
 
-  public codegenValidator(ctx: ValidatorCodegenContext, path: ValidationPath, r: string): void {
+  public codegenValidator(
+    ctx: ValidatorCodegenContext,
+    path: ValidationPath,
+    r: string,
+  ): void {
     const err = ctx.err(ValidationError.MAP, path);
-    ctx.js(`if (!${r} || (typeof ${r} !== 'object') || (${r}.constructor !== Object)) return ${err};`);
+    ctx.js(
+      `if (!${r} || (typeof ${r} !== 'object') || (${r}.constructor !== Object)) return ${err};`,
+    );
     const rKeys = ctx.codegen.var(`Object.keys(${r});`);
     const rLength = ctx.codegen.var(`${rKeys}.length`);
     const rKey = ctx.codegen.r();
@@ -62,13 +70,16 @@ export class MapType<T extends Type> extends AbstractType<schema.MapSchema<Schem
     ctx.js(`for (var ${rKey}, ${rValue}, i = 0; i < ${rLength}; i++) {`);
     ctx.js(`${rKey} = ${rKeys}[i];`);
     ctx.js(`${rValue} = ${r}[${rKey}];`);
-    this.type.codegenValidator(ctx, [...path, {r: rKey}], rValue);
+    this.type.codegenValidator(ctx, [...path, { r: rKey }], rValue);
     ctx.js(`}`);
     ctx.emitCustomValidators(this, path, r);
   }
 
-  public codegenJsonTextEncoder(ctx: JsonTextEncoderCodegenContext, value: JsExpression): void {
-    ctx.writeText('{');
+  public codegenJsonTextEncoder(
+    ctx: JsonTextEncoderCodegenContext,
+    value: JsExpression,
+  ): void {
+    ctx.writeText("{");
     const r = ctx.codegen.var(value.use());
     const rKeys = ctx.codegen.var(`Object.keys(${r})`);
     const rLength = ctx.codegen.var(`${rKeys}.length`);
@@ -76,49 +87,71 @@ export class MapType<T extends Type> extends AbstractType<schema.MapSchema<Schem
     ctx.codegen.if(`${rLength}`, () => {
       ctx.js(`${rKey} = ${rKeys}[0];`);
       ctx.js(`s += asString(${rKey}) + ':';`);
-      this.type.codegenJsonTextEncoder(ctx, new JsExpression(() => `${r}[${rKey}]`));
+      this.type.codegenJsonTextEncoder(
+        ctx,
+        new JsExpression(() => `${r}[${rKey}]`),
+      );
     });
     ctx.js(`for (var i = 1; i < ${rLength}; i++) {`);
     ctx.js(`${rKey} = ${rKeys}[i];`);
     ctx.js(`s += ',' + asString(${rKey}) + ':';`);
-    this.type.codegenJsonTextEncoder(ctx, new JsExpression(() => `${r}[${rKey}]`));
+    this.type.codegenJsonTextEncoder(
+      ctx,
+      new JsExpression(() => `${r}[${rKey}]`),
+    );
     ctx.js(`}`);
-    ctx.writeText('}');
+    ctx.writeText("}");
   }
 
-  private codegenBinaryEncoder(ctx: BinaryEncoderCodegenContext<BinaryJsonEncoder>, value: JsExpression): void {
+  private codegenBinaryEncoder(
+    ctx: BinaryEncoderCodegenContext<BinaryJsonEncoder>,
+    value: JsExpression,
+  ): void {
     const type = this.type;
     const codegen = ctx.codegen;
     const r = codegen.var(value.use());
     const rKeys = codegen.var(`Object.keys(${r})`);
     const rKey = codegen.var();
     const rLength = codegen.var(`${rKeys}.length`);
-    const ri = codegen.var('0');
+    const ri = codegen.var("0");
     ctx.js(`encoder.writeObjHdr(${rLength});`);
     ctx.js(`for(; ${ri} < ${rLength}; ${ri}++){`);
     ctx.js(`${rKey} = ${rKeys}[${ri}];`);
     ctx.js(`encoder.writeStr(${rKey});`);
     const expr = new JsExpression(() => `${r}[${rKey}]`);
-    if (ctx instanceof CborEncoderCodegenContext) type.codegenCborEncoder(ctx, expr);
-    else if (ctx instanceof MessagePackEncoderCodegenContext) type.codegenMessagePackEncoder(ctx, expr);
-    else throw new Error('Unknown encoder');
+    if (ctx instanceof CborEncoderCodegenContext)
+      type.codegenCborEncoder(ctx, expr);
+    else if (ctx instanceof MessagePackEncoderCodegenContext)
+      type.codegenMessagePackEncoder(ctx, expr);
+    else throw new Error("Unknown encoder");
     ctx.js(`}`);
   }
 
-  public codegenCborEncoder(ctx: CborEncoderCodegenContext, value: JsExpression): void {
+  public codegenCborEncoder(
+    ctx: CborEncoderCodegenContext,
+    value: JsExpression,
+  ): void {
     this.codegenBinaryEncoder(ctx, value);
   }
 
-  public codegenMessagePackEncoder(ctx: MessagePackEncoderCodegenContext, value: JsExpression): void {
+  public codegenMessagePackEncoder(
+    ctx: MessagePackEncoderCodegenContext,
+    value: JsExpression,
+  ): void {
     this.codegenBinaryEncoder(ctx, value);
   }
 
-  public codegenJsonEncoder(ctx: JsonEncoderCodegenContext, value: JsExpression): void {
+  public codegenJsonEncoder(
+    ctx: JsonEncoderCodegenContext,
+    value: JsExpression,
+  ): void {
     const type = this.type;
     const objStartBlob = ctx.gen((encoder) => encoder.writeStartObj());
     const objEndBlob = ctx.gen((encoder) => encoder.writeEndObj());
     const separatorBlob = ctx.gen((encoder) => encoder.writeObjSeparator());
-    const keySeparatorBlob = ctx.gen((encoder) => encoder.writeObjKeySeparator());
+    const keySeparatorBlob = ctx.gen((encoder) =>
+      encoder.writeObjKeySeparator(),
+    );
     const codegen = ctx.codegen;
     const r = codegen.var(value.use());
     const rKeys = codegen.var(`Object.keys(${r})`);
@@ -144,43 +177,49 @@ export class MapType<T extends Type> extends AbstractType<schema.MapSchema<Schem
   public random(): Record<string, unknown> {
     const length = Math.round(Math.random() * 10);
     const res: Record<string, unknown> = {};
-    for (let i = 0; i < length; i++) res[RandomJson.genString(length)] = this.type.random();
+    for (let i = 0; i < length; i++)
+      res[RandomJson.genString(length)] = this.type.random();
     return res;
   }
 
   public toTypeScriptAst(): ts.TsTypeReference {
     const node: ts.TsTypeReference = {
-      node: 'TypeReference',
-      typeName: 'Record',
-      typeArguments: [{node: 'StringKeyword'}, this.type.toTypeScriptAst()],
+      node: "TypeReference",
+      typeName: "Record",
+      typeArguments: [{ node: "StringKeyword" }, this.type.toTypeScriptAst()],
     };
     // augmentWithComment(this.schema, node);
     return node;
   }
 
-  public toJson(value: unknown, system: TypeSystem | undefined = this.system): json_string<unknown> {
+  public toJson(
+    value: unknown,
+    system: TypeSystem | undefined = this.system,
+  ): json_string<unknown> {
     const map = value as Record<string, unknown>;
     const keys = Object.keys(map);
     const length = keys.length;
-    if (!length) return '{}' as json_string<unknown>;
+    if (!length) return "{}" as json_string<unknown>;
     const last = length - 1;
     const type = this.type;
-    let str = '{';
+    let str = "{";
     for (let i = 0; i < last; i++) {
       const key = keys[i];
       const val = (value as any)[key];
       if (val === undefined) continue;
-      str += asString(key) + ':' + type.toJson(val as any, system) + ',';
+      str += asString(key) + ":" + type.toJson(val as any, system) + ",";
     }
     const key = keys[last];
     const val = (value as any)[key];
     if (val !== undefined) {
-      str += asString(key) + ':' + type.toJson(val as any, system);
+      str += asString(key) + ":" + type.toJson(val as any, system);
     } else if (str.length > 1) str = str.slice(0, -1);
-    return (str + '}') as json_string<unknown>;
+    return (str + "}") as json_string<unknown>;
   }
 
-  public toString(tab: string = ''): string {
-    return super.toString(tab) + printTree(tab, [(tab) => this.type.toString(tab)]);
+  public toString(tab: string = ""): string {
+    return (
+      super.toString(tab) + printTree(tab, [(tab) => this.type.toString(tab)])
+    );
   }
 }

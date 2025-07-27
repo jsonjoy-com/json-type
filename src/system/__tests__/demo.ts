@@ -1,4 +1,4 @@
-import {TypeSystem} from '../TypeSystem';
+import { TypeSystem } from "../TypeSystem";
 
 const createTypes = (system: TypeSystem) => {
   const t = system.t;
@@ -11,23 +11,32 @@ const createTypes = (system: TypeSystem) => {
 
   // prettier-ignore
   const MuBlockCreateRequest = t.Object(t.propOpt('id', t.str));
-  const MuBlockCreateResponse = t.Object(t.prop('block', t.Ref<typeof MuBlock>('MuBlock')));
+  const MuBlockCreateResponse = t.Object(
+    t.prop("block", t.Ref<typeof MuBlock>("MuBlock")),
+  );
   const MuBlockNew = t.Function(MuBlockCreateRequest, MuBlockCreateResponse);
 
-  const MuBlockGetRequest = t.Object(t.prop('id', t.str));
-  const MuBlockGetResponse = t.Object(t.prop('block', t.Ref<typeof MuBlock>('block.Block')));
+  const MuBlockGetRequest = t.Object(t.prop("id", t.str));
+  const MuBlockGetResponse = t.Object(
+    t.prop("block", t.Ref<typeof MuBlock>("block.Block")),
+  );
   const MuBlockGet = t.Function(MuBlockGetRequest, MuBlockGetResponse).options({
-    title: 'Get Block',
-    description: 'Get a block by ID',
+    title: "Get Block",
+    description: "Get a block by ID",
   });
 
   const MuBlockListen = t.Function$(MuBlockGetRequest, MuBlockGetResponse);
 
   return {
     MuCollection,
-    'aa.collection.create': t.Function(
-      t.Object(t.prop('name', t.str)),
-      t.Object(t.prop('collection', t.Ref<typeof MuCollection>('collection.Collection'))),
+    "aa.collection.create": t.Function(
+      t.Object(t.prop("name", t.str)),
+      t.Object(
+        t.prop(
+          "collection",
+          t.Ref<typeof MuCollection>("collection.Collection"),
+        ),
+      ),
     ),
 
     MuBlock,
@@ -46,4 +55,4 @@ const types = createTypes(system);
 system.importTypes(types);
 
 type Types = typeof types;
-type Ctx = {ip?: string};
+type Ctx = { ip?: string };

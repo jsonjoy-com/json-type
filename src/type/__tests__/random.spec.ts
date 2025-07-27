@@ -1,6 +1,6 @@
-import {t} from '..';
+import { t } from "..";
 
-test('generates random JSON', () => {
+test("generates random JSON", () => {
   const mathRandom = Math.random;
   let i = 0.0;
   Math.random = () => {
@@ -9,11 +9,11 @@ test('generates random JSON', () => {
     return i;
   };
   const type = t.Object(
-    t.prop('id', t.str),
-    t.prop('name', t.str),
-    t.prop('tags', t.Array(t.str)),
-    t.propOpt('scores', t.Array(t.num)),
-    t.prop('refs', t.Map(t.str)),
+    t.prop("id", t.str),
+    t.prop("name", t.str),
+    t.prop("tags", t.Array(t.str)),
+    t.propOpt("scores", t.Array(t.num)),
+    t.prop("refs", t.Map(t.str)),
   );
   const json = type.random();
   expect(json).toMatchInlineSnapshot(`

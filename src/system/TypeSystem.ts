@@ -1,10 +1,10 @@
-import {TypeAlias} from './TypeAlias';
-import {TypeBuilder} from '../type/TypeBuilder';
-import {RefType} from '../type/classes';
-import {printTree} from 'tree-dump/lib/printTree';
-import type {CustomValidator} from './types';
-import type {Type, TypeMap} from '../type';
-import type {Printable} from 'tree-dump/lib/types';
+import { TypeAlias } from "./TypeAlias";
+import { TypeBuilder } from "../type/TypeBuilder";
+import { RefType } from "../type/classes";
+import { printTree } from "tree-dump/lib/printTree";
+import type { CustomValidator } from "./types";
+import type { Type, TypeMap } from "../type";
+import type { Printable } from "tree-dump/lib/types";
 
 export class TypeSystem implements Printable {
   public readonly t = new TypeBuilder(this);
@@ -15,7 +15,10 @@ export class TypeSystem implements Printable {
    * @todo Add ability fetch object of given type by its ID, analogous to
    * GraphQL "nodes".
    */
-  public readonly alias = <K extends string, T extends Type>(id: K, type: T): TypeAlias<K, T> => {
+  public readonly alias = <K extends string, T extends Type>(
+    id: K,
+    type: T,
+  ): TypeAlias<K, T> => {
     const existingAlias = this.aliases.get(id);
     if (existingAlias) return existingAlias as TypeAlias<K, T>;
     const alias = new TypeAlias<K, T>(this, id, type);
@@ -33,7 +36,9 @@ export class TypeSystem implements Printable {
 
   public readonly resolve = <K extends string>(id: K): TypeAlias<K, Type> => {
     const alias = this.unalias(id);
-    return alias.type instanceof RefType ? this.resolve<K>(alias.type.getRef() as K) : alias;
+    return alias.type instanceof RefType
+      ? this.resolve<K>(alias.type.getRef() as K)
+      : alias;
   };
 
   protected readonly customValidators: Map<string, CustomValidator> = new Map();
@@ -67,27 +72,32 @@ export class TypeSystem implements Printable {
     >;
   } {
     const result = {} as any;
-    for (const id in types) result[id] = this.alias(id, this.t.import(types[id]));
+    for (const id in types)
+      result[id] = this.alias(id, this.t.import(types[id]));
     return result;
   }
 
-  public toString(tab: string = '') {
-    const nl = () => '';
+  public toString(tab: string = "") {
+    const nl = () => "";
     return (
-      'TypeSystem' +
+      "TypeSystem" +
       printTree(tab, [
         (tab) =>
-          'aliases' +
+          "aliases" +
           printTree(
             tab,
-            [...this.aliases.values()].map((alias) => (tab) => alias.toString(tab)),
+            [...this.aliases.values()].map(
+              (alias) => (tab) => alias.toString(tab),
+            ),
           ),
         this.customValidators.size ? nl : null,
         (tab) =>
-          'validators' +
+          "validators" +
           printTree(
             tab,
-            [...this.customValidators.keys()].map((validator) => (tab) => `"${validator}"`),
+            [...this.customValidators.keys()].map(
+              (validator) => (tab) => `"${validator}"`,
+            ),
           ),
       ])
     );
