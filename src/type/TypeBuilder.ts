@@ -1,11 +1,30 @@
 import * as schema from '../schema';
 import * as classes from './classes';
-import type {Type} from './types';
+import type {SchemaOf, Type} from './types';
 import type {TypeSystem} from '../system/TypeSystem';
 import type {TypeAlias} from '../system/TypeAlias';
 import type {TypeOfAlias} from '../system/types';
 
 const {s} = schema;
+
+type UnionToIntersection<U> = (
+  U extends never ? never : (arg: U) => never
+) extends (arg: infer I) => void
+  ? I
+  : never;
+
+type UnionToTuple<T> = UnionToIntersection<
+  T extends never ? never : (t: T) => T
+> extends (_: never) => infer W
+  ? [...UnionToTuple<Exclude<T, W>>, W]
+  : [];
+
+type ObjValueTuple<T, KS extends any[] = UnionToTuple<keyof T>, R extends any[] = []> =
+  KS extends [infer K, ...infer KT]
+  ? ObjValueTuple<T, KT, [...R, T[K & keyof T]]>
+  : R
+
+type RecordToFields<O extends Record<string, Type>> = ObjValueTuple<{[K in keyof O]: classes.ObjectFieldType<K extends string ? K : never, O[K]>}>;
 
 export class TypeBuilder {
   constructor(public system?: TypeSystem) {}
@@ -57,6 +76,31 @@ export class TypeBuilder {
   get fn$() {
     return this.Function$(this.any, this.any);
   }
+
+  public readonly undefined = () => this.undef;
+  public readonly null = () => this.nil;
+  public readonly boolean = () => this.bool;
+  public readonly number = () => this.num;
+  public readonly bigint = () => this.Number({format: 'i64'});
+  public readonly string = () => this.str;
+
+  public readonly array = <T>(type?: T, options?: schema.Optional<schema.ArraySchema>) =>
+    this.Array<T extends Type ? T : classes.AnyType>((type ?? this.any) as T extends Type ? T : classes.AnyType, options);
+
+  public readonly object = <R extends Record<string, Type>>(record: R): classes.ObjectType<RecordToFields<R>> => {
+    const fields: classes.ObjectFieldType<any, any>[] = [];
+    for (const [key, value] of Object.entries(record)) fields.push(this.prop(key, value));
+    const obj = new classes.ObjectType<RecordToFields<R>>(fields as any);
+    obj.system = this.system;
+    Object.keys
+    return obj;
+  };
+
+  //   public Object<F extends classes.ObjectFieldType<any, any>[]>(...fields: F) {
+  //   const obj = new classes.ObjectType<F>(fields);
+  //   obj.system = this.system;
+  //   return obj;
+  // }
 
   public Any(options?: schema.Optional<schema.AnySchema>) {
     const type = new classes.AnyType(s.Any(options));

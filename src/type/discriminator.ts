@@ -1,5 +1,5 @@
-import type {Expr} from '@jsonjoy.com/json-expression';
 import {BooleanType, ConstType, NumberType, type ObjectFieldType, ObjectType, StringType, TupleType} from './classes';
+import type {Expr} from '@jsonjoy.com/json-expression';
 import type {Type} from './types';
 
 export class Discriminator {

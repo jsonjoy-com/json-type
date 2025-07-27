@@ -61,6 +61,15 @@ test('can construct a realistic object', () => {
   };
 });
 
+test('can build type using lowercase shortcuts', () => {
+  const MyObject = t.object({
+    id: t.str,
+    offsets: t.array(t.num),
+  })
+
+  console.log(MyObject + '');
+});
+
 describe('import()', () => {
   test('can import a number schema', () => {
     const type = t.import({
