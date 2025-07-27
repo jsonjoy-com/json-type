@@ -1,5 +1,4 @@
 import {cloneBinary} from '@jsonjoy.com/util/lib/json-clone';
-import {validateTType} from '../../schema/validate';
 import {ValidationError} from '../../constants';
 import {maxEncodingCapacity} from '@jsonjoy.com/util/lib/json-size';
 import {AbstractType} from './AbstractType';
@@ -39,10 +38,6 @@ export class ConstType<V = any> extends AbstractType<schema.ConstSchema<V>> {
     return options as any;
   }
 
-  public validateSchema(): void {
-    validateTType(this.getSchema(), 'const');
-  }
-
   public codegenValidator(ctx: ValidatorCodegenContext, path: ValidationPath, r: string): void {
     const value = this.schema.value;
     const equals = deepEqualCodegen(value);
@@ -73,10 +68,6 @@ export class ConstType<V = any> extends AbstractType<schema.ConstSchema<V>> {
 
   public codegenJsonEncoder(ctx: JsonEncoderCodegenContext, value: JsExpression): void {
     this.codegenBinaryEncoder(ctx, value);
-  }
-
-  public random(): unknown {
-    return cloneBinary(this.schema.value);
   }
 
   public toTypeScriptAst() {

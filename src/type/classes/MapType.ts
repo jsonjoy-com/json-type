@@ -4,7 +4,6 @@ import {asString} from '@jsonjoy.com/util/lib/strings/asString';
 import {printTree} from 'tree-dump/lib/printTree';
 import * as schema from '../../schema';
 import {RandomJson} from '@jsonjoy.com/util/lib/json-random';
-import {validateTType} from '../../schema/validate';
 import type {ValidatorCodegenContext} from '../../codegen/validator/ValidatorCodegenContext';
 import type {ValidationPath} from '../../codegen/validator/types';
 import {ValidationError} from '../../constants';
@@ -44,12 +43,6 @@ export class MapType<T extends Type> extends AbstractType<schema.MapSchema<Schem
   public getOptions(): schema.Optional<schema.MapSchema<SchemaOf<T>>> {
     const {kind, type, ...options} = this.schema;
     return options as any;
-  }
-
-  public validateSchema(): void {
-    const schema = this.getSchema();
-    validateTType(schema, 'map');
-    this.type.validateSchema();
   }
 
   public codegenValidator(ctx: ValidatorCodegenContext, path: ValidationPath, r: string): void {
@@ -139,13 +132,6 @@ export class MapType<T extends Type> extends AbstractType<schema.MapSchema<Schem
     type.codegenJsonEncoder(ctx, new JsExpression(() => `${r}[${rKey}]`));
     ctx.js(`}`);
     ctx.blob(objEndBlob);
-  }
-
-  public random(): Record<string, unknown> {
-    const length = Math.round(Math.random() * 10);
-    const res: Record<string, unknown> = {};
-    for (let i = 0; i < length; i++) res[RandomJson.genString(length)] = this.type.random();
-    return res;
   }
 
   public toTypeScriptAst(): ts.TsTypeReference {

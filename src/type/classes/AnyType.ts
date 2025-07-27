@@ -1,6 +1,5 @@
 import type * as schema from '../../schema';
 import {RandomJson} from '@jsonjoy.com/util/lib/json-random';
-import {validateTType} from '../../schema/validate';
 import type {ValidatorCodegenContext} from '../../codegen/validator/ValidatorCodegenContext';
 import type {ValidationPath} from '../../codegen/validator/types';
 import type {JsonTextEncoderCodegenContext} from '../../codegen/json/JsonTextEncoderCodegenContext';
@@ -12,6 +11,7 @@ import {MessagePackEncoderCodegenContext} from '../../codegen/binary/MessagePack
 import {EncodingFormat} from '@jsonjoy.com/json-pack/lib/constants';
 import type {BinaryJsonEncoder} from '@jsonjoy.com/json-pack/lib/types';
 import type {CapacityEstimatorCodegenContext} from '../../codegen/capacity/CapacityEstimatorCodegenContext';
+import {maxEncodingCapacity} from '@jsonjoy.com/util/lib/json-size';
 import {AbstractType} from './AbstractType';
 import type * as jsonSchema from '../../json-schema';
 import type * as ts from '../../typescript/types';
@@ -21,10 +21,6 @@ import type * as jtd from '../../jtd/types';
 export class AnyType extends AbstractType<schema.AnySchema> {
   constructor(protected schema: schema.AnySchema) {
     super();
-  }
-
-  public validateSchema(): void {
-    validateTType(this.getSchema(), 'any');
   }
 
   public codegenValidator(ctx: ValidatorCodegenContext, path: ValidationPath, r: string): void {
@@ -73,10 +69,6 @@ export class AnyType extends AbstractType<schema.AnySchema> {
 
   public codegenJsonEncoder(ctx: JsonEncoderCodegenContext, value: JsExpression): void {
     this.codegenBinaryEncoder(ctx, value);
-  }
-
-  public random(): unknown {
-    return RandomJson.generate({nodeCount: 5});
   }
 
   public toTypeScriptAst(): ts.TsType {

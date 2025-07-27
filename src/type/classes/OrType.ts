@@ -1,6 +1,5 @@
 import * as schema from '../../schema';
 import {printTree} from 'tree-dump/lib/printTree';
-import {validateTType} from '../../schema/validate';
 import type {ValidatorCodegenContext} from '../../codegen/validator/ValidatorCodegenContext';
 import type {ValidationPath} from '../../codegen/validator/types';
 import {ValidationError} from '../../constants';
@@ -69,16 +68,6 @@ export class OrType<T extends Type[]> extends AbstractType<schema.OrSchema<{[K i
     return (this.__discriminator = (data: unknown) => +(fn(new Vars(data)) as any));
   }
 
-  public validateSchema(): void {
-    const schema = this.getSchema();
-    validateTType(schema, 'or');
-    const {types, discriminator} = schema;
-    if (!discriminator || (discriminator[0] === 'num' && discriminator[1] === -1)) throw new Error('DISCRIMINATOR');
-    if (!Array.isArray(types)) throw new Error('TYPES_TYPE');
-    if (!types.length) throw new Error('TYPES_LENGTH');
-    for (const type of this.types) type.validateSchema();
-  }
-
   public codegenValidator(ctx: ValidatorCodegenContext, path: ValidationPath, r: string): void {
     const types = this.types;
     const codegen = ctx.codegen;
@@ -136,12 +125,6 @@ export class OrType<T extends Type[]> extends AbstractType<schema.OrSchema<{[K i
 
   public codegenJsonEncoder(ctx: JsonEncoderCodegenContext, value: JsExpression): void {
     this.codegenBinaryEncoder(ctx, value);
-  }
-
-  public random(): unknown {
-    const types = this.types;
-    const index = Math.floor(Math.random() * types.length);
-    return types[index].random();
   }
 
   public toTypeScriptAst(): ts.TsUnionType {

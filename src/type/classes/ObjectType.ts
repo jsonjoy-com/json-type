@@ -2,10 +2,8 @@ import {normalizeAccessor} from '@jsonjoy.com/util/lib/codegen/util/normalizeAcc
 import {MaxEncodingOverhead, maxEncodingCapacity} from '@jsonjoy.com/util/lib/json-size';
 import {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
 import {asString} from '@jsonjoy.com/util/lib/strings/asString';
-import {RandomJson} from '@jsonjoy.com/util/lib/json-random';
 import {printTree} from 'tree-dump/lib/printTree';
 import * as schema from '../../schema';
-import {validateTType, validateWithValidator} from '../../schema/validate';
 import type {ValidatorCodegenContext} from '../../codegen/validator/ValidatorCodegenContext';
 import type {ValidationPath} from '../../codegen/validator/types';
 import {ValidationError} from '../../constants';
@@ -60,15 +58,6 @@ export class ObjectFieldType<K extends string, V extends Type> extends AbstractT
   public getOptions(): schema.Optional<schema.ObjectFieldSchema<K, SchemaOf<V>>> {
     const {kind, key, type, optional, ...options} = this.schema;
     return options as any;
-  }
-
-  public validateSchema(): void {
-    const schema = this.getSchema();
-    validateTType(schema, 'field');
-    const {key, optional} = schema;
-    if (typeof key !== 'string') throw new Error('KEY_TYPE');
-    if (optional !== undefined && typeof optional !== 'boolean') throw new Error('OPTIONAL_TYPE');
-    this.value.validateSchema();
   }
 
   protected toStringTitle(): string {
@@ -175,16 +164,6 @@ export class ObjectType<F extends ObjectFieldType<any, any>[] = ObjectFieldType<
     const type = new ObjectType([field] as any);
     type.system = this.system;
     return type;
-  }
-
-  public validateSchema(): void {
-    const schema = this.getSchema();
-    validateTType(schema, 'obj');
-    validateWithValidator(schema);
-    const {fields, unknownFields} = schema;
-    if (!Array.isArray(fields)) throw new Error('FIELDS_TYPE');
-    if (unknownFields !== undefined && typeof unknownFields !== 'boolean') throw new Error('UNKNOWN_FIELDS_TYPE');
-    for (const field of this.fields) field.validateSchema();
   }
 
   public codegenValidator(ctx: ValidatorCodegenContext, path: ValidationPath, r: string): void {
@@ -509,16 +488,6 @@ if (${rLength}) {
       emitUnknownFields();
       emitEnding();
     }
-  }
-
-  public random(): Record<string, unknown> {
-    const schema = this.schema;
-    const obj: Record<string, unknown> = schema.unknownFields ? <Record<string, unknown>>RandomJson.genObject() : {};
-    for (const field of this.fields) {
-      if (field instanceof ObjectOptionalFieldType) if (Math.random() > 0.5) continue;
-      obj[field.key] = field.value.random();
-    }
-    return obj;
   }
 
   public toTypeScriptAst(): ts.TsTypeLiteral {

@@ -1,7 +1,5 @@
 import type * as schema from '../../schema';
-import {RandomJson} from '@jsonjoy.com/util/lib/json-random';
 import {asString} from '@jsonjoy.com/util/lib/strings/asString';
-import {validateMinMax, validateTType, validateWithValidator} from '../../schema/validate';
 import {AbstractType} from './AbstractType';
 import {isAscii, isUtf8} from '../../util/stringFormats';
 import {ValidationError} from '../../constants';
@@ -37,29 +35,6 @@ export class StringType extends AbstractType<schema.StringSchema> {
   public max(max: schema.StringSchema['max']): this {
     this.schema.max = max;
     return this;
-  }
-
-  public validateSchema(): void {
-    const schema = this.getSchema();
-    validateTType(schema, 'str');
-    validateWithValidator(schema);
-    const {min, max, ascii, noJsonEscape, format} = schema;
-    validateMinMax(min, max);
-    if (ascii !== undefined) {
-      if (typeof ascii !== 'boolean') throw new Error('ASCII');
-    }
-    if (noJsonEscape !== undefined) {
-      if (typeof noJsonEscape !== 'boolean') throw new Error('NO_JSON_ESCAPE_TYPE');
-    }
-    if (format !== undefined) {
-      if (format !== 'ascii' && format !== 'utf8') {
-        throw new Error('INVALID_STRING_FORMAT');
-      }
-      // If both format and ascii are specified, they should be consistent
-      if (ascii !== undefined && format === 'ascii' && !ascii) {
-        throw new Error('FORMAT_ASCII_MISMATCH');
-      }
-    }
   }
 
   public codegenValidator(ctx: ValidatorCodegenContext, path: ValidationPath, r: string): void {
@@ -125,14 +100,6 @@ export class StringType extends AbstractType<schema.StringSchema> {
 
   public codegenJsonEncoder(ctx: JsonEncoderCodegenContext, value: JsExpression): void {
     this.codegenBinaryEncoder(ctx, value);
-  }
-
-  public random(): string {
-    let length = Math.round(Math.random() * 10);
-    const {min, max} = this.schema;
-    if (min !== undefined && length < min) length = min + length;
-    if (max !== undefined && length > max) length = max;
-    return RandomJson.genString(length);
   }
 
   public toTypeScriptAst(): ts.TsStringKeyword {

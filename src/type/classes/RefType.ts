@@ -1,5 +1,4 @@
 import * as schema from '../../schema';
-import {validateTType} from '../../schema/validate';
 import type {ValidatorCodegenContext} from '../../codegen/validator/ValidatorCodegenContext';
 import type {ValidationPath} from '../../codegen/validator/types';
 import {ValidationError} from '../../constants';
@@ -36,14 +35,6 @@ export class RefType<T extends Type> extends AbstractType<schema.RefSchema<Schem
   public getOptions(): schema.Optional<schema.RefSchema<SchemaOf<T>>> {
     const {kind, ref, ...options} = this.schema;
     return options as any;
-  }
-
-  public validateSchema(): void {
-    const schema = this.getSchema();
-    validateTType(schema, 'ref');
-    const {ref} = schema;
-    if (typeof ref !== 'string') throw new Error('REF_TYPE');
-    if (!ref) throw new Error('REF_EMPTY');
   }
 
   public codegenValidator(ctx: ValidatorCodegenContext, path: ValidationPath, r: string): void {
@@ -116,12 +107,6 @@ export class RefType<T extends Type> extends AbstractType<schema.RefSchema<Schem
 
   public codegenJsonEncoder(ctx: JsonEncoderCodegenContext, value: JsExpression): void {
     this.codegenBinaryEncoder(ctx, value);
-  }
-
-  public random(): unknown {
-    if (!this.system) throw new Error('NO_SYSTEM');
-    const alias = this.system.resolve(this.schema.ref);
-    return alias.type.random();
   }
 
   public toTypeScriptAst(): ts.TsGenericTypeAnnotation {
