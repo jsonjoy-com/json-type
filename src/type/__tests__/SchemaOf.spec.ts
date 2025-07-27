@@ -96,18 +96,27 @@ test('or', () => {
   const v2: T = 'abc';
 });
 
-test('fn', () => {
-  const type = t.Function(t.num, t.str);
-  type S = SchemaOf<typeof type>;
-  type T = TypeOf<S>;
-  const v: T = async (arg: number) => 'abc';
-});
+describe('fn', () => {
+  test('fn', () => {
+    const type = t.Function(t.num, t.str);
+    type S = SchemaOf<typeof type>;
+    type T = TypeOf<S>;
+    const v: T = async (arg: number) => 'abc';
+  });
 
-test('fn$', () => {
-  const type = t.Function$(t.num, t.str);
-  type S = SchemaOf<typeof type>;
-  type T = TypeOf<S>;
-  const v: T = (arg) => EMPTY;
+  test('no input and no output', () => {
+    const type = t.Function(t.undef, t.undef);
+    type S = SchemaOf<typeof type>;
+    type T = TypeOf<S>;
+    const v: T = async () => {};
+  });
+
+  test('fn$', () => {
+    const type = t.Function$(t.num, t.str);
+    type S = SchemaOf<typeof type>;
+    type T = TypeOf<S>;
+    const v: T = (arg) => EMPTY;
+  });
 });
 
 test('string patch', () => {
