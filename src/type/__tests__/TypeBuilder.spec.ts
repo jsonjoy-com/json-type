@@ -63,9 +63,19 @@ test('can construct a realistic object', () => {
 
 test('can build type using lowercase shortcuts', () => {
   const MyObject = t.object({
-    id: t.str,
-    offsets: t.array(t.num),
-  })
+    id: t.string(),
+    name: t.string(),
+    age: t.bigint(),
+    verified: t.boolean(),
+    offsets: t.array(t.number()),
+  });
+  const MyObject2 = t.obj
+    .prop('id', t.str)
+    .prop('name', t.str)
+    .prop('age', t.bigint())
+    .prop('verified', t.bool)
+    .prop('offsets', t.array(t.num));
+  expect(MyObject.getSchema()).toEqual(MyObject2.getSchema());
 
   console.log(MyObject + '');
 });

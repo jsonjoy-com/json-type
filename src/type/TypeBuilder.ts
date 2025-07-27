@@ -92,15 +92,8 @@ export class TypeBuilder {
     for (const [key, value] of Object.entries(record)) fields.push(this.prop(key, value));
     const obj = new classes.ObjectType<RecordToFields<R>>(fields as any);
     obj.system = this.system;
-    Object.keys
     return obj;
   };
-
-  //   public Object<F extends classes.ObjectFieldType<any, any>[]>(...fields: F) {
-  //   const obj = new classes.ObjectType<F>(fields);
-  //   obj.system = this.system;
-  //   return obj;
-  // }
 
   public Any(options?: schema.Optional<schema.AnySchema>) {
     const type = new classes.AnyType(s.Any(options));
