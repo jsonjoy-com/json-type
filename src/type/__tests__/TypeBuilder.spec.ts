@@ -99,6 +99,7 @@ test('can build type using lowercase shortcuts', () => {
     enum: 'three',
     optional: undefined,
   } as ObjectType2;
+  MyObject.validate(obj);
   MyObject2.validate(obj);
 });
 

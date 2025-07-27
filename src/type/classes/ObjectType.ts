@@ -199,7 +199,7 @@ export class ObjectType<F extends ObjectFieldType<any, any>[] = ObjectFieldType<
         if (!canSkipObjectKeyUndefinedCheck((field.value as AbstractType<any>).getSchema().kind)) {
           const err = ctx.err(ValidationError.KEY, [...path, field.key]);
           ctx.js(/* js */ `var ${rv} = ${r}${accessor};`);
-          ctx.js(/* js */ `if (!(${rv} in ${r})) return ${err};`);
+          ctx.js(/* js */ `if (!(${JSON.stringify(field.key)} in ${r})) return ${err};`);
         }
         field.value.codegenValidator(ctx, keyPath, `${r}${accessor}`);
       }

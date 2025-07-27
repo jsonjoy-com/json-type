@@ -133,9 +133,9 @@ export abstract class AbstractType<S extends schema.Schema> implements BaseType<
   }
 
   public validate(value: unknown): void {
-    const validator = this.validator('string');
+    const validator = this.validator('object');
     const err = validator(value);
-    if (err) throw new Error(err + '');
+    if (err) throw err;
   }
 
   public compileValidator(options: Partial<Omit<ValidatorCodegenContextOptions, 'type'>>): JsonTypeValidator {
