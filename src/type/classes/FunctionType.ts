@@ -41,6 +41,24 @@ export class FunctionType<Req extends Type, Res extends Type> extends AbstractTy
     } as any;
   }
 
+  public request<T extends Type>(req: T): FunctionType<T, Res> {
+    (this as any).req = req;
+    return this as any;
+  }
+
+  public inp<T extends Type>(req: T): FunctionType<T, Res> {
+    return this.request(req);
+  }
+
+  public response<T extends Type>(res: T): FunctionType<Req, T> {
+    (this as any).res = res;
+    return this as any;
+  }
+
+  public out<T extends Type>(res: T): FunctionType<Req, T> {
+    return this.response(res);
+  }
+
   public getSchema(): schema.FunctionSchema<SchemaOf<Req>, SchemaOf<Res>> {
     return {
       ...this.schema,
@@ -82,6 +100,24 @@ export class FunctionStreamingType<Req extends Type, Res extends Type> extends A
       ...options,
       ...schema.s.Function$(schema.s.any, schema.s.any),
     } as any;
+  }
+
+  public request<T extends Type>(req: T): FunctionType<T, Res> {
+    (this as any).req = req;
+    return this as any;
+  }
+
+  public inp<T extends Type>(req: T): FunctionType<T, Res> {
+    return this.request(req);
+  }
+
+  public response<T extends Type>(res: T): FunctionType<Req, T> {
+    (this as any).res = res;
+    return this as any;
+  }
+
+  public out<T extends Type>(res: T): FunctionType<Req, T> {
+    return this.response(res);
   }
 
   public getSchema(): schema.FunctionStreamingSchema<SchemaOf<Req>, SchemaOf<Res>> {

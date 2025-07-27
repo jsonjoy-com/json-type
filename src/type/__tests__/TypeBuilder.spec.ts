@@ -1,6 +1,6 @@
+import {NumberType, ObjectFieldType, ObjectType, StringType} from '../classes';
 import {type SchemaOf, t} from '..';
 import type {TypeOf} from '../../schema';
-import {NumberType, ObjectFieldType, ObjectType, StringType} from '../classes';
 
 test('number', () => {
   const type = t.Number({
@@ -11,6 +11,20 @@ test('number', () => {
     kind: 'num',
     description: 'A number',
     format: 'i32',
+  });
+});
+
+describe('"fn" kind', () => {
+  test('can use shorthand to define function', () => {
+    const type1 = t.fn.title('My Function').inp(t.str).out(t.num);
+    const type2 = t.Function(t.str, t.num, {title: 'My Function'});
+    expect(type1.getSchema()).toEqual(type2.getSchema());
+  });
+
+  test('can use shorthand to define a streaming function', () => {
+    const type1 = t.fn$.title('My Function').inp(t.str).out(t.num);
+    const type2 = t.Function$(t.str, t.num, {title: 'My Function'});
+    expect(type1.getSchema()).toEqual(type2.getSchema());
   });
 });
 

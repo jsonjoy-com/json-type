@@ -72,11 +72,11 @@ export class TypeBuilder {
   }
 
   get fn() {
-    return this.Function(this.any, this.any);
+    return this.Function(this.undef, this.undef);
   }
 
   get fn$() {
-    return this.Function$(this.any, this.any);
+    return this.Function$(this.undef, this.undef);
   }
 
 
@@ -245,15 +245,14 @@ export class TypeBuilder {
     return type;
   }
 
-  /** @todo Shorten to `Func`. */
-  public Function<Req extends Type, Res extends Type>(req: Req, res: Res) {
-    const fn = new classes.FunctionType<Req, Res>(req, res);
+  public Function<Req extends Type, Res extends Type>(req: Req, res: Res, options?: schema.Optional<schema.FunctionSchema>) {
+    const fn = new classes.FunctionType<Req, Res>(req, res, options);
     fn.system = this.system;
     return fn;
   }
 
-  public Function$<Req extends Type, Res extends Type>(req: Req, res: Res) {
-    const fn = new classes.FunctionStreamingType<Req, Res>(req, res);
+  public Function$<Req extends Type, Res extends Type>(req: Req, res: Res, options?: schema.Optional<schema.FunctionStreamingSchema>) {
+    const fn = new classes.FunctionStreamingType<Req, Res>(req, res, options);
     fn.system = this.system;
     return fn;
   }
