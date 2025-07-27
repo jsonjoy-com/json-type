@@ -70,8 +70,10 @@ test('can build type using lowercase shortcuts', () => {
     coordinates: t.tuple(t.number(), t.number()),
     verified: t.boolean(),
     offsets: t.array(t.number()),
+    enum: t.enum(1, 2, 'three'),
     optional: t.maybe(t.string()),
   }).opt('description', t.string());
+  // console.log(MyObject + '');
   const MyObject2 = t.obj
     .prop('type', t.Const('user'))
     .prop('id', t.str)
@@ -80,20 +82,24 @@ test('can build type using lowercase shortcuts', () => {
     .prop('coordinates', t.Tuple(t.num, t.num))
     .prop('verified', t.bool)
     .prop('offsets', t.array(t.num))
+    .prop('enum', t.Or(t.Const(1), t.Const(2), t.Const('three')))
     .prop('optional', t.Or(t.str, t.undef))
     .opt('description', t.str);
   expect(MyObject.getSchema()).toEqual(MyObject2.getSchema());
   type ObjectType = t.infer<typeof MyObject>;
   type ObjectType2 = t.infer<typeof MyObject2>;
   const obj: ObjectType = {
-  type: 'user',
+    type: 'user',
     id: '123',
     name: 'Test',
     coordinates: [1.23, 4.56],
     age: 30,
     verified: true,
     offsets: [1, 2, 3],
+    enum: 'three',
+    optional: undefined,
   } as ObjectType2;
+  MyObject2.validate(obj);
 });
 
 describe('import()', () => {

@@ -1,6 +1,4 @@
-import {cloneBinary} from '@jsonjoy.com/util/lib/json-clone';
 import {ValidationError} from '../../constants';
-import {maxEncodingCapacity} from '@jsonjoy.com/util/lib/json-size';
 import {AbstractType} from './AbstractType';
 import {deepEqualCodegen} from '@jsonjoy.com/util/lib/json-equal/deepEqualCodegen';
 import type * as schema from '../../schema';
@@ -13,12 +11,9 @@ import type {BinaryEncoderCodegenContext} from '../../codegen/binary/BinaryEncod
 import type {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
 import type {MessagePackEncoderCodegenContext} from '../../codegen/binary/MessagePackEncoderCodegenContext';
 import type {BinaryJsonEncoder} from '@jsonjoy.com/json-pack/lib/types';
-import type {CapacityEstimatorCodegenContext} from '../../codegen/capacity/CapacityEstimatorCodegenContext';
-import type * as jsonSchema from '../../json-schema';
 import type {TypeSystem} from '../../system/TypeSystem';
 import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
 import type * as ts from '../../typescript/types';
-import type {TypeExportContext} from '../../system/TypeExportContext';
 import type * as jtd from '../../jtd/types';
 
 export class ConstType<V = any> extends AbstractType<schema.ConstSchema<V>> {

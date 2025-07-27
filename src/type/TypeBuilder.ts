@@ -29,6 +29,8 @@ type RecordToFields<O extends Record<string, Type>> = ObjValueTuple<{[K in keyof
 export class TypeBuilder {
   constructor(public system?: TypeSystem) {}
 
+  // -------------------------------------------------------------- empty types
+
   get any() {
     return this.Any();
   }
@@ -77,11 +79,13 @@ export class TypeBuilder {
     return this.Function$(this.any, this.any);
   }
 
+
+  // --------------------------------------------------------------- shorthands
+
   public readonly undefined = () => this.undef;
   public readonly null = () => this.nil;
   public readonly boolean = () => this.bool;
   public readonly number = () => this.num;
-  // public readonly bigint = () => this.Number({format: 'i64'});
   public readonly string = () => this.str;
   public readonly binary = () => this.bin;
 
@@ -93,6 +97,27 @@ export class TypeBuilder {
 
   public readonly tuple = <F extends Type[]>(...types: F) => this.Tuple(...types);
 
+  /**
+   * Creates an object type with the specified properties. This is a shorthand for
+   * `t.Object(t.prop(key, value), ...)`.
+   *
+   * Importantly, this method does not allow to specify object field order,
+   * so the order of properties in the resulting type is not guaranteed.
+   *
+   * Example:
+   *
+   * ```ts
+   * t.object({
+   *   id: t.str,
+   *   name: t.string(),
+   *   age: t.num,
+   *   verified: t.bool,
+   * });
+   * ```
+   *
+   * @param record A mapping of property names to types.
+   * @returns An object type.
+   */
   public readonly object = <R extends Record<string, Type>>(record: R): classes.ObjectType<RecordToFields<R>> => {
     const fields: classes.ObjectFieldType<any, any>[] = [];
     for (const [key, value] of Object.entries(record)) fields.push(this.prop(key, value));
@@ -107,6 +132,25 @@ export class TypeBuilder {
    */
   public readonly maybe = <T extends Type>(type: T) =>
     this.Or(type, this.undef);
+
+  /**
+   * Creates a union type from a list of values. This is a shorthand for
+   * `t.Or(t.Const(value1), t.Const(value2), ...)`. For example, the below
+   * are equivalent:
+   *
+   * ```ts
+   * t.enum('red', 'green', 'blue');
+   * t.Or(t.Const('red'), t.Const('green'), t.Const('blue'));
+   * ```
+   *
+   * @param values The values to include in the union.
+   * @returns A union type representing the values.
+   */
+  public readonly enum = <const T extends (string | number | boolean | null)[]>(...values: T): classes.OrType<{[K in keyof T]: classes.ConstType<schema.Narrow<T[K]>>}> =>
+    this.Or(...values.map(type => this.Const(type as any))) as any;
+
+
+  // --------------------------------------------------- base node constructors
 
   public Any(options?: schema.Optional<schema.AnySchema>) {
     const type = new classes.AnyType(s.Any(options));
