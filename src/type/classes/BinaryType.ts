@@ -1,37 +1,36 @@
-import type { JsExpression } from "@jsonjoy.com/util/lib/codegen/util/JsExpression";
-import type { BinaryJsonEncoder } from "@jsonjoy.com/json-pack/lib/types";
-import { printTree } from "tree-dump/lib/printTree";
-import * as schema from "../../schema";
-import { RandomJson } from "@jsonjoy.com/util/lib/json-random";
-import { stringifyBinary } from "@jsonjoy.com/json-pack/lib/json-binary";
-import { validateMinMax, validateTType } from "../../schema/validate";
-import type { ValidatorCodegenContext } from "../../codegen/validator/ValidatorCodegenContext";
-import type { ValidationPath } from "../../codegen/validator/types";
-import { ValidationError } from "../../constants";
-import type { JsonTextEncoderCodegenContext } from "../../codegen/json/JsonTextEncoderCodegenContext";
-import type { CborEncoderCodegenContext } from "../../codegen/binary/CborEncoderCodegenContext";
-import type { JsonEncoderCodegenContext } from "../../codegen/binary/JsonEncoderCodegenContext";
-import type { BinaryEncoderCodegenContext } from "../../codegen/binary/BinaryEncoderCodegenContext";
-import type { MessagePackEncoderCodegenContext } from "../../codegen/binary/MessagePackEncoderCodegenContext";
-import type { CapacityEstimatorCodegenContext } from "../../codegen/capacity/CapacityEstimatorCodegenContext";
-import { MaxEncodingOverhead } from "@jsonjoy.com/util/lib/json-size";
-import { AbstractType } from "./AbstractType";
-import type * as jsonSchema from "../../json-schema";
-import type { SchemaOf, Type } from "../types";
-import type { TypeSystem } from "../../system/TypeSystem";
-import type { json_string } from "@jsonjoy.com/util/lib/json-brand";
-import type * as ts from "../../typescript/types";
-import type { TypeExportContext } from "../../system/TypeExportContext";
+import type {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
+import type {BinaryJsonEncoder} from '@jsonjoy.com/json-pack/lib/types';
+import {printTree} from 'tree-dump/lib/printTree';
+import * as schema from '../../schema';
+import {RandomJson} from '@jsonjoy.com/util/lib/json-random';
+import {stringifyBinary} from '@jsonjoy.com/json-pack/lib/json-binary';
+import type {ValidatorCodegenContext} from '../../codegen/validator/ValidatorCodegenContext';
+import type {ValidationPath} from '../../codegen/validator/types';
+import {ValidationError} from '../../constants';
+import type {JsonTextEncoderCodegenContext} from '../../codegen/json/JsonTextEncoderCodegenContext';
+import type {CborEncoderCodegenContext} from '../../codegen/binary/CborEncoderCodegenContext';
+import type {JsonEncoderCodegenContext} from '../../codegen/binary/JsonEncoderCodegenContext';
+import type {BinaryEncoderCodegenContext} from '../../codegen/binary/BinaryEncoderCodegenContext';
+import type {MessagePackEncoderCodegenContext} from '../../codegen/binary/MessagePackEncoderCodegenContext';
+import type {CapacityEstimatorCodegenContext} from '../../codegen/capacity/CapacityEstimatorCodegenContext';
+import {MaxEncodingOverhead} from '@jsonjoy.com/util/lib/json-size';
+import {AbstractType} from './AbstractType';
+import type * as jsonSchema from '../../json-schema';
+import type {SchemaOf, Type} from '../types';
+import type {TypeSystem} from '../../system/TypeSystem';
+import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
+import type * as ts from '../../typescript/types';
+import type {TypeExportContext} from '../../system/TypeExportContext';
 
-const formats = new Set<schema.BinarySchema["format"]>([
-  "bencode",
-  "bson",
-  "cbor",
-  "ion",
-  "json",
-  "msgpack",
-  "resp3",
-  "ubjson",
+const formats = new Set<schema.BinarySchema['format']>([
+  'bencode',
+  'bson',
+  'cbor',
+  'ion',
+  'json',
+  'msgpack',
+  'resp3',
+  'ubjson',
 ]);
 
 export class BinaryType<
@@ -59,23 +58,8 @@ export class BinaryType<
     return options as any;
   }
 
-  public validateSchema(): void {
-    const schema = this.getSchema();
-    validateTType(schema, "bin");
-    const { min, max, format } = schema;
-    validateMinMax(min, max);
-    if (format !== undefined) {
-      if (!formats.has(format)) throw new Error("FORMAT");
-    }
-    this.type.validateSchema();
-  }
-
-  public codegenValidator(
-    ctx: ValidatorCodegenContext,
-    path: ValidationPath,
-    r: string,
-  ): void {
-    const hasBuffer = typeof Buffer === "function";
+  public codegenValidator(ctx: ValidatorCodegenContext, path: ValidationPath, r: string): void {
+    const hasBuffer = typeof Buffer === 'function';
     const err = ctx.err(ValidationError.BIN, path);
     ctx.js(
       // prettier-ignore
@@ -134,13 +118,6 @@ export class BinaryType<
     value: JsExpression,
   ): void {
     this.codegenBinaryEncoder(ctx, value);
-  }
-
-  public random(): Uint8Array {
-    const octets = RandomJson.genString()
-      .split("")
-      .map((c) => c.charCodeAt(0));
-    return new Uint8Array(octets);
   }
 
   public toTypeScriptAst(): ts.TsGenericTypeAnnotation {

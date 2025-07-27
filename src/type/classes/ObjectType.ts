@@ -1,31 +1,26 @@
-import { normalizeAccessor } from "@jsonjoy.com/util/lib/codegen/util/normalizeAccessor";
-import {
-  MaxEncodingOverhead,
-  maxEncodingCapacity,
-} from "@jsonjoy.com/util/lib/json-size";
-import { JsExpression } from "@jsonjoy.com/util/lib/codegen/util/JsExpression";
-import { asString } from "@jsonjoy.com/util/lib/strings/asString";
-import { RandomJson } from "@jsonjoy.com/util/lib/json-random";
-import { printTree } from "tree-dump/lib/printTree";
-import * as schema from "../../schema";
-import { validateTType, validateWithValidator } from "../../schema/validate";
-import type { ValidatorCodegenContext } from "../../codegen/validator/ValidatorCodegenContext";
-import type { ValidationPath } from "../../codegen/validator/types";
-import { ValidationError } from "../../constants";
-import { canSkipObjectKeyUndefinedCheck } from "../../codegen/validator/util";
-import type { JsonTextEncoderCodegenContext } from "../../codegen/json/JsonTextEncoderCodegenContext";
-import type { CborEncoderCodegenContext } from "../../codegen/binary/CborEncoderCodegenContext";
-import type { JsonEncoderCodegenContext } from "../../codegen/binary/JsonEncoderCodegenContext";
-import type { MessagePackEncoderCodegenContext } from "../../codegen/binary/MessagePackEncoderCodegenContext";
-import type { CapacityEstimatorCodegenContext } from "../../codegen/capacity/CapacityEstimatorCodegenContext";
-import { AbstractType } from "./AbstractType";
-import type * as jsonSchema from "../../json-schema";
-import type { SchemaOf, SchemaOfObjectFields, Type } from "../types";
-import type { TypeSystem } from "../../system/TypeSystem";
-import type { json_string } from "@jsonjoy.com/util/lib/json-brand";
-import type * as ts from "../../typescript/types";
-import type { TypeExportContext } from "../../system/TypeExportContext";
-import type { ExcludeFromTuple, PickFromTuple } from "../../util/types";
+import {normalizeAccessor} from '@jsonjoy.com/util/lib/codegen/util/normalizeAccessor';
+import {MaxEncodingOverhead, maxEncodingCapacity} from '@jsonjoy.com/util/lib/json-size';
+import {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
+import {asString} from '@jsonjoy.com/util/lib/strings/asString';
+import {printTree} from 'tree-dump/lib/printTree';
+import * as schema from '../../schema';
+import type {ValidatorCodegenContext} from '../../codegen/validator/ValidatorCodegenContext';
+import type {ValidationPath} from '../../codegen/validator/types';
+import {ValidationError} from '../../constants';
+import {canSkipObjectKeyUndefinedCheck} from '../../codegen/validator/util';
+import type {JsonTextEncoderCodegenContext} from '../../codegen/json/JsonTextEncoderCodegenContext';
+import type {CborEncoderCodegenContext} from '../../codegen/binary/CborEncoderCodegenContext';
+import type {JsonEncoderCodegenContext} from '../../codegen/binary/JsonEncoderCodegenContext';
+import type {MessagePackEncoderCodegenContext} from '../../codegen/binary/MessagePackEncoderCodegenContext';
+import type {CapacityEstimatorCodegenContext} from '../../codegen/capacity/CapacityEstimatorCodegenContext';
+import {AbstractType} from './AbstractType';
+import type * as jsonSchema from '../../json-schema';
+import type {SchemaOf, SchemaOfObjectFields, Type} from '../types';
+import type {TypeSystem} from '../../system/TypeSystem';
+import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
+import type * as ts from '../../typescript/types';
+import type {TypeExportContext} from '../../system/TypeExportContext';
+import type {ExcludeFromTuple, PickFromTuple} from '../../util/types';
 
 const augmentWithComment = (
   type: schema.Schema | schema.ObjectFieldSchema,
@@ -66,16 +61,6 @@ export class ObjectFieldType<
   > {
     const { kind, key, type, optional, ...options } = this.schema;
     return options as any;
-  }
-
-  public validateSchema(): void {
-    const schema = this.getSchema();
-    validateTType(schema, "field");
-    const { key, optional } = schema;
-    if (typeof key !== "string") throw new Error("KEY_TYPE");
-    if (optional !== undefined && typeof optional !== "boolean")
-      throw new Error("OPTIONAL_TYPE");
-    this.value.validateSchema();
   }
 
   protected toStringTitle(): string {
@@ -176,22 +161,7 @@ export class ObjectType<
     return type;
   }
 
-  public validateSchema(): void {
-    const schema = this.getSchema();
-    validateTType(schema, "obj");
-    validateWithValidator(schema);
-    const { fields, unknownFields } = schema;
-    if (!Array.isArray(fields)) throw new Error("FIELDS_TYPE");
-    if (unknownFields !== undefined && typeof unknownFields !== "boolean")
-      throw new Error("UNKNOWN_FIELDS_TYPE");
-    for (const field of this.fields) field.validateSchema();
-  }
-
-  public codegenValidator(
-    ctx: ValidatorCodegenContext,
-    path: ValidationPath,
-    r: string,
-  ): void {
+  public codegenValidator(ctx: ValidatorCodegenContext, path: ValidationPath, r: string): void {
     const fields = this.fields;
     const length = fields.length;
     const canSkipObjectTypeCheck = ctx.options.unsafeMode && length > 0;
@@ -586,19 +556,6 @@ if (${rLength}) {
       emitUnknownFields();
       emitEnding();
     }
-  }
-
-  public random(): Record<string, unknown> {
-    const schema = this.schema;
-    const obj: Record<string, unknown> = schema.unknownFields
-      ? <Record<string, unknown>>RandomJson.genObject()
-      : {};
-    for (const field of this.fields) {
-      if (field instanceof ObjectOptionalFieldType)
-        if (Math.random() > 0.5) continue;
-      obj[field.key] = field.value.random();
-    }
-    return obj;
   }
 
   public toTypeScriptAst(): ts.TsTypeLiteral {

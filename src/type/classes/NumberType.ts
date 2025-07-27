@@ -1,79 +1,32 @@
-import type * as schema from "../../schema";
-import { floats, ints, uints } from "../../util";
-import { validateTType, validateWithValidator } from "../../schema/validate";
-import type { ValidatorCodegenContext } from "../../codegen/validator/ValidatorCodegenContext";
-import type { ValidationPath } from "../../codegen/validator/types";
-import { ValidationError } from "../../constants";
-import type { JsonTextEncoderCodegenContext } from "../../codegen/json/JsonTextEncoderCodegenContext";
-import type { CborEncoderCodegenContext } from "../../codegen/binary/CborEncoderCodegenContext";
-import type { JsonEncoderCodegenContext } from "../../codegen/binary/JsonEncoderCodegenContext";
-import type { BinaryEncoderCodegenContext } from "../../codegen/binary/BinaryEncoderCodegenContext";
-import type { JsExpression } from "@jsonjoy.com/util/lib/codegen/util/JsExpression";
-import type { MessagePackEncoderCodegenContext } from "../../codegen/binary/MessagePackEncoderCodegenContext";
-import type { BinaryJsonEncoder } from "@jsonjoy.com/json-pack/lib/types";
-import type { CapacityEstimatorCodegenContext } from "../../codegen/capacity/CapacityEstimatorCodegenContext";
-import { MaxEncodingOverhead } from "@jsonjoy.com/util/lib/json-size";
-import { AbstractType } from "./AbstractType";
-import type * as jsonSchema from "../../json-schema";
-import type { TypeSystem } from "../../system/TypeSystem";
-import type { json_string } from "@jsonjoy.com/util/lib/json-brand";
-import type * as ts from "../../typescript/types";
-import type { TypeExportContext } from "../../system/TypeExportContext";
-import type * as jtd from "../../jtd/types";
+import type * as schema from '../../schema';
+import {floats, ints, uints} from '../../util';
+import type {ValidatorCodegenContext} from '../../codegen/validator/ValidatorCodegenContext';
+import type {ValidationPath} from '../../codegen/validator/types';
+import {ValidationError} from '../../constants';
+import type {JsonTextEncoderCodegenContext} from '../../codegen/json/JsonTextEncoderCodegenContext';
+import type {CborEncoderCodegenContext} from '../../codegen/binary/CborEncoderCodegenContext';
+import type {JsonEncoderCodegenContext} from '../../codegen/binary/JsonEncoderCodegenContext';
+import type {BinaryEncoderCodegenContext} from '../../codegen/binary/BinaryEncoderCodegenContext';
+import type {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
+import type {MessagePackEncoderCodegenContext} from '../../codegen/binary/MessagePackEncoderCodegenContext';
+import type {BinaryJsonEncoder} from '@jsonjoy.com/json-pack/lib/types';
+import type {CapacityEstimatorCodegenContext} from '../../codegen/capacity/CapacityEstimatorCodegenContext';
+import {MaxEncodingOverhead} from '@jsonjoy.com/util/lib/json-size';
+import {AbstractType} from './AbstractType';
+import type * as jsonSchema from '../../json-schema';
+import type {TypeSystem} from '../../system/TypeSystem';
+import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
+import type * as ts from '../../typescript/types';
+import type {TypeExportContext} from '../../system/TypeExportContext';
+import type * as jtd from '../../jtd/types';
 
 export class NumberType extends AbstractType<schema.NumberSchema> {
   constructor(protected schema: schema.NumberSchema) {
     super();
   }
 
-  public validateSchema(): void {
-    const schema = this.getSchema();
-    validateTType(schema, "num");
-    validateWithValidator(schema);
-    const { format, gt, gte, lt, lte } = schema;
-    if (gt !== undefined && typeof gt !== "number") throw new Error("GT_TYPE");
-    if (gte !== undefined && typeof gte !== "number")
-      throw new Error("GTE_TYPE");
-    if (lt !== undefined && typeof lt !== "number") throw new Error("LT_TYPE");
-    if (lte !== undefined && typeof lte !== "number")
-      throw new Error("LTE_TYPE");
-    if (gt !== undefined && gte !== undefined) throw new Error("GT_GTE");
-    if (lt !== undefined && lte !== undefined) throw new Error("LT_LTE");
-    if (
-      (gt !== undefined || gte !== undefined) &&
-      (lt !== undefined || lte !== undefined)
-    )
-      if ((gt ?? gte)! > (lt ?? lte)!) throw new Error("GT_LT");
-    if (format !== undefined) {
-      if (typeof format !== "string") throw new Error("FORMAT_TYPE");
-      if (!format) throw new Error("FORMAT_EMPTY");
-      switch (format) {
-        case "i":
-        case "u":
-        case "f":
-        case "i8":
-        case "i16":
-        case "i32":
-        case "i64":
-        case "u8":
-        case "u16":
-        case "u32":
-        case "u64":
-        case "f32":
-        case "f64":
-          break;
-        default:
-          throw new Error("FORMAT_INVALID");
-      }
-    }
-  }
-
-  public codegenValidator(
-    ctx: ValidatorCodegenContext,
-    path: ValidationPath,
-    r: string,
-  ): void {
-    const { format, gt, gte, lt, lte } = this.schema;
+  public codegenValidator(ctx: ValidatorCodegenContext, path: ValidationPath, r: string): void {
+    const {format, gt, gte, lt, lte} = this.schema;
     if (format && ints.has(format)) {
       const errInt = ctx.err(ValidationError.INT, path);
       ctx.js(/* js */ `if(!Number.isInteger(${r})) return ${errInt};`);
@@ -180,61 +133,6 @@ export class NumberType extends AbstractType<schema.NumberSchema> {
     value: JsExpression,
   ): void {
     this.codegenBinaryEncoder(ctx, value);
-  }
-
-  public random(): number {
-    let num = Math.random();
-    let min = Number.MIN_SAFE_INTEGER;
-    let max = Number.MAX_SAFE_INTEGER;
-    if (this.schema.gt !== undefined) min = this.schema.gt;
-    if (this.schema.gte !== undefined)
-      min = this.schema.gte + 0.000000000000001;
-    if (this.schema.lt !== undefined) max = this.schema.lt;
-    if (this.schema.lte !== undefined)
-      max = this.schema.lte - 0.000000000000001;
-    if (this.schema.format) {
-      switch (this.schema.format) {
-        case "i8":
-          min = Math.max(min, -0x80);
-          max = Math.min(max, 0x7f);
-          break;
-        case "i16":
-          min = Math.max(min, -0x8000);
-          max = Math.min(max, 0x7fff);
-          break;
-        case "i32":
-          min = Math.max(min, -0x80000000);
-          max = Math.min(max, 0x7fffffff);
-          break;
-        case "i64":
-        case "i":
-          min = Math.max(min, -0x8000000000);
-          max = Math.min(max, 0x7fffffffff);
-          break;
-        case "u8":
-          min = Math.max(min, 0);
-          max = Math.min(max, 0xff);
-          break;
-        case "u16":
-          min = Math.max(min, 0);
-          max = Math.min(max, 0xffff);
-          break;
-        case "u32":
-          min = Math.max(min, 0);
-          max = Math.min(max, 0xffffffff);
-          break;
-        case "u64":
-        case "u":
-          min = Math.max(min, 0);
-          max = Math.min(max, 0xffffffffffff);
-          break;
-      }
-      return Math.round(num * (max - min)) + min;
-    }
-    num = num * (max - min) + min;
-    if (Math.random() > 0.7) num = Math.round(num);
-    if (num === 0) return 0;
-    return num;
   }
 
   public toTypeScriptAst(): ts.TsNumberKeyword {

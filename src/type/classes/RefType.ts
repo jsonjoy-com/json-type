@@ -1,25 +1,24 @@
-import * as schema from "../../schema";
-import { validateTType } from "../../schema/validate";
-import type { ValidatorCodegenContext } from "../../codegen/validator/ValidatorCodegenContext";
-import type { ValidationPath } from "../../codegen/validator/types";
-import { ValidationError } from "../../constants";
-import type { JsonTextEncoderCodegenContext } from "../../codegen/json/JsonTextEncoderCodegenContext";
-import type { CompiledBinaryEncoder } from "../../codegen/types";
-import { CborEncoderCodegenContext } from "../../codegen/binary/CborEncoderCodegenContext";
-import { JsonEncoderCodegenContext } from "../../codegen/binary/JsonEncoderCodegenContext";
-import type { BinaryEncoderCodegenContext } from "../../codegen/binary/BinaryEncoderCodegenContext";
-import type { JsExpression } from "@jsonjoy.com/util/lib/codegen/util/JsExpression";
-import { MessagePackEncoderCodegenContext } from "../../codegen/binary/MessagePackEncoderCodegenContext";
-import { EncodingFormat } from "@jsonjoy.com/json-pack/lib/constants";
-import type { BinaryJsonEncoder } from "@jsonjoy.com/json-pack/lib/types";
-import type { CapacityEstimatorCodegenContext } from "../../codegen/capacity/CapacityEstimatorCodegenContext";
-import { AbstractType } from "./AbstractType";
-import type * as jsonSchema from "../../json-schema";
-import type { SchemaOf, Type } from "../types";
-import type { TypeSystem } from "../../system/TypeSystem";
-import type { json_string } from "@jsonjoy.com/util/lib/json-brand";
-import type * as ts from "../../typescript/types";
-import type { TypeExportContext } from "../../system/TypeExportContext";
+import * as schema from '../../schema';
+import type {ValidatorCodegenContext} from '../../codegen/validator/ValidatorCodegenContext';
+import type {ValidationPath} from '../../codegen/validator/types';
+import {ValidationError} from '../../constants';
+import type {JsonTextEncoderCodegenContext} from '../../codegen/json/JsonTextEncoderCodegenContext';
+import type {CompiledBinaryEncoder} from '../../codegen/types';
+import {CborEncoderCodegenContext} from '../../codegen/binary/CborEncoderCodegenContext';
+import {JsonEncoderCodegenContext} from '../../codegen/binary/JsonEncoderCodegenContext';
+import type {BinaryEncoderCodegenContext} from '../../codegen/binary/BinaryEncoderCodegenContext';
+import type {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
+import {MessagePackEncoderCodegenContext} from '../../codegen/binary/MessagePackEncoderCodegenContext';
+import {EncodingFormat} from '@jsonjoy.com/json-pack/lib/constants';
+import type {BinaryJsonEncoder} from '@jsonjoy.com/json-pack/lib/types';
+import type {CapacityEstimatorCodegenContext} from '../../codegen/capacity/CapacityEstimatorCodegenContext';
+import {AbstractType} from './AbstractType';
+import type * as jsonSchema from '../../json-schema';
+import type {SchemaOf, Type} from '../types';
+import type {TypeSystem} from '../../system/TypeSystem';
+import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
+import type * as ts from '../../typescript/types';
+import type {TypeExportContext} from '../../system/TypeExportContext';
 
 export class RefType<T extends Type> extends AbstractType<
   schema.RefSchema<SchemaOf<T>>
@@ -40,19 +39,7 @@ export class RefType<T extends Type> extends AbstractType<
     return options as any;
   }
 
-  public validateSchema(): void {
-    const schema = this.getSchema();
-    validateTType(schema, "ref");
-    const { ref } = schema;
-    if (typeof ref !== "string") throw new Error("REF_TYPE");
-    if (!ref) throw new Error("REF_EMPTY");
-  }
-
-  public codegenValidator(
-    ctx: ValidatorCodegenContext,
-    path: ValidationPath,
-    r: string,
-  ): void {
+  public codegenValidator(ctx: ValidatorCodegenContext, path: ValidationPath, r: string): void {
     const refErr = (errorRegister: string): string => {
       switch (ctx.options.errors) {
         case "boolean":
@@ -145,12 +132,6 @@ export class RefType<T extends Type> extends AbstractType<
     value: JsExpression,
   ): void {
     this.codegenBinaryEncoder(ctx, value);
-  }
-
-  public random(): unknown {
-    if (!this.system) throw new Error("NO_SYSTEM");
-    const alias = this.system.resolve(this.schema.ref);
-    return alias.type.random();
   }
 
   public toTypeScriptAst(): ts.TsGenericTypeAnnotation {

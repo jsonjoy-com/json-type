@@ -1,5 +1,4 @@
 import type * as schema from "../../schema";
-import { RandomJson } from "@jsonjoy.com/util/lib/json-random";
 import type { Printable } from "tree-dump/lib/types";
 import {
   ValidatorCodegenContext,
@@ -38,21 +37,20 @@ import {
   CapacityEstimatorCodegenContext,
   type CapacityEstimatorCodegenContextOptions,
   type CompiledCapacityEstimator,
-} from "../../codegen/capacity/CapacityEstimatorCodegenContext";
-import { generate } from "../../codegen/capacity/estimators";
-import type { JsonValueCodec } from "@jsonjoy.com/json-pack/lib/codecs/types";
-import type * as jsonSchema from "../../json-schema";
-import type { BaseType } from "../types";
-import type { TypeSystem } from "../../system/TypeSystem";
-import type { json_string } from "@jsonjoy.com/util/lib/json-brand";
-import type * as ts from "../../typescript/types";
-import type { TypeExportContext } from "../../system/TypeExportContext";
-import type { Validators } from "./types";
-import type * as jtd from "../../jtd/types";
+} from '../../codegen/capacity/CapacityEstimatorCodegenContext';
+import {generate} from '../../codegen/capacity/estimators';
+import type {JsonValueCodec} from '@jsonjoy.com/json-pack/lib/codecs/types';
+import type * as jsonSchema from '../../json-schema';
+import type {BaseType} from '../types';
+import type {TypeSystem} from '../../system/TypeSystem';
+import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
+import type * as ts from '../../typescript/types';
+import type {TypeExportContext} from '../../system/TypeExportContext';
+import type {Validators} from './types';
+import type * as jtd from '../../jtd/types';
+import {random} from '../../random/generator';
 
-export abstract class AbstractType<S extends schema.Schema>
-  implements BaseType<S>, Printable
-{
+export abstract class AbstractType<S extends schema.Schema> implements BaseType<S>, Printable {
   /** Default type system to use, if any. */
   public system?: TypeSystem;
 
@@ -102,7 +100,10 @@ export abstract class AbstractType<S extends schema.Schema>
   }
 
   /** Validates own schema, throws on errors. */
-  public abstract validateSchema(): void;
+  public validateSchema(): void {
+    const {validateSchema} = require('../../schema/validate');
+    validateSchema(this.getSchema());
+  }
 
   public validate(value: unknown): void {
     const validator = this.validator("string");
@@ -294,6 +295,11 @@ export abstract class AbstractType<S extends schema.Schema>
     );
   }
 
+  public codegenCapacityEstimator(ctx: CapacityEstimatorCodegenContext, value: JsExpression): void {
+    // Use the centralized router function
+    generate(ctx, value, this as any);
+  }
+
   public compileCapacityEstimator(
     options: Omit<CapacityEstimatorCodegenContextOptions, "type">,
   ): CompiledCapacityEstimator {
@@ -320,7 +326,7 @@ export abstract class AbstractType<S extends schema.Schema>
   }
 
   public random(): unknown {
-    return RandomJson.generate({ nodeCount: 5 });
+    return random(this);
   }
 
   public toTypeScriptAst(): ts.TsNode {

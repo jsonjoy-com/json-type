@@ -1,23 +1,28 @@
-import { JsExpression } from "@jsonjoy.com/util/lib/codegen/util/JsExpression";
-import type { BinaryJsonEncoder } from "@jsonjoy.com/json-pack/lib/types";
-import { printTree } from "tree-dump/lib/printTree";
-import * as schema from "../../schema";
-import { validateMinMax, validateTType } from "../../schema/validate";
-import type { ValidatorCodegenContext } from "../../codegen/validator/ValidatorCodegenContext";
-import type { ValidationPath } from "../../codegen/validator/types";
-import { ValidationError } from "../../constants";
-import type { JsonTextEncoderCodegenContext } from "../../codegen/json/JsonTextEncoderCodegenContext";
-import { CborEncoderCodegenContext } from "../../codegen/binary/CborEncoderCodegenContext";
-import type { JsonEncoderCodegenContext } from "../../codegen/binary/JsonEncoderCodegenContext";
-import type { BinaryEncoderCodegenContext } from "../../codegen/binary/BinaryEncoderCodegenContext";
-import { MessagePackEncoderCodegenContext } from "../../codegen/binary/MessagePackEncoderCodegenContext";
-import { AbstractType } from "./AbstractType";
-import type * as jsonSchema from "../../json-schema";
-import type { SchemaOf, Type } from "../types";
-import type { TypeSystem } from "../../system/TypeSystem";
-import type { json_string } from "@jsonjoy.com/util/lib/json-brand";
-import type * as ts from "../../typescript/types";
-import type { TypeExportContext } from "../../system/TypeExportContext";
+import {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
+import type {BinaryJsonEncoder} from '@jsonjoy.com/json-pack/lib/types';
+import {printTree} from 'tree-dump/lib/printTree';
+import * as schema from '../../schema';
+import type {ValidatorCodegenContext} from '../../codegen/validator/ValidatorCodegenContext';
+import type {ValidationPath} from '../../codegen/validator/types';
+import {ValidationError} from '../../constants';
+import type {JsonTextEncoderCodegenContext} from '../../codegen/json/JsonTextEncoderCodegenContext';
+import {CborEncoderCodegenContext} from '../../codegen/binary/CborEncoderCodegenContext';
+import type {JsonEncoderCodegenContext} from '../../codegen/binary/JsonEncoderCodegenContext';
+import type {BinaryEncoderCodegenContext} from '../../codegen/binary/BinaryEncoderCodegenContext';
+import {MessagePackEncoderCodegenContext} from '../../codegen/binary/MessagePackEncoderCodegenContext';
+import {AbstractType} from './AbstractType';
+import type * as jsonSchema from '../../json-schema';
+import type {SchemaOf, Type} from '../types';
+import type {TypeSystem} from '../../system/TypeSystem';
+import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
+import type * as ts from '../../typescript/types';
+import type {TypeExportContext} from '../../system/TypeExportContext';
+import type {CapacityEstimatorCodegenContext} from '../../codegen/capacity/CapacityEstimatorCodegenContext';
+import {ConstType} from './ConstType';
+import {BooleanType} from './BooleanType';
+import {NumberType} from './NumberType';
+import {MaxEncodingOverhead} from '@jsonjoy.com/util/lib/json-size';
+import type * as jtd from '../../jtd/types';
 
 export class ArrayType<T extends Type> extends AbstractType<
   schema.ArraySchema<SchemaOf<T>>
@@ -44,19 +49,7 @@ export class ArrayType<T extends Type> extends AbstractType<
     return options as any;
   }
 
-  public validateSchema(): void {
-    const schema = this.getSchema();
-    validateTType(schema, "arr");
-    const { min, max } = schema;
-    validateMinMax(min, max);
-    this.type.validateSchema();
-  }
-
-  public codegenValidator(
-    ctx: ValidatorCodegenContext,
-    path: ValidationPath,
-    r: string,
-  ): void {
+  public codegenValidator(ctx: ValidatorCodegenContext, path: ValidationPath, r: string): void {
     const rl = ctx.codegen.getRegister();
     const ri = ctx.codegen.getRegister();
     const rv = ctx.codegen.getRegister();
@@ -177,16 +170,6 @@ export class ArrayType<T extends Type> extends AbstractType<
         encoder.writeEndArr();
       }),
     );
-  }
-
-  public random(): unknown[] {
-    let length = Math.round(Math.random() * 10);
-    const { min, max } = this.schema;
-    if (min !== undefined && length < min) length = min + length;
-    if (max !== undefined && length > max) length = max;
-    const arr = [];
-    for (let i = 0; i < length; i++) arr.push(this.type.random());
-    return arr;
   }
 
   public toTypeScriptAst(): ts.TsArrayType {

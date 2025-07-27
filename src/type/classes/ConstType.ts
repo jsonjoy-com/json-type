@@ -1,26 +1,25 @@
-import { cloneBinary } from "@jsonjoy.com/util/lib/json-clone";
-import { validateTType } from "../../schema/validate";
-import { ValidationError } from "../../constants";
-import { maxEncodingCapacity } from "@jsonjoy.com/util/lib/json-size";
-import { AbstractType } from "./AbstractType";
-import { deepEqualCodegen } from "@jsonjoy.com/util/lib/json-equal/deepEqualCodegen";
-import type * as schema from "../../schema";
-import type { ValidatorCodegenContext } from "../../codegen/validator/ValidatorCodegenContext";
-import type { ValidationPath } from "../../codegen/validator/types";
-import type { JsonTextEncoderCodegenContext } from "../../codegen/json/JsonTextEncoderCodegenContext";
-import type { CborEncoderCodegenContext } from "../../codegen/binary/CborEncoderCodegenContext";
-import type { JsonEncoderCodegenContext } from "../../codegen/binary/JsonEncoderCodegenContext";
-import type { BinaryEncoderCodegenContext } from "../../codegen/binary/BinaryEncoderCodegenContext";
-import type { JsExpression } from "@jsonjoy.com/util/lib/codegen/util/JsExpression";
-import type { MessagePackEncoderCodegenContext } from "../../codegen/binary/MessagePackEncoderCodegenContext";
-import type { BinaryJsonEncoder } from "@jsonjoy.com/json-pack/lib/types";
-import type { CapacityEstimatorCodegenContext } from "../../codegen/capacity/CapacityEstimatorCodegenContext";
-import type * as jsonSchema from "../../json-schema";
-import type { TypeSystem } from "../../system/TypeSystem";
-import type { json_string } from "@jsonjoy.com/util/lib/json-brand";
-import type * as ts from "../../typescript/types";
-import type { TypeExportContext } from "../../system/TypeExportContext";
-import type * as jtd from "../../jtd/types";
+import {cloneBinary} from '@jsonjoy.com/util/lib/json-clone';
+import {ValidationError} from '../../constants';
+import {maxEncodingCapacity} from '@jsonjoy.com/util/lib/json-size';
+import {AbstractType} from './AbstractType';
+import {deepEqualCodegen} from '@jsonjoy.com/util/lib/json-equal/deepEqualCodegen';
+import type * as schema from '../../schema';
+import type {ValidatorCodegenContext} from '../../codegen/validator/ValidatorCodegenContext';
+import type {ValidationPath} from '../../codegen/validator/types';
+import type {JsonTextEncoderCodegenContext} from '../../codegen/json/JsonTextEncoderCodegenContext';
+import type {CborEncoderCodegenContext} from '../../codegen/binary/CborEncoderCodegenContext';
+import type {JsonEncoderCodegenContext} from '../../codegen/binary/JsonEncoderCodegenContext';
+import type {BinaryEncoderCodegenContext} from '../../codegen/binary/BinaryEncoderCodegenContext';
+import type {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
+import type {MessagePackEncoderCodegenContext} from '../../codegen/binary/MessagePackEncoderCodegenContext';
+import type {BinaryJsonEncoder} from '@jsonjoy.com/json-pack/lib/types';
+import type {CapacityEstimatorCodegenContext} from '../../codegen/capacity/CapacityEstimatorCodegenContext';
+import type * as jsonSchema from '../../json-schema';
+import type {TypeSystem} from '../../system/TypeSystem';
+import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
+import type * as ts from '../../typescript/types';
+import type {TypeExportContext} from '../../system/TypeExportContext';
+import type * as jtd from '../../jtd/types';
 
 export class ConstType<V = any> extends AbstractType<schema.ConstSchema<V>> {
   private __json: json_string<V>;
@@ -39,15 +38,7 @@ export class ConstType<V = any> extends AbstractType<schema.ConstSchema<V>> {
     return options as any;
   }
 
-  public validateSchema(): void {
-    validateTType(this.getSchema(), "const");
-  }
-
-  public codegenValidator(
-    ctx: ValidatorCodegenContext,
-    path: ValidationPath,
-    r: string,
-  ): void {
+  public codegenValidator(ctx: ValidatorCodegenContext, path: ValidationPath, r: string): void {
     const value = this.schema.value;
     const equals = deepEqualCodegen(value);
     const fn = ctx.codegen.addConstant(equals);
@@ -92,10 +83,6 @@ export class ConstType<V = any> extends AbstractType<schema.ConstSchema<V>> {
     value: JsExpression,
   ): void {
     this.codegenBinaryEncoder(ctx, value);
-  }
-
-  public random(): unknown {
-    return cloneBinary(this.schema.value);
   }
 
   public toTypeScriptAst() {

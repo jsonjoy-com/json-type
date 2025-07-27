@@ -26,15 +26,7 @@ export class BooleanType extends AbstractType<schema.BooleanSchema> {
     super();
   }
 
-  public validateSchema(): void {
-    validateTType(this.getSchema(), "bool");
-  }
-
-  public codegenValidator(
-    ctx: ValidatorCodegenContext,
-    path: ValidationPath,
-    r: string,
-  ): void {
+  public codegenValidator(ctx: ValidatorCodegenContext, path: ValidationPath, r: string): void {
     const err = ctx.err(ValidationError.BOOL, path);
     ctx.js(/* js */ `if(typeof ${r} !== "boolean") return ${err};`);
     ctx.emitCustomValidators(this, path, r);
@@ -73,10 +65,6 @@ export class BooleanType extends AbstractType<schema.BooleanSchema> {
     value: JsExpression,
   ): void {
     this.codegenBinaryEncoder(ctx, value);
-  }
-
-  public random(): boolean {
-    return RandomJson.genBoolean();
   }
 
   public toTypeScriptAst(): ts.TsBooleanKeyword {

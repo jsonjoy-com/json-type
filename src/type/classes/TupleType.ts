@@ -1,23 +1,22 @@
-import * as schema from "../../schema";
-import { printTree } from "tree-dump/lib/printTree";
-import { validateTType } from "../../schema/validate";
-import type { ValidatorCodegenContext } from "../../codegen/validator/ValidatorCodegenContext";
-import type { ValidationPath } from "../../codegen/validator/types";
-import { ValidationError } from "../../constants";
-import type { JsonTextEncoderCodegenContext } from "../../codegen/json/JsonTextEncoderCodegenContext";
-import { CborEncoderCodegenContext } from "../../codegen/binary/CborEncoderCodegenContext";
-import type { JsonEncoderCodegenContext } from "../../codegen/binary/JsonEncoderCodegenContext";
-import { JsExpression } from "@jsonjoy.com/util/lib/codegen/util/JsExpression";
-import type { MessagePackEncoderCodegenContext } from "../../codegen/binary/MessagePackEncoderCodegenContext";
-import type { CapacityEstimatorCodegenContext } from "../../codegen/capacity/CapacityEstimatorCodegenContext";
-import { MaxEncodingOverhead } from "@jsonjoy.com/util/lib/json-size";
-import { AbstractType } from "./AbstractType";
-import type * as jsonSchema from "../../json-schema";
-import type { SchemaOf, Type } from "../types";
-import type { TypeSystem } from "../../system/TypeSystem";
-import type { json_string } from "@jsonjoy.com/util/lib/json-brand";
-import type * as ts from "../../typescript/types";
-import type { TypeExportContext } from "../../system/TypeExportContext";
+import * as schema from '../../schema';
+import {printTree} from 'tree-dump/lib/printTree';
+import type {ValidatorCodegenContext} from '../../codegen/validator/ValidatorCodegenContext';
+import type {ValidationPath} from '../../codegen/validator/types';
+import {ValidationError} from '../../constants';
+import type {JsonTextEncoderCodegenContext} from '../../codegen/json/JsonTextEncoderCodegenContext';
+import {CborEncoderCodegenContext} from '../../codegen/binary/CborEncoderCodegenContext';
+import type {JsonEncoderCodegenContext} from '../../codegen/binary/JsonEncoderCodegenContext';
+import {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
+import type {MessagePackEncoderCodegenContext} from '../../codegen/binary/MessagePackEncoderCodegenContext';
+import type {CapacityEstimatorCodegenContext} from '../../codegen/capacity/CapacityEstimatorCodegenContext';
+import {MaxEncodingOverhead} from '@jsonjoy.com/util/lib/json-size';
+import {AbstractType} from './AbstractType';
+import type * as jsonSchema from '../../json-schema';
+import type {SchemaOf, Type} from '../types';
+import type {TypeSystem} from '../../system/TypeSystem';
+import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
+import type * as ts from '../../typescript/types';
+import type {TypeExportContext} from '../../system/TypeExportContext';
 
 export class TupleType<T extends Type[]> extends AbstractType<
   schema.TupleSchema<{ [K in keyof T]: SchemaOf<T[K]> }>
@@ -46,20 +45,7 @@ export class TupleType<T extends Type[]> extends AbstractType<
     return options as any;
   }
 
-  public validateSchema(): void {
-    const schema = this.getSchema();
-    validateTType(schema, "tup");
-    const { types } = schema;
-    if (!Array.isArray(types)) throw new Error("TYPES_TYPE");
-    if (!types.length) throw new Error("TYPES_LENGTH");
-    for (const type of this.types) type.validateSchema();
-  }
-
-  public codegenValidator(
-    ctx: ValidatorCodegenContext,
-    path: ValidationPath,
-    r: string,
-  ): void {
+  public codegenValidator(ctx: ValidatorCodegenContext, path: ValidationPath, r: string): void {
     const err = ctx.err(ValidationError.TUP, path);
     const types = this.types;
     ctx.js(
@@ -162,10 +148,6 @@ export class TupleType<T extends Type[]> extends AbstractType<
         encoder.writeEndArr();
       }),
     );
-  }
-
-  public random(): unknown[] {
-    return this.types.map((type) => type.random());
   }
 
   public toTypeScriptAst(): ts.TsTupleType {

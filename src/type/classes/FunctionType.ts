@@ -1,11 +1,10 @@
-import { printTree } from "tree-dump/lib/printTree";
-import * as schema from "../../schema";
-import { validateTType } from "../../schema/validate";
-import { AbstractType } from "./AbstractType";
-import type { SchemaOf, Type } from "../types";
-import type * as ts from "../../typescript/types";
-import type { ResolveType } from "../../system";
-import type { Observable } from "rxjs";
+import {printTree} from 'tree-dump/lib/printTree';
+import * as schema from '../../schema';
+import {AbstractType} from './AbstractType';
+import type {SchemaOf, Type} from '../types';
+import type * as ts from '../../typescript/types';
+import type {ResolveType} from '../../system';
+import type {Observable} from 'rxjs';
 
 const fnNotImplemented: schema.FunctionValue<any, any> = async () => {
   throw new Error("NOT_IMPLEMENTED");
@@ -57,17 +56,6 @@ export class FunctionType<
       req: this.req.getSchema() as SchemaOf<Req>,
       res: this.res.getSchema() as SchemaOf<Res>,
     };
-  }
-
-  public validateSchema(): void {
-    const schema = this.getSchema();
-    validateTType(schema, "fn");
-    this.req.validateSchema();
-    this.res.validateSchema();
-  }
-
-  public random(): unknown {
-    return async () => this.res.random();
   }
 
   public singleton?: FunctionImpl<Req, Res, any> = undefined;
@@ -153,17 +141,6 @@ export class FunctionStreamingType<
       req: this.req.getSchema() as SchemaOf<Req>,
       res: this.res.getSchema() as SchemaOf<Res>,
     };
-  }
-
-  public validateSchema(): void {
-    const schema = this.getSchema();
-    validateTType(schema, "fn$");
-    this.req.validateSchema();
-    this.res.validateSchema();
-  }
-
-  public random(): unknown {
-    return async () => this.res.random();
   }
 
   public singleton?: FunctionStreamingImpl<Req, Res, any> = undefined;
