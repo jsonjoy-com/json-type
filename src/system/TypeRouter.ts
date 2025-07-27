@@ -43,7 +43,10 @@ export class TypeRouter<Routes extends RoutesBase> {
   }
 
   public extend<NewRoutes extends RoutesBase>(routes: (t: this) => NewRoutes): TypeRouter<Routes & NewRoutes> {
-    const router = new TypeRouter({system: this.system, routes: routes(this)});
+    const router = new TypeRouter({
+      system: this.system,
+      routes: routes(this),
+    });
     return this.merge(router);
   }
 

@@ -131,8 +131,14 @@ export class ValidatorCodegenContext {
       const v = this.linkValidator(validatorName);
       const rerr = codegen.getRegister();
       const rc = codegen.getRegister();
-      const err = this.err(ValidationError.VALIDATION, path, {validator: validatorName, refError: rerr});
-      const errInCatch = this.err(ValidationError.VALIDATION, path, {validator: validatorName, refError: rc});
+      const err = this.err(ValidationError.VALIDATION, path, {
+        validator: validatorName,
+        refError: rerr,
+      });
+      const errInCatch = this.err(ValidationError.VALIDATION, path, {
+        validator: validatorName,
+        refError: rc,
+      });
       const emitRc = this.options.errors === 'object';
       codegen.js(/* js */ `try {
   var ${rerr} = ${v}(${r});

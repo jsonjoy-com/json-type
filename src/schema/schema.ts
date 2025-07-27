@@ -363,7 +363,9 @@ export type TypeOfValue<T> = T extends BooleanSchema
                       ? (req$: Observable<TypeOf<Req>>, ctx?: unknown) => Observable<TypeOf<Res>>
                       : never;
 
-export type TypeOfMap<M extends Record<string, Schema>> = {[K in keyof M]: TypeOf<M[K]>};
+export type TypeOfMap<M extends Record<string, Schema>> = {
+  [K in keyof M]: TypeOf<M[K]>;
+};
 
 type TypeFields<F> = TypeOfFieldMap<FieldsAdjustedForOptional<ToObject<{[K in keyof F]: ObjectFieldToTuple<F[K]>}>>>;
 
@@ -373,7 +375,9 @@ type ObjectFieldToTuple<F> = F extends ObjectFieldSchema<infer K, infer V> ? [K,
 
 type NoEmptyInterface<I> = keyof I extends never ? Record<string, never> : I;
 
-type OptionalFields<T> = {[K in keyof T]-?: T[K] extends ObjectOptionalFieldSchema ? K : never}[keyof T];
+type OptionalFields<T> = {
+  [K in keyof T]-?: T[K] extends ObjectOptionalFieldSchema ? K : never;
+}[keyof T];
 
 type RequiredFields<T> = Exclude<keyof T, OptionalFields<T>>;
 

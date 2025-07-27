@@ -121,25 +121,4 @@ export class NumberType extends AbstractType<schema.NumberSchema> {
   public toJson(value: unknown, system: TypeSystem | undefined = this.system) {
     return ('' + value) as json_string<number>;
   }
-
-  public toJtdForm(): jtd.JtdTypeForm {
-    switch (this.schema.format) {
-      case 'u8':
-        return {type: 'uint8'};
-      case 'u16':
-        return {type: 'uint16'};
-      case 'u32':
-        return {type: 'uint32'};
-      case 'i8':
-        return {type: 'int8'};
-      case 'i16':
-        return {type: 'int16'};
-      case 'i32':
-        return {type: 'int32'};
-      case 'f32':
-        return {type: 'float32'};
-      default:
-        return {type: 'float64'};
-    }
-  }
 }
