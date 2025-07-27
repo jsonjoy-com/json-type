@@ -70,8 +70,4 @@ export class AnyType extends AbstractType<schema.AnySchema> {
   public codegenJsonEncoder(ctx: JsonEncoderCodegenContext, value: JsExpression): void {
     this.codegenBinaryEncoder(ctx, value);
   }
-
-  public toTypeScriptAst(): ts.TsType {
-    return {node: 'AnyKeyword'};
-  }
 }

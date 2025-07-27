@@ -56,31 +56,6 @@ export class FunctionType<Req extends Type, Res extends Type> extends AbstractTy
     return this;
   }
 
-  public toTypeScriptAst(): ts.TsFunctionType {
-    const node: ts.TsFunctionType = {
-      node: 'FunctionType',
-      parameters: [
-        {
-          node: 'Parameter',
-          name: {
-            node: 'Identifier',
-            name: 'request',
-          },
-          type: this.req.toTypeScriptAst(),
-        },
-      ],
-      type: {
-        node: 'TypeReference',
-        typeName: {
-          node: 'Identifier',
-          name: 'Promise',
-        },
-        typeArguments: [this.res.toTypeScriptAst()],
-      },
-    };
-    return node;
-  }
-
   public toString(tab: string = ''): string {
     return super.toString(tab) + toStringTree(tab, this);
   }
@@ -122,38 +97,6 @@ export class FunctionStreamingType<Req extends Type, Res extends Type> extends A
   public implement<Ctx = unknown>(singleton: FunctionStreamingImpl<Req, Res, Ctx>): this {
     this.singleton = singleton;
     return this;
-  }
-
-  public toTypeScriptAst(): ts.TsFunctionType {
-    const node: ts.TsFunctionType = {
-      node: 'FunctionType',
-      parameters: [
-        {
-          node: 'Parameter',
-          name: {
-            node: 'Identifier',
-            name: 'request$',
-          },
-          type: {
-            node: 'TypeReference',
-            typeName: {
-              node: 'Identifier',
-              name: 'Observable',
-            },
-            typeArguments: [this.req.toTypeScriptAst()],
-          },
-        },
-      ],
-      type: {
-        node: 'TypeReference',
-        typeName: {
-          node: 'Identifier',
-          name: 'Observable',
-        },
-        typeArguments: [this.res.toTypeScriptAst()],
-      },
-    };
-    return node;
   }
 
   public toString(tab: string = ''): string {

@@ -112,16 +112,6 @@ export class RefType<T extends Type> extends AbstractType<schema.RefSchema<Schem
     this.codegenBinaryEncoder(ctx, value);
   }
 
-  public toTypeScriptAst(): ts.TsGenericTypeAnnotation {
-    return {
-      node: 'GenericTypeAnnotation',
-      id: {
-        node: 'Identifier',
-        name: this.schema.ref,
-      },
-    };
-  }
-
   public toJson(value: unknown, system: TypeSystem | undefined = this.system): json_string<unknown> {
     if (!system) return 'null' as json_string<unknown>;
     const alias = system.resolve(this.schema.ref);

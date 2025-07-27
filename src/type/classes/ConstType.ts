@@ -70,41 +70,6 @@ export class ConstType<V = any> extends AbstractType<schema.ConstSchema<V>> {
     this.codegenBinaryEncoder(ctx, value);
   }
 
-  public toTypeScriptAst() {
-    const value = this.schema.value;
-    if (value === null) {
-      const node: ts.TsNullKeyword = {node: 'NullKeyword'};
-      return node;
-    }
-    switch (typeof value) {
-      case 'string': {
-        const node: ts.TsStringLiteral = {node: 'StringLiteral', text: value};
-        return node;
-      }
-      case 'number': {
-        const node: ts.TsNumericLiteral = {
-          node: 'NumericLiteral',
-          text: value.toString(),
-        };
-        return node;
-      }
-      case 'boolean': {
-        const node: ts.TsTrueKeyword | ts.TsFalseKeyword = {
-          node: value ? 'TrueKeyword' : 'FalseKeyword',
-        };
-        return node;
-      }
-      case 'object': {
-        const node: ts.TsObjectKeyword = {node: 'ObjectKeyword'};
-        return node;
-      }
-      default: {
-        const node: ts.TsUnknownKeyword = {node: 'UnknownKeyword'};
-        return node;
-      }
-    }
-  }
-
   public toJson(value: unknown, system: TypeSystem | undefined = this.system) {
     return this.__json;
   }

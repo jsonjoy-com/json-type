@@ -52,10 +52,6 @@ export class BooleanType extends AbstractType<schema.BooleanSchema> {
     this.codegenBinaryEncoder(ctx, value);
   }
 
-  public toTypeScriptAst(): ts.TsBooleanKeyword {
-    return {node: 'BooleanKeyword'};
-  }
-
   public toJson(value: unknown, system: TypeSystem | undefined = this.system) {
     return (value ? 'true' : 'false') as json_string<boolean>;
   }

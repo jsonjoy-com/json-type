@@ -143,13 +143,6 @@ export class ArrayType<T extends Type> extends AbstractType<schema.ArraySchema<S
     );
   }
 
-  public toTypeScriptAst(): ts.TsArrayType {
-    return {
-      node: 'ArrayType',
-      elementType: this.type.toTypeScriptAst() as ts.TsType,
-    };
-  }
-
   public toJson(value: unknown, system: TypeSystem | undefined = this.system): json_string<unknown> {
     const length = (value as unknown[]).length;
     if (!length) return '[]' as json_string<unknown>;

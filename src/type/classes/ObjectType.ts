@@ -460,31 +460,6 @@ if (${rLength}) {
     }
   }
 
-  public toTypeScriptAst(): ts.TsTypeLiteral {
-    const node: ts.TsTypeLiteral = {
-      node: 'TypeLiteral',
-      members: [],
-    };
-    const fields = this.fields;
-    for (const field of fields) {
-      const member: ts.TsPropertySignature = {
-        node: 'PropertySignature',
-        name: field.key,
-        type: field.value.toTypeScriptAst(),
-      };
-      if (field instanceof ObjectOptionalFieldType) member.optional = true;
-      augmentWithComment(field.getSchema(), member);
-      node.members.push(member);
-    }
-    if (this.schema.unknownFields || this.schema.encodeUnknownFields)
-      node.members.push({
-        node: 'IndexSignature',
-        type: {node: 'UnknownKeyword'},
-      });
-    augmentWithComment(this.schema, node);
-    return node;
-  }
-
   public toJson(value: unknown, system: TypeSystem | undefined = this.system): json_string<unknown> {
     const fields = this.fields;
     const length = fields.length;
