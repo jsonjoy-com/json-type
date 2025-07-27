@@ -1,7 +1,7 @@
 import {EMPTY} from 'rxjs';
 import {type SchemaOf, t} from '..';
 import type {TypeOf} from '../../schema';
-import * as system from '../../system';
+import type * as system from '../../system';
 
 test('const', () => {
   const type = t.Const(<const>42);
@@ -120,30 +120,22 @@ describe('fn', () => {
 });
 
 test('string patch', () => {
-  const StringOperationInsert = t.Tuple(t.Const(1), t.str)
-    .options({
-      title: 'Insert String',
-      description: 'Inserts a string at the current position in the source string.'
-    });
-  const StringOperationEqual = t.Tuple(t.Const(0), t.str)
-    .options({
-      title: 'Equal String',
-      description: 'Keeps the current position in the source string unchanged.'
-    });
-  const StringOperationDelete = t.Tuple(t.Const(-1), t.str)
-    .options({
-      title: 'Delete String',
-      description: 'Deletes the current position in the source string.'
-    });
-  const StringPatch = t.Array(
-    t.Or(
-      StringOperationInsert,
-      StringOperationEqual,
-      StringOperationDelete
-    )
-  ).options({
+  const StringOperationInsert = t.Tuple(t.Const(1), t.str).options({
+    title: 'Insert String',
+    description: 'Inserts a string at the current position in the source string.',
+  });
+  const StringOperationEqual = t.Tuple(t.Const(0), t.str).options({
+    title: 'Equal String',
+    description: 'Keeps the current position in the source string unchanged.',
+  });
+  const StringOperationDelete = t.Tuple(t.Const(-1), t.str).options({
+    title: 'Delete String',
+    description: 'Deletes the current position in the source string.',
+  });
+  const StringPatch = t.Array(t.Or(StringOperationInsert, StringOperationEqual, StringOperationDelete)).options({
     title: 'String Patch',
-    description: 'A list of string operations that can be applied to a source string to produce a destination string, or vice versa.'
+    description:
+      'A list of string operations that can be applied to a source string to produce a destination string, or vice versa.',
   });
 
   type T = system.infer<typeof StringPatch>;
@@ -154,6 +146,6 @@ test('string patch', () => {
   ];
   const v2: T = [
     // @ts-expect-error
-    [2, 'Test']
+    [2, 'Test'],
   ];
 });

@@ -67,7 +67,9 @@ export const num = (type: NumberType): number => {
   const schema = type.getSchema();
   const {lt, lte, gt, gte} = schema;
   if (gt !== undefined) min = gt;
-  if (gte !== undefined) if (gte === lte) return gte; else min = gte + 0.000000000000001;
+  if (gte !== undefined)
+    if (gte === lte) return gte;
+    else min = gte + 0.000000000000001;
   if (lt !== undefined) max = lt;
   if (lte !== undefined) max = lte - 0.000000000000001;
   if (min >= max) return max;

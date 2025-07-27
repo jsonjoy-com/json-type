@@ -7,24 +7,22 @@ import type {TypeOfAlias} from '../system/types';
 
 const {s} = schema;
 
-type UnionToIntersection<U> = (
-  U extends never ? never : (arg: U) => never
-) extends (arg: infer I) => void
-  ? I
-  : never;
+type UnionToIntersection<U> = (U extends never ? never : (arg: U) => never) extends (arg: infer I) => void ? I : never;
 
-type UnionToTuple<T> = UnionToIntersection<
-  T extends never ? never : (t: T) => T
-> extends (_: never) => infer W
+type UnionToTuple<T> = UnionToIntersection<T extends never ? never : (t: T) => T> extends (_: never) => infer W
   ? [...UnionToTuple<Exclude<T, W>>, W]
   : [];
 
-type ObjValueTuple<T, KS extends any[] = UnionToTuple<keyof T>, R extends any[] = []> =
-  KS extends [infer K, ...infer KT]
+type ObjValueTuple<T, KS extends any[] = UnionToTuple<keyof T>, R extends any[] = []> = KS extends [
+  infer K,
+  ...infer KT,
+]
   ? ObjValueTuple<T, KT, [...R, T[K & keyof T]]>
-  : R
+  : R;
 
-type RecordToFields<O extends Record<string, Type>> = ObjValueTuple<{[K in keyof O]: classes.ObjectFieldType<K extends string ? K : never, O[K]>}>;
+type RecordToFields<O extends Record<string, Type>> = ObjValueTuple<{
+  [K in keyof O]: classes.ObjectFieldType<K extends string ? K : never, O[K]>;
+}>;
 
 export class TypeBuilder {
   constructor(public system?: TypeSystem) {}
@@ -79,7 +77,6 @@ export class TypeBuilder {
     return this.Function$(this.undef, this.undef);
   }
 
-
   // --------------------------------------------------------------- shorthands
 
   public readonly undefined = () => this.undef;
@@ -94,7 +91,10 @@ export class TypeBuilder {
   public readonly literal = this.con;
 
   public readonly array = <T>(type?: T, options?: schema.Optional<schema.ArraySchema>) =>
-    this.Array<T extends Type ? T : classes.AnyType>((type ?? this.any) as T extends Type ? T : classes.AnyType, options);
+    this.Array<T extends Type ? T : classes.AnyType>(
+      (type ?? this.any) as T extends Type ? T : classes.AnyType,
+      options,
+    );
 
   public readonly tuple = <F extends Type[]>(...types: F) => this.Tuple(...types);
 
@@ -131,8 +131,7 @@ export class TypeBuilder {
    * Creates a type that represents a value that may be present or absent. The
    * value is `undefined` if absent. This is a shorthand for `t.Or(type, t.undef)`.
    */
-  public readonly maybe = <T extends Type>(type: T) =>
-    this.Or(type, this.undef);
+  public readonly maybe = <T extends Type>(type: T) => this.Or(type, this.undef);
 
   /**
    * Creates a union type from a list of values. This is a shorthand for
@@ -147,9 +146,10 @@ export class TypeBuilder {
    * @param values The values to include in the union.
    * @returns A union type representing the values.
    */
-  public readonly enum = <const T extends (string | number | boolean | null)[]>(...values: T): classes.OrType<{[K in keyof T]: classes.ConstType<schema.Narrow<T[K]>>}> =>
-    this.Or(...values.map(type => this.Const(type as any))) as any;
-
+  public readonly enum = <const T extends (string | number | boolean | null)[]>(
+    ...values: T
+  ): classes.OrType<{[K in keyof T]: classes.ConstType<schema.Narrow<T[K]>>}> =>
+    this.Or(...values.map((type) => this.Const(type as any))) as any;
 
   // --------------------------------------------------- base node constructors
 
@@ -246,13 +246,21 @@ export class TypeBuilder {
     return type;
   }
 
-  public Function<Req extends Type, Res extends Type>(req: Req, res: Res, options?: schema.Optional<schema.FunctionSchema>) {
+  public Function<Req extends Type, Res extends Type>(
+    req: Req,
+    res: Res,
+    options?: schema.Optional<schema.FunctionSchema>,
+  ) {
     const fn = new classes.FunctionType<Req, Res>(req, res, options);
     fn.system = this.system;
     return fn;
   }
 
-  public Function$<Req extends Type, Res extends Type>(req: Req, res: Res, options?: schema.Optional<schema.FunctionStreamingSchema>) {
+  public Function$<Req extends Type, Res extends Type>(
+    req: Req,
+    res: Res,
+    options?: schema.Optional<schema.FunctionStreamingSchema>,
+  ) {
     const fn = new classes.FunctionStreamingType<Req, Res>(req, res, options);
     fn.system = this.system;
     return fn;

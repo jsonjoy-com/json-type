@@ -17,7 +17,6 @@ import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
 import type * as ts from '../../typescript/types';
 import type {TypeExportContext} from '../../system/TypeExportContext';
 
-
 export class ArrayType<T extends Type> extends AbstractType<schema.ArraySchema<SchemaOf<T>>> {
   protected schema: schema.ArraySchema<any>;
 

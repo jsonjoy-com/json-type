@@ -15,10 +15,7 @@ describe('.prop()', () => {
   });
 
   test('can create an object using .prop() fields', () => {
-    const object = t.obj
-      .prop('a', t.str)
-      .prop('b', t.num, {title: 'B'})
-      .prop('c', t.bool, {description: 'C'})
+    const object = t.obj.prop('a', t.str).prop('b', t.num, {title: 'B'}).prop('c', t.bool, {description: 'C'});
     expect(object.getSchema()).toMatchObject({
       kind: 'obj',
       fields: [

@@ -1,4 +1,4 @@
-import {ConstSchema, s} from '..';
+import {type ConstSchema, s} from '..';
 
 describe('string', () => {
   test('can create a string type', () => {

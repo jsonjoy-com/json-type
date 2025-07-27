@@ -76,17 +76,19 @@ test('can construct a realistic object', () => {
 });
 
 test('can build type using lowercase shortcuts', () => {
-  const MyObject = t.object({
-    type: t.con('user'),
-    id: t.string(),
-    name: t.string(),
-    age: t.number(),
-    coordinates: t.tuple(t.number(), t.number()),
-    verified: t.boolean(),
-    offsets: t.array(t.number()),
-    enum: t.enum(1, 2, 'three'),
-    optional: t.maybe(t.string()),
-  }).opt('description', t.string());
+  const MyObject = t
+    .object({
+      type: t.con('user'),
+      id: t.string(),
+      name: t.string(),
+      age: t.number(),
+      coordinates: t.tuple(t.number(), t.number()),
+      verified: t.boolean(),
+      offsets: t.array(t.number()),
+      enum: t.enum(1, 2, 'three'),
+      optional: t.maybe(t.string()),
+    })
+    .opt('description', t.string());
   // console.log(MyObject + '');
   const MyObject2 = t.obj
     .prop('type', t.Const('user'))

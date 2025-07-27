@@ -1,4 +1,4 @@
-import {TypeOf} from './schema';
+import type {TypeOf} from './schema';
 import {SchemaBuilder} from './SchemaBuilder';
 
 export * from './common';
