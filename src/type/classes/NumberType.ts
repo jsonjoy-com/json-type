@@ -135,10 +135,6 @@ export class NumberType extends AbstractType<schema.NumberSchema> {
     this.codegenBinaryEncoder(ctx, value);
   }
 
-  public toTypeScriptAst(): ts.TsNumberKeyword {
-    return {node: 'NumberKeyword'};
-  }
-
   public toJson(value: unknown, system: TypeSystem | undefined = this.system) {
     return ('' + value) as json_string<number>;
   }

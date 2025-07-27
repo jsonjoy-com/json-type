@@ -127,14 +127,6 @@ export class OrType<T extends Type[]> extends AbstractType<schema.OrSchema<{[K i
     this.codegenBinaryEncoder(ctx, value);
   }
 
-  public toTypeScriptAst(): ts.TsUnionType {
-    const node: ts.TsUnionType = {
-      node: 'UnionType',
-      types: this.types.map((t) => t.toTypeScriptAst()),
-    };
-    return node;
-  }
-
   public toJson(value: unknown, system: TypeSystem | undefined = this.system): json_string<unknown> {
     return JSON.stringify(value) as json_string<unknown>;
   }
