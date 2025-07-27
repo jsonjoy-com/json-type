@@ -82,6 +82,4 @@ export class AnyType extends AbstractType<schema.AnySchema> {
   public toTypeScriptAst(): ts.TsType {
     return {node: 'AnyKeyword'};
   }
-
-
 }

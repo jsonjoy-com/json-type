@@ -41,23 +41,20 @@ describe('JTD converter', () => {
     const arrayType = t.Array(t.str);
     const jtdForm = arrayType.toJtdForm();
     expect(jtdForm).toEqual({
-      elements: [{type: 'string'}]
+      elements: [{type: 'string'}],
     });
   });
 
   test('object type', () => {
-    const objectType = t.Object(
-      t.prop('name', t.str),
-      t.propOpt('age', t.num)
-    );
+    const objectType = t.Object(t.prop('name', t.str), t.propOpt('age', t.num));
     const jtdForm = objectType.toJtdForm();
     expect(jtdForm).toEqual({
       properties: {
-        name: {type: 'string'}
+        name: {type: 'string'},
       },
       optionalProperties: {
-        age: {type: 'float64'}
-      }
+        age: {type: 'float64'},
+      },
     });
   });
 });

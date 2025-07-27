@@ -131,6 +131,4 @@ export class StringType extends AbstractType<schema.StringSchema> {
   public toJson(value: unknown, system: TypeSystem | undefined = this.system): json_string<unknown> {
     return <json_string<string>>(this.schema.noJsonEscape ? '"' + value + '"' : asString(value as string));
   }
-
-
 }

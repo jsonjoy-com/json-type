@@ -212,6 +212,4 @@ export class NumberType extends AbstractType<schema.NumberSchema> {
   public toJson(value: unknown, system: TypeSystem | undefined = this.system) {
     return ('' + value) as json_string<number>;
   }
-
-
 }

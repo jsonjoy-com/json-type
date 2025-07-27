@@ -67,6 +67,4 @@ export class BooleanType extends AbstractType<schema.BooleanSchema> {
   public toJson(value: unknown, system: TypeSystem | undefined = this.system) {
     return (value ? 'true' : 'false') as json_string<boolean>;
   }
-
-
 }

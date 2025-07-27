@@ -116,6 +116,4 @@ export class ConstType<V = any> extends AbstractType<schema.ConstSchema<V>> {
   public toString(tab: string = ''): string {
     return `${super.toString(tab)} → ${JSON.stringify(this.schema.value)}`;
   }
-
-
 }
