@@ -34,37 +34,31 @@ export class NumberType extends AbstractType<schema.NumberSchema> {
         const err = ctx.err(ValidationError.UINT, path);
         ctx.js(/* js */ `if(${r} < 0) return ${err};`);
         switch (format) {
-          case "u8": {
+          case 'u8': {
             ctx.js(/* js */ `if(${r} > 0xFF) return ${err};`);
             break;
           }
-          case "u16": {
+          case 'u16': {
             ctx.js(/* js */ `if(${r} > 0xFFFF) return ${err};`);
             break;
           }
-          case "u32": {
+          case 'u32': {
             ctx.js(/* js */ `if(${r} > 0xFFFFFFFF) return ${err};`);
             break;
           }
         }
       } else {
         switch (format) {
-          case "i8": {
-            ctx.js(
-              /* js */ `if(${r} > 0x7F || ${r} < -0x80) return ${errInt};`,
-            );
+          case 'i8': {
+            ctx.js(/* js */ `if(${r} > 0x7F || ${r} < -0x80) return ${errInt};`);
             break;
           }
-          case "i16": {
-            ctx.js(
-              /* js */ `if(${r} > 0x7FFF || ${r} < -0x8000) return ${errInt};`,
-            );
+          case 'i16': {
+            ctx.js(/* js */ `if(${r} > 0x7FFF || ${r} < -0x8000) return ${errInt};`);
             break;
           }
-          case "i32": {
-            ctx.js(
-              /* js */ `if(${r} > 0x7FFFFFFF || ${r} < -0x80000000) return ${errInt};`,
-            );
+          case 'i32': {
+            ctx.js(/* js */ `if(${r} > 0x7FFFFFFF || ${r} < -0x80000000) return ${errInt};`);
             break;
           }
         }
@@ -95,18 +89,12 @@ export class NumberType extends AbstractType<schema.NumberSchema> {
     ctx.emitCustomValidators(this, path, r);
   }
 
-  public codegenJsonTextEncoder(
-    ctx: JsonTextEncoderCodegenContext,
-    value: JsExpression,
-  ): void {
+  public codegenJsonTextEncoder(ctx: JsonTextEncoderCodegenContext, value: JsExpression): void {
     ctx.js(/* js */ `s += ${value.use()};`);
   }
 
-  private codegenBinaryEncoder(
-    ctx: BinaryEncoderCodegenContext<BinaryJsonEncoder>,
-    value: JsExpression,
-  ): void {
-    const { format } = this.schema;
+  private codegenBinaryEncoder(ctx: BinaryEncoderCodegenContext<BinaryJsonEncoder>, value: JsExpression): void {
+    const {format} = this.schema;
     const v = value.use();
     if (uints.has(format)) ctx.js(/* js */ `encoder.writeUInteger(${v});`);
     else if (ints.has(format)) ctx.js(/* js */ `encoder.writeInteger(${v});`);
@@ -114,32 +102,23 @@ export class NumberType extends AbstractType<schema.NumberSchema> {
     else ctx.js(/* js */ `encoder.writeNumber(${v});`);
   }
 
-  public codegenCborEncoder(
-    ctx: CborEncoderCodegenContext,
-    value: JsExpression,
-  ): void {
+  public codegenCborEncoder(ctx: CborEncoderCodegenContext, value: JsExpression): void {
     this.codegenBinaryEncoder(ctx, value);
   }
 
-  public codegenMessagePackEncoder(
-    ctx: MessagePackEncoderCodegenContext,
-    value: JsExpression,
-  ): void {
+  public codegenMessagePackEncoder(ctx: MessagePackEncoderCodegenContext, value: JsExpression): void {
     this.codegenBinaryEncoder(ctx, value);
   }
 
-  public codegenJsonEncoder(
-    ctx: JsonEncoderCodegenContext,
-    value: JsExpression,
-  ): void {
+  public codegenJsonEncoder(ctx: JsonEncoderCodegenContext, value: JsExpression): void {
     this.codegenBinaryEncoder(ctx, value);
   }
 
   public toTypeScriptAst(): ts.TsNumberKeyword {
-    return { node: "NumberKeyword" };
+    return {node: 'NumberKeyword'};
   }
 
   public toJson(value: unknown, system: TypeSystem | undefined = this.system) {
-    return ("" + value) as json_string<number>;
+    return ('' + value) as json_string<number>;
   }
 }

@@ -1,11 +1,11 @@
-import * as schema from "../schema";
-import * as classes from "./classes";
-import type { Type } from "./types";
-import type { TypeSystem } from "../system/TypeSystem";
-import type { TypeAlias } from "../system/TypeAlias";
-import type { TypeOfAlias } from "../system/types";
+import * as schema from '../schema';
+import * as classes from './classes';
+import type {Type} from './types';
+import type {TypeSystem} from '../system/TypeSystem';
+import type {TypeAlias} from '../system/TypeAlias';
+import type {TypeOfAlias} from '../system/types';
 
-const { s } = schema;
+const {s} = schema;
 
 export class TypeBuilder {
   constructor(public system?: TypeSystem) {}
@@ -97,19 +97,13 @@ export class TypeBuilder {
     return type;
   }
 
-  public Binary<T extends Type>(
-    type: T,
-    options: schema.Optional<schema.BinarySchema> = {},
-  ) {
+  public Binary<T extends Type>(type: T, options: schema.Optional<schema.BinarySchema> = {}) {
     const bin = new classes.BinaryType(type, options);
     bin.system = this.system;
     return bin;
   }
 
-  public Array<T extends Type>(
-    type: T,
-    options?: schema.Optional<schema.ArraySchema>,
-  ) {
+  public Array<T extends Type>(type: T, options?: schema.Optional<schema.ArraySchema>) {
     const arr = new classes.ArrayType<T>(type, options);
     arr.system = this.system;
     return arr;
@@ -139,10 +133,7 @@ export class TypeBuilder {
     return field;
   }
 
-  public Map<T extends Type>(
-    type: T,
-    options?: schema.Optional<schema.MapSchema>,
-  ) {
+  public Map<T extends Type>(type: T, options?: schema.Optional<schema.MapSchema>) {
     const map = new classes.MapType<T>(type, options);
     map.system = this.system;
     return map;
@@ -175,23 +166,21 @@ export class TypeBuilder {
 
   public import(node: schema.Schema): Type {
     switch (node.kind) {
-      case "any":
+      case 'any':
         return this.Any(node);
-      case "bool":
+      case 'bool':
         return this.Boolean(node);
-      case "num":
+      case 'num':
         return this.Number(node);
-      case "str":
+      case 'str':
         return this.String(node);
-      case "bin":
+      case 'bin':
         return this.Binary(this.import(node.type), node);
-      case "arr":
+      case 'arr':
         return this.Array(this.import(node.type), node);
-      case "tup":
-        return this.Tuple(
-          ...node.types.map((t: schema.Schema) => this.import(t)),
-        ).options(node);
-      case "obj": {
+      case 'tup':
+        return this.Tuple(...node.types.map((t: schema.Schema) => this.import(t))).options(node);
+      case 'obj': {
         return this.Object(
           ...node.fields.map((f: any) =>
             f.optional
@@ -200,66 +189,56 @@ export class TypeBuilder {
           ),
         ).options(node);
       }
-      case "map":
+      case 'map':
         return this.Map(this.import(node.type), node);
-      case "const":
+      case 'const':
         return this.Const(node.value).options(node);
-      case "or":
-        return this.Or(
-          ...node.types.map((t) => this.import(t as schema.Schema)),
-        ).options(node);
-      case "ref":
+      case 'or':
+        return this.Or(...node.types.map((t) => this.import(t as schema.Schema))).options(node);
+      case 'ref':
         return this.Ref(node.ref).options(node);
-      case "fn":
-        return this.Function(
-          this.import(node.req as schema.Schema),
-          this.import(node.res as schema.Schema),
-        ).options(node);
-      case "fn$":
-        return this.Function$(
-          this.import(node.req as schema.Schema),
-          this.import(node.res as schema.Schema),
-        ).options(node);
+      case 'fn':
+        return this.Function(this.import(node.req as schema.Schema), this.import(node.res as schema.Schema)).options(
+          node,
+        );
+      case 'fn$':
+        return this.Function$(this.import(node.req as schema.Schema), this.import(node.res as schema.Schema)).options(
+          node,
+        );
     }
     throw new Error(`UNKNOWN_NODE [${node.kind}]`);
   }
 
   public from(value: unknown): Type {
     switch (typeof value) {
-      case "undefined":
+      case 'undefined':
         return this.undef;
-      case "boolean":
+      case 'boolean':
         return this.bool;
-      case "number":
+      case 'number':
         return this.num;
-      case "string":
+      case 'string':
         return this.str;
-      case "object":
+      case 'object':
         if (value === null) return this.nil;
         if (Array.isArray(value)) {
           if (value.length === 0) return this.arr;
           const getType = (v: unknown): string => {
             switch (typeof v) {
-              case "object":
-                if (v === null) return "nil";
-                if (Array.isArray(v)) return "arr";
-                return "obj";
+              case 'object':
+                if (v === null) return 'nil';
+                if (Array.isArray(v)) return 'arr';
+                return 'obj';
               default:
                 return typeof v;
             }
           };
-          const allElementsOfTheSameType = value.every(
-            (v) => getType(v) === getType(value[0]),
-          );
+          const allElementsOfTheSameType = value.every((v) => getType(v) === getType(value[0]));
           return allElementsOfTheSameType
             ? this.Array(this.from(value[0]))
             : this.Tuple(...value.map((v) => this.from(v)));
         }
-        return this.Object(
-          ...Object.entries(value).map(([key, value]) =>
-            this.prop(key, this.from(value)),
-          ),
-        );
+        return this.Object(...Object.entries(value).map(([key, value]) => this.prop(key, this.from(value))));
       default:
         return this.any;
     }

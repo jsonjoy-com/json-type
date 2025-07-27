@@ -1,17 +1,15 @@
-import { Codegen, CodegenStepExecJs } from "@jsonjoy.com/util/lib/codegen";
-import { WriteBlobStep } from "../WriteBlobStep";
-import { concat } from "@jsonjoy.com/util/lib/buffers/concat";
-import { Value } from "../../value/Value";
-import type { TypeSystem } from "../../system";
-import type { Type } from "../../type";
-import type { CompiledBinaryEncoder } from "../types";
-import type { BinaryJsonEncoder } from "@jsonjoy.com/json-pack/lib/types";
+import {Codegen, CodegenStepExecJs} from '@jsonjoy.com/util/lib/codegen';
+import {WriteBlobStep} from '../WriteBlobStep';
+import {concat} from '@jsonjoy.com/util/lib/buffers/concat';
+import {Value} from '../../value/Value';
+import type {TypeSystem} from '../../system';
+import type {Type} from '../../type';
+import type {CompiledBinaryEncoder} from '../types';
+import type {BinaryJsonEncoder} from '@jsonjoy.com/json-pack/lib/types';
 
 type Step = WriteBlobStep | CodegenStepExecJs;
 
-export interface BinaryEncoderCodegenContextOptions<
-  Encoder extends BinaryJsonEncoder,
-> {
+export interface BinaryEncoderCodegenContextOptions<Encoder extends BinaryJsonEncoder> {
   /** Type for which to generate the encoder. */
   type: Type;
 
@@ -28,17 +26,15 @@ export interface BinaryEncoderCodegenContextOptions<
 export class BinaryEncoderCodegenContext<Encoder extends BinaryJsonEncoder> {
   public readonly codegen: Codegen<CompiledBinaryEncoder>;
 
-  constructor(
-    public readonly options: BinaryEncoderCodegenContextOptions<Encoder>,
-  ) {
+  constructor(public readonly options: BinaryEncoderCodegenContextOptions<Encoder>) {
     this.codegen = new Codegen<CompiledBinaryEncoder>({
-      name: "toBinary" + (options.name ? "_" + options.name : ""),
-      args: ["r0", "encoder"],
+      name: 'toBinary' + (options.name ? '_' + options.name : ''),
+      args: ['r0', 'encoder'],
       prologue: /* js */ `
 var writer = encoder.writer;
 writer.ensureCapacity(capacityEstimator(r0));
 var uint8 = writer.uint8, view = writer.view;`,
-      epilogue: "",
+      epilogue: '',
       linkable: {
         Value,
       },
@@ -49,8 +45,7 @@ var uint8 = writer.uint8, view = writer.view;`,
           if (step instanceof CodegenStepExecJs) stepsJoined.push(step);
           else if (step instanceof WriteBlobStep) {
             const last = stepsJoined[stepsJoined.length - 1];
-            if (last instanceof WriteBlobStep)
-              last.arr = concat(last.arr, step.arr);
+            if (last instanceof WriteBlobStep) last.arr = concat(last.arr, step.arr);
             else stepsJoined.push(step);
           }
         }
@@ -65,10 +60,7 @@ var uint8 = writer.uint8, view = writer.view;`,
         return execSteps;
       },
     });
-    this.codegen.linkDependency(
-      options.type.capacityEstimator(),
-      "capacityEstimator",
-    );
+    this.codegen.linkDependency(options.type.capacityEstimator(), 'capacityEstimator');
   }
 
   public getBigIntStr(arr: Uint8Array, offset: number): string {
@@ -76,7 +68,7 @@ var uint8 = writer.uint8, view = writer.view;`,
     for (let i = 0; i < 8; i++) buf[i] = arr[offset + i];
     const view = new DataView(buf.buffer);
     const bigint = view.getBigUint64(0);
-    return bigint.toString() + "n";
+    return bigint.toString() + 'n';
   }
 
   private codegenBlob(step: WriteBlobStep) {
@@ -93,35 +85,23 @@ var uint8 = writer.uint8, view = writer.view;`,
         const remaining = length - i;
         if (remaining >= 8) {
           const value = this.getBigIntStr(step.arr, i);
-          lines.push(
-            /* js */ `view.setBigUint64(${ro}${i ? ` + ${i}` : ""}, ${value});`,
-          );
+          lines.push(/* js */ `view.setBigUint64(${ro}${i ? ` + ${i}` : ''}, ${value});`);
           i += 8;
         } else if (remaining >= 4) {
-          const value =
-            (step.arr[i] << 24) |
-            (step.arr[i + 1] << 16) |
-            (step.arr[i + 2] << 8) |
-            step.arr[i + 3];
-          lines.push(
-            /* js */ `view.setInt32(${ro}${i ? ` + ${i}` : ""}, ${value});`,
-          );
+          const value = (step.arr[i] << 24) | (step.arr[i + 1] << 16) | (step.arr[i + 2] << 8) | step.arr[i + 3];
+          lines.push(/* js */ `view.setInt32(${ro}${i ? ` + ${i}` : ''}, ${value});`);
           i += 4;
         } else if (remaining >= 2) {
           const value = (step.arr[i] << 8) | step.arr[i + 1];
-          lines.push(
-            /* js */ `view.setInt16(${ro}${i ? ` + ${i}` : ""}, ${value});`,
-          );
+          lines.push(/* js */ `view.setInt16(${ro}${i ? ` + ${i}` : ''}, ${value});`);
           i += 2;
         } else {
-          lines.push(
-            /* js */ `uint8[${ro}${i ? ` + ${i}` : ""}] = ${step.arr[i]};`,
-          );
+          lines.push(/* js */ `uint8[${ro}${i ? ` + ${i}` : ''}] = ${step.arr[i]};`);
           i++;
         }
       }
     }
-    const js = lines.join("\n");
+    const js = lines.join('\n');
     return new CodegenStepExecJs(js);
   }
 
@@ -130,7 +110,7 @@ var uint8 = writer.uint8, view = writer.view;`,
   }
 
   public gen(callback: (encoder: Encoder) => void): Uint8Array {
-    const { encoder } = this.options;
+    const {encoder} = this.options;
     encoder.writer.reset();
     callback(encoder);
     return encoder.writer.flush();

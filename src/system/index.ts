@@ -1,3 +1,3 @@
-export * from "./types";
-export * from "./TypeAlias";
-export * from "./TypeSystem";
+export * from './types';
+export * from './TypeAlias';
+export * from './TypeSystem';

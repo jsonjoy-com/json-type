@@ -1,6 +1,6 @@
-import type { JsonValueCodec } from "@jsonjoy.com/json-pack/lib/codecs/types";
-import type { ResolveType } from "../system/types";
-import type { Type } from "../type/types";
+import type {JsonValueCodec} from '@jsonjoy.com/json-pack/lib/codecs/types';
+import type {ResolveType} from '../system/types';
+import type {Type} from '../type/types';
 
 export class Value<T extends Type = Type> {
   constructor(
@@ -18,7 +18,7 @@ export class Value<T extends Type = Type> {
   }
 }
 
-if (process.env.NODE_ENV !== "production") {
+if (process.env.NODE_ENV !== 'production') {
   const encode = Value.prototype.encode;
   Value.prototype.encode = function (codec: JsonValueCodec): void {
     try {
@@ -29,7 +29,7 @@ if (process.env.NODE_ENV !== "production") {
         console.error(error);
         const type = this.type;
         if (type) {
-          const err = type.validator("object")(this.data);
+          const err = type.validator('object')(this.data);
           // tslint:disable-next-line no-console
           console.error(err);
         }

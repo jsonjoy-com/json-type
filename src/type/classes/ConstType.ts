@@ -34,7 +34,7 @@ export class ConstType<V = any> extends AbstractType<schema.ConstSchema<V>> {
   }
 
   public getOptions(): schema.Optional<schema.ConstSchema<V>> {
-    const { kind, value, ...options } = this.schema;
+    const {kind, value, ...options} = this.schema;
     return options as any;
   }
 
@@ -46,17 +46,11 @@ export class ConstType<V = any> extends AbstractType<schema.ConstSchema<V>> {
     ctx.emitCustomValidators(this, path, r);
   }
 
-  public codegenJsonTextEncoder(
-    ctx: JsonTextEncoderCodegenContext,
-    value: JsExpression,
-  ): void {
+  public codegenJsonTextEncoder(ctx: JsonTextEncoderCodegenContext, value: JsExpression): void {
     ctx.writeText(JSON.stringify(this.schema.value));
   }
 
-  private codegenBinaryEncoder(
-    ctx: BinaryEncoderCodegenContext<BinaryJsonEncoder>,
-    value: JsExpression,
-  ): void {
+  private codegenBinaryEncoder(ctx: BinaryEncoderCodegenContext<BinaryJsonEncoder>, value: JsExpression): void {
     ctx.blob(
       ctx.gen((encoder) => {
         encoder.writeAny(this.schema.value);
@@ -64,57 +58,48 @@ export class ConstType<V = any> extends AbstractType<schema.ConstSchema<V>> {
     );
   }
 
-  public codegenCborEncoder(
-    ctx: CborEncoderCodegenContext,
-    value: JsExpression,
-  ): void {
+  public codegenCborEncoder(ctx: CborEncoderCodegenContext, value: JsExpression): void {
     this.codegenBinaryEncoder(ctx, value);
   }
 
-  public codegenMessagePackEncoder(
-    ctx: MessagePackEncoderCodegenContext,
-    value: JsExpression,
-  ): void {
+  public codegenMessagePackEncoder(ctx: MessagePackEncoderCodegenContext, value: JsExpression): void {
     this.codegenBinaryEncoder(ctx, value);
   }
 
-  public codegenJsonEncoder(
-    ctx: JsonEncoderCodegenContext,
-    value: JsExpression,
-  ): void {
+  public codegenJsonEncoder(ctx: JsonEncoderCodegenContext, value: JsExpression): void {
     this.codegenBinaryEncoder(ctx, value);
   }
 
   public toTypeScriptAst() {
     const value = this.schema.value;
     if (value === null) {
-      const node: ts.TsNullKeyword = { node: "NullKeyword" };
+      const node: ts.TsNullKeyword = {node: 'NullKeyword'};
       return node;
     }
     switch (typeof value) {
-      case "string": {
-        const node: ts.TsStringLiteral = { node: "StringLiteral", text: value };
+      case 'string': {
+        const node: ts.TsStringLiteral = {node: 'StringLiteral', text: value};
         return node;
       }
-      case "number": {
+      case 'number': {
         const node: ts.TsNumericLiteral = {
-          node: "NumericLiteral",
+          node: 'NumericLiteral',
           text: value.toString(),
         };
         return node;
       }
-      case "boolean": {
+      case 'boolean': {
         const node: ts.TsTrueKeyword | ts.TsFalseKeyword = {
-          node: value ? "TrueKeyword" : "FalseKeyword",
+          node: value ? 'TrueKeyword' : 'FalseKeyword',
         };
         return node;
       }
-      case "object": {
-        const node: ts.TsObjectKeyword = { node: "ObjectKeyword" };
+      case 'object': {
+        const node: ts.TsObjectKeyword = {node: 'ObjectKeyword'};
         return node;
       }
       default: {
-        const node: ts.TsUnknownKeyword = { node: "UnknownKeyword" };
+        const node: ts.TsUnknownKeyword = {node: 'UnknownKeyword'};
         return node;
       }
     }
@@ -124,7 +109,7 @@ export class ConstType<V = any> extends AbstractType<schema.ConstSchema<V>> {
     return this.__json;
   }
 
-  public toString(tab: string = ""): string {
+  public toString(tab: string = ''): string {
     return `${super.toString(tab)} → ${JSON.stringify(this.schema.value)}`;
   }
 }

@@ -29,16 +29,16 @@ export class StringType extends AbstractType<schema.StringSchema> {
   public codegenValidator(ctx: ValidatorCodegenContext, path: ValidationPath, r: string): void {
     const error = ctx.err(ValidationError.STR, path);
     ctx.js(/* js */ `if(typeof ${r} !== "string") return ${error};`);
-    const { min, max, format, ascii } = this.schema;
-    if (typeof min === "number" && min === max) {
+    const {min, max, format, ascii} = this.schema;
+    if (typeof min === 'number' && min === max) {
       const err = ctx.err(ValidationError.STR_LEN, path);
       ctx.js(/* js */ `if(${r}.length !== ${min}) return ${err};`);
     } else {
-      if (typeof min === "number") {
+      if (typeof min === 'number') {
         const err = ctx.err(ValidationError.STR_LEN, path);
         ctx.js(/* js */ `if(${r}.length < ${min}) return ${err};`);
       }
-      if (typeof max === "number") {
+      if (typeof max === 'number') {
         const err = ctx.err(ValidationError.STR_LEN, path);
         ctx.js(/* js */ `if(${r}.length > ${max}) return ${err};`);
       }
@@ -46,10 +46,10 @@ export class StringType extends AbstractType<schema.StringSchema> {
 
     if (format) {
       const formatErr = ctx.err(ValidationError.STR, path);
-      if (format === "ascii") {
+      if (format === 'ascii') {
         const validateFn = ctx.codegen.linkDependency(isAscii);
         ctx.js(/* js */ `if(!${validateFn}(${r})) return ${formatErr};`);
-      } else if (format === "utf8") {
+      } else if (format === 'utf8') {
         const validateFn = ctx.codegen.linkDependency(isUtf8);
         ctx.js(/* js */ `if(!${validateFn}(${r})) return ${formatErr};`);
       }
@@ -62,10 +62,7 @@ export class StringType extends AbstractType<schema.StringSchema> {
     ctx.emitCustomValidators(this, path, r);
   }
 
-  public codegenJsonTextEncoder(
-    ctx: JsonTextEncoderCodegenContext,
-    value: JsExpression,
-  ): void {
+  public codegenJsonTextEncoder(ctx: JsonTextEncoderCodegenContext, value: JsExpression): void {
     if (this.schema.noJsonEscape) {
       ctx.writeText('"');
       ctx.js(/* js */ `s += ${value.use()};`);
@@ -73,49 +70,32 @@ export class StringType extends AbstractType<schema.StringSchema> {
     } else ctx.js(/* js */ `s += asString(${value.use()});`);
   }
 
-  private codegenBinaryEncoder(
-    ctx: BinaryEncoderCodegenContext<BinaryJsonEncoder>,
-    value: JsExpression,
-  ): void {
-    const { ascii, format } = this.schema;
+  private codegenBinaryEncoder(ctx: BinaryEncoderCodegenContext<BinaryJsonEncoder>, value: JsExpression): void {
+    const {ascii, format} = this.schema;
     const v = value.use();
     // Use ASCII encoding if format is 'ascii' or ascii=true (backward compatibility)
-    const useAscii = format === "ascii" || ascii;
+    const useAscii = format === 'ascii' || ascii;
     if (useAscii) ctx.js(/* js */ `encoder.writeAsciiStr(${v});`);
     else ctx.js(/* js */ `encoder.writeStr(${v});`);
   }
 
-  public codegenCborEncoder(
-    ctx: CborEncoderCodegenContext,
-    value: JsExpression,
-  ): void {
+  public codegenCborEncoder(ctx: CborEncoderCodegenContext, value: JsExpression): void {
     this.codegenBinaryEncoder(ctx, value);
   }
 
-  public codegenMessagePackEncoder(
-    ctx: MessagePackEncoderCodegenContext,
-    value: JsExpression,
-  ): void {
+  public codegenMessagePackEncoder(ctx: MessagePackEncoderCodegenContext, value: JsExpression): void {
     this.codegenBinaryEncoder(ctx, value);
   }
 
-  public codegenJsonEncoder(
-    ctx: JsonEncoderCodegenContext,
-    value: JsExpression,
-  ): void {
+  public codegenJsonEncoder(ctx: JsonEncoderCodegenContext, value: JsExpression): void {
     this.codegenBinaryEncoder(ctx, value);
   }
 
   public toTypeScriptAst(): ts.TsStringKeyword {
-    return { node: "StringKeyword" };
+    return {node: 'StringKeyword'};
   }
 
-  public toJson(
-    value: unknown,
-    system: TypeSystem | undefined = this.system,
-  ): json_string<unknown> {
-    return <json_string<string>>(
-      (this.schema.noJsonEscape ? '"' + value + '"' : asString(value as string))
-    );
+  public toJson(value: unknown, system: TypeSystem | undefined = this.system): json_string<unknown> {
+    return <json_string<string>>(this.schema.noJsonEscape ? '"' + value + '"' : asString(value as string));
   }
 }

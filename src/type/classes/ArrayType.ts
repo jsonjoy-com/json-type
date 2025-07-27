@@ -24,9 +24,7 @@ import {NumberType} from './NumberType';
 import {MaxEncodingOverhead} from '@jsonjoy.com/util/lib/json-size';
 import type * as jtd from '../../jtd/types';
 
-export class ArrayType<T extends Type> extends AbstractType<
-  schema.ArraySchema<SchemaOf<T>>
-> {
+export class ArrayType<T extends Type> extends AbstractType<schema.ArraySchema<SchemaOf<T>>> {
   protected schema: schema.ArraySchema<any>;
 
   constructor(
@@ -45,7 +43,7 @@ export class ArrayType<T extends Type> extends AbstractType<
   }
 
   public getOptions(): schema.Optional<schema.ArraySchema<SchemaOf<T>>> {
-    const { kind, type, ...options } = this.schema;
+    const {kind, type, ...options} = this.schema;
     return options as any;
   }
 
@@ -55,51 +53,37 @@ export class ArrayType<T extends Type> extends AbstractType<
     const rv = ctx.codegen.getRegister();
     const err = ctx.err(ValidationError.ARR, path);
     const errLen = ctx.err(ValidationError.ARR_LEN, path);
-    const { min, max } = this.schema;
+    const {min, max} = this.schema;
     ctx.js(/* js */ `if (!Array.isArray(${r})) return ${err};`);
     ctx.js(`var ${rl} = ${r}.length;`);
     if (min !== undefined) ctx.js(`if (${rl} < ${min}) return ${errLen};`);
     if (max !== undefined) ctx.js(`if (${rl} > ${max}) return ${errLen};`);
     ctx.js(`for (var ${rv}, ${ri} = ${r}.length; ${ri}-- !== 0;) {`);
     ctx.js(`${rv} = ${r}[${ri}];`);
-    this.type.codegenValidator(ctx, [...path, { r: ri }], rv);
+    this.type.codegenValidator(ctx, [...path, {r: ri}], rv);
     ctx.js(`}`);
     ctx.emitCustomValidators(this, path, r);
   }
 
-  public codegenJsonTextEncoder(
-    ctx: JsonTextEncoderCodegenContext,
-    value: JsExpression,
-  ): void {
-    ctx.writeText("[");
+  public codegenJsonTextEncoder(ctx: JsonTextEncoderCodegenContext, value: JsExpression): void {
+    ctx.writeText('[');
     const codegen = ctx.codegen;
     const r = codegen.getRegister(); // array
     const rl = codegen.getRegister(); // array.length
     const rll = codegen.getRegister(); // last
     const ri = codegen.getRegister(); // index
-    ctx.js(
-      /* js */ `var ${r} = ${value.use()}, ${rl} = ${r}.length, ${rll} = ${rl} - 1, ${ri} = 0;`,
-    );
-    ctx.js(/* js */ `for(; ${ri} < ${rll}; ${ri}++) ` + "{");
-    this.type.codegenJsonTextEncoder(
-      ctx,
-      new JsExpression(() => `${r}[${ri}]`),
-    );
+    ctx.js(/* js */ `var ${r} = ${value.use()}, ${rl} = ${r}.length, ${rll} = ${rl} - 1, ${ri} = 0;`);
+    ctx.js(/* js */ `for(; ${ri} < ${rll}; ${ri}++) ` + '{');
+    this.type.codegenJsonTextEncoder(ctx, new JsExpression(() => `${r}[${ri}]`));
     ctx.js(/* js */ `s += ',';`);
     ctx.js(`}`);
     ctx.js(`if (${rl}) {`);
-    this.type.codegenJsonTextEncoder(
-      ctx,
-      new JsExpression(() => `${r}[${rll}]`),
-    );
+    this.type.codegenJsonTextEncoder(ctx, new JsExpression(() => `${r}[${rll}]`));
     ctx.js(`}`);
-    ctx.writeText("]");
+    ctx.writeText(']');
   }
 
-  private codegenBinaryEncoder(
-    ctx: BinaryEncoderCodegenContext<BinaryJsonEncoder>,
-    value: JsExpression,
-  ): void {
+  private codegenBinaryEncoder(ctx: BinaryEncoderCodegenContext<BinaryJsonEncoder>, value: JsExpression): void {
     const type = this.type;
     const codegen = ctx.codegen;
     const r = codegen.getRegister(); // array
@@ -107,45 +91,32 @@ export class ArrayType<T extends Type> extends AbstractType<
     const ri = codegen.getRegister(); // index
     const rItem = codegen.getRegister(); // item
     const expr = new JsExpression(() => `${rItem}`);
-    ctx.js(
-      /* js */ `var ${r} = ${value.use()}, ${rl} = ${r}.length, ${ri} = 0, ${rItem};`,
-    );
+    ctx.js(/* js */ `var ${r} = ${value.use()}, ${rl} = ${r}.length, ${ri} = 0, ${rItem};`);
     ctx.js(/* js */ `encoder.writeArrHdr(${rl});`);
-    ctx.js(/* js */ `for(; ${ri} < ${rl}; ${ri}++) ` + "{");
+    ctx.js(/* js */ `for(; ${ri} < ${rl}; ${ri}++) ` + '{');
     ctx.js(/* js */ `${rItem} = ${r}[${ri}];`);
-    if (ctx instanceof CborEncoderCodegenContext)
-      type.codegenCborEncoder(ctx, expr);
-    else if (ctx instanceof MessagePackEncoderCodegenContext)
-      type.codegenMessagePackEncoder(ctx, expr);
-    else throw new Error("Unknown encoder");
+    if (ctx instanceof CborEncoderCodegenContext) type.codegenCborEncoder(ctx, expr);
+    else if (ctx instanceof MessagePackEncoderCodegenContext) type.codegenMessagePackEncoder(ctx, expr);
+    else throw new Error('Unknown encoder');
     ctx.js(`}`);
   }
 
-  public codegenCborEncoder(
-    ctx: CborEncoderCodegenContext,
-    value: JsExpression,
-  ): void {
+  public codegenCborEncoder(ctx: CborEncoderCodegenContext, value: JsExpression): void {
     this.codegenBinaryEncoder(ctx, value);
   }
 
-  public codegenMessagePackEncoder(
-    ctx: MessagePackEncoderCodegenContext,
-    value: JsExpression,
-  ): void {
+  public codegenMessagePackEncoder(ctx: MessagePackEncoderCodegenContext, value: JsExpression): void {
     this.codegenBinaryEncoder(ctx, value);
   }
 
-  public codegenJsonEncoder(
-    ctx: JsonEncoderCodegenContext,
-    value: JsExpression,
-  ): void {
+  public codegenJsonEncoder(ctx: JsonEncoderCodegenContext, value: JsExpression): void {
     const type = this.type;
     const codegen = ctx.codegen;
     const expr = new JsExpression(() => `${rItem}`);
     const r = codegen.var(value.use());
     const rLen = codegen.var(`${r}.length`);
     const rLast = codegen.var(`${rLen} - 1`);
-    const ri = codegen.var("0");
+    const ri = codegen.var('0');
     const rItem = codegen.var();
     ctx.blob(
       ctx.gen((encoder) => {
@@ -174,29 +145,23 @@ export class ArrayType<T extends Type> extends AbstractType<
 
   public toTypeScriptAst(): ts.TsArrayType {
     return {
-      node: "ArrayType",
+      node: 'ArrayType',
       elementType: this.type.toTypeScriptAst() as ts.TsType,
     };
   }
 
-  public toJson(
-    value: unknown,
-    system: TypeSystem | undefined = this.system,
-  ): json_string<unknown> {
+  public toJson(value: unknown, system: TypeSystem | undefined = this.system): json_string<unknown> {
     const length = (value as unknown[]).length;
-    if (!length) return "[]" as json_string<unknown>;
+    if (!length) return '[]' as json_string<unknown>;
     const last = length - 1;
     const type = this.type;
-    let str = "[";
-    for (let i = 0; i < last; i++)
-      str += (type as any).toJson((value as unknown[])[i] as any, system) + ",";
+    let str = '[';
+    for (let i = 0; i < last; i++) str += (type as any).toJson((value as unknown[])[i] as any, system) + ',';
     str += (type as any).toJson((value as unknown[])[last] as any, system);
-    return (str + "]") as json_string<unknown>;
+    return (str + ']') as json_string<unknown>;
   }
 
-  public toString(tab: string = ""): string {
-    return (
-      super.toString(tab) + printTree(tab, [(tab) => this.type.toString(tab)])
-    );
+  public toString(tab: string = ''): string {
+    return super.toString(tab) + printTree(tab, [(tab) => this.type.toString(tab)]);
   }
 }

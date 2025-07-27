@@ -27,18 +27,17 @@ const augmentWithComment = (
   node: ts.TsDeclaration | ts.TsPropertySignature | ts.TsTypeLiteral,
 ) => {
   if (type.title || type.description) {
-    let comment = "";
-    if (type.title) comment += "# " + type.title;
-    if (type.title && type.description) comment += "\n\n";
+    let comment = '';
+    if (type.title) comment += '# ' + type.title;
+    if (type.title && type.description) comment += '\n\n';
     if (type.description) comment += type.description;
     node.comment = comment;
   }
 };
 
-export class ObjectFieldType<
-  K extends string,
-  V extends Type,
-> extends AbstractType<schema.ObjectFieldSchema<K, SchemaOf<V>>> {
+export class ObjectFieldType<K extends string, V extends Type> extends AbstractType<
+  schema.ObjectFieldSchema<K, SchemaOf<V>>
+> {
   protected schema: schema.ObjectFieldSchema<K, any>;
 
   constructor(
@@ -56,10 +55,8 @@ export class ObjectFieldType<
     };
   }
 
-  public getOptions(): schema.Optional<
-    schema.ObjectFieldSchema<K, SchemaOf<V>>
-  > {
-    const { kind, key, type, optional, ...options } = this.schema;
+  public getOptions(): schema.Optional<schema.ObjectFieldSchema<K, SchemaOf<V>>> {
+    const {kind, key, type, optional, ...options} = this.schema;
     return options as any;
   }
 
@@ -67,18 +64,12 @@ export class ObjectFieldType<
     return `"${this.key}":`;
   }
 
-  public toString(tab: string = ""): string {
-    return (
-      super.toString(tab) +
-      printTree(tab + " ", [(tab) => this.value.toString(tab)])
-    );
+  public toString(tab: string = ''): string {
+    return super.toString(tab) + printTree(tab + ' ', [(tab) => this.value.toString(tab)]);
   }
 }
 
-export class ObjectOptionalFieldType<
-  K extends string,
-  V extends Type,
-> extends ObjectFieldType<K, V> {
+export class ObjectOptionalFieldType<K extends string, V extends Type> extends ObjectFieldType<K, V> {
   public optional = true;
 
   constructor(
@@ -94,9 +85,9 @@ export class ObjectOptionalFieldType<
   }
 }
 
-export class ObjectType<
-  F extends ObjectFieldType<any, any>[] = ObjectFieldType<any, any>[],
-> extends AbstractType<schema.ObjectSchema<SchemaOfObjectFields<F>>> {
+export class ObjectType<F extends ObjectFieldType<any, any>[] = ObjectFieldType<any, any>[]> extends AbstractType<
+  schema.ObjectSchema<SchemaOfObjectFields<F>>
+> {
   protected schema: schema.ObjectSchema<any> = schema.s.obj;
 
   constructor(public readonly fields: F) {
@@ -110,52 +101,36 @@ export class ObjectType<
     };
   }
 
-  public getOptions(): schema.Optional<
-    schema.ObjectSchema<SchemaOfObjectFields<F>>
-  > {
-    const { kind, fields, ...options } = this.schema;
+  public getOptions(): schema.Optional<schema.ObjectSchema<SchemaOfObjectFields<F>>> {
+    const {kind, fields, ...options} = this.schema;
     return options as any;
   }
 
-  public getField<
-    K extends keyof schema.TypeOf<schema.ObjectSchema<SchemaOfObjectFields<F>>>,
-  >(key: K): ObjectFieldType<string, Type> | undefined {
+  public getField<K extends keyof schema.TypeOf<schema.ObjectSchema<SchemaOfObjectFields<F>>>>(
+    key: K,
+  ): ObjectFieldType<string, Type> | undefined {
     return this.fields.find((f) => f.key === key);
   }
 
-  public extend<F2 extends ObjectFieldType<any, any>[]>(
-    o: ObjectType<F2>,
-  ): ObjectType<[...F, ...F2]> {
-    const type = new ObjectType([...this.fields, ...o.fields]) as ObjectType<
-      [...F, ...F2]
-    >;
+  public extend<F2 extends ObjectFieldType<any, any>[]>(o: ObjectType<F2>): ObjectType<[...F, ...F2]> {
+    const type = new ObjectType([...this.fields, ...o.fields]) as ObjectType<[...F, ...F2]>;
     type.system = this.system;
     return type;
   }
 
-  public omit<
-    K extends keyof schema.TypeOf<schema.ObjectSchema<SchemaOfObjectFields<F>>>,
-  >(
+  public omit<K extends keyof schema.TypeOf<schema.ObjectSchema<SchemaOfObjectFields<F>>>>(
     key: K,
-  ): ObjectType<
-    ExcludeFromTuple<F, ObjectFieldType<K extends string ? K : never, any>>
-  > {
-    const type = new ObjectType(
-      this.fields.filter((f) => f.key !== key) as any,
-    );
+  ): ObjectType<ExcludeFromTuple<F, ObjectFieldType<K extends string ? K : never, any>>> {
+    const type = new ObjectType(this.fields.filter((f) => f.key !== key) as any);
     type.system = this.system;
     return type;
   }
 
-  public pick<
-    K extends keyof schema.TypeOf<schema.ObjectSchema<SchemaOfObjectFields<F>>>,
-  >(
+  public pick<K extends keyof schema.TypeOf<schema.ObjectSchema<SchemaOfObjectFields<F>>>>(
     key: K,
-  ): ObjectType<
-    PickFromTuple<F, ObjectFieldType<K extends string ? K : never, any>>
-  > {
+  ): ObjectType<PickFromTuple<F, ObjectFieldType<K extends string ? K : never, any>>> {
     const field = this.fields.find((f) => f.key === key);
-    if (!field) throw new Error("FIELD_NOT_FOUND");
+    if (!field) throw new Error('FIELD_NOT_FOUND');
     const type = new ObjectType([field] as any);
     type.system = this.system;
     return type;
@@ -167,23 +142,16 @@ export class ObjectType<
     const canSkipObjectTypeCheck = ctx.options.unsafeMode && length > 0;
     if (!canSkipObjectTypeCheck) {
       const err = ctx.err(ValidationError.OBJ, path);
-      ctx.js(
-        /* js */ `if (typeof ${r} !== 'object' || !${r} || (${r} instanceof Array)) return ${err};`,
-      );
+      ctx.js(/* js */ `if (typeof ${r} !== 'object' || !${r} || (${r} instanceof Array)) return ${err};`);
     }
-    const checkExtraKeys =
-      length &&
-      !this.schema.unknownFields &&
-      !ctx.options.skipObjectExtraFieldsCheck;
+    const checkExtraKeys = length && !this.schema.unknownFields && !ctx.options.skipObjectExtraFieldsCheck;
     if (checkExtraKeys) {
       const rk = ctx.codegen.getRegister();
       ctx.js(`for (var ${rk} in ${r}) {`);
       ctx.js(
         `switch (${rk}) { case ${fields
           .map((field) => JSON.stringify(field.key))
-          .join(
-            ": case ",
-          )}: break; default: return ${ctx.err(ValidationError.KEYS, [...path, { r: rk }])};}`,
+          .join(': case ')}: break; default: return ${ctx.err(ValidationError.KEYS, [...path, {r: rk}])};}`,
       );
       ctx.js(`}`);
     }
@@ -198,11 +166,7 @@ export class ObjectType<
         field.value.codegenValidator(ctx, keyPath, rv);
         ctx.js(`}`);
       } else {
-        if (
-          !canSkipObjectKeyUndefinedCheck(
-            (field.value as AbstractType<any>).getSchema().kind,
-          )
-        ) {
+        if (!canSkipObjectKeyUndefinedCheck((field.value as AbstractType<any>).getSchema().kind)) {
           const err = ctx.err(ValidationError.KEY, [...path, field.key]);
           ctx.js(/* js */ `var ${rv} = ${r}${accessor};`);
           ctx.js(/* js */ `if (${rv} === undefined) return ${err};`);
@@ -213,11 +177,8 @@ export class ObjectType<
     ctx.emitCustomValidators(this, path, r);
   }
 
-  public codegenJsonTextEncoder(
-    ctx: JsonTextEncoderCodegenContext,
-    value: JsExpression,
-  ): void {
-    const { schema, fields } = this;
+  public codegenJsonTextEncoder(ctx: JsonTextEncoderCodegenContext, value: JsExpression): void {
+    const {schema, fields} = this;
     const codegen = ctx.codegen;
     const r = codegen.getRegister();
     ctx.js(/* js */ `var ${r} = ${value.use()};`);
@@ -225,21 +186,16 @@ export class ObjectType<
     if (schema.encodeUnknownFields) {
       ctx.js(/* js */ `var ${rKeys} = new Set(Object.keys(${r}));`);
     }
-    const requiredFields = fields.filter(
-      (field) => !(field instanceof ObjectOptionalFieldType),
-    );
-    const optionalFields = fields.filter(
-      (field) => field instanceof ObjectOptionalFieldType,
-    );
-    ctx.writeText("{");
+    const requiredFields = fields.filter((field) => !(field instanceof ObjectOptionalFieldType));
+    const optionalFields = fields.filter((field) => field instanceof ObjectOptionalFieldType);
+    ctx.writeText('{');
     for (let i = 0; i < requiredFields.length; i++) {
       const field = requiredFields[i];
-      if (i) ctx.writeText(",");
-      ctx.writeText(JSON.stringify(field.key) + ":");
+      if (i) ctx.writeText(',');
+      ctx.writeText(JSON.stringify(field.key) + ':');
       const accessor = normalizeAccessor(field.key);
       const valueExpression = new JsExpression(() => `${r}${accessor}`);
-      if (schema.encodeUnknownFields)
-        ctx.js(/* js */ `${rKeys}.delete(${JSON.stringify(field.key)});`);
+      if (schema.encodeUnknownFields) ctx.js(/* js */ `${rKeys}.delete(${JSON.stringify(field.key)});`);
       field.value.codegenJsonTextEncoder(ctx, valueExpression);
     }
     const rHasFields = codegen.getRegister();
@@ -248,28 +204,22 @@ export class ObjectType<
       const field = optionalFields[i];
       const accessor = normalizeAccessor(field.key);
       const rValue = codegen.getRegister();
-      if (schema.encodeUnknownFields)
-        ctx.js(/* js */ `${rKeys}.delete(${JSON.stringify(field.key)});`);
+      if (schema.encodeUnknownFields) ctx.js(/* js */ `${rKeys}.delete(${JSON.stringify(field.key)});`);
       ctx.js(/* js */ `var ${rValue} = ${r}${accessor};`);
       ctx.js(`if (${rValue} !== undefined) {`);
       if (requiredFields.length) {
-        ctx.writeText(",");
+        ctx.writeText(',');
       } else {
         ctx.js(`if (${rHasFields}) s += ',';`);
         ctx.js(/* js */ `${rHasFields} = true;`);
       }
-      ctx.writeText(JSON.stringify(field.key) + ":");
+      ctx.writeText(JSON.stringify(field.key) + ':');
       const valueExpression = new JsExpression(() => `${rValue}`);
       field.value.codegenJsonTextEncoder(ctx, valueExpression);
       ctx.js(`}`);
     }
     if (schema.encodeUnknownFields) {
-      const [rList, ri, rLength, rk] = [
-        codegen.r(),
-        codegen.r(),
-        codegen.r(),
-        codegen.r(),
-      ];
+      const [rList, ri, rLength, rk] = [codegen.r(), codegen.r(), codegen.r(), codegen.r()];
       ctx.js(`var ${rLength} = ${rKeys}.size;
 if (${rLength}) {
   var ${rk}, ${rList} = Array.from(${rKeys}.values());
@@ -279,23 +229,16 @@ if (${rLength}) {
   }
 }`);
     }
-    ctx.writeText("}");
+    ctx.writeText('}');
   }
 
-  public codegenCborEncoder(
-    ctx: CborEncoderCodegenContext,
-    value: JsExpression,
-  ): void {
+  public codegenCborEncoder(ctx: CborEncoderCodegenContext, value: JsExpression): void {
     const codegen = ctx.codegen;
     const r = codegen.r();
     const fields = this.fields;
     const length = fields.length;
-    const requiredFields = fields.filter(
-      (field) => !(field instanceof ObjectOptionalFieldType),
-    );
-    const optionalFields = fields.filter(
-      (field) => field instanceof ObjectOptionalFieldType,
-    );
+    const requiredFields = fields.filter((field) => !(field instanceof ObjectOptionalFieldType));
+    const optionalFields = fields.filter((field) => field instanceof ObjectOptionalFieldType);
     const requiredLength = requiredFields.length;
     const optionalLength = optionalFields.length;
     const encodeUnknownFields = !!this.schema.encodeUnknownFields;
@@ -304,10 +247,7 @@ if (${rLength}) {
         const field = requiredFields[i];
         ctx.blob(ctx.gen((encoder) => encoder.writeStr(field.key)));
         const accessor = normalizeAccessor(field.key);
-        field.value.codegenCborEncoder(
-          ctx,
-          new JsExpression(() => `${r}${accessor}`),
-        );
+        field.value.codegenCborEncoder(ctx, new JsExpression(() => `${r}${accessor}`));
       }
     };
     const emitOptionalFields = () => {
@@ -316,10 +256,7 @@ if (${rLength}) {
         const accessor = normalizeAccessor(field.key);
         codegen.js(`if (${r}${accessor} !== undefined) {`);
         ctx.blob(ctx.gen((encoder) => encoder.writeStr(field.key)));
-        field.value.codegenCborEncoder(
-          ctx,
-          new JsExpression(() => `${r}${accessor}`),
-        );
+        field.value.codegenCborEncoder(ctx, new JsExpression(() => `${r}${accessor}`));
         codegen.js(`}`);
       }
     };
@@ -329,10 +266,8 @@ if (${rLength}) {
       const ri = codegen.r();
       const rLength = codegen.r();
       const keys = fields.map((field) => JSON.stringify(field.key));
-      const rKnownFields = codegen.addConstant(`new Set([${keys.join(",")}])`);
-      codegen.js(
-        `var ${rKeys} = Object.keys(${r}), ${rLength} = ${rKeys}.length, ${rKey};`,
-      );
+      const rKnownFields = codegen.addConstant(`new Set([${keys.join(',')}])`);
+      codegen.js(`var ${rKeys} = Object.keys(${r}), ${rLength} = ${rKeys}.length, ${rKey};`);
       codegen.js(`for (var ${ri} = 0; ${ri} < ${rLength}; ${ri}++) {`);
       codegen.js(`${rKey} = ${rKeys}[${ri}];`);
       codegen.js(`if (${rKnownFields}.has(${rKey})) continue;`);
@@ -358,24 +293,17 @@ if (${rLength}) {
     }
   }
 
-  public codegenMessagePackEncoder(
-    ctx: MessagePackEncoderCodegenContext,
-    value: JsExpression,
-  ): void {
+  public codegenMessagePackEncoder(ctx: MessagePackEncoderCodegenContext, value: JsExpression): void {
     const codegen = ctx.codegen;
     const r = codegen.r();
     const fields = this.fields;
     const length = fields.length;
-    const requiredFields = fields.filter(
-      (field) => !(field instanceof ObjectOptionalFieldType),
-    );
-    const optionalFields = fields.filter(
-      (field) => field instanceof ObjectOptionalFieldType,
-    );
+    const requiredFields = fields.filter((field) => !(field instanceof ObjectOptionalFieldType));
+    const optionalFields = fields.filter((field) => field instanceof ObjectOptionalFieldType);
     const requiredLength = requiredFields.length;
     const optionalLength = optionalFields.length;
     const totalMaxKnownFields = requiredLength + optionalLength;
-    if (totalMaxKnownFields > 0xffff) throw new Error("Too many fields");
+    if (totalMaxKnownFields > 0xffff) throw new Error('Too many fields');
     const encodeUnknownFields = !!this.schema.encodeUnknownFields;
     const rFieldCount = codegen.r();
     const emitRequiredFields = () => {
@@ -383,10 +311,7 @@ if (${rLength}) {
         const field = requiredFields[i];
         ctx.blob(ctx.gen((encoder) => encoder.writeStr(field.key)));
         const accessor = normalizeAccessor(field.key);
-        field.value.codegenMessagePackEncoder(
-          ctx,
-          new JsExpression(() => `${r}${accessor}`),
-        );
+        field.value.codegenMessagePackEncoder(ctx, new JsExpression(() => `${r}${accessor}`));
       }
     };
     const emitOptionalFields = () => {
@@ -396,10 +321,7 @@ if (${rLength}) {
         codegen.if(`${r}${accessor} !== undefined`, () => {
           codegen.js(`${rFieldCount}++;`);
           ctx.blob(ctx.gen((encoder) => encoder.writeStr(field.key)));
-          field.value.codegenMessagePackEncoder(
-            ctx,
-            new JsExpression(() => `${r}${accessor}`),
-          );
+          field.value.codegenMessagePackEncoder(ctx, new JsExpression(() => `${r}${accessor}`));
         });
       }
     };
@@ -409,10 +331,8 @@ if (${rLength}) {
       const rKey = codegen.r();
       const rLength = codegen.r();
       const keys = fields.map((field) => JSON.stringify(field.key));
-      const rKnownFields = codegen.addConstant(`new Set([${keys.join(",")}])`);
-      codegen.js(
-        `var ${rKeys} = Object.keys(${r}), ${rLength} = ${rKeys}.length, ${rKey};`,
-      );
+      const rKnownFields = codegen.addConstant(`new Set([${keys.join(',')}])`);
+      codegen.js(`var ${rKeys} = Object.keys(${r}), ${rLength} = ${rKeys}.length, ${rKey};`);
       codegen.js(`for (var ${ri} = 0; ${ri} < ${rLength}; ${ri}++) {`);
       codegen.js(`${rKey} = ${rKeys}[${ri}];`);
       codegen.js(`if (${rKnownFields}.has(${rKey})) continue;`);
@@ -427,14 +347,14 @@ if (${rLength}) {
       emitRequiredFields();
     } else if (!encodeUnknownFields) {
       codegen.js(`var ${rFieldCount} = ${requiredLength};`);
-      const rHeaderPosition = codegen.var("writer.x");
+      const rHeaderPosition = codegen.var('writer.x');
       ctx.blob(ctx.gen((encoder) => encoder.writeObjHdr(0xffff)));
       emitRequiredFields();
       emitOptionalFields();
       codegen.js(`view.setUint16(${rHeaderPosition} + 1, ${rFieldCount});`);
     } else {
       codegen.js(`var ${rFieldCount} = ${requiredLength};`);
-      const rHeaderPosition = codegen.var("writer.x");
+      const rHeaderPosition = codegen.var('writer.x');
       ctx.blob(ctx.gen((encoder) => encoder.writeObjHdr(0xffffffff)));
       emitRequiredFields();
       emitOptionalFields();
@@ -443,26 +363,17 @@ if (${rLength}) {
     }
   }
 
-  public codegenJsonEncoder(
-    ctx: JsonEncoderCodegenContext,
-    value: JsExpression,
-  ): void {
+  public codegenJsonEncoder(ctx: JsonEncoderCodegenContext, value: JsExpression): void {
     const codegen = ctx.codegen;
     const r = codegen.var(value.use());
     const fields = this.fields;
-    const requiredFields = fields.filter(
-      (field) => !(field instanceof ObjectOptionalFieldType),
-    );
-    const optionalFields = fields.filter(
-      (field) => field instanceof ObjectOptionalFieldType,
-    );
+    const requiredFields = fields.filter((field) => !(field instanceof ObjectOptionalFieldType));
+    const optionalFields = fields.filter((field) => field instanceof ObjectOptionalFieldType);
     const requiredLength = requiredFields.length;
     const optionalLength = optionalFields.length;
     const encodeUnknownFields = !!this.schema.encodeUnknownFields;
     const separatorBlob = ctx.gen((encoder) => encoder.writeObjSeparator());
-    const keySeparatorBlob = ctx.gen((encoder) =>
-      encoder.writeObjKeySeparator(),
-    );
+    const keySeparatorBlob = ctx.gen((encoder) => encoder.writeObjKeySeparator());
     const endBlob = ctx.gen((encoder) => encoder.writeEndObj());
     const emitRequiredFields = () => {
       for (let i = 0; i < requiredLength; i++) {
@@ -474,10 +385,7 @@ if (${rLength}) {
           }),
         );
         const accessor = normalizeAccessor(field.key);
-        field.value.codegenJsonEncoder(
-          ctx,
-          new JsExpression(() => `${r}${accessor}`),
-        );
+        field.value.codegenJsonEncoder(ctx, new JsExpression(() => `${r}${accessor}`));
         ctx.blob(separatorBlob);
       }
     };
@@ -492,10 +400,7 @@ if (${rLength}) {
             }),
           );
           ctx.blob(keySeparatorBlob);
-          field.value.codegenJsonEncoder(
-            ctx,
-            new JsExpression(() => `${r}${accessor}`),
-          );
+          field.value.codegenJsonEncoder(ctx, new JsExpression(() => `${r}${accessor}`));
           ctx.blob(separatorBlob);
         });
       }
@@ -506,10 +411,8 @@ if (${rLength}) {
       const ri = codegen.r();
       const rLength = codegen.r();
       const keys = fields.map((field) => JSON.stringify(field.key));
-      const rKnownFields = codegen.addConstant(`new Set([${keys.join(",")}])`);
-      codegen.js(
-        `var ${rKeys} = Object.keys(${r}), ${rLength} = ${rKeys}.length, ${rKey};`,
-      );
+      const rKnownFields = codegen.addConstant(`new Set([${keys.join(',')}])`);
+      codegen.js(`var ${rKeys} = Object.keys(${r}), ${rLength} = ${rKeys}.length, ${rKey};`);
       codegen.js(`for (var ${ri} = 0; ${ri} < ${rLength}; ${ri}++) {`);
       codegen.js(`${rKey} = ${rKeys}[${ri}];`);
       codegen.js(`if (${rKnownFields}.has(${rKey})) continue;`);
@@ -521,8 +424,7 @@ if (${rLength}) {
     };
     const emitEnding = () => {
       const rewriteLastSeparator = () => {
-        for (let i = 0; i < endBlob.length; i++)
-          ctx.js(`uint8[writer.x - ${endBlob.length - i}] = ${endBlob[i]};`);
+        for (let i = 0; i < endBlob.length; i++) ctx.js(`uint8[writer.x - ${endBlob.length - i}] = ${endBlob[i]};`);
       };
       if (requiredFields.length) {
         rewriteLastSeparator();
@@ -560,13 +462,13 @@ if (${rLength}) {
 
   public toTypeScriptAst(): ts.TsTypeLiteral {
     const node: ts.TsTypeLiteral = {
-      node: "TypeLiteral",
+      node: 'TypeLiteral',
       members: [],
     };
     const fields = this.fields;
     for (const field of fields) {
       const member: ts.TsPropertySignature = {
-        node: "PropertySignature",
+        node: 'PropertySignature',
         name: field.key,
         type: field.value.toTypeScriptAst(),
       };
@@ -576,40 +478,36 @@ if (${rLength}) {
     }
     if (this.schema.unknownFields || this.schema.encodeUnknownFields)
       node.members.push({
-        node: "IndexSignature",
-        type: { node: "UnknownKeyword" },
+        node: 'IndexSignature',
+        type: {node: 'UnknownKeyword'},
       });
     augmentWithComment(this.schema, node);
     return node;
   }
 
-  public toJson(
-    value: unknown,
-    system: TypeSystem | undefined = this.system,
-  ): json_string<unknown> {
+  public toJson(value: unknown, system: TypeSystem | undefined = this.system): json_string<unknown> {
     const fields = this.fields;
     const length = fields.length;
-    if (!length) return "{}" as json_string<unknown>;
+    if (!length) return '{}' as json_string<unknown>;
     const last = length - 1;
-    let str = "{";
+    let str = '{';
     for (let i = 0; i < last; i++) {
       const field = fields[i];
       const key = field.key;
       const fieldType = field.value;
       const val = (value as any)[key];
       if (val === undefined) continue;
-      str += asString(key) + ":" + fieldType.toJson(val as any, system) + ",";
+      str += asString(key) + ':' + fieldType.toJson(val as any, system) + ',';
     }
     const key = fields[last].key;
     const val = (value as any)[key];
     if (val !== undefined) {
-      str +=
-        asString(key) + ":" + fields[last].value.toJson(val as any, system);
+      str += asString(key) + ':' + fields[last].value.toJson(val as any, system);
     } else if (str.length > 1) str = str.slice(0, -1);
-    return (str + "}") as json_string<unknown>;
+    return (str + '}') as json_string<unknown>;
   }
 
-  public toString(tab: string = ""): string {
+  public toString(tab: string = ''): string {
     return (
       super.toString(tab) +
       printTree(

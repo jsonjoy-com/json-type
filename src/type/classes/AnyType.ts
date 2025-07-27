@@ -27,18 +27,12 @@ export class AnyType extends AbstractType<schema.AnySchema> {
     ctx.emitCustomValidators(this, path, r);
   }
 
-  public codegenJsonTextEncoder(
-    ctx: JsonTextEncoderCodegenContext,
-    value: JsExpression,
-  ): void {
+  public codegenJsonTextEncoder(ctx: JsonTextEncoderCodegenContext, value: JsExpression): void {
     ctx.js(/* js */ `s += stringify(${value.use()});`);
   }
 
-  private codegenBinaryEncoder(
-    ctx: BinaryEncoderCodegenContext<BinaryJsonEncoder>,
-    value: JsExpression,
-  ): void {
-    ctx.codegen.link("Value");
+  private codegenBinaryEncoder(ctx: BinaryEncoderCodegenContext<BinaryJsonEncoder>, value: JsExpression): void {
+    ctx.codegen.link('Value');
     const r = ctx.codegen.var(value.use());
     ctx.codegen.if(
       `${r} instanceof Value`,
@@ -65,28 +59,19 @@ export class AnyType extends AbstractType<schema.AnySchema> {
     );
   }
 
-  public codegenCborEncoder(
-    ctx: CborEncoderCodegenContext,
-    value: JsExpression,
-  ): void {
+  public codegenCborEncoder(ctx: CborEncoderCodegenContext, value: JsExpression): void {
     this.codegenBinaryEncoder(ctx, value);
   }
 
-  public codegenMessagePackEncoder(
-    ctx: MessagePackEncoderCodegenContext,
-    value: JsExpression,
-  ): void {
+  public codegenMessagePackEncoder(ctx: MessagePackEncoderCodegenContext, value: JsExpression): void {
     this.codegenBinaryEncoder(ctx, value);
   }
 
-  public codegenJsonEncoder(
-    ctx: JsonEncoderCodegenContext,
-    value: JsExpression,
-  ): void {
+  public codegenJsonEncoder(ctx: JsonEncoderCodegenContext, value: JsExpression): void {
     this.codegenBinaryEncoder(ctx, value);
   }
 
   public toTypeScriptAst(): ts.TsType {
-    return { node: "AnyKeyword" };
+    return {node: 'AnyKeyword'};
   }
 }

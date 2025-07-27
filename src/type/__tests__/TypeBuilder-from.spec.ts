@@ -1,16 +1,16 @@
-import { TypeSystem } from "../../system";
+import {TypeSystem} from '../../system';
 
 const system = new TypeSystem();
 const t = system.t;
 
-test("can create a schema for a deeply nested object", () => {
+test('can create a schema for a deeply nested object', () => {
   const type = t.from({
     id: 123,
-    foo: "bar",
+    foo: 'bar',
     verified: true,
-    tags: ["a", "b", "c"],
+    tags: ['a', 'b', 'c'],
     emptyArr: [],
-    vectorClockIsTuple: ["site 1", 123],
+    vectorClockIsTuple: ['site 1', 123],
     tupleOfObjectsAndArrays: [[], {}, null],
     nested: {
       id: 456,
@@ -18,7 +18,7 @@ test("can create a schema for a deeply nested object", () => {
     nil: null,
     undef: undefined,
   });
-  expect(type + "").toMatchInlineSnapshot(`
+  expect(type + '').toMatchInlineSnapshot(`
     "obj
     ├─ "id":
     │   └─ num

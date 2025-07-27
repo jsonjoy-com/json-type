@@ -9,11 +9,11 @@ export interface JsonSchemaGenericKeywords {
   writeOnly?: boolean;
   $id?: string;
   $ref?: string;
-  $defs?: { [name: string]: JsonSchemaValueNode };
+  $defs?: {[name: string]: JsonSchemaValueNode};
 }
 
 export interface JsonSchemaString extends JsonSchemaGenericKeywords {
-  type: "string";
+  type: 'string';
   const?: string;
   format?: string;
   pattern?: string;
@@ -22,7 +22,7 @@ export interface JsonSchemaString extends JsonSchemaGenericKeywords {
 }
 
 export interface JsonSchemaNumber extends JsonSchemaGenericKeywords {
-  type: "number" | "integer";
+  type: 'number' | 'integer';
   const?: number;
   minimum?: number;
   exclusiveMinimum?: number;
@@ -31,7 +31,7 @@ export interface JsonSchemaNumber extends JsonSchemaGenericKeywords {
 }
 
 export interface JsonSchemaObject extends JsonSchemaGenericKeywords {
-  type: "object";
+  type: 'object';
   properties?: {
     [key: string]: JsonSchemaNode;
   };
@@ -44,7 +44,7 @@ export interface JsonSchemaObject extends JsonSchemaGenericKeywords {
 }
 
 export interface JsonSchemaArray extends JsonSchemaGenericKeywords {
-  type: "array";
+  type: 'array';
   items: JsonSchemaNode | false;
   minItems?: number;
   maxItems?: number;
@@ -53,20 +53,20 @@ export interface JsonSchemaArray extends JsonSchemaGenericKeywords {
 }
 
 export interface JsonSchemaBoolean extends JsonSchemaGenericKeywords {
-  type: "boolean";
+  type: 'boolean';
   const?: boolean;
 }
 
 export interface JsonSchemaNull extends JsonSchemaGenericKeywords {
-  type: "null";
+  type: 'null';
 }
 
 export interface JsonSchemaBinary extends JsonSchemaGenericKeywords {
-  type: "binary";
+  type: 'binary';
 }
 
 export interface JsonSchemaAny extends JsonSchemaGenericKeywords {
-  type: Array<"string" | "number" | "boolean" | "null" | "array" | "object">;
+  type: Array<'string' | 'number' | 'boolean' | 'null' | 'array' | 'object'>;
 }
 
 export interface JsonSchemaRef {
@@ -86,8 +86,4 @@ export type JsonSchemaValueNode =
   | JsonSchemaArray
   | JsonSchemaObject;
 
-export type JsonSchemaNode =
-  | JsonSchemaGenericKeywords
-  | JsonSchemaValueNode
-  | JsonSchemaRef
-  | JsonSchemaOr;
+export type JsonSchemaNode = JsonSchemaGenericKeywords | JsonSchemaValueNode | JsonSchemaRef | JsonSchemaOr;

@@ -1,7 +1,7 @@
-import { SchemaBuilder } from "./SchemaBuilder";
+import {SchemaBuilder} from './SchemaBuilder';
 
-export * from "./common";
-export * from "./schema";
+export * from './common';
+export * from './schema';
 
 /**
  * JSON Type AST builder.

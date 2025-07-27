@@ -1,30 +1,30 @@
-import { TypeSystem } from "../../system";
+import {TypeSystem} from '../../system';
 
-describe("any", () => {
+describe('any', () => {
   test('can encode "any" type', () => {
     const system = new TypeSystem();
     const type = system.t.any;
     expect(type.toTypeScriptAst()).toEqual({
-      node: "AnyKeyword",
+      node: 'AnyKeyword',
     });
   });
 });
 
-describe("const", () => {
-  test("can handle number const", () => {
+describe('const', () => {
+  test('can handle number const', () => {
     const system = new TypeSystem();
     const type = system.t.Const<123>(123);
     expect(type.toTypeScriptAst()).toEqual({
-      node: "NumericLiteral",
-      text: "123",
+      node: 'NumericLiteral',
+      text: '123',
     });
   });
 
-  test("can handle null", () => {
+  test('can handle null', () => {
     const system = new TypeSystem();
     const type = system.t.Const<null>(null);
     expect(type.toTypeScriptAst()).toEqual({
-      node: "NullKeyword",
+      node: 'NullKeyword',
     });
   });
 
@@ -32,7 +32,7 @@ describe("const", () => {
     const system = new TypeSystem();
     const type = system.t.Const<true>(true);
     expect(type.toTypeScriptAst()).toEqual({
-      node: "TrueKeyword",
+      node: 'TrueKeyword',
     });
   });
 
@@ -40,60 +40,60 @@ describe("const", () => {
     const system = new TypeSystem();
     const type = system.t.Const<false>(false);
     expect(type.toTypeScriptAst()).toEqual({
-      node: "FalseKeyword",
+      node: 'FalseKeyword',
     });
   });
 
-  test("can handle string", () => {
+  test('can handle string', () => {
     const system = new TypeSystem();
-    const type = system.t.Const<"asdf">("asdf");
+    const type = system.t.Const<'asdf'>('asdf');
     expect(type.toTypeScriptAst()).toEqual({
-      node: "StringLiteral",
-      text: "asdf",
+      node: 'StringLiteral',
+      text: 'asdf',
     });
   });
 
-  test("complex objects", () => {
+  test('complex objects', () => {
     const system = new TypeSystem();
-    const type = system.t.Const({ foo: "bar" } as const);
+    const type = system.t.Const({foo: 'bar'} as const);
     expect(type.toTypeScriptAst()).toEqual({
-      node: "ObjectKeyword",
+      node: 'ObjectKeyword',
     });
   });
 });
 
-describe("bool", () => {
-  test("can emit boolean AST", () => {
+describe('bool', () => {
+  test('can emit boolean AST', () => {
     const system = new TypeSystem();
     const type = system.t.bool;
     expect(type.toTypeScriptAst()).toEqual({
-      node: "BooleanKeyword",
+      node: 'BooleanKeyword',
     });
   });
 });
 
-describe("num", () => {
-  test("can emit number AST", () => {
+describe('num', () => {
+  test('can emit number AST', () => {
     const system = new TypeSystem();
     const type = system.t.num;
     expect(type.toTypeScriptAst()).toEqual({
-      node: "NumberKeyword",
+      node: 'NumberKeyword',
     });
   });
 });
 
-describe("str", () => {
-  test("can emit string AST", () => {
+describe('str', () => {
+  test('can emit string AST', () => {
     const system = new TypeSystem();
     const type = system.t.str;
     expect(type.toTypeScriptAst()).toEqual({
-      node: "StringKeyword",
+      node: 'StringKeyword',
     });
   });
 });
 
-describe("bin", () => {
-  test("can emit binary AST", () => {
+describe('bin', () => {
+  test('can emit binary AST', () => {
     const system = new TypeSystem();
     const type = system.t.bin;
     expect(type.toTypeScriptAst()).toMatchInlineSnapshot(`
@@ -108,7 +108,7 @@ describe("bin", () => {
   });
 });
 
-describe("arr", () => {
+describe('arr', () => {
   test('can emit array of "any" AST', () => {
     const system = new TypeSystem();
     const type = system.t.arr;
@@ -136,10 +136,10 @@ describe("arr", () => {
   });
 });
 
-describe("tup", () => {
-  test("can emit tuple AST", () => {
+describe('tup', () => {
+  test('can emit tuple AST', () => {
     const system = new TypeSystem();
-    const { t } = system;
+    const {t} = system;
     const type = system.t.Tuple(t.str, t.num, t.bool);
     expect(type.toTypeScriptAst()).toMatchInlineSnapshot(`
       {
@@ -160,21 +160,21 @@ describe("tup", () => {
   });
 });
 
-describe("obj", () => {
-  test("can emit tuple AST", () => {
+describe('obj', () => {
+  test('can emit tuple AST', () => {
     const system = new TypeSystem();
-    const { t } = system;
+    const {t} = system;
     const type = system.t
       .Object(
-        t.prop("id", t.str).options({
-          title: "title-x",
-          description: "description-x",
+        t.prop('id', t.str).options({
+          title: 'title-x',
+          description: 'description-x',
         }),
-        t.propOpt("id", t.num),
+        t.propOpt('id', t.num),
       )
       .options({
-        title: "title",
-        description: "description",
+        title: 'title',
+        description: 'description',
       });
     expect(type.toTypeScriptAst()).toMatchInlineSnapshot(`
       {
@@ -207,13 +207,13 @@ describe("obj", () => {
   });
 });
 
-describe("map", () => {
-  test("can emit tuple AST", () => {
+describe('map', () => {
+  test('can emit tuple AST', () => {
     const system = new TypeSystem();
-    const { t } = system;
+    const {t} = system;
     const type = system.t.Map(t.num).options({
-      title: "title",
-      description: "description",
+      title: 'title',
+      description: 'description',
     });
     expect(type.toTypeScriptAst()).toMatchInlineSnapshot(`
       {
@@ -232,11 +232,11 @@ describe("map", () => {
   });
 });
 
-describe("ref", () => {
-  test("can emit reference AST", () => {
+describe('ref', () => {
+  test('can emit reference AST', () => {
     const system = new TypeSystem();
-    const { t } = system;
-    const type = system.t.Ref("Foo");
+    const {t} = system;
+    const type = system.t.Ref('Foo');
     expect(type.toTypeScriptAst()).toMatchInlineSnapshot(`
       {
         "id": {
@@ -249,10 +249,10 @@ describe("ref", () => {
   });
 });
 
-describe("or", () => {
-  test("can emit reference AST", () => {
+describe('or', () => {
+  test('can emit reference AST', () => {
     const system = new TypeSystem();
-    const { t } = system;
+    const {t} = system;
     const type = system.t.Or(t.str, t.num);
     expect(type.toTypeScriptAst()).toMatchInlineSnapshot(`
       {
@@ -270,10 +270,10 @@ describe("or", () => {
   });
 });
 
-describe("fn", () => {
-  test("can emit reference AST", () => {
+describe('fn', () => {
+  test('can emit reference AST', () => {
     const system = new TypeSystem();
-    const { t } = system;
+    const {t} = system;
     const type = system.t.Function(t.str, t.num);
     expect(type.toTypeScriptAst()).toMatchInlineSnapshot(`
       {
@@ -307,10 +307,10 @@ describe("fn", () => {
   });
 });
 
-describe("fn$", () => {
-  test("can emit reference AST", () => {
+describe('fn$', () => {
+  test('can emit reference AST', () => {
     const system = new TypeSystem();
-    const { t } = system;
+    const {t} = system;
     const type = system.t.Function$(t.str, t.num);
     expect(type.toTypeScriptAst()).toMatchInlineSnapshot(`
       {

@@ -1,31 +1,23 @@
-import type { Expr } from "@jsonjoy.com/json-expression";
-import {
-  BooleanType,
-  ConstType,
-  NumberType,
-  type ObjectFieldType,
-  ObjectType,
-  StringType,
-  TupleType,
-} from "./classes";
-import type { Type } from "./types";
+import type {Expr} from '@jsonjoy.com/json-expression';
+import {BooleanType, ConstType, NumberType, type ObjectFieldType, ObjectType, StringType, TupleType} from './classes';
+import type {Type} from './types';
 
 export class Discriminator {
   public static findConst(type: Type): Discriminator | undefined {
-    if (type instanceof ConstType) return new Discriminator("", type);
+    if (type instanceof ConstType) return new Discriminator('', type);
     else if (type instanceof TupleType) {
       const types = type.types;
       for (let i = 0; i < types.length; i++) {
         const t = types[i];
         const d = Discriminator.findConst(t);
-        if (d) return new Discriminator("/" + i + d.path, d.type);
+        if (d) return new Discriminator('/' + i + d.path, d.type);
       }
     } else if (type instanceof ObjectType) {
       const fields = type.fields as ObjectFieldType<string, Type>[];
       for (let i = 0; i < fields.length; i++) {
         const f = fields[i];
         const d = Discriminator.findConst(f.value);
-        if (d) return new Discriminator("/" + f.key + d.path, d.type);
+        if (d) return new Discriminator('/' + f.key + d.path, d.type);
       }
     }
     return undefined;
@@ -33,7 +25,7 @@ export class Discriminator {
 
   public static find(type: Type): Discriminator {
     const constDiscriminator = Discriminator.findConst(type);
-    return constDiscriminator ?? new Discriminator("", type);
+    return constDiscriminator ?? new Discriminator('', type);
   }
 
   public static createExpression(types: Type[]): Expr {
@@ -44,15 +36,14 @@ export class Discriminator {
       const type = types[i];
       const d = Discriminator.find(type);
       const specifier = d.toSpecifier();
-      if (specifiers.has(specifier))
-        throw new Error("Duplicate discriminator: " + specifier);
+      if (specifiers.has(specifier)) throw new Error('Duplicate discriminator: ' + specifier);
       specifiers.add(specifier);
       discriminators.push(d);
     }
     let expr: Expr = <any>0;
     for (let i = 0; i < discriminators.length; i++) {
       const d = discriminators[i];
-      expr = <Expr>["?", d.condition(), i + 1, expr];
+      expr = <Expr>['?', d.condition(), i + 1, expr];
     }
     return expr;
   }
@@ -63,44 +54,38 @@ export class Discriminator {
   ) {}
 
   condition(): Expr {
-    if (this.type instanceof ConstType)
-      return ["==", this.type.value(), ["$", this.path]];
-    if (this.type instanceof BooleanType)
-      return ["==", ["type", ["$", this.path]], "boolean"];
-    if (this.type instanceof NumberType)
-      return ["==", ["type", ["$", this.path]], "number"];
-    if (this.type instanceof StringType)
-      return ["==", ["type", ["$", this.path]], "string"];
+    if (this.type instanceof ConstType) return ['==', this.type.value(), ['$', this.path]];
+    if (this.type instanceof BooleanType) return ['==', ['type', ['$', this.path]], 'boolean'];
+    if (this.type instanceof NumberType) return ['==', ['type', ['$', this.path]], 'number'];
+    if (this.type instanceof StringType) return ['==', ['type', ['$', this.path]], 'string'];
     switch (this.typeSpecifier()) {
-      case "obj":
-        return ["==", ["type", ["$", this.path]], "object"];
-      case "arr":
-        return ["==", ["type", ["$", this.path]], "array"];
+      case 'obj':
+        return ['==', ['type', ['$', this.path]], 'object'];
+      case 'arr':
+        return ['==', ['type', ['$', this.path]], 'array'];
     }
-    throw new Error(
-      "Cannot create condition for discriminator: " + this.toSpecifier(),
-    );
+    throw new Error('Cannot create condition for discriminator: ' + this.toSpecifier());
   }
 
   typeSpecifier(): string {
     const mnemonic = this.type.getTypeName();
     switch (mnemonic) {
-      case "bool":
-      case "str":
-      case "num":
-      case "const":
+      case 'bool':
+      case 'str':
+      case 'num':
+      case 'const':
         return mnemonic;
-      case "obj":
-      case "map":
-        return "obj";
-      case "arr":
-      case "tup":
-        return "arr";
-      case "fn":
-      case "fn$":
-        return "fn";
+      case 'obj':
+      case 'map':
+        return 'obj';
+      case 'arr':
+      case 'tup':
+        return 'arr';
+      case 'fn':
+      case 'fn$':
+        return 'fn';
     }
-    return "";
+    return '';
   }
 
   toSpecifier(): string {

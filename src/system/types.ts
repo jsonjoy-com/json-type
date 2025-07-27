@@ -1,6 +1,6 @@
-import type { Schema, TypeOf } from "../schema";
-import type { SchemaOf, Type } from "../type";
-import type { TypeAlias } from "./TypeAlias";
+import type {Schema, TypeOf} from '../schema';
+import type {SchemaOf, Type} from '../type';
+import type {TypeAlias} from './TypeAlias';
 
 /** A custom user provided validator. */
 export interface CustomValidator {
@@ -14,14 +14,12 @@ export interface CustomValidator {
   fn: (value: any) => unknown;
 }
 
-export type TypeOfAlias<T> =
-  T extends TypeAlias<any, infer T> ? T : T extends Type ? T : never;
+export type TypeOfAlias<T> = T extends TypeAlias<any, infer T> ? T : T extends Type ? T : never;
 
-export type ResolveType<T> =
-  T extends TypeAlias<any, infer T>
+export type ResolveType<T> = T extends TypeAlias<any, infer T>
+  ? TypeOf<SchemaOf<T>>
+  : T extends Type
     ? TypeOf<SchemaOf<T>>
-    : T extends Type
-      ? TypeOf<SchemaOf<T>>
-      : T extends Schema
-        ? TypeOf<T>
-        : never;
+    : T extends Schema
+      ? TypeOf<T>
+      : never;

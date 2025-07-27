@@ -1,38 +1,35 @@
-import type * as schema from "../../schema";
-import type { Printable } from "tree-dump/lib/types";
+import type * as schema from '../../schema';
+import type {Printable} from 'tree-dump/lib/types';
 import {
   ValidatorCodegenContext,
   type ValidatorCodegenContextOptions,
-} from "../../codegen/validator/ValidatorCodegenContext";
-import type {
-  JsonTypeValidator,
-  ValidationPath,
-} from "../../codegen/validator/types";
+} from '../../codegen/validator/ValidatorCodegenContext';
+import type {JsonTypeValidator, ValidationPath} from '../../codegen/validator/types';
 import {
   JsonTextEncoderCodegenContext,
   type JsonTextEncoderCodegenContextOptions,
   type JsonEncoderFn,
-} from "../../codegen/json/JsonTextEncoderCodegenContext";
-import type { CompiledBinaryEncoder } from "../../codegen/types";
+} from '../../codegen/json/JsonTextEncoderCodegenContext';
+import type {CompiledBinaryEncoder} from '../../codegen/types';
 import {
   CborEncoderCodegenContext,
   type CborEncoderCodegenContextOptions,
-} from "../../codegen/binary/CborEncoderCodegenContext";
+} from '../../codegen/binary/CborEncoderCodegenContext';
 import {
   JsonEncoderCodegenContext,
   type JsonEncoderCodegenContextOptions,
-} from "../../codegen/binary/JsonEncoderCodegenContext";
-import { CborEncoder } from "@jsonjoy.com/json-pack/lib/cbor/CborEncoder";
-import { JsExpression } from "@jsonjoy.com/util/lib/codegen/util/JsExpression";
+} from '../../codegen/binary/JsonEncoderCodegenContext';
+import {CborEncoder} from '@jsonjoy.com/json-pack/lib/cbor/CborEncoder';
+import {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
 import {
   MessagePackEncoderCodegenContext,
   type MessagePackEncoderCodegenContextOptions,
-} from "../../codegen/binary/MessagePackEncoderCodegenContext";
-import { MsgPackEncoder } from "@jsonjoy.com/json-pack/lib/msgpack";
-import { lazy } from "@jsonjoy.com/util/lib/lazyFunction";
-import { EncodingFormat } from "@jsonjoy.com/json-pack/lib/constants";
-import { JsonEncoder } from "@jsonjoy.com/json-pack/lib/json/JsonEncoder";
-import { Writer } from "@jsonjoy.com/util/lib/buffers/Writer";
+} from '../../codegen/binary/MessagePackEncoderCodegenContext';
+import {MsgPackEncoder} from '@jsonjoy.com/json-pack/lib/msgpack';
+import {lazy} from '@jsonjoy.com/util/lib/lazyFunction';
+import {EncodingFormat} from '@jsonjoy.com/json-pack/lib/constants';
+import {JsonEncoder} from '@jsonjoy.com/json-pack/lib/json/JsonEncoder';
+import {Writer} from '@jsonjoy.com/util/lib/buffers/Writer';
 import {
   CapacityEstimatorCodegenContext,
   type CapacityEstimatorCodegenContextOptions,
@@ -62,11 +59,11 @@ export abstract class AbstractType<S extends schema.Schema> implements BaseType<
 
   public getSystem(): TypeSystem {
     const system = this.system;
-    if (!system) throw new Error("NO_SYSTEM");
+    if (!system) throw new Error('NO_SYSTEM');
     return system;
   }
 
-  public getTypeName(): S["kind"] {
+  public getTypeName(): S['kind'] {
     return this.schema.kind;
   }
 
@@ -78,14 +75,14 @@ export abstract class AbstractType<S extends schema.Schema> implements BaseType<
   }
 
   public getValidatorNames(): string[] {
-    const { validator } = this.schema as schema.WithValidator;
+    const {validator} = this.schema as schema.WithValidator;
     if (!validator) return [];
     return Array.isArray(validator) ? validator : [validator];
   }
 
   public toJsonSchema(ctx?: TypeExportContext): jsonSchema.JsonSchemaNode {
     // Use dynamic import to avoid circular dependency
-    const converter = require("../../json-schema/converter");
+    const converter = require('../../json-schema/converter');
     return converter.typeToJsonSchema(this, ctx);
   }
 
@@ -95,7 +92,7 @@ export abstract class AbstractType<S extends schema.Schema> implements BaseType<
   }
 
   public getOptions(): schema.Optional<S> {
-    const { kind, ...options } = this.schema;
+    const {kind, ...options} = this.schema;
     return options as any;
   }
 
@@ -106,17 +103,15 @@ export abstract class AbstractType<S extends schema.Schema> implements BaseType<
   }
 
   public validate(value: unknown): void {
-    const validator = this.validator("string");
+    const validator = this.validator('string');
     const err = validator(value);
     if (err) throw new Error(JSON.parse(err as string)[0]);
   }
 
-  public compileValidator(
-    options: Partial<Omit<ValidatorCodegenContextOptions, "type">>,
-  ): JsonTypeValidator {
+  public compileValidator(options: Partial<Omit<ValidatorCodegenContextOptions, 'type'>>): JsonTypeValidator {
     const ctx = new ValidatorCodegenContext({
       system: this.system,
-      errors: "object",
+      errors: 'object',
       ...options,
       type: this as any,
     });
@@ -128,8 +123,8 @@ export abstract class AbstractType<S extends schema.Schema> implements BaseType<
     return (this.validators[kind] = this.compileValidator({
       errors: kind,
       system: this.system,
-      skipObjectExtraFieldsCheck: kind === "boolean",
-      unsafeMode: kind === "boolean",
+      skipObjectExtraFieldsCheck: kind === 'boolean',
+      unsafeMode: kind === 'boolean',
     }));
   }
 
@@ -137,9 +132,7 @@ export abstract class AbstractType<S extends schema.Schema> implements BaseType<
     return this.validators[kind] || lazy(() => this.__compileValidator(kind));
   }
 
-  protected compileJsonTextEncoder(
-    options: Omit<JsonTextEncoderCodegenContextOptions, "type">,
-  ): JsonEncoderFn {
+  protected compileJsonTextEncoder(options: Omit<JsonTextEncoderCodegenContextOptions, 'type'>): JsonEncoderFn {
     const ctx = new JsonTextEncoderCodegenContext({
       ...options,
       system: this.system,
@@ -151,42 +144,31 @@ export abstract class AbstractType<S extends schema.Schema> implements BaseType<
     return ctx.compile();
   }
 
-  public codegenJsonTextEncoder(
-    ctx: JsonTextEncoderCodegenContext,
-    value: JsExpression,
-  ): void {
-    throw new Error(
-      `${this.toStringName()}.codegenJsonTextEncoder() not implemented`,
-    );
+  public codegenJsonTextEncoder(ctx: JsonTextEncoderCodegenContext, value: JsExpression): void {
+    throw new Error(`${this.toStringName()}.codegenJsonTextEncoder() not implemented`);
   }
 
   private __jsonEncoder: JsonEncoderFn | undefined;
   public jsonTextEncoder(): JsonEncoderFn {
     return (
-      this.__jsonEncoder ||
-      (this.__jsonEncoder = lazy(
-        () => (this.__jsonEncoder = this.compileJsonTextEncoder({})),
-      ))
+      this.__jsonEncoder || (this.__jsonEncoder = lazy(() => (this.__jsonEncoder = this.compileJsonTextEncoder({}))))
     );
   }
 
-  public compileEncoder(
-    format: EncodingFormat,
-    name?: string,
-  ): CompiledBinaryEncoder {
+  public compileEncoder(format: EncodingFormat, name?: string): CompiledBinaryEncoder {
     switch (format) {
       case EncodingFormat.Cbor: {
-        const encoder = this.compileCborEncoder({ name });
+        const encoder = this.compileCborEncoder({name});
         this.encoders.set(EncodingFormat.Cbor, encoder);
         return encoder;
       }
       case EncodingFormat.MsgPack: {
-        const encoder = this.compileMessagePackEncoder({ name });
+        const encoder = this.compileMessagePackEncoder({name});
         this.encoders.set(EncodingFormat.MsgPack, encoder);
         return encoder;
       }
       case EncodingFormat.Json: {
-        const encoder = this.compileJsonEncoder({ name });
+        const encoder = this.compileJsonEncoder({name});
         this.encoders.set(EncodingFormat.Json, encoder);
         return encoder;
       }
@@ -212,18 +194,12 @@ export abstract class AbstractType<S extends schema.Schema> implements BaseType<
     return writer.flush();
   }
 
-  public codegenValidator(
-    ctx: ValidatorCodegenContext,
-    path: ValidationPath,
-    r: string,
-  ): void {
-    throw new Error(
-      `${this.toStringName()}.codegenValidator() not implemented`,
-    );
+  public codegenValidator(ctx: ValidatorCodegenContext, path: ValidationPath, r: string): void {
+    throw new Error(`${this.toStringName()}.codegenValidator() not implemented`);
   }
 
   public compileCborEncoder(
-    options: Omit<CborEncoderCodegenContextOptions, "type" | "encoder">,
+    options: Omit<CborEncoderCodegenContextOptions, 'type' | 'encoder'>,
   ): CompiledBinaryEncoder {
     const ctx = new CborEncoderCodegenContext({
       system: this.system,
@@ -237,17 +213,12 @@ export abstract class AbstractType<S extends schema.Schema> implements BaseType<
     return ctx.compile();
   }
 
-  public codegenCborEncoder(
-    ctx: CborEncoderCodegenContext,
-    value: JsExpression,
-  ): void {
-    throw new Error(
-      `${this.toStringName()}.codegenCborEncoder() not implemented`,
-    );
+  public codegenCborEncoder(ctx: CborEncoderCodegenContext, value: JsExpression): void {
+    throw new Error(`${this.toStringName()}.codegenCborEncoder() not implemented`);
   }
 
   public compileMessagePackEncoder(
-    options: Omit<MessagePackEncoderCodegenContextOptions, "type" | "encoder">,
+    options: Omit<MessagePackEncoderCodegenContextOptions, 'type' | 'encoder'>,
   ): CompiledBinaryEncoder {
     const ctx = new MessagePackEncoderCodegenContext({
       system: this.system,
@@ -261,17 +232,12 @@ export abstract class AbstractType<S extends schema.Schema> implements BaseType<
     return ctx.compile();
   }
 
-  public codegenMessagePackEncoder(
-    ctx: MessagePackEncoderCodegenContext,
-    value: JsExpression,
-  ): void {
-    throw new Error(
-      `${this.toStringName()}.codegenMessagePackEncoder() not implemented`,
-    );
+  public codegenMessagePackEncoder(ctx: MessagePackEncoderCodegenContext, value: JsExpression): void {
+    throw new Error(`${this.toStringName()}.codegenMessagePackEncoder() not implemented`);
   }
 
   public compileJsonEncoder(
-    options: Omit<JsonEncoderCodegenContextOptions, "type" | "encoder">,
+    options: Omit<JsonEncoderCodegenContextOptions, 'type' | 'encoder'>,
   ): CompiledBinaryEncoder {
     const writer = new Writer();
     const ctx = new JsonEncoderCodegenContext({
@@ -286,13 +252,8 @@ export abstract class AbstractType<S extends schema.Schema> implements BaseType<
     return ctx.compile();
   }
 
-  public codegenJsonEncoder(
-    ctx: JsonEncoderCodegenContext,
-    value: JsExpression,
-  ): void {
-    throw new Error(
-      `${this.toStringName()}.codegenJsonEncoder() not implemented`,
-    );
+  public codegenJsonEncoder(ctx: JsonEncoderCodegenContext, value: JsExpression): void {
+    throw new Error(`${this.toStringName()}.codegenJsonEncoder() not implemented`);
   }
 
   public codegenCapacityEstimator(ctx: CapacityEstimatorCodegenContext, value: JsExpression): void {
@@ -301,7 +262,7 @@ export abstract class AbstractType<S extends schema.Schema> implements BaseType<
   }
 
   public compileCapacityEstimator(
-    options: Omit<CapacityEstimatorCodegenContextOptions, "type">,
+    options: Omit<CapacityEstimatorCodegenContextOptions, 'type'>,
   ): CompiledCapacityEstimator {
     const ctx = new CapacityEstimatorCodegenContext({
       system: this.system,
@@ -319,9 +280,7 @@ export abstract class AbstractType<S extends schema.Schema> implements BaseType<
   public capacityEstimator(): CompiledCapacityEstimator {
     return (
       this.__capacityEstimator ||
-      (this.__capacityEstimator = lazy(
-        () => (this.__capacityEstimator = this.compileCapacityEstimator({})),
-      ))
+      (this.__capacityEstimator = lazy(() => (this.__capacityEstimator = this.compileCapacityEstimator({}))))
     );
   }
 
@@ -330,14 +289,11 @@ export abstract class AbstractType<S extends schema.Schema> implements BaseType<
   }
 
   public toTypeScriptAst(): ts.TsNode {
-    const node: ts.TsUnknownKeyword = { node: "UnknownKeyword" };
+    const node: ts.TsUnknownKeyword = {node: 'UnknownKeyword'};
     return node;
   }
 
-  public toJson(
-    value: unknown,
-    system: TypeSystem | undefined = this.system,
-  ): json_string<unknown> {
+  public toJson(value: unknown, system: TypeSystem | undefined = this.system): json_string<unknown> {
     return JSON.stringify(value) as json_string<schema.TypeOf<S>>;
   }
 
@@ -348,22 +304,22 @@ export abstract class AbstractType<S extends schema.Schema> implements BaseType<
   protected toStringOptions(): string {
     const options = this.getOptions() as schema.Display;
     const title = options.title || options.intro || options.description;
-    if (!title) return "";
+    if (!title) return '';
     return JSON.stringify(title);
   }
 
   protected toStringName(): string {
-    return "AbstractType";
+    return 'AbstractType';
   }
 
-  public toString(tab: string = ""): string {
+  public toString(tab: string = ''): string {
     const options = this.toStringOptions();
-    return this.toStringTitle() + (options ? ` ${options}` : "");
+    return this.toStringTitle() + (options ? ` ${options}` : '');
   }
 
   public toJtdForm(): jtd.JtdForm {
     // Use dynamic import to avoid circular dependency
-    const converter = require("../../jtd/converter");
+    const converter = require('../../jtd/converter');
     return converter.toJtdForm(this.getSchema());
   }
 }

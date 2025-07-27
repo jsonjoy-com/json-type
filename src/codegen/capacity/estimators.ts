@@ -1,20 +1,13 @@
-import { JsExpression } from "@jsonjoy.com/util/lib/codegen/util/JsExpression";
-import {
-  MaxEncodingOverhead,
-  maxEncodingCapacity,
-} from "@jsonjoy.com/util/lib/json-size";
-import { CapacityEstimatorCodegenContext } from "./CapacityEstimatorCodegenContext";
+import {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
+import {MaxEncodingOverhead, maxEncodingCapacity} from '@jsonjoy.com/util/lib/json-size';
+import {CapacityEstimatorCodegenContext} from './CapacityEstimatorCodegenContext';
 import type {
   CapacityEstimatorCodegenContextOptions,
   CompiledCapacityEstimator,
-} from "./CapacityEstimatorCodegenContext";
-import type { Type } from "../../type";
+} from './CapacityEstimatorCodegenContext';
+import type {Type} from '../../type';
 
-type EstimatorFunction = (
-  ctx: CapacityEstimatorCodegenContext,
-  value: JsExpression,
-  type: Type,
-) => void;
+type EstimatorFunction = (ctx: CapacityEstimatorCodegenContext, value: JsExpression, type: Type) => void;
 
 const normalizeAccessor = (key: string): string => {
   // Simple property access for valid identifiers, bracket notation otherwise
@@ -24,13 +17,9 @@ const normalizeAccessor = (key: string): string => {
   return `[${JSON.stringify(key)}]`;
 };
 
-export const any = (
-  ctx: CapacityEstimatorCodegenContext,
-  value: JsExpression,
-  type: Type,
-): void => {
+export const any = (ctx: CapacityEstimatorCodegenContext, value: JsExpression, type: Type): void => {
   const codegen = ctx.codegen;
-  codegen.link("Value");
+  codegen.link('Value');
   const r = codegen.var(value.use());
   codegen.if(
     `${r} instanceof Value`,
@@ -51,54 +40,30 @@ export const any = (
   );
 };
 
-export const bool = (
-  ctx: CapacityEstimatorCodegenContext,
-  value: JsExpression,
-): void => {
+export const bool = (ctx: CapacityEstimatorCodegenContext, value: JsExpression): void => {
   ctx.inc(MaxEncodingOverhead.Boolean);
 };
 
-export const num = (
-  ctx: CapacityEstimatorCodegenContext,
-  value: JsExpression,
-): void => {
+export const num = (ctx: CapacityEstimatorCodegenContext, value: JsExpression): void => {
   ctx.inc(MaxEncodingOverhead.Number);
 };
 
-export const str = (
-  ctx: CapacityEstimatorCodegenContext,
-  value: JsExpression,
-): void => {
+export const str = (ctx: CapacityEstimatorCodegenContext, value: JsExpression): void => {
   ctx.inc(MaxEncodingOverhead.String);
-  ctx.codegen.js(
-    `size += ${MaxEncodingOverhead.StringLengthMultiplier} * ${value.use()}.length;`,
-  );
+  ctx.codegen.js(`size += ${MaxEncodingOverhead.StringLengthMultiplier} * ${value.use()}.length;`);
 };
 
-export const bin = (
-  ctx: CapacityEstimatorCodegenContext,
-  value: JsExpression,
-): void => {
+export const bin = (ctx: CapacityEstimatorCodegenContext, value: JsExpression): void => {
   ctx.inc(MaxEncodingOverhead.Binary);
-  ctx.codegen.js(
-    `size += ${MaxEncodingOverhead.BinaryLengthMultiplier} * ${value.use()}.length;`,
-  );
+  ctx.codegen.js(`size += ${MaxEncodingOverhead.BinaryLengthMultiplier} * ${value.use()}.length;`);
 };
 
-export const const_ = (
-  ctx: CapacityEstimatorCodegenContext,
-  value: JsExpression,
-  type: Type,
-): void => {
+export const const_ = (ctx: CapacityEstimatorCodegenContext, value: JsExpression, type: Type): void => {
   const constType = type as any; // ConstType
   ctx.inc(maxEncodingCapacity(constType.value()));
 };
 
-export const arr = (
-  ctx: CapacityEstimatorCodegenContext,
-  value: JsExpression,
-  type: Type,
-): void => {
+export const arr = (ctx: CapacityEstimatorCodegenContext, value: JsExpression, type: Type): void => {
   const codegen = ctx.codegen;
   ctx.inc(MaxEncodingOverhead.Array);
   const rLen = codegen.var(`${value.use()}.length`);
@@ -109,32 +74,25 @@ export const arr = (
     system: ctx.options.system,
     name: ctx.options.name,
   });
-  const isConstantSizeType = ["const", "bool", "num"].includes(
-    elementType.getTypeName(),
-  );
+  const isConstantSizeType = ['const', 'bool', 'num'].includes(elementType.getTypeName());
   if (isConstantSizeType) {
     const rFn = codegen.linkDependency(fn);
     codegen.js(`size += ${rLen} * ${rFn}(${elementType.random()});`);
   } else {
     const rFn = codegen.linkDependency(fn);
-    const ri = codegen.var("0");
+    const ri = codegen.var('0');
     codegen.js(`for (; ${ri} < ${rLen}; ${ri}++) {`);
     codegen.js(`size += ${rFn}(${value.use()}[${ri}]);`);
     codegen.js(`}`);
   }
 };
 
-export const tup = (
-  ctx: CapacityEstimatorCodegenContext,
-  value: JsExpression,
-  type: Type,
-): void => {
+export const tup = (ctx: CapacityEstimatorCodegenContext, value: JsExpression, type: Type): void => {
   const codegen = ctx.codegen;
   const r = codegen.var(value.use());
   const tupleType = type as any; // TupleType
   const types = tupleType.types;
-  const overhead =
-    MaxEncodingOverhead.Array + MaxEncodingOverhead.ArrayElement * types.length;
+  const overhead = MaxEncodingOverhead.Array + MaxEncodingOverhead.ArrayElement * types.length;
   ctx.inc(overhead);
   for (let i = 0; i < types.length; i++) {
     const elementType = types[i];
@@ -162,32 +120,20 @@ export const obj = (
     return;
   }
   const fields = objectType.fields;
-  const overhead =
-    MaxEncodingOverhead.Object +
-    fields.length * MaxEncodingOverhead.ObjectElement;
+  const overhead = MaxEncodingOverhead.Object + fields.length * MaxEncodingOverhead.ObjectElement;
   ctx.inc(overhead);
   for (const field of fields) {
     ctx.inc(maxEncodingCapacity(field.key));
     const accessor = normalizeAccessor(field.key);
-    const isOptional =
-      field.optional || field.constructor?.name === "ObjectOptionalFieldType";
-    const block = () =>
-      estimateCapacityFn(
-        ctx,
-        new JsExpression(() => `${r}${accessor}`),
-        field.value,
-      );
+    const isOptional = field.optional || field.constructor?.name === 'ObjectOptionalFieldType';
+    const block = () => estimateCapacityFn(ctx, new JsExpression(() => `${r}${accessor}`), field.value);
     if (isOptional) {
       codegen.if(`${r}${accessor} !== undefined`, block);
     } else block();
   }
 };
 
-export const map = (
-  ctx: CapacityEstimatorCodegenContext,
-  value: JsExpression,
-  type: Type,
-): void => {
+export const map = (ctx: CapacityEstimatorCodegenContext, value: JsExpression, type: Type): void => {
   const codegen = ctx.codegen;
   ctx.inc(MaxEncodingOverhead.Object);
   const r = codegen.var(value.use());
@@ -202,21 +148,17 @@ export const map = (
     name: ctx.options.name,
   });
   const rFn = codegen.linkDependency(fn);
-  const ri = codegen.var("0");
+  const ri = codegen.var('0');
   codegen.js(`for (; ${ri} < ${rLen}; ${ri}++) {`);
   codegen.js(`${rKey} = ${rKeys}[${ri}];`);
   codegen.js(`size += maxEncodingCapacity(${rKey}) + ${rFn}(${r}[${rKey}]);`);
   codegen.js(`}`);
 };
 
-export const ref = (
-  ctx: CapacityEstimatorCodegenContext,
-  value: JsExpression,
-  type: Type,
-): void => {
+export const ref = (ctx: CapacityEstimatorCodegenContext, value: JsExpression, type: Type): void => {
   const refType = type as any; // RefType
   const system = ctx.options.system || refType.system;
-  if (!system) throw new Error("NO_SYSTEM");
+  if (!system) throw new Error('NO_SYSTEM');
   const estimator = system.resolve(refType.schema.ref).type.capacityEstimator();
   const d = ctx.codegen.linkDependency(estimator);
   ctx.codegen.js(`size += ${d}(${value.use()});`);
@@ -248,48 +190,44 @@ export const or = (
  * Main router function that dispatches capacity estimation to the appropriate
  * estimator function based on the type's kind.
  */
-export const generate = (
-  ctx: CapacityEstimatorCodegenContext,
-  value: JsExpression,
-  type: Type,
-): void => {
+export const generate = (ctx: CapacityEstimatorCodegenContext, value: JsExpression, type: Type): void => {
   const kind = type.getTypeName();
 
   switch (kind) {
-    case "any":
+    case 'any':
       any(ctx, value, type);
       break;
-    case "bool":
+    case 'bool':
       bool(ctx, value);
       break;
-    case "num":
+    case 'num':
       num(ctx, value);
       break;
-    case "str":
+    case 'str':
       str(ctx, value);
       break;
-    case "bin":
+    case 'bin':
       bin(ctx, value);
       break;
-    case "const":
+    case 'const':
       const_(ctx, value, type);
       break;
-    case "arr":
+    case 'arr':
       arr(ctx, value, type);
       break;
-    case "tup":
+    case 'tup':
       tup(ctx, value, type);
       break;
-    case "obj":
+    case 'obj':
       obj(ctx, value, type, generate);
       break;
-    case "map":
+    case 'map':
       map(ctx, value, type);
       break;
-    case "ref":
+    case 'ref':
       ref(ctx, value, type);
       break;
-    case "or":
+    case 'or':
       or(ctx, value, type, generate);
       break;
     default:
@@ -302,7 +240,7 @@ export const generate = (
  */
 export const codegen = (
   type: Type,
-  options: Omit<CapacityEstimatorCodegenContextOptions, "type">,
+  options: Omit<CapacityEstimatorCodegenContextOptions, 'type'>,
 ): CompiledCapacityEstimator => {
   const ctx = new CapacityEstimatorCodegenContext({
     system: type.system,

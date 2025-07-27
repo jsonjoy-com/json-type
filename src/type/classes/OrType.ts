@@ -28,35 +28,29 @@ export class OrType<T extends Type[]> extends AbstractType<schema.OrSchema<{[K i
 
   constructor(
     protected types: T,
-    options?: Omit<schema.OrSchema, "kind" | "type">,
+    options?: Omit<schema.OrSchema, 'kind' | 'type'>,
   ) {
     super();
     this.schema = {
       ...schema.s.Or(),
       ...options,
-      discriminator:
-        options?.discriminator ?? Discriminator.createExpression(types),
+      discriminator: options?.discriminator ?? Discriminator.createExpression(types),
     };
   }
 
-  public getSchema(): schema.OrSchema<{ [K in keyof T]: SchemaOf<T[K]> }> {
+  public getSchema(): schema.OrSchema<{[K in keyof T]: SchemaOf<T[K]>}> {
     return {
       ...this.schema,
       types: this.types.map((type) => type.getSchema()) as any,
     };
   }
 
-  public getOptions(): schema.Optional<
-    schema.OrSchema<{ [K in keyof T]: SchemaOf<T[K]> }>
-  > {
-    const { kind, types, ...options } = this.schema;
+  public getOptions(): schema.Optional<schema.OrSchema<{[K in keyof T]: SchemaOf<T[K]>}>> {
+    const {kind, types, ...options} = this.schema;
     return options as any;
   }
 
-  public options(
-    options: schema.Optional<schema.OrSchema> &
-      Partial<Pick<schema.OrSchema, "discriminator">>,
-  ): this {
+  public options(options: schema.Optional<schema.OrSchema> & Partial<Pick<schema.OrSchema, 'discriminator'>>): this {
     Object.assign(this.schema, options);
     return this;
   }
@@ -65,15 +59,13 @@ export class OrType<T extends Type[]> extends AbstractType<schema.OrSchema<{[K i
   public discriminator(): (val: unknown) => number {
     if (this.__discriminator) return this.__discriminator;
     const expr = this.schema.discriminator;
-    if (!expr || (expr[0] === "num" && expr[1] === 0))
-      throw new Error("NO_DISCRIMINATOR");
+    if (!expr || (expr[0] === 'num' && expr[1] === 0)) throw new Error('NO_DISCRIMINATOR');
     const codegen = new JsonExpressionCodegen({
       expression: expr,
       operators: operatorsMap,
     });
     const fn = codegen.run().compile();
-    return (this.__discriminator = (data: unknown) =>
-      +(fn(new Vars(data)) as any));
+    return (this.__discriminator = (data: unknown) => +(fn(new Vars(data)) as any));
   }
 
   public codegenValidator(ctx: ValidatorCodegenContext, path: ValidationPath, r: string): void {
@@ -101,17 +93,11 @@ export class OrType<T extends Type[]> extends AbstractType<schema.OrSchema<{[K i
     );
   }
 
-  public codegenJsonTextEncoder(
-    ctx: JsonTextEncoderCodegenContext,
-    value: JsExpression,
-  ): void {
+  public codegenJsonTextEncoder(ctx: JsonTextEncoderCodegenContext, value: JsExpression): void {
     ctx.js(/* js */ `s += stringify(${value.use()});`);
   }
 
-  private codegenBinaryEncoder(
-    ctx: BinaryEncoderCodegenContext<BinaryJsonEncoder>,
-    value: JsExpression,
-  ): void {
+  private codegenBinaryEncoder(ctx: BinaryEncoderCodegenContext<BinaryJsonEncoder>, value: JsExpression): void {
     const codegen = ctx.codegen;
     const discriminator = this.discriminator();
     const d = codegen.linkDependency(discriminator);
@@ -121,59 +107,39 @@ export class OrType<T extends Type[]> extends AbstractType<schema.OrSchema<{[K i
       types.map((type, index) => [
         index,
         () => {
-          if (ctx instanceof CborEncoderCodegenContext)
-            type.codegenCborEncoder(ctx, value);
-          else if (ctx instanceof MessagePackEncoderCodegenContext)
-            type.codegenMessagePackEncoder(ctx, value);
-          else if (ctx instanceof JsonEncoderCodegenContext)
-            type.codegenJsonEncoder(ctx, value);
+          if (ctx instanceof CborEncoderCodegenContext) type.codegenCborEncoder(ctx, value);
+          else if (ctx instanceof MessagePackEncoderCodegenContext) type.codegenMessagePackEncoder(ctx, value);
+          else if (ctx instanceof JsonEncoderCodegenContext) type.codegenJsonEncoder(ctx, value);
         },
       ]),
     );
   }
 
-  public codegenCborEncoder(
-    ctx: CborEncoderCodegenContext,
-    value: JsExpression,
-  ): void {
+  public codegenCborEncoder(ctx: CborEncoderCodegenContext, value: JsExpression): void {
     this.codegenBinaryEncoder(ctx, value);
   }
 
-  public codegenMessagePackEncoder(
-    ctx: MessagePackEncoderCodegenContext,
-    value: JsExpression,
-  ): void {
+  public codegenMessagePackEncoder(ctx: MessagePackEncoderCodegenContext, value: JsExpression): void {
     this.codegenBinaryEncoder(ctx, value);
   }
 
-  public codegenJsonEncoder(
-    ctx: JsonEncoderCodegenContext,
-    value: JsExpression,
-  ): void {
+  public codegenJsonEncoder(ctx: JsonEncoderCodegenContext, value: JsExpression): void {
     this.codegenBinaryEncoder(ctx, value);
   }
 
   public toTypeScriptAst(): ts.TsUnionType {
     const node: ts.TsUnionType = {
-      node: "UnionType",
+      node: 'UnionType',
       types: this.types.map((t) => t.toTypeScriptAst()),
     };
     return node;
   }
 
-  public toJson(
-    value: unknown,
-    system: TypeSystem | undefined = this.system,
-  ): json_string<unknown> {
+  public toJson(value: unknown, system: TypeSystem | undefined = this.system): json_string<unknown> {
     return JSON.stringify(value) as json_string<unknown>;
   }
 
-  public toString(tab: string = ""): string {
-    return (
-      super.toString(tab) +
-      printTree(tab, [
-        ...this.types.map((type) => (tab: string) => type.toString(tab)),
-      ])
-    );
+  public toString(tab: string = ''): string {
+    return super.toString(tab) + printTree(tab, [...this.types.map((type) => (tab: string) => type.toString(tab))]);
   }
 }

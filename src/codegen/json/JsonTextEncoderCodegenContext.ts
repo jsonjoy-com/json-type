@@ -1,9 +1,9 @@
-import { Codegen, CodegenStepExecJs } from "@jsonjoy.com/util/lib/codegen";
-import { asString } from "@jsonjoy.com/util/lib/strings/asString";
-import { toBase64 } from "@jsonjoy.com/base64/lib/toBase64";
-import type { TypeSystem } from "../../system";
-import type { Type } from "../../type";
-import type { json_string } from "@jsonjoy.com/util/lib/json-brand";
+import {Codegen, CodegenStepExecJs} from '@jsonjoy.com/util/lib/codegen';
+import {asString} from '@jsonjoy.com/util/lib/strings/asString';
+import {toBase64} from '@jsonjoy.com/base64/lib/toBase64';
+import type {TypeSystem} from '../../system';
+import type {Type} from '../../type';
+import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
 
 export type JsonEncoderFn = <T>(value: T) => json_string<T>;
 
@@ -28,7 +28,7 @@ export class JsonTextEncoderCodegenContext {
 
   constructor(public readonly options: JsonTextEncoderCodegenContextOptions) {
     this.codegen = new Codegen<JsonEncoderFn>({
-      name: "toJson" + (options.name ? "_" + options.name : ""),
+      name: 'toJson' + (options.name ? '_' + options.name : ''),
       prologue: `var s = '';`,
       epilogue: `return s;`,
       processSteps: (steps) => {
@@ -54,8 +54,8 @@ export class JsonTextEncoderCodegenContext {
         return execSteps;
       },
     });
-    this.codegen.linkDependency(asString, "asString");
-    this.codegen.linkDependency(JSON.stringify, "stringify");
+    this.codegen.linkDependency(asString, 'asString');
+    this.codegen.linkDependency(JSON.stringify, 'stringify');
   }
 
   public js(js: string): void {
@@ -69,7 +69,7 @@ export class JsonTextEncoderCodegenContext {
   protected base64Linked = false;
   public linkBase64() {
     if (this.base64Linked) return;
-    this.codegen.linkDependency(toBase64, "toBase64");
+    this.codegen.linkDependency(toBase64, 'toBase64');
   }
 
   public compile() {

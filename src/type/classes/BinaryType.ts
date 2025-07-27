@@ -33,9 +33,7 @@ const formats = new Set<schema.BinarySchema['format']>([
   'ubjson',
 ]);
 
-export class BinaryType<
-  T extends Type,
-> extends AbstractType<schema.BinarySchema> {
+export class BinaryType<T extends Type> extends AbstractType<schema.BinarySchema> {
   protected schema: schema.BinarySchema;
 
   constructor(
@@ -54,7 +52,7 @@ export class BinaryType<
   }
 
   public getOptions(): schema.Optional<schema.ArraySchema<SchemaOf<T>>> {
-    const { kind, type, ...options } = this.schema;
+    const {kind, type, ...options} = this.schema;
     return options as any;
   }
 
@@ -65,16 +63,16 @@ export class BinaryType<
       // prettier-ignore
       `if(!(${r} instanceof Uint8Array)${hasBuffer ? ` && !Buffer.isBuffer(${r})` : ''}) return ${err};`,
     );
-    const { min, max } = this.schema;
-    if (typeof min === "number" && min === max) {
+    const {min, max} = this.schema;
+    if (typeof min === 'number' && min === max) {
       const err = ctx.err(ValidationError.BIN_LEN, path);
       ctx.js(`if(${r}.length !== ${min}) return ${err};`);
     } else {
-      if (typeof min === "number") {
+      if (typeof min === 'number') {
         const err = ctx.err(ValidationError.BIN_LEN, path);
         ctx.js(`if(${r}.length < ${min}) return ${err};`);
       }
-      if (typeof max === "number") {
+      if (typeof max === 'number') {
         const err = ctx.err(ValidationError.BIN_LEN, path);
         ctx.js(`if(${r}.length > ${max}) return ${err};`);
       }
@@ -82,66 +80,44 @@ export class BinaryType<
     ctx.emitCustomValidators(this, path, r);
   }
 
-  public codegenJsonTextEncoder(
-    ctx: JsonTextEncoderCodegenContext,
-    value: JsExpression,
-  ): void {
+  public codegenJsonTextEncoder(ctx: JsonTextEncoderCodegenContext, value: JsExpression): void {
     ctx.linkBase64();
     ctx.writeText('"data:application/octet-stream;base64,');
     ctx.js(/* js */ `s += toBase64(${value.use()});`);
     ctx.writeText('"');
   }
 
-  private codegenBinaryEncoder(
-    ctx: BinaryEncoderCodegenContext<BinaryJsonEncoder>,
-    value: JsExpression,
-  ): void {
+  private codegenBinaryEncoder(ctx: BinaryEncoderCodegenContext<BinaryJsonEncoder>, value: JsExpression): void {
     ctx.js(/* js */ `encoder.writeBin(${value.use()});`);
   }
 
-  public codegenCborEncoder(
-    ctx: CborEncoderCodegenContext,
-    value: JsExpression,
-  ): void {
+  public codegenCborEncoder(ctx: CborEncoderCodegenContext, value: JsExpression): void {
     this.codegenBinaryEncoder(ctx, value);
   }
 
-  public codegenMessagePackEncoder(
-    ctx: MessagePackEncoderCodegenContext,
-    value: JsExpression,
-  ): void {
+  public codegenMessagePackEncoder(ctx: MessagePackEncoderCodegenContext, value: JsExpression): void {
     this.codegenBinaryEncoder(ctx, value);
   }
 
-  public codegenJsonEncoder(
-    ctx: JsonEncoderCodegenContext,
-    value: JsExpression,
-  ): void {
+  public codegenJsonEncoder(ctx: JsonEncoderCodegenContext, value: JsExpression): void {
     this.codegenBinaryEncoder(ctx, value);
   }
 
   public toTypeScriptAst(): ts.TsGenericTypeAnnotation {
     return {
-      node: "GenericTypeAnnotation",
+      node: 'GenericTypeAnnotation',
       id: {
-        node: "Identifier",
-        name: "Uint8Array",
+        node: 'Identifier',
+        name: 'Uint8Array',
       },
     };
   }
 
-  public toJson(
-    value: unknown,
-    system: TypeSystem | undefined = this.system,
-  ): json_string<unknown> {
-    return ('"' +
-      stringifyBinary(value as Uint8Array) +
-      '"') as json_string<unknown>;
+  public toJson(value: unknown, system: TypeSystem | undefined = this.system): json_string<unknown> {
+    return ('"' + stringifyBinary(value as Uint8Array) + '"') as json_string<unknown>;
   }
 
-  public toString(tab: string = ""): string {
-    return (
-      super.toString(tab) + printTree(tab, [(tab) => this.type.toString(tab)])
-    );
+  public toString(tab: string = ''): string {
+    return super.toString(tab) + printTree(tab, [(tab) => this.type.toString(tab)]);
   }
 }
