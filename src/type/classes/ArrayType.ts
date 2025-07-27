@@ -1,28 +1,21 @@
-import {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
-import type {BinaryJsonEncoder} from '@jsonjoy.com/json-pack/lib/types';
-import {printTree} from 'tree-dump/lib/printTree';
 import * as schema from '../../schema';
-import type {ValidatorCodegenContext} from '../../codegen/validator/ValidatorCodegenContext';
-import type {ValidationPath} from '../../codegen/validator/types';
 import {ValidationError} from '../../constants';
-import type {JsonTextEncoderCodegenContext} from '../../codegen/json/JsonTextEncoderCodegenContext';
-import {CborEncoderCodegenContext} from '../../codegen/binary/CborEncoderCodegenContext';
-import type {JsonEncoderCodegenContext} from '../../codegen/binary/JsonEncoderCodegenContext';
-import type {BinaryEncoderCodegenContext} from '../../codegen/binary/BinaryEncoderCodegenContext';
 import {MessagePackEncoderCodegenContext} from '../../codegen/binary/MessagePackEncoderCodegenContext';
 import {AbstractType} from './AbstractType';
-import type * as jsonSchema from '../../json-schema';
+import {CborEncoderCodegenContext} from '../../codegen/binary/CborEncoderCodegenContext';
+import {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
+import {printTree} from 'tree-dump';
+import type {BinaryJsonEncoder} from '@jsonjoy.com/json-pack/lib/types';
+import type {ValidatorCodegenContext} from '../../codegen/validator/ValidatorCodegenContext';
+import type {ValidationPath} from '../../codegen/validator/types';
+import type {JsonTextEncoderCodegenContext} from '../../codegen/json/JsonTextEncoderCodegenContext';
+import type {JsonEncoderCodegenContext} from '../../codegen/binary/JsonEncoderCodegenContext';
+import type {BinaryEncoderCodegenContext} from '../../codegen/binary/BinaryEncoderCodegenContext';
 import type {SchemaOf, Type} from '../types';
 import type {TypeSystem} from '../../system/TypeSystem';
 import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
 import type * as ts from '../../typescript/types';
 import type {TypeExportContext} from '../../system/TypeExportContext';
-import type {CapacityEstimatorCodegenContext} from '../../codegen/capacity/CapacityEstimatorCodegenContext';
-import {ConstType} from './ConstType';
-import {BooleanType} from './BooleanType';
-import {NumberType} from './NumberType';
-import {MaxEncodingOverhead} from '@jsonjoy.com/util/lib/json-size';
-import type * as jtd from '../../jtd/types';
 
 export class ArrayType<T extends Type> extends AbstractType<schema.ArraySchema<SchemaOf<T>>> {
   protected schema: schema.ArraySchema<any>;
@@ -33,6 +26,16 @@ export class ArrayType<T extends Type> extends AbstractType<schema.ArraySchema<S
   ) {
     super();
     this.schema = schema.s.Array(schema.s.any, options);
+  }
+
+  public min(min: schema.ArraySchema['min']): this {
+    this.schema.min = min;
+    return this;
+  }
+
+  public max(max: schema.ArraySchema['max']): this {
+    this.schema.max = max;
+    return this;
   }
 
   public getSchema(ctx?: TypeExportContext): schema.ArraySchema<SchemaOf<T>> {

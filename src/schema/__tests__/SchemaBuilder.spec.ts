@@ -1,4 +1,4 @@
-import {s} from '..';
+import {type ConstSchema, s} from '..';
 
 describe('string', () => {
   test('can create a string type', () => {
@@ -76,6 +76,17 @@ describe('or', () => {
       kind: 'or',
       types: [{kind: 'str'}, {kind: 'num'}],
       discriminator: ['num', -1],
+    });
+  });
+});
+
+describe('const', () => {
+  test('can create an "const" type', () => {
+    const type = s.Const('Hello');
+    const type2: ConstSchema<'Hello'> = type;
+    expect(type2).toEqual({
+      kind: 'const',
+      value: 'Hello',
     });
   });
 });

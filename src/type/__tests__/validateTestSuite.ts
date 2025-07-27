@@ -47,6 +47,13 @@ export const validateTestSuite = (validate: (type: Type, value: unknown) => void
       validate(obj, {foo: 'bar'});
       expect(() => validate(obj, {foo: 'bar', baz: 'bar'})).toThrowErrorMatchingInlineSnapshot(`"CONST"`);
     });
+
+    test('empty value', () => {
+      validate(t.undef, undefined);
+      expect(() => validate(t.undef, {})).toThrow();
+      expect(() => validate(t.undef, null)).toThrow();
+      expect(() => validate(t.undef, 123)).toThrow();
+    });
   });
 
   describe('undefined', () => {

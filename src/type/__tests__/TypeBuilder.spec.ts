@@ -1,6 +1,6 @@
+import {NumberType, ObjectFieldType, ObjectType, StringType} from '../classes';
 import {type SchemaOf, t} from '..';
 import type {TypeOf} from '../../schema';
-import {NumberType, ObjectFieldType, ObjectType, StringType} from '../classes';
 
 test('number', () => {
   const type = t.Number({
@@ -11,6 +11,20 @@ test('number', () => {
     kind: 'num',
     description: 'A number',
     format: 'i32',
+  });
+});
+
+describe('"fn" kind', () => {
+  test('can use shorthand to define function', () => {
+    const type1 = t.fn.title('My Function').inp(t.str).out(t.num);
+    const type2 = t.Function(t.str, t.num, {title: 'My Function'});
+    expect(type1.getSchema()).toEqual(type2.getSchema());
+  });
+
+  test('can use shorthand to define a streaming function', () => {
+    const type1 = t.fn$.title('My Function').inp(t.str).out(t.num);
+    const type2 = t.Function$(t.str, t.num, {title: 'My Function'});
+    expect(type1.getSchema()).toEqual(type2.getSchema());
   });
 });
 
@@ -59,6 +73,50 @@ test('can construct a realistic object', () => {
     id: 'abc',
     verified: true,
   };
+});
+
+test('can build type using lowercase shortcuts', () => {
+  const MyObject = t
+    .object({
+      type: t.con('user'),
+      id: t.string(),
+      name: t.string(),
+      age: t.number(),
+      coordinates: t.tuple(t.number(), t.number()),
+      verified: t.boolean(),
+      offsets: t.array(t.number()),
+      enum: t.enum(1, 2, 'three'),
+      optional: t.maybe(t.string()),
+    })
+    .opt('description', t.string());
+  // console.log(MyObject + '');
+  const MyObject2 = t.obj
+    .prop('type', t.Const('user'))
+    .prop('id', t.str)
+    .prop('name', t.str)
+    .prop('age', t.num)
+    .prop('coordinates', t.Tuple(t.num, t.num))
+    .prop('verified', t.bool)
+    .prop('offsets', t.array(t.num))
+    .prop('enum', t.Or(t.Const(1), t.Const(2), t.Const('three')))
+    .prop('optional', t.Or(t.str, t.undef))
+    .opt('description', t.str);
+  expect(MyObject.getSchema()).toEqual(MyObject2.getSchema());
+  type ObjectType = t.infer<typeof MyObject>;
+  type ObjectType2 = t.infer<typeof MyObject2>;
+  const obj: ObjectType = {
+    type: 'user',
+    id: '123',
+    name: 'Test',
+    coordinates: [1.23, 4.56],
+    age: 30,
+    verified: true,
+    offsets: [1, 2, 3],
+    enum: 'three',
+    optional: undefined,
+  } as ObjectType2;
+  MyObject.validate(obj);
+  MyObject2.validate(obj);
 });
 
 describe('import()', () => {

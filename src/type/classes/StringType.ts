@@ -1,8 +1,10 @@
 import type * as schema from '../../schema';
 import {asString} from '@jsonjoy.com/util/lib/strings/asString';
+import {AbstractType} from './AbstractType';
+import {isAscii, isUtf8} from '../../util/stringFormats';
+import {ValidationError} from '../../constants';
 import type {ValidatorCodegenContext} from '../../codegen/validator/ValidatorCodegenContext';
 import type {ValidationPath} from '../../codegen/validator/types';
-import {ValidationError} from '../../constants';
 import type {JsonTextEncoderCodegenContext} from '../../codegen/json/JsonTextEncoderCodegenContext';
 import type {CborEncoderCodegenContext} from '../../codegen/binary/CborEncoderCodegenContext';
 import type {JsonEncoderCodegenContext} from '../../codegen/binary/JsonEncoderCodegenContext';
@@ -10,20 +12,29 @@ import type {BinaryEncoderCodegenContext} from '../../codegen/binary/BinaryEncod
 import type {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
 import type {MessagePackEncoderCodegenContext} from '../../codegen/binary/MessagePackEncoderCodegenContext';
 import type {BinaryJsonEncoder} from '@jsonjoy.com/json-pack/lib/types';
-import type {CapacityEstimatorCodegenContext} from '../../codegen/capacity/CapacityEstimatorCodegenContext';
-import {MaxEncodingOverhead} from '@jsonjoy.com/util/lib/json-size';
-import {AbstractType} from './AbstractType';
-import type * as jsonSchema from '../../json-schema';
 import type {TypeSystem} from '../../system/TypeSystem';
 import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
 import type * as ts from '../../typescript/types';
-import type {TypeExportContext} from '../../system/TypeExportContext';
 import type * as jtd from '../../jtd/types';
-import {isAscii, isUtf8} from '../../util/stringFormats';
 
 export class StringType extends AbstractType<schema.StringSchema> {
   constructor(protected schema: schema.StringSchema) {
     super();
+  }
+
+  public format(format: schema.StringSchema['format']): this {
+    this.schema.format = format;
+    return this;
+  }
+
+  public min(min: schema.StringSchema['min']): this {
+    this.schema.min = min;
+    return this;
+  }
+
+  public max(max: schema.StringSchema['max']): this {
+    this.schema.max = max;
+    return this;
   }
 
   public codegenValidator(ctx: ValidatorCodegenContext, path: ValidationPath, r: string): void {

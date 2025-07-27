@@ -17,6 +17,13 @@ export interface TType<Value = unknown> extends Display, Partial<Identifiable> {
   meta?: Record<string, unknown>;
 
   /**
+   * Default value for this type. This may be used when the value is not provided
+   * during validation or serialization. The default value should match the
+   * type of this schema node.
+   */
+  default?: Value;
+
+  /**
    * List of example usages of this type.
    */
   examples?: TExample<Value>[];
@@ -52,6 +59,17 @@ export interface WithValidator {
 
 /**
  * Represents something of which type is not known.
+ *
+ * Example:
+ *
+ * ```json
+ * {
+ *   "kind": "any",
+ *   "metadata": {
+ *     "description": "Any type"
+ *   }
+ * }
+ * ```
  */
 export interface AnySchema extends TType<unknown>, WithValidator {
   kind: 'any';
@@ -65,6 +83,17 @@ export interface AnySchema extends TType<unknown>, WithValidator {
 
 /**
  * Represents a JSON boolean.
+ *
+ * Example:
+ *
+ * ```json
+ * {
+ *   "kind": "bool",
+ *   "meta": {
+ *     "description": "A boolean value"
+ *   }
+ * }
+ * ```
  */
 export interface BooleanSchema extends TType<boolean>, WithValidator {
   kind: 'bool';
@@ -72,6 +101,17 @@ export interface BooleanSchema extends TType<boolean>, WithValidator {
 
 /**
  * Represents a JSON number.
+ *
+ * Example:
+ *
+ * ```json
+ * {
+ *   "kind": "num",
+ *   "format": "i32",
+ *   "gte": 0,
+ *   "lte": 100
+ * }
+ * ```
  */
 export interface NumberSchema extends TType<number>, WithValidator {
   kind: 'num';
@@ -112,6 +152,17 @@ export interface NumberSchema extends TType<number>, WithValidator {
 
 /**
  * Represents a JSON string.
+ *
+ * Example:
+ *
+ * ```json
+ * {
+ *   "kind": "str",
+ *   "format": "utf8",
+ *   "min": 1,
+ *   "max": 255
+ * }
+ * ```
  */
 export interface StringSchema extends TType<string>, WithValidator {
   kind: 'str';
@@ -150,6 +201,20 @@ export interface StringSchema extends TType<string>, WithValidator {
 
 /**
  * Represents a binary type.
+ *
+ * Example:
+ *
+ * ```json
+ * {
+ *   "kind": "bin",
+ *   "type": {
+ *     "kind": "str"
+ *   },
+ *   "format": "json",
+ *   "min": 10,
+ *   "max": 1024
+ * }
+ * ```
  */
 export interface BinarySchema<T extends TType = any> extends TType, WithValidator {
   kind: 'bin';
@@ -169,6 +234,19 @@ export interface BinarySchema<T extends TType = any> extends TType, WithValidato
 
 /**
  * Represents a JSON array.
+ *
+ * Example:
+ *
+ * ```json
+ * {
+ *   "kind": "arr",
+ *   "type": {
+ *     "kind": "num"
+ *   },
+ *   "min": 1,
+ *   "max": 10
+ * }
+ * ```
  */
 export interface ArraySchema<T extends TType = any> extends TType<Array<unknown>>, WithValidator {
   kind: 'arr';
@@ -182,6 +260,13 @@ export interface ArraySchema<T extends TType = any> extends TType<Array<unknown>
 
 /**
  * Represents a constant value.
+ * Example:
+ * ```json
+ * {
+ *   "kind": "const",
+ *   "value": 42
+ * }
+ * ```
  */
 export interface ConstSchema<V = any> extends TType, WithValidator {
   /** @todo Rename to "con". */
@@ -202,6 +287,32 @@ export interface TupleSchema<T extends TType[] = any> extends TType, WithValidat
 /**
  * Represents a JSON object type, the "object" type excluding "null" in JavaScript,
  * the "object" type in JSON Schema, and the "obj" type in MessagePack.
+ * Example:
+ * ```json
+ * {
+ *   "kind": "obj",
+ *   "fields": [
+ *     {
+ *       "kind": "field",
+ *       "key": "name",
+ *       "type": {
+ *         "kind": "str"
+ *       },
+ *       "optional": false
+ *     },
+ *     {
+ *       "kind": "field",
+ *       "key": "age",
+ *       "type": {
+ *         "kind": "num",
+ *         "gte": 0
+ *       },
+ *       "optional": true
+ *     }
+ *   ],
+ *   "unknownFields": false
+ * }
+ * ```
  */
 export interface ObjectSchema<
   Fields extends ObjectFieldSchema<string, TType>[] | readonly ObjectFieldSchema<string, TType>[] = any,
@@ -246,8 +357,14 @@ export interface ObjectFieldSchema<K extends string = string, V extends TType = 
   kind: 'field';
   /** Key name of the field. */
   key: K;
-  /** One or more "one-of" types of the field. */
+
+  /**
+   * One or more "one-of" types of the field.
+   *
+   * @todo Rename to `val`.
+   */
   type: V;
+
   optional?: boolean;
 }
 
@@ -262,7 +379,11 @@ export interface ObjectOptionalFieldSchema<K extends string = string, V extends 
  */
 export interface MapSchema<T extends TType = any> extends TType<Record<string, unknown>>, WithValidator {
   kind: 'map';
-  /** Type of all values in the map. */
+  /**
+   * Type of all values in the map.
+   *
+   * @todo Rename to `val`. And add `key` field for the key type. Make `key` default to `str`.
+   */
   type: T;
 }
 
@@ -299,6 +420,7 @@ export interface FunctionSchema<Req extends TType = TType, Res extends TType = T
 export type FunctionStreamingValue<Req, Res, Ctx = unknown> = (req: Observable<Req>, ctx?: Ctx) => Observable<Res>;
 
 export interface FunctionStreamingSchema<Req extends TType = TType, Res extends TType = TType> extends TType {
+  /** @todo Rename to `fn`. Make it a property on the schema instead. */
   kind: 'fn$';
   req: Req;
   res: Res;
@@ -396,3 +518,8 @@ export type OptionalProps<T extends object> = Exclude<
 
 export type Optional<T extends object> = Pick<T, OptionalProps<T>>;
 export type Required<T extends object> = Omit<T, OptionalProps<T>>;
+
+export type Narrow<T> =
+  | (T extends infer U ? U : never)
+  | Extract<T, number | string | boolean | bigint | symbol | null | undefined | []>
+  | ([T] extends [[]] ? [] : {[K in keyof T]: Narrow<T[K]>});

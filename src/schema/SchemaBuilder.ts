@@ -19,6 +19,7 @@ import type {
   FunctionSchema,
   FunctionStreamingSchema,
   TType,
+  Narrow,
 } from '.';
 
 export class SchemaBuilder {
@@ -127,7 +128,7 @@ export class SchemaBuilder {
    * ```
    */
   public Const<V>(
-    value: V,
+    value: Narrow<V>,
     options?: Optional<ConstSchema<V>>,
   ): ConstSchema<
     string extends V ? never : number extends V ? never : boolean extends V ? never : any[] extends V ? never : V

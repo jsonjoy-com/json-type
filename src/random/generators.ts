@@ -65,10 +65,14 @@ export const num = (type: NumberType): number => {
   let min = Number.MIN_SAFE_INTEGER;
   let max = Number.MAX_SAFE_INTEGER;
   const schema = type.getSchema();
-  if (schema.gt !== undefined) min = schema.gt;
-  if (schema.gte !== undefined) min = schema.gte + 0.000000000000001;
-  if (schema.lt !== undefined) max = schema.lt;
-  if (schema.lte !== undefined) max = schema.lte - 0.000000000000001;
+  const {lt, lte, gt, gte} = schema;
+  if (gt !== undefined) min = gt;
+  if (gte !== undefined)
+    if (gte === lte) return gte;
+    else min = gte + 0.000000000000001;
+  if (lt !== undefined) max = lt;
+  if (lte !== undefined) max = lte - 0.000000000000001;
+  if (min >= max) return max;
   if (schema.format) {
     switch (schema.format) {
       case 'i8':
