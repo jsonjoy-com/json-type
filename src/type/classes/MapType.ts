@@ -134,16 +134,6 @@ export class MapType<T extends Type> extends AbstractType<schema.MapSchema<Schem
     ctx.blob(objEndBlob);
   }
 
-  public toTypeScriptAst(): ts.TsTypeReference {
-    const node: ts.TsTypeReference = {
-      node: 'TypeReference',
-      typeName: 'Record',
-      typeArguments: [{node: 'StringKeyword'}, this.type.toTypeScriptAst()],
-    };
-    // augmentWithComment(this.schema, node);
-    return node;
-  }
-
   public toJson(value: unknown, system: TypeSystem | undefined = this.system): json_string<unknown> {
     const map = value as Record<string, unknown>;
     const keys = Object.keys(map);

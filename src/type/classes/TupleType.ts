@@ -122,13 +122,6 @@ export class TupleType<T extends Type[]> extends AbstractType<schema.TupleSchema
     );
   }
 
-  public toTypeScriptAst(): ts.TsTupleType {
-    return {
-      node: 'TupleType',
-      elements: this.types.map((type) => type.toTypeScriptAst() as ts.TsType),
-    };
-  }
-
   public toJson(value: unknown, system: TypeSystem | undefined = this.system): json_string<unknown> {
     const types = this.types;
     const length = types.length;

@@ -288,9 +288,10 @@ export abstract class AbstractType<S extends schema.Schema> implements BaseType<
     return random(this);
   }
 
-  public toTypeScriptAst(): ts.TsNode {
-    const node: ts.TsUnknownKeyword = {node: 'UnknownKeyword'};
-    return node;
+  public toTypeScriptAst(): ts.TsType {
+    // Use dynamic import to avoid circular dependency
+    const converter = require('../../typescript/converter');
+    return converter.toTypeScriptAst(this.getSchema());
   }
 
   public toJson(value: unknown, system: TypeSystem | undefined = this.system): json_string<unknown> {
