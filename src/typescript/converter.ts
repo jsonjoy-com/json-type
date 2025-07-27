@@ -147,10 +147,7 @@ export function toTypeScriptAst(schema: schema.Schema): ts.TsType {
       const node: ts.TsTypeReference = {
         node: 'TypeReference',
         typeName: 'Record',
-        typeArguments: [
-          {node: 'StringKeyword'},
-          toTypeScriptAst(mapSchema.type),
-        ],
+        typeArguments: [{node: 'StringKeyword'}, toTypeScriptAst(mapSchema.type)],
       };
       return node;
     }
@@ -178,7 +175,7 @@ export function toTypeScriptAst(schema: schema.Schema): ts.TsType {
       // Extract schemas from the type instances
       const reqSchema = (fnSchema.req as any).getSchema ? (fnSchema.req as any).getSchema() : fnSchema.req;
       const resSchema = (fnSchema.res as any).getSchema ? (fnSchema.res as any).getSchema() : fnSchema.res;
-      
+
       const node: ts.TsFunctionType = {
         node: 'FunctionType',
         parameters: [
@@ -207,7 +204,7 @@ export function toTypeScriptAst(schema: schema.Schema): ts.TsType {
       // Extract schemas from the type instances
       const reqSchema = (fnSchema.req as any).getSchema ? (fnSchema.req as any).getSchema() : fnSchema.req;
       const resSchema = (fnSchema.res as any).getSchema ? (fnSchema.res as any).getSchema() : fnSchema.res;
-      
+
       const node: ts.TsFunctionType = {
         node: 'FunctionType',
         parameters: [
