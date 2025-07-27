@@ -77,7 +77,7 @@ test('can construct a realistic object', () => {
 
 test('can build type using lowercase shortcuts', () => {
   const MyObject = t.object({
-    type: t.literal('user'),
+    type: t.con('user'),
     id: t.string(),
     name: t.string(),
     age: t.number(),

@@ -89,8 +89,9 @@ export class TypeBuilder {
   public readonly string = () => this.str;
   public readonly binary = () => this.bin;
 
-  public readonly literal = <V>(value: schema.Narrow<V>, options?: schema.Optional<schema.ConstSchema>) =>
+  public readonly con = <V>(value: schema.Narrow<V>, options?: schema.Optional<schema.ConstSchema>) =>
     this.Const(value, options);
+  public readonly literal = this.con;
 
   public readonly array = <T>(type?: T, options?: schema.Optional<schema.ArraySchema>) =>
     this.Array<T extends Type ? T : classes.AnyType>((type ?? this.any) as T extends Type ? T : classes.AnyType, options);
