@@ -145,7 +145,6 @@ test('string patch', () => {
     [-1, '!'],
   ];
   const v2: T = [
-    // @ts-expect-error
     [2, 'Test'],
   ];
 });
