@@ -18,20 +18,6 @@ export type ObjectValueToTypeMap<F> = ToObject<{
 }>;
 export type TuplesToFields<T> = T extends PropDefinition<infer K, infer V>[] ? classes.ObjectFieldType<K, V>[] : never;
 
-// export type MergeObjectsTypes<A, B> =
-//   A extends classes.ObjectType<infer A2>
-//     ? B extends classes.ObjectType<infer B2>
-//       ? classes.ObjectType<[...A2, ...B2]> :
-//     never :
-//   never;
-
-// export type MergeObjectValues<A, B> =
-//   A extends ObjectValue<infer A2>
-//     ? B extends ObjectValue<infer B2>
-//       ? ObjectValue<MergeObjectsTypes<A2, B2>> :
-//     never :
-//   never;
-
 type PropDefinition<K extends string, V extends classes.Type> = [key: K, val: V, data: ResolveType<V>];
 type PropDef = <K extends string, V extends classes.Type>(key: K, val: V, data: ResolveType<V>) => PropDefinition<K, V>;
 

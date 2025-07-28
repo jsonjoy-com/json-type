@@ -14,7 +14,6 @@ import type {BinaryEncoderCodegenContext} from '../../codegen/binary/BinaryEncod
 import type {SchemaOf, Type} from '../types';
 import type {TypeSystem} from '../../system/TypeSystem';
 import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
-import type * as ts from '../../typescript/types';
 import type {TypeExportContext} from '../../system/TypeExportContext';
 
 export class ArrayType<T extends Type> extends AbstractType<schema.ArraySchema<SchemaOf<T>>> {

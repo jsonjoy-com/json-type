@@ -1,6 +1,5 @@
 import {RandomJson} from '@jsonjoy.com/util/lib/json-random';
 import {cloneBinary} from '@jsonjoy.com/util/lib/json-clone';
-import type {AbstractType} from '../type/classes/AbstractType';
 import type {AnyType} from '../type/classes/AnyType';
 import type {ArrayType} from '../type/classes/ArrayType';
 import type {BinaryType} from '../type/classes/BinaryType';

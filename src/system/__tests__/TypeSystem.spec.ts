@@ -44,4 +44,21 @@ describe('.toString()', () => {
    └─ "empty-string""
 `);
   });
+
+  test('prints type with nested self reference', () => {
+    const system = new TypeSystem();
+    const {t} = system;
+    system.alias('User', t.obj.prop('id', t.str).opt('friend', t.Ref('User')));
+    expect(system.toString()).toMatchInlineSnapshot(`
+"TypeSystem
+├─ aliases
+│  └─ User
+│     └─ obj
+│        ├─ "id":
+│        │   └─ str
+│        └─ "friend"?:
+│            └─ ref → [User]
+└─ validators"
+`);
+  });
 });
