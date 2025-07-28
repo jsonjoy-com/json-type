@@ -1,6 +1,6 @@
 import {floats, ints, uints} from '../../util';
 import {ValidationError} from '../../constants';
-import {AbstractType} from './AbstractType';
+import {AbsType} from './AbsType';
 import type {ValidatorCodegenContext} from '../../codegen/validator/ValidatorCodegenContext';
 import type {ValidationPath} from '../../codegen/validator/types';
 import type {JsonTextEncoderCodegenContext} from '../../codegen/json/JsonTextEncoderCodegenContext';
@@ -16,7 +16,7 @@ import type * as ts from '../../typescript/types';
 import type * as schema from '../../schema';
 import type * as jtd from '../../jtd/types';
 
-export class NumberType extends AbstractType<schema.NumberSchema> {
+export class NumType extends AbsType<schema.NumberSchema> {
   constructor(protected schema: schema.NumberSchema) {
     super();
   }

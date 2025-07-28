@@ -1,6 +1,6 @@
 import type * as schema from '../../schema';
 import {asString} from '@jsonjoy.com/util/lib/strings/asString';
-import {AbstractType} from './AbstractType';
+import {AbsType} from './AbsType';
 import {isAscii, isUtf8} from '../../util/stringFormats';
 import {ValidationError} from '../../constants';
 import type {ValidatorCodegenContext} from '../../codegen/validator/ValidatorCodegenContext';
@@ -17,7 +17,7 @@ import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
 import type * as ts from '../../typescript/types';
 import type * as jtd from '../../jtd/types';
 
-export class StringType extends AbstractType<schema.StringSchema> {
+export class StrType extends AbsType<schema.StringSchema> {
   constructor(protected schema: schema.StringSchema) {
     super();
   }

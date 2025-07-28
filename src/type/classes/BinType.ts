@@ -1,7 +1,7 @@
 import {printTree} from 'tree-dump/lib/printTree';
 import * as schema from '../../schema';
 import {stringifyBinary} from '@jsonjoy.com/json-pack/lib/json-binary';
-import {AbstractType} from './AbstractType';
+import {AbsType} from './AbsType';
 import {ValidationError} from '../../constants';
 import type {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
 import type {BinaryJsonEncoder} from '@jsonjoy.com/json-pack/lib/types';
@@ -17,7 +17,7 @@ import type {TypeSystem} from '../../system/TypeSystem';
 import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
 import type * as ts from '../../typescript/types';
 
-export class BinaryType<T extends Type> extends AbstractType<schema.BinarySchema> {
+export class BinType<T extends Type> extends AbsType<schema.BinarySchema> {
   protected schema: schema.BinarySchema;
 
   constructor(

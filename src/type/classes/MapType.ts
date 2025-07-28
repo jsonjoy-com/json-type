@@ -5,7 +5,7 @@ import * as schema from '../../schema';
 import {ValidationError} from '../../constants';
 import {CborEncoderCodegenContext} from '../../codegen/binary/CborEncoderCodegenContext';
 import {MessagePackEncoderCodegenContext} from '../../codegen/binary/MessagePackEncoderCodegenContext';
-import {AbstractType} from './AbstractType';
+import {AbsType} from './AbsType';
 import type {BinaryJsonEncoder} from '@jsonjoy.com/json-pack/lib/types';
 import type {JsonEncoderCodegenContext} from '../../codegen/binary/JsonEncoderCodegenContext';
 import type {BinaryEncoderCodegenContext} from '../../codegen/binary/BinaryEncoderCodegenContext';
@@ -18,26 +18,28 @@ import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
 import type * as ts from '../../typescript/types';
 import type {TypeExportContext} from '../../system/TypeExportContext';
 
-export class MapType<T extends Type> extends AbstractType<schema.MapSchema<SchemaOf<T>>> {
+export class MapType<T extends Type> extends AbsType<schema.MapSchema<SchemaOf<T>>> {
   protected schema: schema.MapSchema<any>;
 
   constructor(
-    protected type: T,
+    protected valueType: T,
+    protected keyType?: Type,
     options?: schema.Optional<schema.MapSchema>,
   ) {
     super();
-    this.schema = schema.s.Map(schema.s.any, options);
+    this.schema = {kind: 'map', value: schema.s.any, ...(keyType && {key: schema.s.any}), ...options};
   }
 
   public getSchema(ctx?: TypeExportContext): schema.MapSchema<SchemaOf<T>> {
     return {
       ...this.schema,
-      type: this.type.getSchema(ctx) as any,
+      value: this.valueType.getSchema(ctx) as any,
+      ...(this.keyType && {key: this.keyType.getSchema(ctx) as any}),
     };
   }
 
   public getOptions(): schema.Optional<schema.MapSchema<SchemaOf<T>>> {
-    const {kind, type, ...options} = this.schema;
+    const {kind, value, key, ...options} = this.schema;
     return options as any;
   }
 
@@ -51,7 +53,7 @@ export class MapType<T extends Type> extends AbstractType<schema.MapSchema<Schem
     ctx.js(`for (var ${rKey}, ${rValue}, i = 0; i < ${rLength}; i++) {`);
     ctx.js(`${rKey} = ${rKeys}[i];`);
     ctx.js(`${rValue} = ${r}[${rKey}];`);
-    this.type.codegenValidator(ctx, [...path, {r: rKey}], rValue);
+    this.valueType.codegenValidator(ctx, [...path, {r: rKey}], rValue);
     ctx.js(`}`);
     ctx.emitCustomValidators(this, path, r);
   }
@@ -65,18 +67,18 @@ export class MapType<T extends Type> extends AbstractType<schema.MapSchema<Schem
     ctx.codegen.if(`${rLength}`, () => {
       ctx.js(`${rKey} = ${rKeys}[0];`);
       ctx.js(`s += asString(${rKey}) + ':';`);
-      this.type.codegenJsonTextEncoder(ctx, new JsExpression(() => `${r}[${rKey}]`));
+      this.valueType.codegenJsonTextEncoder(ctx, new JsExpression(() => `${r}[${rKey}]`));
     });
     ctx.js(`for (var i = 1; i < ${rLength}; i++) {`);
     ctx.js(`${rKey} = ${rKeys}[i];`);
     ctx.js(`s += ',' + asString(${rKey}) + ':';`);
-    this.type.codegenJsonTextEncoder(ctx, new JsExpression(() => `${r}[${rKey}]`));
+    this.valueType.codegenJsonTextEncoder(ctx, new JsExpression(() => `${r}[${rKey}]`));
     ctx.js(`}`);
     ctx.writeText('}');
   }
 
   private codegenBinaryEncoder(ctx: BinaryEncoderCodegenContext<BinaryJsonEncoder>, value: JsExpression): void {
-    const type = this.type;
+    const type = this.valueType;
     const codegen = ctx.codegen;
     const r = codegen.var(value.use());
     const rKeys = codegen.var(`Object.keys(${r})`);
@@ -103,7 +105,7 @@ export class MapType<T extends Type> extends AbstractType<schema.MapSchema<Schem
   }
 
   public codegenJsonEncoder(ctx: JsonEncoderCodegenContext, value: JsExpression): void {
-    const type = this.type;
+    const type = this.valueType;
     const objStartBlob = ctx.gen((encoder) => encoder.writeStartObj());
     const objEndBlob = ctx.gen((encoder) => encoder.writeEndObj());
     const separatorBlob = ctx.gen((encoder) => encoder.writeObjSeparator());
@@ -136,7 +138,7 @@ export class MapType<T extends Type> extends AbstractType<schema.MapSchema<Schem
     const length = keys.length;
     if (!length) return '{}' as json_string<unknown>;
     const last = length - 1;
-    const type = this.type;
+    const type = this.valueType;
     let str = '{';
     for (let i = 0; i < last; i++) {
       const key = keys[i];
@@ -153,6 +155,6 @@ export class MapType<T extends Type> extends AbstractType<schema.MapSchema<Schem
   }
 
   public toString(tab: string = ''): string {
-    return super.toString(tab) + printTree(tab, [(tab) => this.type.toString(tab)]);
+    return super.toString(tab) + printTree(tab, [(tab) => this.valueType.toString(tab)]);
   }
 }

@@ -133,7 +133,7 @@ export class SchemaBuilder {
   ): ConstSchema<
     string extends V ? never : number extends V ? never : boolean extends V ? never : any[] extends V ? never : V
   > {
-    return {kind: 'const', value: value as any, ...options};
+    return {kind: 'con', value: value as any, ...options};
   }
 
   public Tuple<T extends Schema[]>(...types: T): TupleSchema<T> {
@@ -176,13 +176,13 @@ export class SchemaBuilder {
   /** @deprecated Use `.prop`. */
   public Field<K extends string, V extends Schema>(
     key: K,
-    type: V,
-    options: Omit<NoT<ObjectFieldSchema<K, V>>, 'key' | 'type' | 'optional'> = {},
+    value: V,
+    options: Omit<NoT<ObjectFieldSchema<K, V>>, 'key' | 'value' | 'optional'> = {},
   ): ObjectFieldSchema<K, V> {
     return {
       kind: 'field',
       key,
-      type,
+      value,
       ...options,
     };
   }
@@ -190,13 +190,13 @@ export class SchemaBuilder {
   /** @deprecated Use `.propOpt`. */
   public FieldOpt<K extends string, V extends Schema>(
     key: K,
-    type: V,
-    options: Omit<NoT<ObjectFieldSchema<K, V>>, 'key' | 'type' | 'optional'> = {},
+    value: V,
+    options: Omit<NoT<ObjectFieldSchema<K, V>>, 'key' | 'value' | 'optional'> = {},
   ): ObjectOptionalFieldSchema<K, V> {
     return {
       kind: 'field',
       key,
-      type,
+      value,
       ...options,
       optional: true,
     };
@@ -205,13 +205,13 @@ export class SchemaBuilder {
   /** Declares an object property. */
   public prop<K extends string, V extends Schema>(
     key: K,
-    type: V,
-    options: Omit<NoT<ObjectFieldSchema<K, V>>, 'key' | 'type' | 'optional'> = {},
+    value: V,
+    options: Omit<NoT<ObjectFieldSchema<K, V>>, 'key' | 'value' | 'optional'> = {},
   ): ObjectFieldSchema<K, V> {
     return {
       kind: 'field',
       key,
-      type,
+      value,
       ...options,
     };
   }
@@ -219,20 +219,24 @@ export class SchemaBuilder {
   /** Declares an optional object property. */
   public propOpt<K extends string, V extends Schema>(
     key: K,
-    type: V,
-    options: Omit<NoT<ObjectFieldSchema<K, V>>, 'key' | 'type' | 'optional'> = {},
+    value: V,
+    options: Omit<NoT<ObjectFieldSchema<K, V>>, 'key' | 'value' | 'optional'> = {},
   ): ObjectOptionalFieldSchema<K, V> {
     return {
       kind: 'field',
       key,
-      type,
+      value,
       ...options,
       optional: true,
     };
   }
 
-  public Map<T extends Schema>(type: T, options?: Omit<NoT<MapSchema<T>>, 'type'>): MapSchema<T> {
-    return {kind: 'map', type, ...options};
+  public Map<V extends Schema, K extends Schema = StringSchema>(
+    value: V,
+    key?: K,
+    options?: Omit<NoT<MapSchema<V, K>>, 'value' | 'key'>,
+  ): MapSchema<V, K> {
+    return {kind: 'map', value, ...(key && {key}), ...options};
   }
 
   public Any(options: NoT<AnySchema> = {}): AnySchema {

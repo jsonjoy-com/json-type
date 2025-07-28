@@ -1,6 +1,6 @@
 import {printTree} from 'tree-dump/lib/printTree';
 import * as schema from '../../schema';
-import {AbstractType} from './AbstractType';
+import {AbsType} from './AbsType';
 import type {SchemaOf, Type} from '../types';
 import type * as ts from '../../typescript/types';
 import type {ResolveType} from '../../system';
@@ -10,7 +10,7 @@ const fnNotImplemented: schema.FunctionValue<any, any> = async () => {
   throw new Error('NOT_IMPLEMENTED');
 };
 
-const toStringTree = (tab: string = '', type: FunctionType<Type, Type> | FunctionStreamingType<Type, Type>) => {
+const toStringTree = (tab: string = '', type: FnType<Type, Type> | FunctionStreamingType<Type, Type>) => {
   return printTree(tab, [
     (tab) => 'req: ' + type.req.toString(tab + '     '),
     (tab) => 'res: ' + type.res.toString(tab + '     '),
@@ -22,7 +22,7 @@ type FunctionImpl<Req extends Type, Res extends Type, Ctx = unknown> = (
   ctx: Ctx,
 ) => Promise<ResolveType<Res>>;
 
-export class FunctionType<Req extends Type, Res extends Type> extends AbstractType<
+export class FnType<Req extends Type, Res extends Type> extends AbsType<
   schema.FunctionSchema<SchemaOf<Req>, SchemaOf<Res>>
 > {
   protected schema: schema.FunctionSchema<SchemaOf<Req>, SchemaOf<Res>>;
@@ -41,21 +41,21 @@ export class FunctionType<Req extends Type, Res extends Type> extends AbstractTy
     } as any;
   }
 
-  public request<T extends Type>(req: T): FunctionType<T, Res> {
+  public request<T extends Type>(req: T): FnType<T, Res> {
     (this as any).req = req;
     return this as any;
   }
 
-  public inp<T extends Type>(req: T): FunctionType<T, Res> {
+  public inp<T extends Type>(req: T): FnType<T, Res> {
     return this.request(req);
   }
 
-  public response<T extends Type>(res: T): FunctionType<Req, T> {
+  public response<T extends Type>(res: T): FnType<Req, T> {
     (this as any).res = res;
     return this as any;
   }
 
-  public out<T extends Type>(res: T): FunctionType<Req, T> {
+  public out<T extends Type>(res: T): FnType<Req, T> {
     return this.response(res);
   }
 
@@ -84,7 +84,7 @@ type FunctionStreamingImpl<Req extends Type, Res extends Type, Ctx = unknown> = 
   ctx: Ctx,
 ) => Observable<ResolveType<Res>>;
 
-export class FunctionStreamingType<Req extends Type, Res extends Type> extends AbstractType<
+export class FunctionStreamingType<Req extends Type, Res extends Type> extends AbsType<
   schema.FunctionStreamingSchema<SchemaOf<Req>, SchemaOf<Res>>
 > {
   public readonly isStreaming = true;
@@ -102,21 +102,21 @@ export class FunctionStreamingType<Req extends Type, Res extends Type> extends A
     } as any;
   }
 
-  public request<T extends Type>(req: T): FunctionType<T, Res> {
+  public request<T extends Type>(req: T): FnType<T, Res> {
     (this as any).req = req;
     return this as any;
   }
 
-  public inp<T extends Type>(req: T): FunctionType<T, Res> {
+  public inp<T extends Type>(req: T): FnType<T, Res> {
     return this.request(req);
   }
 
-  public response<T extends Type>(res: T): FunctionType<Req, T> {
+  public response<T extends Type>(res: T): FnType<Req, T> {
     (this as any).res = res;
     return this as any;
   }
 
-  public out<T extends Type>(res: T): FunctionType<Req, T> {
+  public out<T extends Type>(res: T): FnType<Req, T> {
     return this.response(res);
   }
 

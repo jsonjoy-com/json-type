@@ -263,14 +263,13 @@ export interface ArraySchema<T extends TType = any> extends TType<Array<unknown>
  * Example:
  * ```json
  * {
- *   "kind": "const",
+ *   "kind": "con",
  *   "value": 42
  * }
  * ```
  */
 export interface ConstSchema<V = any> extends TType, WithValidator {
-  /** @todo Rename to "con". */
-  kind: 'const';
+  kind: 'con';
   /** The value. */
   value: V;
 }
@@ -359,11 +358,9 @@ export interface ObjectFieldSchema<K extends string = string, V extends TType = 
   key: K;
 
   /**
-   * One or more "one-of" types of the field.
-   *
-   * @todo Rename to `val`.
+   * Type of the field value.
    */
-  type: V;
+  value: V;
 
   optional?: boolean;
 }
@@ -377,14 +374,18 @@ export interface ObjectOptionalFieldSchema<K extends string = string, V extends 
  * Represents an object, which is treated as a map. All keys are strings and all
  * values are of the same type.
  */
-export interface MapSchema<T extends TType = any> extends TType<Record<string, unknown>>, WithValidator {
+export interface MapSchema<V extends TType = any, K extends TType = any>
+  extends TType<Record<string, unknown>>,
+    WithValidator {
   kind: 'map';
   /**
-   * Type of all values in the map.
-   *
-   * @todo Rename to `val`. And add `key` field for the key type. Make `key` default to `str`.
+   * Type of all keys in the map. Defaults to string type.
    */
-  type: T;
+  key?: K;
+  /**
+   * Type of all values in the map.
+   */
+  value: V;
 }
 
 /**

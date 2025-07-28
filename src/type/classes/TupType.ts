@@ -10,7 +10,7 @@ import {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
 import type {MessagePackEncoderCodegenContext} from '../../codegen/binary/MessagePackEncoderCodegenContext';
 import type {CapacityEstimatorCodegenContext} from '../../codegen/capacity/CapacityEstimatorCodegenContext';
 import {MaxEncodingOverhead} from '@jsonjoy.com/util/lib/json-size';
-import {AbstractType} from './AbstractType';
+import {AbsType} from './AbsType';
 import type * as jsonSchema from '../../json-schema';
 import type {SchemaOf, Type} from '../types';
 import type {TypeSystem} from '../../system/TypeSystem';
@@ -18,7 +18,7 @@ import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
 import type * as ts from '../../typescript/types';
 import type {TypeExportContext} from '../../system/TypeExportContext';
 
-export class TupleType<T extends Type[]> extends AbstractType<schema.TupleSchema<{[K in keyof T]: SchemaOf<T[K]>}>> {
+export class TupType<T extends Type[]> extends AbsType<schema.TupleSchema<{[K in keyof T]: SchemaOf<T[K]>}>> {
   protected schema: schema.TupleSchema<any>;
 
   constructor(

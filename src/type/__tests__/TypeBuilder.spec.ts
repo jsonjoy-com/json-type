@@ -1,4 +1,4 @@
-import {NumberType, ObjectFieldType, ObjectType, StringType} from '../classes';
+import {NumType, ObjectFieldType, ObjType, StrType} from '../classes';
 import {type SchemaOf, t} from '..';
 import type {TypeOf} from '../../schema';
 
@@ -62,10 +62,10 @@ test('can construct a realistic object', () => {
   expect(type.getSchema()).toStrictEqual({
     kind: 'obj',
     fields: [
-      {kind: 'field', key: 'id', type: {kind: 'str'}},
-      {kind: 'field', key: 'name', type: {kind: 'str'}, optional: true},
-      {kind: 'field', key: 'age', type: {kind: 'num'}, optional: true},
-      {kind: 'field', key: 'verified', type: {kind: 'bool'}},
+      {kind: 'field', key: 'id', value: {kind: 'str'}},
+      {kind: 'field', key: 'name', value: {kind: 'str'}, optional: true},
+      {kind: 'field', key: 'age', value: {kind: 'num'}, optional: true},
+      {kind: 'field', key: 'verified', value: {kind: 'bool'}},
     ],
   });
   type T = TypeOf<SchemaOf<typeof type>>;
@@ -102,9 +102,9 @@ test('can build type using lowercase shortcuts', () => {
     .prop('optional', t.Or(t.str, t.undef))
     .opt('description', t.str);
   expect(MyObject.getSchema()).toEqual(MyObject2.getSchema());
-  type ObjectType = t.infer<typeof MyObject>;
-  type ObjectType2 = t.infer<typeof MyObject2>;
-  const obj: ObjectType = {
+  type ObjType = t.infer<typeof MyObject>;
+  type ObjType2 = t.infer<typeof MyObject2>;
+  const obj: ObjType = {
     type: 'user',
     id: '123',
     name: 'Test',
@@ -114,7 +114,7 @@ test('can build type using lowercase shortcuts', () => {
     offsets: [1, 2, 3],
     enum: 'three',
     optional: undefined,
-  } as ObjectType2;
+  } as ObjType2;
   MyObject.validate(obj);
   MyObject2.validate(obj);
 });
@@ -126,7 +126,7 @@ describe('import()', () => {
       description: 'A number',
       format: 'i32',
     });
-    expect(type).toBeInstanceOf(NumberType);
+    expect(type).toBeInstanceOf(NumType);
     expect(type.getTypeName()).toBe('num');
     expect(type.getSchema()).toStrictEqual({
       kind: 'num',
@@ -139,26 +139,26 @@ describe('import()', () => {
     const type = t.import({
       kind: 'obj',
       fields: [
-        {kind: 'field', key: 'id', type: {kind: 'str'}},
-        {kind: 'field', key: 'name', type: {kind: 'str'}, optional: true},
-        {kind: 'field', key: 'age', type: {kind: 'num'}, optional: true},
-        {kind: 'field', key: 'verified', type: {kind: 'bool'}},
+        {kind: 'field', key: 'id', value: {kind: 'str'}},
+        {kind: 'field', key: 'name', value: {kind: 'str'}, optional: true},
+        {kind: 'field', key: 'age', value: {kind: 'num'}, optional: true},
+        {kind: 'field', key: 'verified', value: {kind: 'bool'}},
       ],
-    }) as ObjectType<any>;
-    expect(type).toBeInstanceOf(ObjectType);
+    }) as ObjType<any>;
+    expect(type).toBeInstanceOf(ObjType);
     expect(type.getTypeName()).toBe('obj');
     const id = type.getField('id')!;
     expect(id).toBeInstanceOf(ObjectFieldType);
     expect(id.getTypeName()).toBe('field');
-    expect(id.value).toBeInstanceOf(StringType);
+    expect(id.value).toBeInstanceOf(StrType);
     expect(id.value.getTypeName()).toBe('str');
     expect(type.getSchema()).toStrictEqual({
       kind: 'obj',
       fields: [
-        {kind: 'field', key: 'id', type: {kind: 'str'}},
-        {kind: 'field', key: 'name', type: {kind: 'str'}, optional: true},
-        {kind: 'field', key: 'age', type: {kind: 'num'}, optional: true},
-        {kind: 'field', key: 'verified', type: {kind: 'bool'}},
+        {kind: 'field', key: 'id', value: {kind: 'str'}},
+        {kind: 'field', key: 'name', value: {kind: 'str'}, optional: true},
+        {kind: 'field', key: 'age', value: {kind: 'num'}, optional: true},
+        {kind: 'field', key: 'verified', value: {kind: 'bool'}},
       ],
     });
   });
@@ -253,7 +253,7 @@ describe('validateSchema()', () => {
         {
           kind: 'field',
           key: 'id',
-          type: {kind: 'str', ascii: 'bytes'} as any,
+          value: {kind: 'str', ascii: 'bytes'} as any,
         },
       ],
     });
@@ -269,7 +269,7 @@ describe('validateSchema()', () => {
           kind: 'field',
           key: 'id',
           optional: 123,
-          type: {kind: 'str'},
+          value: {kind: 'str'},
         } as any,
       ],
     });

@@ -47,7 +47,7 @@ test('can use helper functions to define type schema fields', () => {
   });
 });
 
-describe('StringType format validation', () => {
+describe('StrType format validation', () => {
   describe('ASCII format', () => {
     const asciiType = t.String({format: 'ascii'});
 

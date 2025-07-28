@@ -9,9 +9,9 @@ describe('Discriminator', () => {
     const d1 = Discriminator.find(t1);
     const d2 = Discriminator.find(t2);
     const d3 = Discriminator.find(t3);
-    expect(d1!.toSpecifier()).toBe('["","const","foo"]');
-    expect(d2!.toSpecifier()).toBe('["","const",123]');
-    expect(d3!.toSpecifier()).toBe('["","const",[true,false]]');
+    expect(d1!.toSpecifier()).toBe('["","con","foo"]');
+    expect(d2!.toSpecifier()).toBe('["","con",123]');
+    expect(d3!.toSpecifier()).toBe('["","con",[true,false]]');
   });
 
   test('can find const discriminator in a tuple', () => {
@@ -21,15 +21,15 @@ describe('Discriminator', () => {
     const d1 = Discriminator.find(t1);
     const d2 = Discriminator.find(t2);
     const d3 = Discriminator.find(t3);
-    expect(d1!.toSpecifier()).toBe('["/0","const","foo"]');
-    expect(d2!.toSpecifier()).toBe('["/0","const","add"]');
-    expect(d3!.toSpecifier()).toBe('["/2","const",null]');
+    expect(d1!.toSpecifier()).toBe('["/0","con","foo"]');
+    expect(d2!.toSpecifier()).toBe('["/0","con","add"]');
+    expect(d3!.toSpecifier()).toBe('["/2","con",null]');
   });
 
   test('can find const discriminator in a object', () => {
     const t1 = t.Object(t.prop('op', t.Const('replace')), t.prop('value', t.num), t.prop('path', t.str));
     const d1 = Discriminator.find(t1);
-    expect(d1!.toSpecifier()).toBe('["/op","const","replace"]');
+    expect(d1!.toSpecifier()).toBe('["/op","con","replace"]');
   });
 
   test('uses node type as discriminator, if not const', () => {
@@ -50,8 +50,8 @@ describe('Discriminator', () => {
     const d1 = Discriminator.find(t1);
     const d2 = Discriminator.find(t2);
     // const d3 = Discriminator.find(t3);
-    expect(d1!.toSpecifier()).toBe('["/1/1","const","foo"]');
-    expect(d2!.toSpecifier()).toBe('["/type/0","const",25]');
+    expect(d1!.toSpecifier()).toBe('["/1/1","con","foo"]');
+    expect(d2!.toSpecifier()).toBe('["/type/0","con",25]');
   });
 });
 

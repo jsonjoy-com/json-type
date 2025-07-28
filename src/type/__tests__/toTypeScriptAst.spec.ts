@@ -117,7 +117,7 @@ describe('arr', () => {
         "elementType": {
           "node": "AnyKeyword",
         },
-        "node": "ArrayType",
+        "node": "ArrType",
       }
     `);
   });
@@ -130,7 +130,7 @@ describe('arr', () => {
         "elementType": {
           "node": "StringKeyword",
         },
-        "node": "ArrayType",
+        "node": "ArrType",
       }
     `);
   });
@@ -154,7 +154,7 @@ describe('tup', () => {
             "node": "BooleanKeyword",
           },
         ],
-        "node": "TupleType",
+        "node": "TupType",
       }
     `);
   });
@@ -177,33 +177,33 @@ describe('obj', () => {
         description: 'description',
       });
     expect(type.toTypeScriptAst()).toMatchInlineSnapshot(`
-      {
-        "comment": "# title
+{
+  "comment": "# title
 
-      description",
-        "members": [
-          {
-            "comment": "# title-x
+description",
+  "members": [
+    {
+      "comment": "# title-x
 
-      description-x",
-            "name": "id",
-            "node": "PropertySignature",
-            "type": {
-              "node": "StringKeyword",
-            },
-          },
-          {
-            "name": "id",
-            "node": "PropertySignature",
-            "optional": true,
-            "type": {
-              "node": "NumberKeyword",
-            },
-          },
-        ],
-        "node": "TypeLiteral",
-      }
-    `);
+description-x",
+      "name": "id",
+      "node": "PropertySignature",
+      "type": {
+        "node": "StringKeyword",
+      },
+    },
+    {
+      "name": "id",
+      "node": "PropertySignature",
+      "optional": true,
+      "type": {
+        "node": "NumberKeyword",
+      },
+    },
+  ],
+  "node": "TypeLiteral",
+}
+`);
   });
 });
 
@@ -276,34 +276,34 @@ describe('fn', () => {
     const {t} = system;
     const type = system.t.Function(t.str, t.num);
     expect(type.toTypeScriptAst()).toMatchInlineSnapshot(`
+{
+  "node": "FnType",
+  "parameters": [
+    {
+      "name": {
+        "name": "request",
+        "node": "Identifier",
+      },
+      "node": "Parameter",
+      "type": {
+        "node": "StringKeyword",
+      },
+    },
+  ],
+  "type": {
+    "node": "TypeReference",
+    "typeArguments": [
       {
-        "node": "FunctionType",
-        "parameters": [
-          {
-            "name": {
-              "name": "request",
-              "node": "Identifier",
-            },
-            "node": "Parameter",
-            "type": {
-              "node": "StringKeyword",
-            },
-          },
-        ],
-        "type": {
-          "node": "TypeReference",
-          "typeArguments": [
-            {
-              "node": "NumberKeyword",
-            },
-          ],
-          "typeName": {
-            "name": "Promise",
-            "node": "Identifier",
-          },
-        },
-      }
-    `);
+        "node": "NumberKeyword",
+      },
+    ],
+    "typeName": {
+      "name": "Promise",
+      "node": "Identifier",
+    },
+  },
+}
+`);
   });
 });
 
@@ -313,42 +313,42 @@ describe('fn$', () => {
     const {t} = system;
     const type = system.t.Function$(t.str, t.num);
     expect(type.toTypeScriptAst()).toMatchInlineSnapshot(`
-      {
-        "node": "FunctionType",
-        "parameters": [
+{
+  "node": "FnType",
+  "parameters": [
+    {
+      "name": {
+        "name": "request$",
+        "node": "Identifier",
+      },
+      "node": "Parameter",
+      "type": {
+        "node": "TypeReference",
+        "typeArguments": [
           {
-            "name": {
-              "name": "request$",
-              "node": "Identifier",
-            },
-            "node": "Parameter",
-            "type": {
-              "node": "TypeReference",
-              "typeArguments": [
-                {
-                  "node": "StringKeyword",
-                },
-              ],
-              "typeName": {
-                "name": "Observable",
-                "node": "Identifier",
-              },
-            },
+            "node": "StringKeyword",
           },
         ],
-        "type": {
-          "node": "TypeReference",
-          "typeArguments": [
-            {
-              "node": "NumberKeyword",
-            },
-          ],
-          "typeName": {
-            "name": "Observable",
-            "node": "Identifier",
-          },
+        "typeName": {
+          "name": "Observable",
+          "node": "Identifier",
         },
-      }
-    `);
+      },
+    },
+  ],
+  "type": {
+    "node": "TypeReference",
+    "typeArguments": [
+      {
+        "node": "NumberKeyword",
+      },
+    ],
+    "typeName": {
+      "name": "Observable",
+      "node": "Identifier",
+    },
+  },
+}
+`);
   });
 });

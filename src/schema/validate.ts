@@ -137,7 +137,7 @@ const validateArraySchema = (schema: any, validateChildSchema: (schema: Schema) 
 };
 
 const validateConstSchema = (schema: any): void => {
-  validateTType(schema, 'const');
+  validateTType(schema, 'con');
 };
 
 const validateTupleSchema = (schema: any, validateChildSchema: (schema: Schema) => void): void => {
@@ -162,12 +162,15 @@ const validateFieldSchema = (schema: any, validateChildSchema: (schema: Schema) 
   const {key, optional} = schema;
   if (typeof key !== 'string') throw new Error('KEY_TYPE');
   if (optional !== undefined && typeof optional !== 'boolean') throw new Error('OPTIONAL_TYPE');
-  validateChildSchema(schema.type);
+  validateChildSchema(schema.value);
 };
 
 const validateMapSchema = (schema: any, validateChildSchema: (schema: Schema) => void): void => {
   validateTType(schema, 'map');
-  validateChildSchema(schema.type);
+  validateChildSchema(schema.value);
+  if (schema.key) {
+    validateChildSchema(schema.key);
+  }
 };
 
 const validateRefSchema = (schema: any): void => {
@@ -222,7 +225,7 @@ export const validateSchema = (schema: Schema): void => {
     case 'arr':
       validateArraySchema(schema, validateSchema);
       break;
-    case 'const':
+    case 'con':
       validateConstSchema(schema);
       break;
     case 'tup':
