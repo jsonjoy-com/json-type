@@ -1,4 +1,5 @@
 import {type Type, t} from '..';
+import {ValidationError, ValidationErrorMessage} from '../../constants';
 import {TypeSystem} from '../../system/TypeSystem';
 
 export const validateTestSuite = (validate: (type: Type, value: unknown) => void) => {
@@ -382,6 +383,22 @@ export const validateTestSuite = (validate: (type: Type, value: unknown) => void
       validate(type, ['']);
       validate(type, ['asdf']);
       expect(() => validate(type, [1])).toThrowErrorMatchingInlineSnapshot(`"STR"`);
+    });
+
+    test('object nested in array', () => {
+      const type = t.obj
+        .prop('foo', t.array(t.obj.prop('bar', t.str)))
+      validate(type, {foo: [{bar: 'baz'}]});
+      const validator = type.validator('object');
+      const res = validator({foo: [{bar: 'baz'}]});
+      expect(res).toBe(null);
+      const res2 = validator({foo: {bar: 'baz'}});
+      expect(res2).toEqual({
+        code: ValidationError[ValidationError.ARR],
+        errno: ValidationError.ARR,
+        message: ValidationErrorMessage[ValidationError.ARR],
+        path: [ 'foo' ]
+      });
     });
 
     describe('size bounds', () => {
