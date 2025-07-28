@@ -144,7 +144,5 @@ test('string patch', () => {
     [0, 'World'],
     [-1, '!'],
   ];
-  const v2: T = [
-    [2, 'Test'],
-  ];
+  const v2: T = [[2, 'Test']];
 });

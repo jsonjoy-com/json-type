@@ -22,11 +22,11 @@ import type {TypeExportContext} from '../../system/TypeExportContext';
 // Helper type to extract the underlying type from either Type or ObjectFieldType
 type TupleElement = Type | ObjectFieldType<any, any>;
 
-// Helper type to extract the schema from a tuple element  
-type SchemaOfTupleElement<T> = T extends ObjectFieldType<any, infer V> 
-  ? SchemaOf<V> 
-  : T extends Type 
-    ? SchemaOf<T> 
+// Helper type to extract the schema from a tuple element
+type SchemaOfTupleElement<T> = T extends ObjectFieldType<any, infer V>
+  ? SchemaOf<V>
+  : T extends Type
+    ? SchemaOf<T>
     : never;
 
 // Helper type for the schema mapping
@@ -47,8 +47,15 @@ export class TupleType<T extends TupleElement[]> extends AbstractType<schema.Tup
     return {
       ...this.schema,
       types: this.types.map((type) => {
-        // If it's an ObjectFieldType, get the value type's schema, otherwise get the type's schema directly
-        return type instanceof ObjectFieldType ? type.value.getSchema() : type.getSchema();
+        // If it's an ObjectFieldType, wrap in a field structure, otherwise get the type's schema directly
+        if (type instanceof ObjectFieldType) {
+          return {
+            kind: 'field',
+            key: type.key,
+            value: type.value.getSchema(),
+          };
+        }
+        return type.getSchema();
       }) as any,
     };
   }
@@ -168,15 +175,18 @@ export class TupleType<T extends TupleElement[]> extends AbstractType<schema.Tup
   }
 
   public toString(tab: string = ''): string {
-    return super.toString(tab) + printTree(tab, [
-      ...this.types.map((type) => (tab: string) => {
-        const typeToShow = type instanceof ObjectFieldType ? type.value : type;
-        const key = type instanceof ObjectFieldType ? type.key : undefined;
-        if (key) {
-          return `"${key}": ${typeToShow.toString(tab)}`;
-        }
-        return typeToShow.toString(tab);
-      })
-    ]);
+    return (
+      super.toString(tab) +
+      printTree(tab, [
+        ...this.types.map((type) => (tab: string) => {
+          const typeToShow = type instanceof ObjectFieldType ? type.value : type;
+          const key = type instanceof ObjectFieldType ? type.key : undefined;
+          if (key) {
+            return `"${key}": ${typeToShow.toString(tab)}`;
+          }
+          return typeToShow.toString(tab);
+        }),
+      ])
+    );
   }
 }
