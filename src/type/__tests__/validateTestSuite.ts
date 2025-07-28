@@ -386,8 +386,7 @@ export const validateTestSuite = (validate: (type: Type, value: unknown) => void
     });
 
     test('object nested in array', () => {
-      const type = t.obj
-        .prop('foo', t.array(t.obj.prop('bar', t.str)))
+      const type = t.obj.prop('foo', t.array(t.obj.prop('bar', t.str)));
       validate(type, {foo: [{bar: 'baz'}]});
       const validator = type.validator('object');
       const res = validator({foo: [{bar: 'baz'}]});
@@ -397,7 +396,7 @@ export const validateTestSuite = (validate: (type: Type, value: unknown) => void
         code: ValidationError[ValidationError.ARR],
         errno: ValidationError.ARR,
         message: ValidationErrorMessage[ValidationError.ARR],
-        path: [ 'foo' ]
+        path: ['foo'],
       });
     });
 
