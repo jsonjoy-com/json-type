@@ -12,7 +12,7 @@ import {MessagePackEncoderCodegenContext} from '../../codegen/binary/MessagePack
 import {EncodingFormat} from '@jsonjoy.com/json-pack/lib/constants';
 import type {BinaryJsonEncoder} from '@jsonjoy.com/json-pack/lib/types';
 import type {CapacityEstimatorCodegenContext} from '../../codegen/capacity/CapacityEstimatorCodegenContext';
-import {AbstractType} from './AbstractType';
+import {AbsType} from './AbsType';
 import type * as jsonSchema from '../../json-schema';
 import type {SchemaOf, Type} from '../types';
 import type {TypeSystem} from '../../system/TypeSystem';
@@ -20,7 +20,7 @@ import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
 import type * as ts from '../../typescript/types';
 import type {TypeExportContext} from '../../system/TypeExportContext';
 
-export class RefType<T extends Type> extends AbstractType<schema.RefSchema<SchemaOf<T>>> {
+export class RefType<T extends Type> extends AbsType<schema.RefSchema<SchemaOf<T>>> {
   protected schema: schema.RefSchema<SchemaOf<T>>;
 
   constructor(ref: string) {

@@ -79,16 +79,16 @@ export function toTypeScriptAst(schema: schema.Schema): ts.TsType {
     }
     case 'arr': {
       const arraySchema = schema as schema.ArraySchema;
-      const node: ts.TsArrayType = {
-        node: 'ArrayType',
+      const node: ts.TsArrType = {
+        node: 'ArrType',
         elementType: toTypeScriptAst(arraySchema.type) as ts.TsType,
       };
       return node;
     }
     case 'tup': {
       const tupleSchema = schema as schema.TupleSchema;
-      const node: ts.TsTupleType = {
-        node: 'TupleType',
+      const node: ts.TsTupType = {
+        node: 'TupType',
         elements: tupleSchema.types.map((type: any) => toTypeScriptAst(type) as ts.TsType),
       };
       return node;
@@ -176,8 +176,8 @@ export function toTypeScriptAst(schema: schema.Schema): ts.TsType {
       const reqSchema = (fnSchema.req as any).getSchema ? (fnSchema.req as any).getSchema() : fnSchema.req;
       const resSchema = (fnSchema.res as any).getSchema ? (fnSchema.res as any).getSchema() : fnSchema.res;
 
-      const node: ts.TsFunctionType = {
-        node: 'FunctionType',
+      const node: ts.TsFunType = {
+        node: 'FunType',
         parameters: [
           {
             node: 'Parameter',
@@ -205,8 +205,8 @@ export function toTypeScriptAst(schema: schema.Schema): ts.TsType {
       const reqSchema = (fnSchema.req as any).getSchema ? (fnSchema.req as any).getSchema() : fnSchema.req;
       const resSchema = (fnSchema.res as any).getSchema ? (fnSchema.res as any).getSchema() : fnSchema.res;
 
-      const node: ts.TsFunctionType = {
-        node: 'FunctionType',
+      const node: ts.TsFunType = {
+        node: 'FunType',
         parameters: [
           {
             node: 'Parameter',

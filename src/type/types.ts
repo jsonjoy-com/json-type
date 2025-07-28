@@ -9,18 +9,18 @@ export interface BaseType<S extends schema.TType> {
 
 export type Type =
   | classes.AnyType
-  | classes.ConstType<any>
-  | classes.BooleanType
-  | classes.NumberType
-  | classes.StringType
-  | classes.BinaryType<any>
-  | classes.ArrayType<any>
-  | classes.TupleType<any>
-  | classes.ObjectType<any>
+  | classes.ConType<any>
+  | classes.BoolType
+  | classes.NumType
+  | classes.StrType
+  | classes.BinType<any>
+  | classes.ArrType<any>
+  | classes.TupType<any>
+  | classes.ObjType<any>
   | classes.MapType<any>
   | classes.RefType<any>
   | classes.OrType<any>
-  | classes.FunctionType<any, any>
+  | classes.FunType<any, any>
   | classes.FunctionStreamingType<any, any>;
 
 export type SchemaOf<T extends Type | Type[]> = T extends BaseType<infer U> ? U : never;
@@ -41,11 +41,11 @@ export type SchemaOfObjectFields<F> = {
 export type TypeMap = {[name: string]: schema.Schema};
 
 export type FilterFunctions<T> = {
-  [K in keyof T as T[K] extends classes.FunctionType<any, any>
+  [K in keyof T as T[K] extends classes.FunType<any, any>
     ? K
     : T[K] extends classes.FunctionStreamingType<any, any>
       ? K
-      : never]: T[K] extends classes.FunctionType<any, any>
+      : never]: T[K] extends classes.FunType<any, any>
     ? T[K]
     : T[K] extends classes.FunctionStreamingType<any, any>
       ? T[K]

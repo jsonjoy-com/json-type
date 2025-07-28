@@ -44,13 +44,13 @@ export interface TsTypeAliasDeclaration {
 export type TsDeclaration = TsModuleDeclaration | TsInterfaceDeclaration | TsTypeAliasDeclaration;
 
 /** An "Array<*>" type. */
-export interface TsArrayType {
-  node: 'ArrayType';
+export interface TsArrType {
+  node: 'ArrType';
   elementType: TsType;
 }
 
-export interface TsTupleType {
-  node: 'TupleType';
+export interface TsTupType {
+  node: 'TupType';
   elements: TsType[];
 }
 
@@ -141,8 +141,8 @@ export interface TsTypeReference {
   typeArguments?: TsType[];
 }
 
-export interface TsFunctionType {
-  node: 'FunctionType';
+export interface TsFunType {
+  node: 'FunType';
   parameters: TsParameter[];
   type: TsType;
 }
@@ -164,15 +164,15 @@ export type TsType =
   | TsNumberKeyword
   | TsStringKeyword
   | TsStringLiteral
-  | TsArrayType
-  | TsTupleType
+  | TsArrType
+  | TsTupType
   | TsObjectKeyword
   | TsTypeLiteral
   | TsNumericLiteral
   | TsUnionType
   | TsTypeReference
   | TsGenericTypeAnnotation
-  | TsFunctionType;
+  | TsFunType;
 
 /** Any possible TypeScript AST node. */
 export type TsNode = TsDeclaration | TsType | TsPropertySignature | TsIndexSignature;

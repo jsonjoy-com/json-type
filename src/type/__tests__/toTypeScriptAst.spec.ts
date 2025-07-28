@@ -117,7 +117,7 @@ describe('arr', () => {
         "elementType": {
           "node": "AnyKeyword",
         },
-        "node": "ArrayType",
+        "node": "ArrType",
       }
     `);
   });
@@ -130,7 +130,7 @@ describe('arr', () => {
         "elementType": {
           "node": "StringKeyword",
         },
-        "node": "ArrayType",
+        "node": "ArrType",
       }
     `);
   });
@@ -154,7 +154,7 @@ describe('tup', () => {
             "node": "BooleanKeyword",
           },
         ],
-        "node": "TupleType",
+        "node": "TupType",
       }
     `);
   });
@@ -277,7 +277,7 @@ describe('fn', () => {
     const type = system.t.Function(t.str, t.num);
     expect(type.toTypeScriptAst()).toMatchInlineSnapshot(`
       {
-        "node": "FunctionType",
+        "node": "FunType",
         "parameters": [
           {
             "name": {
@@ -314,7 +314,7 @@ describe('fn$', () => {
     const type = system.t.Function$(t.str, t.num);
     expect(type.toTypeScriptAst()).toMatchInlineSnapshot(`
       {
-        "node": "FunctionType",
+        "node": "FunType",
         "parameters": [
           {
             "name": {

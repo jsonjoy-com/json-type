@@ -45,12 +45,12 @@ export const toText = (node: TsNode | TsNode[] | TsIdentifier | TsParameter, __:
     case 'IndexSignature': {
       return `${__}[key: string]: ${toText(node.type, __)};`;
     }
-    case 'ArrayType': {
+    case 'ArrType': {
       const simple = isSimpleType(node.elementType);
       const inner = toText(node.elementType, __);
       return simple ? `${inner}[]` : `Array<${inner}>`;
     }
-    case 'TupleType': {
+    case 'TupType': {
       const hasObject = node.elements.some((e) => e.node === 'TypeLiteral');
       if (hasObject) {
         return `[\n${____}${node.elements.map((e) => toText(e, ____)).join(',\n' + ____)}\n${__}]`;
@@ -106,7 +106,7 @@ export const toText = (node: TsNode | TsNode[] | TsIdentifier | TsParameter, __:
     case 'Identifier': {
       return node.name;
     }
-    case 'FunctionType': {
+    case 'FunType': {
       const {parameters, type} = node;
       const params = parameters.map((p) => toText(p, __)).join(', ');
       return `(${params}) => ${toText(type, __)}`;

@@ -48,7 +48,7 @@ import type {Validators} from './types';
 import type * as jtd from '../../jtd/types';
 import {random} from '../../random/generator';
 
-export abstract class AbstractType<S extends schema.Schema> implements BaseType<S>, Printable {
+export abstract class AbsType<S extends schema.Schema> implements BaseType<S>, Printable {
   /** Default type system to use, if any. */
   public system?: TypeSystem;
 
@@ -343,7 +343,7 @@ export abstract class AbstractType<S extends schema.Schema> implements BaseType<
   }
 
   protected toStringName(): string {
-    return 'AbstractType';
+    return 'AbsType';
   }
 
   public toString(tab: string = ''): string {

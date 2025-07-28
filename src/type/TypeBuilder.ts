@@ -119,10 +119,10 @@ export class TypeBuilder {
    * @param record A mapping of property names to types.
    * @returns An object type.
    */
-  public readonly object = <R extends Record<string, Type>>(record: R): classes.ObjectType<RecordToFields<R>> => {
+  public readonly object = <R extends Record<string, Type>>(record: R): classes.ObjType<RecordToFields<R>> => {
     const fields: classes.ObjectFieldType<any, any>[] = [];
     for (const [key, value] of Object.entries(record)) fields.push(this.prop(key, value));
-    const obj = new classes.ObjectType<RecordToFields<R>>(fields as any);
+    const obj = new classes.ObjType<RecordToFields<R>>(fields as any);
     obj.system = this.system;
     return obj;
   };
@@ -148,7 +148,7 @@ export class TypeBuilder {
    */
   public readonly enum = <const T extends (string | number | boolean | null)[]>(
     ...values: T
-  ): classes.OrType<{[K in keyof T]: classes.ConstType<schema.Narrow<T[K]>>}> =>
+  ): classes.OrType<{[K in keyof T]: classes.ConType<schema.Narrow<T[K]>>}> =>
     this.Or(...values.map((type) => this.Const(type as any))) as any;
 
   // --------------------------------------------------- base node constructors
@@ -169,49 +169,49 @@ export class TypeBuilder {
           : any[] extends V
             ? never
             : V;
-    const type = new classes.ConstType<V2>(schema.s.Const(value, options));
+    const type = new classes.ConType<V2>(schema.s.Const(value, options));
     type.system = this.system;
     return type;
   }
 
   public Boolean(options?: schema.Optional<schema.BooleanSchema>) {
-    const type = new classes.BooleanType(s.Boolean(options));
+    const type = new classes.BoolType(s.Boolean(options));
     type.system = this.system;
     return type;
   }
 
   public Number(options?: schema.Optional<schema.NumberSchema>) {
-    const type = new classes.NumberType(s.Number(options));
+    const type = new classes.NumType(s.Number(options));
     type.system = this.system;
     return type;
   }
 
   public String(options?: schema.Optional<schema.StringSchema>) {
-    const type = new classes.StringType(s.String(options));
+    const type = new classes.StrType(s.String(options));
     type.system = this.system;
     return type;
   }
 
   public Binary<T extends Type>(type: T, options: schema.Optional<schema.BinarySchema> = {}) {
-    const bin = new classes.BinaryType(type, options);
+    const bin = new classes.BinType(type, options);
     bin.system = this.system;
     return bin;
   }
 
   public Array<T extends Type>(type: T, options?: schema.Optional<schema.ArraySchema>) {
-    const arr = new classes.ArrayType<T>(type, options);
+    const arr = new classes.ArrType<T>(type, options);
     arr.system = this.system;
     return arr;
   }
 
   public Tuple<F extends Type[]>(...types: F) {
-    const tup = new classes.TupleType<F>(types);
+    const tup = new classes.TupType<F>(types);
     tup.system = this.system;
     return tup;
   }
 
   public Object<F extends classes.ObjectFieldType<any, any>[]>(...fields: F) {
-    const obj = new classes.ObjectType<F>(fields);
+    const obj = new classes.ObjType<F>(fields);
     obj.system = this.system;
     return obj;
   }
@@ -251,7 +251,7 @@ export class TypeBuilder {
     res: Res,
     options?: schema.Optional<schema.FunctionSchema>,
   ) {
-    const fn = new classes.FunctionType<Req, Res>(req, res, options);
+    const fn = new classes.FunType<Req, Res>(req, res, options);
     fn.system = this.system;
     return fn;
   }

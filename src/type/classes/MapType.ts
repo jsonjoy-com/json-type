@@ -5,7 +5,7 @@ import * as schema from '../../schema';
 import {ValidationError} from '../../constants';
 import {CborEncoderCodegenContext} from '../../codegen/binary/CborEncoderCodegenContext';
 import {MessagePackEncoderCodegenContext} from '../../codegen/binary/MessagePackEncoderCodegenContext';
-import {AbstractType} from './AbstractType';
+import {AbsType} from './AbsType';
 import type {BinaryJsonEncoder} from '@jsonjoy.com/json-pack/lib/types';
 import type {JsonEncoderCodegenContext} from '../../codegen/binary/JsonEncoderCodegenContext';
 import type {BinaryEncoderCodegenContext} from '../../codegen/binary/BinaryEncoderCodegenContext';
@@ -18,7 +18,7 @@ import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
 import type * as ts from '../../typescript/types';
 import type {TypeExportContext} from '../../system/TypeExportContext';
 
-export class MapType<T extends Type> extends AbstractType<schema.MapSchema<SchemaOf<T>>> {
+export class MapType<T extends Type> extends AbsType<schema.MapSchema<SchemaOf<T>>> {
   protected schema: schema.MapSchema<any>;
 
   constructor(

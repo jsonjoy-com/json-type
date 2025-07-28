@@ -59,7 +59,7 @@ export const bin = (ctx: CapacityEstimatorCodegenContext, value: JsExpression): 
 };
 
 export const const_ = (ctx: CapacityEstimatorCodegenContext, value: JsExpression, type: Type): void => {
-  const constType = type as any; // ConstType
+  const constType = type as any; // ConType
   ctx.inc(maxEncodingCapacity(constType.value()));
 };
 
@@ -67,7 +67,7 @@ export const arr = (ctx: CapacityEstimatorCodegenContext, value: JsExpression, t
   const codegen = ctx.codegen;
   ctx.inc(MaxEncodingOverhead.Array);
   const rLen = codegen.var(`${value.use()}.length`);
-  const arrayType = type as any; // ArrayType
+  const arrayType = type as any; // ArrType
   const elementType = arrayType.type;
   codegen.js(`size += ${MaxEncodingOverhead.ArrayElement} * ${rLen}`);
   const fn = elementType.compileCapacityEstimator({
@@ -90,7 +90,7 @@ export const arr = (ctx: CapacityEstimatorCodegenContext, value: JsExpression, t
 export const tup = (ctx: CapacityEstimatorCodegenContext, value: JsExpression, type: Type): void => {
   const codegen = ctx.codegen;
   const r = codegen.var(value.use());
-  const tupleType = type as any; // TupleType
+  const tupleType = type as any; // TupType
   const types = tupleType.types;
   const overhead = MaxEncodingOverhead.Array + MaxEncodingOverhead.ArrayElement * types.length;
   ctx.inc(overhead);
@@ -113,7 +113,7 @@ export const obj = (
 ): void => {
   const codegen = ctx.codegen;
   const r = codegen.var(value.use());
-  const objectType = type as any; // ObjectType
+  const objectType = type as any; // ObjType
   const encodeUnknownFields = !!objectType.schema.encodeUnknownFields;
   if (encodeUnknownFields) {
     codegen.js(`size += maxEncodingCapacity(${r});`);

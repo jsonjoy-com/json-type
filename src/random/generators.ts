@@ -1,24 +1,24 @@
 import {RandomJson} from '@jsonjoy.com/util/lib/json-random';
 import {cloneBinary} from '@jsonjoy.com/util/lib/json-clone';
 import type {AnyType} from '../type/classes/AnyType';
-import type {ArrayType} from '../type/classes/ArrayType';
-import type {BinaryType} from '../type/classes/BinaryType';
-import type {BooleanType} from '../type/classes/BooleanType';
-import type {ConstType} from '../type/classes/ConstType';
-import type {FunctionType} from '../type/classes/FunctionType';
+import type {ArrType} from '../type/classes/ArrType';
+import type {BinType} from '../type/classes/BinType';
+import type {BoolType} from '../type/classes/BoolType';
+import type {ConType} from '../type/classes/ConType';
+import type {FunType} from '../type/classes/FunType';
 import type {MapType} from '../type/classes/MapType';
-import type {NumberType} from '../type/classes/NumberType';
-import type {ObjectType} from '../type/classes/ObjectType';
+import type {NumType} from '../type/classes/NumType';
+import type {ObjType} from '../type/classes/ObjType';
 import type {OrType} from '../type/classes/OrType';
 import type {RefType} from '../type/classes/RefType';
-import type {StringType} from '../type/classes/StringType';
-import type {TupleType} from '../type/classes/TupleType';
+import type {StrType} from '../type/classes/StrType';
+import type {TupType} from '../type/classes/TupType';
 
 export const any = (type: AnyType): unknown => {
   return RandomJson.generate({nodeCount: 5});
 };
 
-export const arr = (type: ArrayType<any>): unknown[] => {
+export const arr = (type: ArrType<any>): unknown[] => {
   let length = Math.round(Math.random() * 10);
   const schema = type.getSchema();
   const {min, max} = schema;
@@ -31,22 +31,22 @@ export const arr = (type: ArrayType<any>): unknown[] => {
   return result;
 };
 
-export const bin = (type: BinaryType<any>): Uint8Array => {
+export const bin = (type: BinType<any>): Uint8Array => {
   const octets = RandomJson.genString()
     .split('')
     .map((c) => c.charCodeAt(0));
   return new Uint8Array(octets);
 };
 
-export const bool = (type: BooleanType): boolean => {
+export const bool = (type: BoolType): boolean => {
   return RandomJson.genBoolean();
 };
 
-export const const_ = (type: ConstType): unknown => {
+export const const_ = (type: ConType): unknown => {
   return cloneBinary(type.getSchema().value);
 };
 
-export const fn = (type: FunctionType<any, any>): unknown => {
+export const fn = (type: FunType<any, any>): unknown => {
   return async () => type.res.random();
 };
 
@@ -59,7 +59,7 @@ export const map = (type: MapType<any>): Record<string, unknown> => {
   return res;
 };
 
-export const num = (type: NumberType): number => {
+export const num = (type: NumType): number => {
   let num = Math.random();
   let min = Number.MIN_SAFE_INTEGER;
   let max = Number.MAX_SAFE_INTEGER;
@@ -117,7 +117,7 @@ export const num = (type: NumberType): number => {
   return num;
 };
 
-export const obj = (type: ObjectType<any>): Record<string, unknown> => {
+export const obj = (type: ObjType<any>): Record<string, unknown> => {
   const schema = type.getSchema();
   const obj: Record<string, unknown> = schema.unknownFields ? <Record<string, unknown>>RandomJson.genObject() : {};
   // Use runtime check to avoid circular import with ObjectOptionalFieldType
@@ -140,7 +140,7 @@ export const ref = (type: RefType<any>): unknown => {
   return alias.type.random();
 };
 
-export const str = (type: StringType): string => {
+export const str = (type: StrType): string => {
   let length = Math.round(Math.random() * 10);
   const schema = type.getSchema();
   const {min, max} = schema;
@@ -149,6 +149,6 @@ export const str = (type: StringType): string => {
   return RandomJson.genString(length);
 };
 
-export const tup = (type: TupleType<any>): unknown[] => {
+export const tup = (type: TupType<any>): unknown[] => {
   return (type as any).types.map((subType: any) => subType.random());
 };

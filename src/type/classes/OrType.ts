@@ -15,7 +15,7 @@ import {JsonExpressionCodegen} from '@jsonjoy.com/json-expression';
 import {operatorsMap} from '@jsonjoy.com/json-expression/lib/operators';
 import {Vars} from '@jsonjoy.com/json-expression/lib/Vars';
 import {Discriminator} from '../discriminator';
-import {AbstractType} from './AbstractType';
+import {AbsType} from './AbsType';
 import type * as jsonSchema from '../../json-schema';
 import type {SchemaOf, Type} from '../types';
 import type {TypeSystem} from '../../system/TypeSystem';
@@ -23,7 +23,7 @@ import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
 import type * as ts from '../../typescript/types';
 import type {TypeExportContext} from '../../system/TypeExportContext';
 
-export class OrType<T extends Type[]> extends AbstractType<schema.OrSchema<{[K in keyof T]: SchemaOf<T[K]>}>> {
+export class OrType<T extends Type[]> extends AbsType<schema.OrSchema<{[K in keyof T]: SchemaOf<T[K]>}>> {
   protected schema: schema.OrSchema<any>;
 
   constructor(

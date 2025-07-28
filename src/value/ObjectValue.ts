@@ -8,7 +8,7 @@ import type {TypeBuilder} from '../type/TypeBuilder';
 import type {Printable} from 'tree-dump/lib/types';
 import type {ResolveType} from '../system/types';
 
-export type UnObjectType<T> = T extends classes.ObjectType<infer U> ? U : never;
+export type UnObjType<T> = T extends classes.ObjType<infer U> ? U : never;
 export type UnObjectValue<T> = T extends ObjectValue<infer U> ? U : never;
 export type UnObjectFieldTypeVal<T> = T extends classes.ObjectFieldType<any, infer U> ? U : never;
 export type ObjectFieldToTuple<F> = F extends classes.ObjectFieldType<infer K, infer V> ? [K, V] : never;
@@ -21,7 +21,7 @@ export type TuplesToFields<T> = T extends PropDefinition<infer K, infer V>[] ? c
 type PropDefinition<K extends string, V extends classes.Type> = [key: K, val: V, data: ResolveType<V>];
 type PropDef = <K extends string, V extends classes.Type>(key: K, val: V, data: ResolveType<V>) => PropDefinition<K, V>;
 
-export class ObjectValue<T extends classes.ObjectType<any>> extends Value<T> implements Printable {
+export class ObjectValue<T extends classes.ObjType<any>> extends Value<T> implements Printable {
   public static create = (system: TypeSystem = new TypeSystem()) => new ObjectValue(system.t.obj, {});
 
   public get system(): TypeSystem {
@@ -37,11 +37,11 @@ export class ObjectValue<T extends classes.ObjectType<any>> extends Value<T> imp
     return type.fields.map((field: classes.ObjectFieldType<string, any>) => field.key);
   }
 
-  public get<K extends keyof ObjectValueToTypeMap<UnObjectType<T>>>(
+  public get<K extends keyof ObjectValueToTypeMap<UnObjType<T>>>(
     key: K,
   ): Value<
-    ObjectValueToTypeMap<UnObjectType<T>>[K] extends classes.Type
-      ? ObjectValueToTypeMap<UnObjectType<T>>[K]
+    ObjectValueToTypeMap<UnObjType<T>>[K] extends classes.Type
+      ? ObjectValueToTypeMap<UnObjType<T>>[K]
       : classes.Type
   > {
     const field = this.type.getField(<string>key);
@@ -54,8 +54,8 @@ export class ObjectValue<T extends classes.ObjectType<any>> extends Value<T> imp
   public field<F extends classes.ObjectFieldType<any, any>>(
     field: F | ((t: TypeBuilder) => F),
     data: ResolveType<UnObjectFieldTypeVal<F>>,
-  ): ObjectValue<classes.ObjectType<[...UnObjectType<T>, F]>> {
-    field = typeof field === 'function' ? field((this.type as classes.ObjectType<any>).getSystem().t) : field;
+  ): ObjectValue<classes.ObjType<[...UnObjType<T>, F]>> {
+    field = typeof field === 'function' ? field((this.type as classes.ObjType<any>).getSystem().t) : field;
     const extendedData = {...this.data, [field.key]: data};
     const type = this.type;
     const system = type.system;
@@ -69,7 +69,7 @@ export class ObjectValue<T extends classes.ObjectType<any>> extends Value<T> imp
     type: V | ((t: TypeBuilder) => V),
     data: ResolveType<V>,
   ) {
-    const system = (this.type as classes.ObjectType<any>).getSystem();
+    const system = (this.type as classes.ObjType<any>).getSystem();
     const t = system.t;
     type = typeof type === 'function' ? type(t) : type;
     return this.field(t.prop(key, type), data);
@@ -77,7 +77,7 @@ export class ObjectValue<T extends classes.ObjectType<any>> extends Value<T> imp
 
   public merge<O extends ObjectValue<any>>(
     obj: O,
-  ): ObjectValue<classes.ObjectType<[...UnObjectType<T>, ...UnObjectType<O['type']>]>> {
+  ): ObjectValue<classes.ObjType<[...UnObjType<T>, ...UnObjType<O['type']>]>> {
     const extendedData = {...this.data, ...obj.data};
     const type = this.type;
     const system = type.system;
@@ -88,7 +88,7 @@ export class ObjectValue<T extends classes.ObjectType<any>> extends Value<T> imp
 
   public extend<R extends PropDefinition<any, any>[]>(
     inp: (t: TypeBuilder, prop: PropDef, system: TypeSystem) => R,
-  ): ObjectValue<classes.ObjectType<[...UnObjectType<T>, ...TuplesToFields<R>]>> {
+  ): ObjectValue<classes.ObjType<[...UnObjType<T>, ...TuplesToFields<R>]>> {
     const system = this.type.getSystem();
     const r: PropDef = (key, val, data) => [key, val, data];
     const extension = inp(system.t, r, system);
