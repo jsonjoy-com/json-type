@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for src/type/classes/FunctionType.ts</title>
+    <title>Code coverage report for src/type/classes/FnType.ts</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../../prettify.css" />
     <link rel="stylesheet" href="../../../base.css" />
@@ -19,7 +19,7 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/type/classes</a> FunctionType.ts</h1>
+        <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/type/classes</a> FnType.ts</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
@@ -347,7 +347,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import {printTree} from 'tree-dump/lib/printTree';
 import * as schema from '../../schema';
-import {AbstractType} from './AbstractType';
+import {AbsType} from './AbsType';
 import type {SchemaOf, Type} from '../types';
 import type * as ts from '../../typescript/types';
 import type {ResolveType} from '../../system';
@@ -357,7 +357,7 @@ const fnNotImplemented: schema.FunctionValue&lt;any, any&gt; = <span class="fsta
 <span class="cstat-no" title="statement not covered" >  throw new Error('NOT_IMPLEMENTED');</span>
 };
 &nbsp;
-const toStringTree = (tab: string = <span class="branch-0 cbranch-no" title="branch not covered" >'',</span> type: FunctionType&lt;Type, Type&gt; | FunctionStreamingType&lt;Type, Type&gt;) =&gt; {
+const toStringTree = (tab: string = <span class="branch-0 cbranch-no" title="branch not covered" >'',</span> type: FnType&lt;Type, Type&gt; | FunctionStreamingType&lt;Type, Type&gt;) =&gt; {
   return printTree(tab, [
     (tab) =&gt; 'req: ' + type.req.toString(tab + '     '),
     (tab) =&gt; 'res: ' + type.res.toString(tab + '     '),
@@ -369,7 +369,7 @@ type FunctionImpl&lt;Req extends Type, Res extends Type, Ctx = unknown&gt; = (
   ctx: Ctx,
 ) =&gt; Promise&lt;ResolveType&lt;Res&gt;&gt;;
 &nbsp;
-export class FunctionType&lt;Req extends Type, Res extends Type&gt; extends AbstractType&lt;
+export class FnType&lt;Req extends Type, Res extends Type&gt; extends AbsType&lt;
   schema.FunctionSchema&lt;SchemaOf&lt;Req&gt;, SchemaOf&lt;Res&gt;&gt;
 &gt; {
   protected schema: schema.FunctionSchema&lt;SchemaOf&lt;Req&gt;, SchemaOf&lt;Res&gt;&gt;;
@@ -388,21 +388,21 @@ export class FunctionType&lt;Req extends Type, Res extends Type&gt; extends Abst
     } as any;
   }
 &nbsp;
-  public request&lt;T extends Type&gt;(req: T): FunctionType&lt;T, Res&gt; {
+  public request&lt;T extends Type&gt;(req: T): FnType&lt;T, Res&gt; {
     (this as any).req = req;
     return this as any;
   }
 &nbsp;
-  public inp&lt;T extends Type&gt;(req: T): FunctionType&lt;T, Res&gt; {
+  public inp&lt;T extends Type&gt;(req: T): FnType&lt;T, Res&gt; {
     return this.request(req);
   }
 &nbsp;
-  public response&lt;T extends Type&gt;(res: T): FunctionType&lt;Req, T&gt; {
+  public response&lt;T extends Type&gt;(res: T): FnType&lt;Req, T&gt; {
     (this as any).res = res;
     return this as any;
   }
 &nbsp;
-  public out&lt;T extends Type&gt;(res: T): FunctionType&lt;Req, T&gt; {
+  public out&lt;T extends Type&gt;(res: T): FnType&lt;Req, T&gt; {
     return this.response(res);
   }
 &nbsp;
@@ -431,7 +431,7 @@ type FunctionStreamingImpl&lt;Req extends Type, Res extends Type, Ctx = unknown&
   ctx: Ctx,
 ) =&gt; Observable&lt;ResolveType&lt;Res&gt;&gt;;
 &nbsp;
-export class FunctionStreamingType&lt;Req extends Type, Res extends Type&gt; extends AbstractType&lt;
+export class FunctionStreamingType&lt;Req extends Type, Res extends Type&gt; extends AbsType&lt;
   schema.FunctionStreamingSchema&lt;SchemaOf&lt;Req&gt;, SchemaOf&lt;Res&gt;&gt;
 &gt; {
   public readonly isStreaming = true;
@@ -449,21 +449,21 @@ export class FunctionStreamingType&lt;Req extends Type, Res extends Type&gt; ext
     } as any;
   }
 &nbsp;
-  public request&lt;T extends Type&gt;(req: T): FunctionType&lt;T, Res&gt; {
+  public request&lt;T extends Type&gt;(req: T): FnType&lt;T, Res&gt; {
     (this as any).req = req;
     return this as any;
   }
 &nbsp;
-  public inp&lt;T extends Type&gt;(req: T): FunctionType&lt;T, Res&gt; {
+  public inp&lt;T extends Type&gt;(req: T): FnType&lt;T, Res&gt; {
     return this.request(req);
   }
 &nbsp;
-  public response&lt;T extends Type&gt;(res: T): FunctionType&lt;Req, T&gt; {
+  public response&lt;T extends Type&gt;(res: T): FnType&lt;Req, T&gt; {
     (this as any).res = res;
     return this as any;
   }
 &nbsp;
-  public out&lt;T extends Type&gt;(res: T): FunctionType&lt;Req, T&gt; {
+  public out&lt;T extends Type&gt;(res: T): FnType&lt;Req, T&gt; {
     return this.response(res);
   }
 &nbsp;
@@ -493,7 +493,7 @@ export class FunctionStreamingType&lt;Req extends Type, Res extends Type&gt; ext
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-28T08:24:26.222Z
+                at 2025-07-28T15:20:49.550Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

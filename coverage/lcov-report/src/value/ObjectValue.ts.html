@@ -213,9 +213,7 @@
 <a name='L148'></a><a href='#L148'>148</a>
 <a name='L149'></a><a href='#L149'>149</a>
 <a name='L150'></a><a href='#L150'>150</a>
-<a name='L151'></a><a href='#L151'>151</a>
-<a name='L152'></a><a href='#L152'>152</a>
-<a name='L153'></a><a href='#L153'>153</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">5x</span>
+<a name='L151'></a><a href='#L151'>151</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">5x</span>
@@ -252,8 +250,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -377,7 +373,7 @@ import type {TypeBuilder} from '../type/TypeBuilder';
 import type {Printable} from 'tree-dump/lib/types';
 import type {ResolveType} from '../system/types';
 &nbsp;
-export type UnObjectType&lt;T&gt; = T extends classes.ObjectType&lt;infer U&gt; ? U : never;
+export type UnObjType&lt;T&gt; = T extends classes.ObjType&lt;infer U&gt; ? U : never;
 export type UnObjectValue&lt;T&gt; = T extends ObjectValue&lt;infer U&gt; ? U : never;
 export type UnObjectFieldTypeVal&lt;T&gt; = T extends classes.ObjectFieldType&lt;any, infer U&gt; ? U : never;
 export type ObjectFieldToTuple&lt;F&gt; = F extends classes.ObjectFieldType&lt;infer K, infer V&gt; ? [K, V] : never;
@@ -390,7 +386,7 @@ export type TuplesToFields&lt;T&gt; = T extends PropDefinition&lt;infer K, infer
 type PropDefinition&lt;K extends string, V extends classes.Type&gt; = [key: K, val: V, data: ResolveType&lt;V&gt;];
 type PropDef = &lt;K extends string, V extends classes.Type&gt;(key: K, val: V, data: ResolveType&lt;V&gt;) =&gt; PropDefinition&lt;K, V&gt;;
 &nbsp;
-export class ObjectValue&lt;T extends classes.ObjectType&lt;any&gt;&gt; extends Value&lt;T&gt; implements Printable {
+export class ObjectValue&lt;T extends classes.ObjType&lt;any&gt;&gt; extends Value&lt;T&gt; implements Printable {
   public static create = <span class="fstat-no" title="function not covered" >(s</span>ystem: TypeSystem = <span class="branch-0 cbranch-no" title="branch not covered" >new TypeSystem())</span> =&gt; <span class="cstat-no" title="statement not covered" >new ObjectValue(system.t.obj, {});</span>
 &nbsp;
 <span class="fstat-no" title="function not covered" >  public get s</span>ystem(): TypeSystem {
@@ -406,12 +402,10 @@ export class ObjectValue&lt;T extends classes.ObjectType&lt;any&gt;&gt; extends 
 <span class="cstat-no" title="statement not covered" >    return type.fields.map(<span class="fstat-no" title="function not covered" >(f</span>ield: classes.ObjectFieldType&lt;string, any&gt;) =&gt; <span class="cstat-no" title="statement not covered" >field.key)</span>;</span>
   }
 &nbsp;
-  public get&lt;K extends keyof ObjectValueToTypeMap&lt;UnObjectType&lt;T&gt;&gt;&gt;(
+  public get&lt;K extends keyof ObjectValueToTypeMap&lt;UnObjType&lt;T&gt;&gt;&gt;(
     key: K,
   ): Value&lt;
-    ObjectValueToTypeMap&lt;UnObjectType&lt;T&gt;&gt;[K] extends classes.Type
-      ? ObjectValueToTypeMap&lt;UnObjectType&lt;T&gt;&gt;[K]
-      : classes.Type
+    ObjectValueToTypeMap&lt;UnObjType&lt;T&gt;&gt;[K] extends classes.Type ? ObjectValueToTypeMap&lt;UnObjType&lt;T&gt;&gt;[K] : classes.Type
   &gt; {
     const field = this.type.getField(&lt;string&gt;key);
     <span class="missing-if-branch" title="if path not taken" >I</span>if (!field) <span class="cstat-no" title="statement not covered" >throw new Error('NO_FIELD');</span>
@@ -423,8 +417,8 @@ export class ObjectValue&lt;T extends classes.ObjectType&lt;any&gt;&gt; extends 
   public <span class="fstat-no" title="function not covered" >field&lt;</span>F extends classes.ObjectFieldType&lt;any, any&gt;&gt;(
     field: F | ((t: TypeBuilder) =&gt; F),
     data: ResolveType&lt;UnObjectFieldTypeVal&lt;F&gt;&gt;,
-  ): ObjectValue&lt;classes.ObjectType&lt;[...UnObjectType&lt;T&gt;, F]&gt;&gt; {
-<span class="cstat-no" title="statement not covered" >    field = typeof field === 'function' ? field((this.type as classes.ObjectType&lt;any&gt;).getSystem().t) : field;</span>
+  ): ObjectValue&lt;classes.ObjType&lt;[...UnObjType&lt;T&gt;, F]&gt;&gt; {
+<span class="cstat-no" title="statement not covered" >    field = typeof field === 'function' ? field((this.type as classes.ObjType&lt;any&gt;).getSystem().t) : field;</span>
     const extendedData = <span class="cstat-no" title="statement not covered" >{...this.data, [field.key]: data};</span>
     const type = <span class="cstat-no" title="statement not covered" >this.type;</span>
     const system = <span class="cstat-no" title="statement not covered" >type.system;</span>
@@ -438,7 +432,7 @@ export class ObjectValue&lt;T extends classes.ObjectType&lt;any&gt;&gt; extends 
     type: V | ((t: TypeBuilder) =&gt; V),
     data: ResolveType&lt;V&gt;,
   ) {
-    const system = (<span class="cstat-no" title="statement not covered" >this.type as classes.ObjectType&lt;any&gt;).getSystem();</span>
+    const system = (<span class="cstat-no" title="statement not covered" >this.type as classes.ObjType&lt;any&gt;).getSystem();</span>
     const t = <span class="cstat-no" title="statement not covered" >system.t;</span>
 <span class="cstat-no" title="statement not covered" >    type = typeof type === 'function' ? type(t) : type;</span>
 <span class="cstat-no" title="statement not covered" >    return this.field(t.prop(key, type), data);</span>
@@ -446,7 +440,7 @@ export class ObjectValue&lt;T extends classes.ObjectType&lt;any&gt;&gt; extends 
 &nbsp;
   public <span class="fstat-no" title="function not covered" >merge&lt;</span>O extends ObjectValue&lt;any&gt;&gt;(
     obj: O,
-  ): ObjectValue&lt;classes.ObjectType&lt;[...UnObjectType&lt;T&gt;, ...UnObjectType&lt;O['type']&gt;]&gt;&gt; {
+  ): ObjectValue&lt;classes.ObjType&lt;[...UnObjType&lt;T&gt;, ...UnObjType&lt;O['type']&gt;]&gt;&gt; {
     const extendedData = <span class="cstat-no" title="statement not covered" >{...this.data, ...obj.data};</span>
     const type = <span class="cstat-no" title="statement not covered" >this.type;</span>
     const system = <span class="cstat-no" title="statement not covered" >type.system;</span>
@@ -457,7 +451,7 @@ export class ObjectValue&lt;T extends classes.ObjectType&lt;any&gt;&gt; extends 
 &nbsp;
   public <span class="fstat-no" title="function not covered" >extend&lt;</span>R extends PropDefinition&lt;any, any&gt;[]&gt;(
     inp: (t: TypeBuilder, prop: PropDef, system: TypeSystem) =&gt; R,
-  ): ObjectValue&lt;classes.ObjectType&lt;[...UnObjectType&lt;T&gt;, ...TuplesToFields&lt;R&gt;]&gt;&gt; {
+  ): ObjectValue&lt;classes.ObjType&lt;[...UnObjType&lt;T&gt;, ...TuplesToFields&lt;R&gt;]&gt;&gt; {
     const system = <span class="cstat-no" title="statement not covered" >this.type.getSystem();</span>
     const r: PropDef = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(k</span>ey, val, data) =&gt; <span class="cstat-no" title="statement not covered" >[key, val, data];</span></span>
     const extension = <span class="cstat-no" title="statement not covered" >inp(system.t, r, system);</span>
@@ -526,7 +520,7 @@ export class ObjectValue&lt;T extends classes.ObjectType&lt;any&gt;&gt; extends 
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-28T08:24:26.222Z
+                at 2025-07-28T15:20:49.550Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

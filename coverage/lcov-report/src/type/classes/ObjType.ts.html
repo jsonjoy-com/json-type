@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for src/type/classes/ObjectType.ts</title>
+    <title>Code coverage report for src/type/classes/ObjType.ts</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../../prettify.css" />
     <link rel="stylesheet" href="../../../base.css" />
@@ -19,7 +19,7 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/type/classes</a> ObjectType.ts</h1>
+        <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/type/classes</a> ObjType.ts</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
@@ -649,7 +649,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">8481x</span>
+<span class="cline-any cline-yes">7228x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -736,9 +736,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4806x</span>
+<span class="cline-any cline-yes">4101x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">8481x</span>
+<span class="cline-any cline-yes">7228x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1148,7 +1148,7 @@ import type {CborEncoderCodegenContext} from '../../codegen/binary/CborEncoderCo
 import type {JsonEncoderCodegenContext} from '../../codegen/binary/JsonEncoderCodegenContext';
 import type {MessagePackEncoderCodegenContext} from '../../codegen/binary/MessagePackEncoderCodegenContext';
 import type {CapacityEstimatorCodegenContext} from '../../codegen/capacity/CapacityEstimatorCodegenContext';
-import {AbstractType} from './AbstractType';
+import {AbsType} from './AbsType';
 import type * as jsonSchema from '../../json-schema';
 import type {SchemaOf, SchemaOfObjectFields, Type} from '../types';
 import type {TypeSystem} from '../../system/TypeSystem';
@@ -1170,7 +1170,7 @@ const augmentWithComment = <span class="fstat-no" title="function not covered" >
   }
 };
 &nbsp;
-export class ObjectFieldType&lt;K extends string, V extends Type&gt; extends AbstractType&lt;
+export class ObjectFieldType&lt;K extends string, V extends Type&gt; extends AbsType&lt;
   schema.ObjectFieldSchema&lt;K, SchemaOf&lt;V&gt;&gt;
 &gt; {
   protected schema: schema.ObjectFieldSchema&lt;K, any&gt;;
@@ -1186,12 +1186,12 @@ export class ObjectFieldType&lt;K extends string, V extends Type&gt; extends Abs
   public getSchema(): schema.ObjectFieldSchema&lt;K, SchemaOf&lt;V&gt;&gt; {
     return {
       ...this.schema,
-      type: this.value.getSchema() as any,
+      value: this.value.getSchema() as any,
     };
   }
 &nbsp;
   public getOptions(): schema.Optional&lt;schema.ObjectFieldSchema&lt;K, SchemaOf&lt;V&gt;&gt;&gt; {
-    const {kind, key, type, optional, ...options} = this.schema;
+    const {kind, key, value, optional, ...options} = this.schema;
     return options as any;
   }
 &nbsp;
@@ -1220,7 +1220,7 @@ export class ObjectOptionalFieldType&lt;K extends string, V extends Type&gt; ext
   }
 }
 &nbsp;
-export class ObjectType&lt;F extends ObjectFieldType&lt;any, any&gt;[] = ObjectFieldType&lt;any, any&gt;[]&gt; extends AbstractType&lt;
+export class ObjType&lt;F extends ObjectFieldType&lt;any, any&gt;[] = ObjectFieldType&lt;any, any&gt;[]&gt; extends AbsType&lt;
   schema.ObjectSchema&lt;SchemaOfObjectFields&lt;F&gt;&gt;
 &gt; {
   protected schema: schema.ObjectSchema&lt;any&gt; = schema.s.obj;
@@ -1249,7 +1249,7 @@ export class ObjectType&lt;F extends ObjectFieldType&lt;any, any&gt;[] = ObjectF
     key: K,
     value: V,
     options?: schema.Optional&lt;schema.ObjectFieldSchema&lt;K, SchemaOf&lt;V&gt;&gt;&gt;,
-  ): ObjectType&lt;[...F, ObjectFieldType&lt;K, V&gt;]&gt; {
+  ): ObjType&lt;[...F, ObjectFieldType&lt;K, V&gt;]&gt; {
     this._field(new ObjectFieldType&lt;K, V&gt;(key, value), options);
     return &lt;any&gt;this;
   }
@@ -1265,7 +1265,7 @@ export class ObjectType&lt;F extends ObjectFieldType&lt;any, any&gt;[] = ObjectF
     key: K,
     value: V,
     options?: schema.Optional&lt;schema.ObjectFieldSchema&lt;K, SchemaOf&lt;V&gt;&gt;&gt;,
-  ): ObjectType&lt;[...F, ObjectOptionalFieldType&lt;K, V&gt;]&gt; {
+  ): ObjType&lt;[...F, ObjectOptionalFieldType&lt;K, V&gt;]&gt; {
     this._field(new ObjectOptionalFieldType&lt;K, V&gt;(key, value), options);
     return &lt;any&gt;this;
   }
@@ -1288,26 +1288,26 @@ export class ObjectType&lt;F extends ObjectFieldType&lt;any, any&gt;[] = ObjectF
     return this.fields.find((f) =&gt; f.key === key);
   }
 &nbsp;
-  public extend&lt;F2 extends ObjectFieldType&lt;any, any&gt;[]&gt;(o: ObjectType&lt;F2&gt;): ObjectType&lt;[...F, ...F2]&gt; {
-    const type = new ObjectType([...this.fields, ...o.fields]) as ObjectType&lt;[...F, ...F2]&gt;;
+  public extend&lt;F2 extends ObjectFieldType&lt;any, any&gt;[]&gt;(o: ObjType&lt;F2&gt;): ObjType&lt;[...F, ...F2]&gt; {
+    const type = new ObjType([...this.fields, ...o.fields]) as ObjType&lt;[...F, ...F2]&gt;;
     type.system = this.system;
     return type;
   }
 &nbsp;
   public omit&lt;K extends keyof schema.TypeOf&lt;schema.ObjectSchema&lt;SchemaOfObjectFields&lt;F&gt;&gt;&gt;&gt;(
     key: K,
-  ): ObjectType&lt;ExcludeFromTuple&lt;F, ObjectFieldType&lt;K extends string ? K : never, any&gt;&gt;&gt; {
-    const type = new ObjectType(this.fields.filter((f) =&gt; f.key !== key) as any);
+  ): ObjType&lt;ExcludeFromTuple&lt;F, ObjectFieldType&lt;K extends string ? K : never, any&gt;&gt;&gt; {
+    const type = new ObjType(this.fields.filter((f) =&gt; f.key !== key) as any);
     type.system = this.system;
     return type;
   }
 &nbsp;
   public pick&lt;K extends keyof schema.TypeOf&lt;schema.ObjectSchema&lt;SchemaOfObjectFields&lt;F&gt;&gt;&gt;&gt;(
     key: K,
-  ): ObjectType&lt;PickFromTuple&lt;F, ObjectFieldType&lt;K extends string ? K : never, any&gt;&gt;&gt; {
+  ): ObjType&lt;PickFromTuple&lt;F, ObjectFieldType&lt;K extends string ? K : never, any&gt;&gt;&gt; {
     const field = this.fields.find((f) =&gt; f.key === key);
     <span class="missing-if-branch" title="if path not taken" >I</span>if (!field) <span class="cstat-no" title="statement not covered" >throw new Error('FIELD_NOT_FOUND');</span>
-    const type = new ObjectType([field] as any);
+    const type = new ObjType([field] as any);
     type.system = this.system;
     return type;
   }
@@ -1315,8 +1315,8 @@ export class ObjectType&lt;F extends ObjectFieldType&lt;any, any&gt;[] = ObjectF
   public codegenValidator(ctx: ValidatorCodegenContext, path: ValidationPath, r: string): void {
     const fields = this.fields;
     const length = fields.length;
-    const canSkipObjectTypeCheck = ctx.options.unsafeMode &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >length &gt; 0;</span>
-    if (!canSkipObjectTypeCheck) {
+    const canSkipObjTypeCheck = ctx.options.unsafeMode &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >length &gt; 0;</span>
+    if (!canSkipObjTypeCheck) {
       const err = ctx.err(ValidationError.OBJ, path);
       ctx.js(/* js */ `if (typeof ${r} !== 'object' || !${r} || (${r} instanceof Array)) return ${err};`);
     }
@@ -1342,7 +1342,7 @@ export class ObjectType&lt;F extends ObjectFieldType&lt;any, any&gt;[] = ObjectF
         field.value.codegenValidator(ctx, keyPath, rv);
         ctx.js(`}`);
       } else {
-        if (!canSkipObjectKeyUndefinedCheck((field.value as AbstractType&lt;any&gt;).getSchema().kind)) {
+        if (!canSkipObjectKeyUndefinedCheck((field.value as AbsType&lt;any&gt;).getSchema().kind)) {
           const err = ctx.err(ValidationError.KEY, [...path, field.key]);
           ctx.js(/* js */ `var ${rv} = ${r}${accessor};`);
           ctx.js(/* js */ `if (!(${JSON.stringify(field.key)} in ${r})) return ${err};`);
@@ -1675,7 +1675,7 @@ if (${rLength}) {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-28T08:24:26.222Z
+                at 2025-07-28T15:20:49.550Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

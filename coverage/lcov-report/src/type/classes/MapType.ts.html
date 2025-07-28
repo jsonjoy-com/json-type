@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">80.67% </span>
+                <span class="strong">80.83% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>96/119</span>
+                <span class='fraction'>97/120</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">27.27% </span>
+                <span class="strong">33.33% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>3/11</span>
+                <span class='fraction'>5/15</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">81.55% </span>
+                <span class="strong">81.73% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>84/103</span>
+                <span class='fraction'>85/104</span>
             </div>
         
             
@@ -221,7 +221,9 @@
 <a name='L156'></a><a href='#L156'>156</a>
 <a name='L157'></a><a href='#L157'>157</a>
 <a name='L158'></a><a href='#L158'>158</a>
-<a name='L159'></a><a href='#L159'>159</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">30x</span>
+<a name='L159'></a><a href='#L159'>159</a>
+<a name='L160'></a><a href='#L160'>160</a>
+<a name='L161'></a><a href='#L161'>161</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">30x</span>
 <span class="cline-any cline-yes">30x</span>
 <span class="cline-any cline-yes">30x</span>
 <span class="cline-any cline-yes">30x</span>
@@ -246,6 +248,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">42x</span>
+<span class="cline-any cline-yes">42x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">42x</span>
@@ -253,7 +256,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">82x</span>
+<span class="cline-any cline-yes">78x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -386,7 +390,7 @@ import * as schema from '../../schema';
 import {ValidationError} from '../../constants';
 import {CborEncoderCodegenContext} from '../../codegen/binary/CborEncoderCodegenContext';
 import {MessagePackEncoderCodegenContext} from '../../codegen/binary/MessagePackEncoderCodegenContext';
-import {AbstractType} from './AbstractType';
+import {AbsType} from './AbsType';
 import type {BinaryJsonEncoder} from '@jsonjoy.com/json-pack/lib/types';
 import type {JsonEncoderCodegenContext} from '../../codegen/binary/JsonEncoderCodegenContext';
 import type {BinaryEncoderCodegenContext} from '../../codegen/binary/BinaryEncoderCodegenContext';
@@ -399,26 +403,28 @@ import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
 import type * as ts from '../../typescript/types';
 import type {TypeExportContext} from '../../system/TypeExportContext';
 &nbsp;
-export class MapType&lt;T extends Type&gt; extends AbstractType&lt;schema.MapSchema&lt;SchemaOf&lt;T&gt;&gt;&gt; {
+export class MapType&lt;T extends Type&gt; extends AbsType&lt;schema.MapSchema&lt;SchemaOf&lt;T&gt;&gt;&gt; {
   protected schema: schema.MapSchema&lt;any&gt;;
 &nbsp;
   constructor(
-    protected type: T,
+    protected valueType: T,
+    protected keyType?: Type,
     options?: schema.Optional&lt;schema.MapSchema&gt;,
   ) {
     super();
-    this.schema = schema.s.Map(schema.s.any, options);
+    this.schema = {kind: 'map', value: schema.s.any, ...(keyType &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >{key: schema.s.any})</span>, ...options};
   }
 &nbsp;
   public getSchema(ctx?: TypeExportContext): schema.MapSchema&lt;SchemaOf&lt;T&gt;&gt; {
     return {
       ...this.schema,
-      type: this.type.getSchema(ctx) as any,
+      value: this.valueType.getSchema(ctx) as any,
+      ...(this.keyType &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >{key: this.keyType.getSchema(ctx) as any})</span>,
     };
   }
 &nbsp;
   public getOptions(): schema.Optional&lt;schema.MapSchema&lt;SchemaOf&lt;T&gt;&gt;&gt; {
-    const {kind, type, ...options} = this.schema;
+    const {kind, value, key, ...options} = this.schema;
     return options as any;
   }
 &nbsp;
@@ -432,7 +438,7 @@ export class MapType&lt;T extends Type&gt; extends AbstractType&lt;schema.MapSch
     ctx.js(`for (var ${rKey}, ${rValue}, i = 0; i &lt; ${rLength}; i++) {`);
     ctx.js(`${rKey} = ${rKeys}[i];`);
     ctx.js(`${rValue} = ${r}[${rKey}];`);
-    this.type.codegenValidator(ctx, [...path, {r: rKey}], rValue);
+    this.valueType.codegenValidator(ctx, [...path, {r: rKey}], rValue);
     ctx.js(`}`);
     ctx.emitCustomValidators(this, path, r);
   }
@@ -446,18 +452,18 @@ export class MapType&lt;T extends Type&gt; extends AbstractType&lt;schema.MapSch
     ctx.codegen.if(`${rLength}`, () =&gt; {
       ctx.js(`${rKey} = ${rKeys}[0];`);
       ctx.js(`s += asString(${rKey}) + ':';`);
-      this.type.codegenJsonTextEncoder(ctx, new JsExpression(() =&gt; `${r}[${rKey}]`));
+      this.valueType.codegenJsonTextEncoder(ctx, new JsExpression(() =&gt; `${r}[${rKey}]`));
     });
     ctx.js(`for (var i = 1; i &lt; ${rLength}; i++) {`);
     ctx.js(`${rKey} = ${rKeys}[i];`);
     ctx.js(`s += ',' + asString(${rKey}) + ':';`);
-    this.type.codegenJsonTextEncoder(ctx, new JsExpression(() =&gt; `${r}[${rKey}]`));
+    this.valueType.codegenJsonTextEncoder(ctx, new JsExpression(() =&gt; `${r}[${rKey}]`));
     ctx.js(`}`);
     ctx.writeText('}');
   }
 &nbsp;
   private codegenBinaryEncoder(ctx: BinaryEncoderCodegenContext&lt;BinaryJsonEncoder&gt;, value: JsExpression): void {
-    const type = this.type;
+    const type = this.valueType;
     const codegen = ctx.codegen;
     const r = codegen.var(value.use());
     const rKeys = codegen.var(`Object.keys(${r})`);
@@ -484,7 +490,7 @@ export class MapType&lt;T extends Type&gt; extends AbstractType&lt;schema.MapSch
   }
 &nbsp;
   public codegenJsonEncoder(ctx: JsonEncoderCodegenContext, value: JsExpression): void {
-    const type = this.type;
+    const type = this.valueType;
     const objStartBlob = ctx.gen((encoder) =&gt; encoder.writeStartObj());
     const objEndBlob = ctx.gen((encoder) =&gt; encoder.writeEndObj());
     const separatorBlob = ctx.gen((encoder) =&gt; encoder.writeObjSeparator());
@@ -517,7 +523,7 @@ export class MapType&lt;T extends Type&gt; extends AbstractType&lt;schema.MapSch
     const length = <span class="cstat-no" title="statement not covered" >keys.length;</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!length) <span class="cstat-no" title="statement not covered" >return '{}' as json_string&lt;unknown&gt;;</span></span>
     const last = <span class="cstat-no" title="statement not covered" >length - 1;</span>
-    const type = <span class="cstat-no" title="statement not covered" >this.type;</span>
+    const type = <span class="cstat-no" title="statement not covered" >this.valueType;</span>
     let str = <span class="cstat-no" title="statement not covered" >'{';</span>
 <span class="cstat-no" title="statement not covered" >    for (let i = <span class="cstat-no" title="statement not covered" >0;</span> i &lt; last; i++) {</span>
       const key = <span class="cstat-no" title="statement not covered" >keys[i];</span>
@@ -534,7 +540,7 @@ export class MapType&lt;T extends Type&gt; extends AbstractType&lt;schema.MapSch
   }
 &nbsp;
   public toString(tab: string = <span class="branch-0 cbranch-no" title="branch not covered" >'')</span>: string {
-    return super.toString(tab) + printTree(tab, [(tab) =&gt; this.type.toString(tab)]);
+    return super.toString(tab) + printTree(tab, [(tab) =&gt; this.valueType.toString(tab)]);
   }
 }
 &nbsp;</pre></td></tr></table></pre>
@@ -544,7 +550,7 @@ export class MapType&lt;T extends Type&gt; extends AbstractType&lt;schema.MapSch
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-28T08:24:26.222Z
+                at 2025-07-28T15:20:49.550Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

@@ -741,19 +741,19 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import type {AbstractType} from '../type/classes/AbstractType';
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import type {AbsType} from '../type/classes/AbsType';
 import type {AnyType} from '../type/classes/AnyType';
-import type {ArrayType} from '../type/classes/ArrayType';
-import type {BinaryType} from '../type/classes/BinaryType';
-import type {BooleanType} from '../type/classes/BooleanType';
-import type {ConstType} from '../type/classes/ConstType';
+import type {ArrType} from '../type/classes/ArrType';
+import type {BinType} from '../type/classes/BinType';
+import type {BoolType} from '../type/classes/BoolType';
+import type {ConType} from '../type/classes/ConType';
 import type {MapType} from '../type/classes/MapType';
-import type {NumberType} from '../type/classes/NumberType';
-import type {ObjectType} from '../type/classes/ObjectType';
+import type {NumType} from '../type/classes/NumType';
+import type {ObjType} from '../type/classes/ObjType';
 import type {OrType} from '../type/classes/OrType';
 import type {RefType} from '../type/classes/RefType';
-import type {StringType} from '../type/classes/StringType';
-import type {TupleType} from '../type/classes/TupleType';
+import type {StrType} from '../type/classes/StrType';
+import type {TupType} from '../type/classes/TupType';
 import type {TypeExportContext} from '../system/TypeExportContext';
 import type * as schema from '../schema';
 import type {
@@ -773,9 +773,9 @@ import type {
 &nbsp;
 /**
  * Extracts the base JSON Schema properties that are common to all types.
- * This replaces the logic from AbstractType.toJsonSchema().
+ * This replaces the logic from AbsType.toJsonSchema().
  */
-function getBaseJsonSchema(type: AbstractType&lt;any&gt;, ctx?: TypeExportContext): JsonSchemaGenericKeywords {
+function getBaseJsonSchema(type: AbsType&lt;any&gt;, ctx?: TypeExportContext): JsonSchemaGenericKeywords {
   const typeSchema = type.getSchema();
   const jsonSchema: JsonSchemaGenericKeywords = {};
 &nbsp;
@@ -792,34 +792,34 @@ function getBaseJsonSchema(type: AbstractType&lt;any&gt;, ctx?: TypeExportContex
  * Main router function that converts a type to JSON Schema using a switch statement.
  * This replaces the individual toJsonSchema() methods on each type class.
  */
-export function typeToJsonSchema(type: AbstractType&lt;any&gt;, ctx?: TypeExportContext): JsonSchemaNode {
+export function typeToJsonSchema(type: AbsType&lt;any&gt;, ctx?: TypeExportContext): JsonSchemaNode {
   const typeName = type.getTypeName();
 &nbsp;
   switch (typeName) {
     case 'any':
       return anyToJsonSchema(type as AnyType, ctx);
     case 'arr':
-      return arrayToJsonSchema(type as ArrayType&lt;any&gt;, ctx);
+      return arrayToJsonSchema(type as ArrType&lt;any&gt;, ctx);
     case 'bin':
-      return binaryToJsonSchema(type as BinaryType&lt;any&gt;, ctx);
+      return binaryToJsonSchema(type as BinType&lt;any&gt;, ctx);
     case 'bool':
-      return booleanToJsonSchema(type as BooleanType, ctx);
-    case 'const':
-      return constToJsonSchema(type as ConstType&lt;any&gt;, ctx);
+      return booleanToJsonSchema(type as BoolType, ctx);
+    case 'con':
+      return constToJsonSchema(type as ConType&lt;any&gt;, ctx);
     case 'map':
       return mapToJsonSchema(type as MapType&lt;any&gt;, ctx);
     case 'num':
-      return numberToJsonSchema(type as NumberType, ctx);
+      return numberToJsonSchema(type as NumType, ctx);
     case 'obj':
-      return objectToJsonSchema(type as ObjectType&lt;any&gt;, ctx);
+      return objectToJsonSchema(type as ObjType&lt;any&gt;, ctx);
     case 'or':
       return orToJsonSchema(type as OrType&lt;any&gt;, ctx);
     case 'ref':
       return refToJsonSchema(type as RefType&lt;any&gt;, ctx);
     case 'str':
-      return stringToJsonSchema(type as StringType, ctx);
+      return stringToJsonSchema(type as StrType, ctx);
 <span class="branch-11 cbranch-no" title="branch not covered" >    case 'tup':</span>
-<span class="cstat-no" title="statement not covered" >      return tupleToJsonSchema(type as TupleType&lt;any&gt;, ctx);</span>
+<span class="cstat-no" title="statement not covered" >      return tupleToJsonSchema(type as TupType&lt;any&gt;, ctx);</span>
 <span class="branch-12 cbranch-no" title="branch not covered" >    default:</span>
       // Fallback to base implementation for unknown types
 <span class="cstat-no" title="statement not covered" >      return getBaseJsonSchema(type, ctx);</span>
@@ -840,7 +840,7 @@ function anyToJsonSchema(type: AnyType, ctx?: TypeExportContext): JsonSchemaAny 
   return result;
 }
 &nbsp;
-function arrayToJsonSchema(type: ArrayType&lt;any&gt;, ctx?: TypeExportContext): JsonSchemaArray {
+function arrayToJsonSchema(type: ArrType&lt;any&gt;, ctx?: TypeExportContext): JsonSchemaArray {
   const schema = type.getSchema();
   const baseSchema = getBaseJsonSchema(type, ctx);
   const result: JsonSchemaArray = {
@@ -857,7 +857,7 @@ function arrayToJsonSchema(type: ArrayType&lt;any&gt;, ctx?: TypeExportContext):
   return result;
 }
 &nbsp;
-function binaryToJsonSchema(type: BinaryType&lt;any&gt;, ctx?: TypeExportContext): JsonSchemaBinary {
+function binaryToJsonSchema(type: BinType&lt;any&gt;, ctx?: TypeExportContext): JsonSchemaBinary {
   const baseSchema = getBaseJsonSchema(type, ctx);
   const result: JsonSchemaBinary = {
     type: 'binary' as any,
@@ -869,7 +869,7 @@ function binaryToJsonSchema(type: BinaryType&lt;any&gt;, ctx?: TypeExportContext
   return result;
 }
 &nbsp;
-function booleanToJsonSchema(type: BooleanType, ctx?: TypeExportContext): JsonSchemaBoolean {
+function booleanToJsonSchema(type: BoolType, ctx?: TypeExportContext): JsonSchemaBoolean {
   const baseSchema = getBaseJsonSchema(type, ctx);
   const result: JsonSchemaBoolean = {
     type: 'boolean',
@@ -881,7 +881,7 @@ function booleanToJsonSchema(type: BooleanType, ctx?: TypeExportContext): JsonSc
   return result;
 }
 &nbsp;
-function constToJsonSchema(type: ConstType&lt;any&gt;, ctx?: TypeExportContext): JsonSchemaNode {
+function constToJsonSchema(type: ConType&lt;any&gt;, ctx?: TypeExportContext): JsonSchemaNode {
   const schema = type.getSchema();
   const baseSchema = getBaseJsonSchema(type, ctx);
   const value = schema.value;
@@ -947,7 +947,7 @@ function mapToJsonSchema(type: MapType&lt;any&gt;, ctx?: TypeExportContext): Jso
   const result: JsonSchemaObject = {
     type: 'object',
     patternProperties: {
-      '.*': typeToJsonSchema((type as any).type, ctx),
+      '.*': typeToJsonSchema((type as any).valueType, ctx),
     },
   };
 &nbsp;
@@ -957,7 +957,7 @@ function mapToJsonSchema(type: MapType&lt;any&gt;, ctx?: TypeExportContext): Jso
   return result;
 }
 &nbsp;
-function numberToJsonSchema(type: NumberType, ctx?: TypeExportContext): JsonSchemaNumber {
+function numberToJsonSchema(type: NumType, ctx?: TypeExportContext): JsonSchemaNumber {
   const schema = type.getSchema();
   const baseSchema = getBaseJsonSchema(type, ctx);
   const result: JsonSchemaNumber = {
@@ -981,7 +981,7 @@ function numberToJsonSchema(type: NumberType, ctx?: TypeExportContext): JsonSche
   return result;
 }
 &nbsp;
-function objectToJsonSchema(type: ObjectType&lt;any&gt;, ctx?: TypeExportContext): JsonSchemaObject {
+function objectToJsonSchema(type: ObjType&lt;any&gt;, ctx?: TypeExportContext): JsonSchemaObject {
   const schema = type.getSchema();
   const baseSchema = getBaseJsonSchema(type, ctx);
   const result: JsonSchemaObject = {
@@ -1037,7 +1037,7 @@ function refToJsonSchema(type: RefType&lt;any&gt;, ctx?: TypeExportContext): Jso
   return result;
 }
 &nbsp;
-function stringToJsonSchema(type: StringType, ctx?: TypeExportContext): JsonSchemaString {
+function stringToJsonSchema(type: StrType, ctx?: TypeExportContext): JsonSchemaString {
   const schema = type.getSchema();
   const baseSchema = getBaseJsonSchema(type, ctx);
   const result: JsonSchemaString = {
@@ -1066,7 +1066,7 @@ function stringToJsonSchema(type: StringType, ctx?: TypeExportContext): JsonSche
   return result;
 }
 &nbsp;
-function <span class="fstat-no" title="function not covered" >tupleToJsonSchema(</span>type: TupleType&lt;any&gt;, ctx?: TypeExportContext): JsonSchemaArray {
+function <span class="fstat-no" title="function not covered" >tupleToJsonSchema(</span>type: TupType&lt;any&gt;, ctx?: TypeExportContext): JsonSchemaArray {
   const baseSchema = <span class="cstat-no" title="statement not covered" >getBaseJsonSchema(type, ctx);</span>
   const types = (<span class="cstat-no" title="statement not covered" >type as any).types;</span>
   const result: JsonSchemaArray = <span class="cstat-no" title="statement not covered" >{</span>
@@ -1087,7 +1087,7 @@ function <span class="fstat-no" title="function not covered" >tupleToJsonSchema(
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-28T08:24:26.222Z
+                at 2025-07-28T15:20:49.550Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
