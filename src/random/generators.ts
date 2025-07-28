@@ -54,7 +54,7 @@ export const map = (type: MapType<any>): Record<string, unknown> => {
   const length = Math.round(Math.random() * 10);
   const res: Record<string, unknown> = {};
   for (let i = 0; i < length; i++) {
-    res[RandomJson.genString(length)] = (type as any).type.random();
+    res[RandomJson.genString(length)] = (type as any).valueType.random();
   }
   return res;
 };

@@ -155,10 +155,10 @@ describe('import()', () => {
     expect(type.getSchema()).toStrictEqual({
       kind: 'obj',
       fields: [
-        {kind: 'field', key: 'id', type: {kind: 'str'}},
-        {kind: 'field', key: 'name', type: {kind: 'str'}, optional: true},
-        {kind: 'field', key: 'age', type: {kind: 'num'}, optional: true},
-        {kind: 'field', key: 'verified', type: {kind: 'bool'}},
+        {kind: 'field', key: 'id', value: {kind: 'str'}},
+        {kind: 'field', key: 'name', value: {kind: 'str'}, optional: true},
+        {kind: 'field', key: 'age', value: {kind: 'num'}, optional: true},
+        {kind: 'field', key: 'verified', value: {kind: 'bool'}},
       ],
     });
   });
@@ -253,7 +253,7 @@ describe('validateSchema()', () => {
         {
           kind: 'field',
           key: 'id',
-          type: {kind: 'str', ascii: 'bytes'} as any,
+          value: {kind: 'str', ascii: 'bytes'} as any,
         },
       ],
     });
@@ -269,7 +269,7 @@ describe('validateSchema()', () => {
           kind: 'field',
           key: 'id',
           optional: 123,
-          type: {kind: 'str'},
+          value: {kind: 'str'},
         } as any,
       ],
     });

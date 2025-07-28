@@ -162,12 +162,15 @@ const validateFieldSchema = (schema: any, validateChildSchema: (schema: Schema) 
   const {key, optional} = schema;
   if (typeof key !== 'string') throw new Error('KEY_TYPE');
   if (optional !== undefined && typeof optional !== 'boolean') throw new Error('OPTIONAL_TYPE');
-  validateChildSchema(schema.type);
+  validateChildSchema(schema.value);
 };
 
 const validateMapSchema = (schema: any, validateChildSchema: (schema: Schema) => void): void => {
   validateTType(schema, 'map');
-  validateChildSchema(schema.type);
+  validateChildSchema(schema.value);
+  if (schema.key) {
+    validateChildSchema(schema.key);
+  }
 };
 
 const validateRefSchema = (schema: any): void => {

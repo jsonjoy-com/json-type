@@ -142,7 +142,7 @@ export const map = (ctx: CapacityEstimatorCodegenContext, value: JsExpression, t
   const rLen = codegen.var(`${rKeys}.length`);
   codegen.js(`size += ${MaxEncodingOverhead.ObjectElement} * ${rLen}`);
   const mapType = type as any; // MapType
-  const valueType = mapType.type;
+  const valueType = mapType.valueType;
   const fn = valueType.compileCapacityEstimator({
     system: ctx.options.system,
     name: ctx.options.name,
