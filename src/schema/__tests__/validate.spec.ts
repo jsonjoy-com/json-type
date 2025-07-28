@@ -319,7 +319,7 @@ describe('validateSchema', () => {
     test('validates valid binary schema', () => {
       const schema: Schema = {
         kind: 'bin',
-        type: {kind: 'str'},
+        value: {kind: 'str'},
       };
       expect(() => validateSchema(schema)).not.toThrow();
     });
@@ -329,7 +329,7 @@ describe('validateSchema', () => {
       for (const format of formats) {
         const schema: Schema = {
           kind: 'bin',
-          type: {kind: 'str'},
+          value: {kind: 'str'},
           format,
         };
         expect(() => validateSchema(schema)).not.toThrow();
@@ -340,7 +340,7 @@ describe('validateSchema', () => {
       expect(() =>
         validateSchema({
           kind: 'bin',
-          type: {kind: 'str'},
+          value: {kind: 'str'},
           format: 'invalid',
         } as any),
       ).toThrow('FORMAT');
@@ -351,7 +351,7 @@ describe('validateSchema', () => {
     test('validates valid array schema', () => {
       const schema: Schema = {
         kind: 'arr',
-        type: {kind: 'str'},
+        value: {kind: 'str'},
       };
       expect(() => validateSchema(schema)).not.toThrow();
     });
@@ -359,7 +359,7 @@ describe('validateSchema', () => {
     test('validates array schema with constraints', () => {
       const schema: Schema = {
         kind: 'arr',
-        type: {kind: 'num'},
+        value: {kind: 'num'},
         min: 1,
         max: 10,
       };
@@ -396,7 +396,7 @@ describe('validateSchema', () => {
           {
             kind: 'field',
             key: 'name',
-            type: {kind: 'str'},
+            value: {kind: 'str'},
           },
         ],
       };
@@ -428,7 +428,7 @@ describe('validateSchema', () => {
       const schema: Schema = {
         kind: 'field',
         key: 'test',
-        type: {kind: 'str'},
+        value: {kind: 'str'},
       };
       expect(() => validateSchema(schema)).not.toThrow();
     });
@@ -437,7 +437,7 @@ describe('validateSchema', () => {
       const schema: Schema = {
         kind: 'field',
         key: 'test',
-        type: {kind: 'str'},
+        value: {kind: 'str'},
         optional: true,
       };
       expect(() => validateSchema(schema)).not.toThrow();
@@ -448,7 +448,7 @@ describe('validateSchema', () => {
         validateSchema({
           kind: 'field',
           key: 123,
-          type: {kind: 'str'},
+          value: {kind: 'str'},
         } as any),
       ).toThrow('KEY_TYPE');
     });
@@ -458,7 +458,7 @@ describe('validateSchema', () => {
         validateSchema({
           kind: 'field',
           key: 'test',
-          type: {kind: 'str'},
+          value: {kind: 'str'},
           optional: 'true',
         } as any),
       ).toThrow('OPTIONAL_TYPE');
@@ -469,7 +469,7 @@ describe('validateSchema', () => {
     test('validates valid map schema', () => {
       const schema: Schema = {
         kind: 'map',
-        type: {kind: 'str'},
+        value: {kind: 'str'},
       };
       expect(() => validateSchema(schema)).not.toThrow();
     });

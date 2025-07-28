@@ -115,7 +115,7 @@ test('can print a type', () => {
         "path": {
           "type": "string",
         },
-        "type": {
+        "value": {
           "const": "replace",
           "title": "Always use replace",
           "type": "string",

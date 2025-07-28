@@ -42,7 +42,7 @@ describe('object', () => {
         {
           kind: 'field',
           key: 'id',
-          type: {
+          value: {
             kind: 'str',
             id: 'UserId',
           },
@@ -50,7 +50,7 @@ describe('object', () => {
         {
           kind: 'field',
           key: 'name',
-          type: {
+          value: {
             kind: 'str',
           },
         },
@@ -61,11 +61,11 @@ describe('object', () => {
 
 describe('map', () => {
   test('can create an simple object using shorthand', () => {
-    expect(s.map).toEqual({kind: 'map', type: {kind: 'any'}});
+    expect(s.map).toEqual({kind: 'map', value: {kind: 'any'}});
   });
 
   test('can define a map', () => {
-    expect(s.Map(s.Boolean())).toEqual({kind: 'map', type: {kind: 'bool'}});
+    expect(s.Map(s.Boolean())).toEqual({kind: 'map', value: {kind: 'bool'}});
   });
 });
 

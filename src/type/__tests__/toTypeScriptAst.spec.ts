@@ -188,7 +188,7 @@ describe('obj', () => {
       description-x",
             "name": "id",
             "node": "PropertySignature",
-            "type": {
+            "value": {
               "node": "StringKeyword",
             },
           },
@@ -196,7 +196,7 @@ describe('obj', () => {
             "name": "id",
             "node": "PropertySignature",
             "optional": true,
-            "type": {
+            "value": {
               "node": "NumberKeyword",
             },
           },
@@ -285,12 +285,12 @@ describe('fn', () => {
               "node": "Identifier",
             },
             "node": "Parameter",
-            "type": {
+            "value": {
               "node": "StringKeyword",
             },
           },
         ],
-        "type": {
+        "value": {
           "node": "TypeReference",
           "typeArguments": [
             {
@@ -322,7 +322,7 @@ describe('fn$', () => {
               "node": "Identifier",
             },
             "node": "Parameter",
-            "type": {
+            "value": {
               "node": "TypeReference",
               "typeArguments": [
                 {
@@ -336,7 +336,7 @@ describe('fn$', () => {
             },
           },
         ],
-        "type": {
+        "value": {
           "node": "TypeReference",
           "typeArguments": [
             {

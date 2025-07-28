@@ -106,7 +106,7 @@ export function toTypeScriptAst(schema: schema.Schema): ts.TsType {
           const member: ts.TsPropertySignature = {
             node: 'PropertySignature',
             name: field.key,
-            type: toTypeScriptAst(field.type) as ts.TsType,
+            type: toTypeScriptAst(field.value) as ts.TsType,
           };
           if (field.optional === true) {
             member.optional = true;
@@ -147,7 +147,7 @@ export function toTypeScriptAst(schema: schema.Schema): ts.TsType {
       const node: ts.TsTypeReference = {
         node: 'TypeReference',
         typeName: 'Record',
-        typeArguments: [{node: 'StringKeyword'}, toTypeScriptAst(mapSchema.type)],
+        typeArguments: [{node: 'StringKeyword'}, toTypeScriptAst(mapSchema.value)],
       };
       return node;
     }

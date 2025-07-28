@@ -228,8 +228,8 @@ export class TypeBuilder {
     return field;
   }
 
-  public Map<T extends Type>(val: T, options?: schema.Optional<schema.MapSchema>) {
-    const map = new classes.MapType<T>(val, options);
+  public Map<T extends Type>(val: T, key?: Type, options?: schema.Optional<schema.MapSchema>) {
+    const map = new classes.MapType<T>(val, key, options);
     map.system = this.system;
     return map;
   }
@@ -286,13 +286,13 @@ export class TypeBuilder {
         return this.Object(
           ...node.fields.map((f: any) =>
             f.optional
-              ? this.propOpt(f.key, this.import(f.type)).options(f)
-              : this.prop(f.key, this.import(f.type)).options(f),
+              ? this.propOpt(f.key, this.import(f.value)).options(f)
+              : this.prop(f.key, this.import(f.value)).options(f),
           ),
         ).options(node);
       }
       case 'map':
-        return this.Map(this.import(node.type), node);
+        return this.Map(this.import(node.value), node.key ? this.import(node.key) : undefined, node);
       case 'con':
         return this.Const(node.value).options(node);
       case 'or':

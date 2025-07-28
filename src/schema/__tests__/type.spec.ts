@@ -22,40 +22,40 @@ test('can generate any type', () => {
     fields: [
       {
         key: 'id',
-        type: {
+        value: {
           kind: 'num',
           format: 'i',
         },
       },
       {
         key: 'alwaysOne',
-        type: {
+        value: {
           kind: 'con',
           value: 1,
         },
       },
       {
         key: 'name',
-        type: {
+        value: {
           kind: 'str',
         },
       },
       {
         key: 'address',
-        type: {
+        value: {
           kind: 'obj',
           title: 'User address',
           description: 'Various address fields for user',
           fields: [
             {
               key: 'street',
-              type: {
+              value: {
                 kind: 'str',
               },
             },
             {
               key: 'zip',
-              type: {
+              value: {
                 kind: 'str',
               },
             },
@@ -64,15 +64,15 @@ test('can generate any type', () => {
       },
       {
         key: 'timeCreated',
-        type: {
+        value: {
           kind: 'num',
         },
       },
       {
         key: 'tags',
-        type: {
+        value: {
           kind: 'arr',
-          type: {
+          value: {
             kind: 'or',
             types: [
               {
@@ -87,9 +87,9 @@ test('can generate any type', () => {
       },
       {
         key: 'elements',
-        type: {
+        value: {
           kind: 'map',
-          type: {
+          value: {
             kind: 'str',
           },
         },

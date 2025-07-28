@@ -62,10 +62,10 @@ test('can construct a realistic object', () => {
   expect(type.getSchema()).toStrictEqual({
     kind: 'obj',
     fields: [
-      {kind: 'field', key: 'id', type: {kind: 'str'}},
-      {kind: 'field', key: 'name', type: {kind: 'str'}, optional: true},
-      {kind: 'field', key: 'age', type: {kind: 'num'}, optional: true},
-      {kind: 'field', key: 'verified', type: {kind: 'bool'}},
+      {kind: 'field', key: 'id', value: {kind: 'str'}},
+      {kind: 'field', key: 'name', value: {kind: 'str'}, optional: true},
+      {kind: 'field', key: 'age', value: {kind: 'num'}, optional: true},
+      {kind: 'field', key: 'verified', value: {kind: 'bool'}},
     ],
   });
   type T = TypeOf<SchemaOf<typeof type>>;
@@ -139,10 +139,10 @@ describe('import()', () => {
     const type = t.import({
       kind: 'obj',
       fields: [
-        {kind: 'field', key: 'id', type: {kind: 'str'}},
-        {kind: 'field', key: 'name', type: {kind: 'str'}, optional: true},
-        {kind: 'field', key: 'age', type: {kind: 'num'}, optional: true},
-        {kind: 'field', key: 'verified', type: {kind: 'bool'}},
+        {kind: 'field', key: 'id', value: {kind: 'str'}},
+        {kind: 'field', key: 'name', value: {kind: 'str'}, optional: true},
+        {kind: 'field', key: 'age', value: {kind: 'num'}, optional: true},
+        {kind: 'field', key: 'verified', value: {kind: 'bool'}},
       ],
     }) as ObjType<any>;
     expect(type).toBeInstanceOf(ObjType);

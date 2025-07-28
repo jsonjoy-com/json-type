@@ -51,12 +51,12 @@ export class ObjectFieldType<K extends string, V extends Type> extends AbsType<
   public getSchema(): schema.ObjectFieldSchema<K, SchemaOf<V>> {
     return {
       ...this.schema,
-      type: this.value.getSchema() as any,
+      value: this.value.getSchema() as any,
     };
   }
 
   public getOptions(): schema.Optional<schema.ObjectFieldSchema<K, SchemaOf<V>>> {
-    const {kind, key, type, optional, ...options} = this.schema;
+    const {kind, key, value, optional, ...options} = this.schema;
     return options as any;
   }
 

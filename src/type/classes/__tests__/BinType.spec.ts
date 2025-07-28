@@ -2,20 +2,20 @@ import {t} from '../../..';
 
 test('can use convenience methods to define type schema fields', () => {
   const binary = t.bin;
-  expect(binary.getSchema()).toEqual({kind: 'bin', type: {kind: 'any'}});
+  expect(binary.getSchema()).toEqual({kind: 'bin', value: {kind: 'any'}});
   binary.title('My Binary');
-  expect(binary.getSchema()).toEqual({kind: 'bin', type: {kind: 'any'}, title: 'My Binary'});
+  expect(binary.getSchema()).toEqual({kind: 'bin', value: {kind: 'any'}, title: 'My Binary'});
   binary.intro('This is a binary type');
   expect(binary.getSchema()).toEqual({
     kind: 'bin',
-    type: {kind: 'any'},
+    value: {kind: 'any'},
     title: 'My Binary',
     intro: 'This is a binary type',
   });
   binary.description('A detailed description of the binary type');
   expect(binary.getSchema()).toEqual({
     kind: 'bin',
-    type: {kind: 'any'},
+    value: {kind: 'any'},
     title: 'My Binary',
     intro: 'This is a binary type',
     description: 'A detailed description of the binary type',
@@ -23,7 +23,7 @@ test('can use convenience methods to define type schema fields', () => {
   binary.format('json');
   expect(binary.getSchema()).toEqual({
     kind: 'bin',
-    type: {kind: 'any'},
+    value: {kind: 'any'},
     title: 'My Binary',
     intro: 'This is a binary type',
     description: 'A detailed description of the binary type',
@@ -32,7 +32,7 @@ test('can use convenience methods to define type schema fields', () => {
   binary.min(5);
   expect(binary.getSchema()).toEqual({
     kind: 'bin',
-    type: {kind: 'any'},
+    value: {kind: 'any'},
     title: 'My Binary',
     intro: 'This is a binary type',
     description: 'A detailed description of the binary type',
@@ -42,7 +42,7 @@ test('can use convenience methods to define type schema fields', () => {
   binary.max(10);
   expect(binary.getSchema()).toEqual({
     kind: 'bin',
-    type: {kind: 'any'},
+    value: {kind: 'any'},
     title: 'My Binary',
     intro: 'This is a binary type',
     description: 'A detailed description of the binary type',
@@ -53,7 +53,7 @@ test('can use convenience methods to define type schema fields', () => {
   binary.default(new Uint8Array([1, 2, 3]));
   expect(binary.getSchema()).toEqual({
     kind: 'bin',
-    type: {kind: 'any'},
+    value: {kind: 'any'},
     title: 'My Binary',
     intro: 'This is a binary type',
     description: 'A detailed description of the binary type',
@@ -65,7 +65,7 @@ test('can use convenience methods to define type schema fields', () => {
   binary.example(new Uint8Array([4, 5, 6]), 'Example Binary', {description: 'An example binary value'});
   expect(binary.getSchema()).toEqual({
     kind: 'bin',
-    type: {kind: 'any'},
+    value: {kind: 'any'},
     title: 'My Binary',
     intro: 'This is a binary type',
     description: 'A detailed description of the binary type',
