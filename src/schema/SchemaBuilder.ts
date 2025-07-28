@@ -133,7 +133,7 @@ export class SchemaBuilder {
   ): ConstSchema<
     string extends V ? never : number extends V ? never : boolean extends V ? never : any[] extends V ? never : V
   > {
-    return {kind: 'const', value: value as any, ...options};
+    return {kind: 'con', value: value as any, ...options};
   }
 
   public Tuple<T extends Schema[]>(...types: T): TupleSchema<T> {

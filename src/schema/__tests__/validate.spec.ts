@@ -369,7 +369,7 @@ describe('validateSchema', () => {
 
   describe('const schema', () => {
     test('validates valid const schema', () => {
-      const schema: Schema = {kind: 'const', value: 'test'};
+      const schema: Schema = {kind: 'con', value: 'test'};
       expect(() => validateSchema(schema)).not.toThrow();
     });
   });

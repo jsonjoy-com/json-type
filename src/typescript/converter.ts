@@ -17,7 +17,7 @@ export function toTypeScriptAst(schema: schema.Schema): ts.TsType {
       const node: ts.TsBooleanKeyword = {node: 'BooleanKeyword'};
       return node;
     }
-    case 'const': {
+    case 'con': {
       const constSchema = schema as schema.ConstSchema;
       const value = constSchema.value;
       const valueType = typeof value;

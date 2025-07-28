@@ -85,7 +85,7 @@ describe('const', () => {
     const type = s.Const('Hello');
     const type2: ConstSchema<'Hello'> = type;
     expect(type2).toEqual({
-      kind: 'const',
+      kind: 'con',
       value: 'Hello',
     });
   });

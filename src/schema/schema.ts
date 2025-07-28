@@ -263,14 +263,13 @@ export interface ArraySchema<T extends TType = any> extends TType<Array<unknown>
  * Example:
  * ```json
  * {
- *   "kind": "const",
+ *   "kind": "con",
  *   "value": 42
  * }
  * ```
  */
 export interface ConstSchema<V = any> extends TType, WithValidator {
-  /** @todo Rename to "con". */
-  kind: 'const';
+  kind: 'con';
   /** The value. */
   value: V;
 }

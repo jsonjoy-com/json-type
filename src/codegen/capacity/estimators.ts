@@ -74,7 +74,7 @@ export const arr = (ctx: CapacityEstimatorCodegenContext, value: JsExpression, t
     system: ctx.options.system,
     name: ctx.options.name,
   });
-  const isConstantSizeType = ['const', 'bool', 'num'].includes(elementType.getTypeName());
+  const isConstantSizeType = ['con', 'bool', 'num'].includes(elementType.getTypeName());
   if (isConstantSizeType) {
     const rFn = codegen.linkDependency(fn);
     codegen.js(`size += ${rLen} * ${rFn}(${elementType.random()});`);
@@ -209,7 +209,7 @@ export const generate = (ctx: CapacityEstimatorCodegenContext, value: JsExpressi
     case 'bin':
       bin(ctx, value);
       break;
-    case 'const':
+    case 'con':
       const_(ctx, value, type);
       break;
     case 'arr':

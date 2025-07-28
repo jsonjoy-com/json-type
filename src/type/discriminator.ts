@@ -73,7 +73,7 @@ export class Discriminator {
       case 'bool':
       case 'str':
       case 'num':
-      case 'const':
+      case 'con':
         return mnemonic;
       case 'obj':
       case 'map':

@@ -27,7 +27,7 @@ export function toJtdForm(schema: schema.Schema): jtd.JtdForm {
       const form: jtd.JtdTypeForm = {type: 'boolean'};
       return form;
     }
-    case 'const': {
+    case 'con': {
       const constSchema = schema as schema.ConstSchema;
       const value = constSchema.value;
       const valueType = typeof value;

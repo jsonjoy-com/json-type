@@ -137,7 +137,7 @@ const validateArraySchema = (schema: any, validateChildSchema: (schema: Schema) 
 };
 
 const validateConstSchema = (schema: any): void => {
-  validateTType(schema, 'const');
+  validateTType(schema, 'con');
 };
 
 const validateTupleSchema = (schema: any, validateChildSchema: (schema: Schema) => void): void => {
@@ -222,7 +222,7 @@ export const validateSchema = (schema: Schema): void => {
     case 'arr':
       validateArraySchema(schema, validateSchema);
       break;
-    case 'const':
+    case 'con':
       validateConstSchema(schema);
       break;
     case 'tup':

@@ -31,7 +31,7 @@ export function random(type: AbstractType<any>): unknown {
       return gen.bin(type as BinaryType<any>);
     case 'bool':
       return gen.bool(type as BooleanType);
-    case 'const':
+    case 'con':
       return gen.const_(type as ConstType);
     case 'fn':
     case 'fn$':

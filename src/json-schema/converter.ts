@@ -61,7 +61,7 @@ export function typeToJsonSchema(type: AbstractType<any>, ctx?: TypeExportContex
       return binaryToJsonSchema(type as BinaryType<any>, ctx);
     case 'bool':
       return booleanToJsonSchema(type as BooleanType, ctx);
-    case 'const':
+    case 'con':
       return constToJsonSchema(type as ConstType<any>, ctx);
     case 'map':
       return mapToJsonSchema(type as MapType<any>, ctx);

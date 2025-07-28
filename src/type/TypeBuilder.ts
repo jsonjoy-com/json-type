@@ -293,7 +293,7 @@ export class TypeBuilder {
       }
       case 'map':
         return this.Map(this.import(node.type), node);
-      case 'const':
+      case 'con':
         return this.Const(node.value).options(node);
       case 'or':
         return this.Or(...node.types.map((t) => this.import(t as schema.Schema))).options(node);

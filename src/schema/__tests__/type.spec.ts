@@ -30,7 +30,7 @@ test('can generate any type', () => {
       {
         key: 'alwaysOne',
         type: {
-          kind: 'const',
+          kind: 'con',
           value: 1,
         },
       },
