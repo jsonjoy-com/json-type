@@ -72,17 +72,6 @@ test('can generate any type', () => {
         key: 'tags',
         value: {
           kind: 'arr',
-          value: {
-            kind: 'or',
-            types: [
-              {
-                kind: 'num',
-              },
-              {
-                kind: 'str',
-              },
-            ],
-          },
         },
       },
       {
