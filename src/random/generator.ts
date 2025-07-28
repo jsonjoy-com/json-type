@@ -4,7 +4,7 @@ import type {ArrType} from '../type/classes/ArrType';
 import type {BinType} from '../type/classes/BinType';
 import type {BoolType} from '../type/classes/BoolType';
 import type {ConType} from '../type/classes/ConType';
-import type {FunType} from '../type/classes/FunType';
+import type {FnType} from '../type/classes/FnType';
 import type {MapType} from '../type/classes/MapType';
 import type {NumType} from '../type/classes/NumType';
 import type {ObjType} from '../type/classes/ObjType';
@@ -35,7 +35,7 @@ export function random(type: AbsType<any>): unknown {
       return gen.const_(type as ConType);
     case 'fn':
     case 'fn$':
-      return gen.fn(type as FunType<any, any>);
+      return gen.fn(type as FnType<any, any>);
     case 'map':
       return gen.map(type as MapType<any>);
     case 'num':

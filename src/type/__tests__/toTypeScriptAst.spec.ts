@@ -277,7 +277,7 @@ describe('fn', () => {
     const type = system.t.Function(t.str, t.num);
     expect(type.toTypeScriptAst()).toMatchInlineSnapshot(`
 {
-  "node": "FunType",
+  "node": "FnType",
   "parameters": [
     {
       "name": {
@@ -314,7 +314,7 @@ describe('fn$', () => {
     const type = system.t.Function$(t.str, t.num);
     expect(type.toTypeScriptAst()).toMatchInlineSnapshot(`
 {
-  "node": "FunType",
+  "node": "FnType",
   "parameters": [
     {
       "name": {

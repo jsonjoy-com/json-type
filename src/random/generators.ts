@@ -5,7 +5,7 @@ import type {ArrType} from '../type/classes/ArrType';
 import type {BinType} from '../type/classes/BinType';
 import type {BoolType} from '../type/classes/BoolType';
 import type {ConType} from '../type/classes/ConType';
-import type {FunType} from '../type/classes/FunType';
+import type {FnType} from '../type/classes/FnType';
 import type {MapType} from '../type/classes/MapType';
 import type {NumType} from '../type/classes/NumType';
 import type {ObjType} from '../type/classes/ObjType';
@@ -46,7 +46,7 @@ export const const_ = (type: ConType): unknown => {
   return cloneBinary(type.getSchema().value);
 };
 
-export const fn = (type: FunType<any, any>): unknown => {
+export const fn = (type: FnType<any, any>): unknown => {
   return async () => type.res.random();
 };
 

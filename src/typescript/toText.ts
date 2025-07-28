@@ -106,7 +106,7 @@ export const toText = (node: TsNode | TsNode[] | TsIdentifier | TsParameter, __:
     case 'Identifier': {
       return node.name;
     }
-    case 'FunType': {
+    case 'FnType': {
       const {parameters, type} = node;
       const params = parameters.map((p) => toText(p, __)).join(', ');
       return `(${params}) => ${toText(type, __)}`;

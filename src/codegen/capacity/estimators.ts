@@ -6,6 +6,7 @@ import type {
   CompiledCapacityEstimator,
 } from './CapacityEstimatorCodegenContext';
 import type {Type} from '../../type';
+import type {ConType} from '../../type/classes/ConType';
 
 type EstimatorFunction = (ctx: CapacityEstimatorCodegenContext, value: JsExpression, type: Type) => void;
 
@@ -59,7 +60,7 @@ export const bin = (ctx: CapacityEstimatorCodegenContext, value: JsExpression): 
 };
 
 export const const_ = (ctx: CapacityEstimatorCodegenContext, value: JsExpression, type: Type): void => {
-  const constType = type as any; // ConType
+  const constType = type as ConType;
   ctx.inc(maxEncodingCapacity(constType.value()));
 };
 

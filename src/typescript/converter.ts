@@ -176,8 +176,8 @@ export function toTypeScriptAst(schema: schema.Schema): ts.TsType {
       const reqSchema = (fnSchema.req as any).getSchema ? (fnSchema.req as any).getSchema() : fnSchema.req;
       const resSchema = (fnSchema.res as any).getSchema ? (fnSchema.res as any).getSchema() : fnSchema.res;
 
-      const node: ts.TsFunType = {
-        node: 'FunType',
+      const node: ts.TsFnType = {
+        node: 'FnType',
         parameters: [
           {
             node: 'Parameter',
@@ -205,8 +205,8 @@ export function toTypeScriptAst(schema: schema.Schema): ts.TsType {
       const reqSchema = (fnSchema.req as any).getSchema ? (fnSchema.req as any).getSchema() : fnSchema.req;
       const resSchema = (fnSchema.res as any).getSchema ? (fnSchema.res as any).getSchema() : fnSchema.res;
 
-      const node: ts.TsFunType = {
-        node: 'FunType',
+      const node: ts.TsFnType = {
+        node: 'FnType',
         parameters: [
           {
             node: 'Parameter',

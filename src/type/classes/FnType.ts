@@ -10,7 +10,7 @@ const fnNotImplemented: schema.FunctionValue<any, any> = async () => {
   throw new Error('NOT_IMPLEMENTED');
 };
 
-const toStringTree = (tab: string = '', type: FunType<Type, Type> | FunctionStreamingType<Type, Type>) => {
+const toStringTree = (tab: string = '', type: FnType<Type, Type> | FunctionStreamingType<Type, Type>) => {
   return printTree(tab, [
     (tab) => 'req: ' + type.req.toString(tab + '     '),
     (tab) => 'res: ' + type.res.toString(tab + '     '),
@@ -22,7 +22,7 @@ type FunctionImpl<Req extends Type, Res extends Type, Ctx = unknown> = (
   ctx: Ctx,
 ) => Promise<ResolveType<Res>>;
 
-export class FunType<Req extends Type, Res extends Type> extends AbsType<
+export class FnType<Req extends Type, Res extends Type> extends AbsType<
   schema.FunctionSchema<SchemaOf<Req>, SchemaOf<Res>>
 > {
   protected schema: schema.FunctionSchema<SchemaOf<Req>, SchemaOf<Res>>;
@@ -41,21 +41,21 @@ export class FunType<Req extends Type, Res extends Type> extends AbsType<
     } as any;
   }
 
-  public request<T extends Type>(req: T): FunType<T, Res> {
+  public request<T extends Type>(req: T): FnType<T, Res> {
     (this as any).req = req;
     return this as any;
   }
 
-  public inp<T extends Type>(req: T): FunType<T, Res> {
+  public inp<T extends Type>(req: T): FnType<T, Res> {
     return this.request(req);
   }
 
-  public response<T extends Type>(res: T): FunType<Req, T> {
+  public response<T extends Type>(res: T): FnType<Req, T> {
     (this as any).res = res;
     return this as any;
   }
 
-  public out<T extends Type>(res: T): FunType<Req, T> {
+  public out<T extends Type>(res: T): FnType<Req, T> {
     return this.response(res);
   }
 
@@ -102,21 +102,21 @@ export class FunctionStreamingType<Req extends Type, Res extends Type> extends A
     } as any;
   }
 
-  public request<T extends Type>(req: T): FunType<T, Res> {
+  public request<T extends Type>(req: T): FnType<T, Res> {
     (this as any).req = req;
     return this as any;
   }
 
-  public inp<T extends Type>(req: T): FunType<T, Res> {
+  public inp<T extends Type>(req: T): FnType<T, Res> {
     return this.request(req);
   }
 
-  public response<T extends Type>(res: T): FunType<Req, T> {
+  public response<T extends Type>(res: T): FnType<Req, T> {
     (this as any).res = res;
     return this as any;
   }
 
-  public out<T extends Type>(res: T): FunType<Req, T> {
+  public out<T extends Type>(res: T): FnType<Req, T> {
     return this.response(res);
   }
 

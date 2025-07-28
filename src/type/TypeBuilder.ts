@@ -251,7 +251,7 @@ export class TypeBuilder {
     res: Res,
     options?: schema.Optional<schema.FunctionSchema>,
   ) {
-    const fn = new classes.FunType<Req, Res>(req, res, options);
+    const fn = new classes.FnType<Req, Res>(req, res, options);
     fn.system = this.system;
     return fn;
   }

@@ -141,8 +141,8 @@ export interface TsTypeReference {
   typeArguments?: TsType[];
 }
 
-export interface TsFunType {
-  node: 'FunType';
+export interface TsFnType {
+  node: 'FnType';
   parameters: TsParameter[];
   type: TsType;
 }
@@ -172,7 +172,7 @@ export type TsType =
   | TsUnionType
   | TsTypeReference
   | TsGenericTypeAnnotation
-  | TsFunType;
+  | TsFnType;
 
 /** Any possible TypeScript AST node. */
 export type TsNode = TsDeclaration | TsType | TsPropertySignature | TsIndexSignature;

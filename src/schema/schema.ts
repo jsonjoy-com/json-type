@@ -374,7 +374,9 @@ export interface ObjectOptionalFieldSchema<K extends string = string, V extends 
  * Represents an object, which is treated as a map. All keys are strings and all
  * values are of the same type.
  */
-export interface MapSchema<V extends TType = any, K extends TType = any> extends TType<Record<string, unknown>>, WithValidator {
+export interface MapSchema<V extends TType = any, K extends TType = any>
+  extends TType<Record<string, unknown>>,
+    WithValidator {
   kind: 'map';
   /**
    * Type of all keys in the map. Defaults to string type.

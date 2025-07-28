@@ -232,9 +232,9 @@ export class SchemaBuilder {
   }
 
   public Map<V extends Schema, K extends Schema = StringSchema>(
-    value: V, 
+    value: V,
     key?: K,
-    options?: Omit<NoT<MapSchema<V, K>>, 'value' | 'key'>
+    options?: Omit<NoT<MapSchema<V, K>>, 'value' | 'key'>,
   ): MapSchema<V, K> {
     return {kind: 'map', value, ...(key && {key}), ...options};
   }

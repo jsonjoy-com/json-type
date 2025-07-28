@@ -40,9 +40,7 @@ export class ObjectValue<T extends classes.ObjType<any>> extends Value<T> implem
   public get<K extends keyof ObjectValueToTypeMap<UnObjType<T>>>(
     key: K,
   ): Value<
-    ObjectValueToTypeMap<UnObjType<T>>[K] extends classes.Type
-      ? ObjectValueToTypeMap<UnObjType<T>>[K]
-      : classes.Type
+    ObjectValueToTypeMap<UnObjType<T>>[K] extends classes.Type ? ObjectValueToTypeMap<UnObjType<T>>[K] : classes.Type
   > {
     const field = this.type.getField(<string>key);
     if (!field) throw new Error('NO_FIELD');
