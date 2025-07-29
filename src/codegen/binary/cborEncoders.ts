@@ -1,9 +1,9 @@
 import type {CborEncoderCodegenContext} from './CborEncoderCodegenContext';
 import type {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
 import type {Type} from '../../type';
-import type {BinaryJsonEncoder} from '@jsonjoy.com/json-pack/lib/types';
-import type {BinaryEncoderCodegenContext} from './BinaryEncoderCodegenContext';
 import {normalizeAccessor} from '@jsonjoy.com/util/lib/codegen/util/normalizeAccessor';
+import {EncodingFormat} from '@jsonjoy.com/json-pack/lib/constants';
+import {floats, ints, uints} from '../../util';
 
 type CborEncoderFunction = (ctx: CborEncoderCodegenContext, value: JsExpression, type: Type) => void;
 
@@ -37,18 +37,12 @@ const bool = (ctx: CborEncoderCodegenContext, value: JsExpression): void => {
 
 const num = (ctx: CborEncoderCodegenContext, value: JsExpression, type: Type): void => {
   const numType = type as any; // NumType
-  const {format, int} = numType.schema;
+  const {format} = numType.schema;
   const v = value.use();
-  if (format === 'u8') ctx.js(/* js */ `encoder.writeU8(${v});`);
-  else if (format === 'u16') ctx.js(/* js */ `encoder.writeU16(${v});`);
-  else if (format === 'u32') ctx.js(/* js */ `encoder.writeU32(${v});`);
-  else if (format === 'i8') ctx.js(/* js */ `encoder.writeI8(${v});`);
-  else if (format === 'i16') ctx.js(/* js */ `encoder.writeI16(${v});`);
-  else if (format === 'i32') ctx.js(/* js */ `encoder.writeI32(${v});`);
-  else if (format === 'f32') ctx.js(/* js */ `encoder.writeF32(${v});`);
-  else if (format === 'f64') ctx.js(/* js */ `encoder.writeF64(${v});`);
-  else if (int) ctx.js(/* js */ `encoder.writeUInt(${v});`);
-  else ctx.js(/* js */ `encoder.writeF64(${v});`);
+  if (uints.has(format)) ctx.js(/* js */ `encoder.writeUInteger(${v});`);
+  else if (ints.has(format)) ctx.js(/* js */ `encoder.writeInteger(${v});`);
+  else if (floats.has(format)) ctx.js(/* js */ `encoder.writeFloat(${v});`);
+  else ctx.js(/* js */ `encoder.writeNumber(${v});`);
 };
 
 const str = (ctx: CborEncoderCodegenContext, value: JsExpression, type: Type): void => {
