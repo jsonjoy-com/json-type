@@ -66,12 +66,7 @@ const const_ = (ctx: CborEncoderCodegenContext, value: JsExpression, type: Type)
   ctx.js(/* js */ `encoder.writeAny(${JSON.stringify(constValue)});`);
 };
 
-const arr = (
-  ctx: CborEncoderCodegenContext,
-  value: JsExpression,
-  type: Type,
-  encodeFn: CborEncoderFunction,
-): void => {
+const arr = (ctx: CborEncoderCodegenContext, value: JsExpression, type: Type, encodeFn: CborEncoderFunction): void => {
   const arrType = type as any; // ArrType
   const codegen = ctx.codegen;
   const r = codegen.getRegister(); // array
@@ -84,12 +79,7 @@ const arr = (
   ctx.js(`}`);
 };
 
-const tup = (
-  ctx: CborEncoderCodegenContext,
-  value: JsExpression,
-  type: Type,
-  encodeFn: CborEncoderFunction,
-): void => {
+const tup = (ctx: CborEncoderCodegenContext, value: JsExpression, type: Type, encodeFn: CborEncoderFunction): void => {
   const tupType = type as any; // TupType
   const codegen = ctx.codegen;
   const r = codegen.var(value.use());
@@ -100,17 +90,12 @@ const tup = (
   }
 };
 
-const obj = (
-  ctx: CborEncoderCodegenContext,
-  value: JsExpression,
-  type: Type,
-  encodeFn: CborEncoderFunction,
-): void => {
+const obj = (ctx: CborEncoderCodegenContext, value: JsExpression, type: Type, encodeFn: CborEncoderFunction): void => {
   const objType = type as any; // ObjType
   const codegen = ctx.codegen;
   const r = codegen.var(value.use());
   const encodeUnknownFields = !!objType.schema.encodeUnknownFields;
-  
+
   if (encodeUnknownFields) {
     ctx.js(/* js */ `encoder.writeAny(${r});`);
     return;
@@ -119,7 +104,7 @@ const obj = (
   const fields = objType.fields;
   const requiredFields = fields.filter((f: any) => !f.optional && f.constructor?.name !== 'ObjectOptionalFieldType');
   const optionalFields = fields.filter((f: any) => f.optional || f.constructor?.name === 'ObjectOptionalFieldType');
-  
+
   if (optionalFields.length === 0) {
     // All fields are required
     ctx.js(/* js */ `encoder.writeObjHdr(${fields.length});`);
@@ -133,16 +118,16 @@ const obj = (
     // Mixed fields - need to count optional ones dynamically
     const rSize = codegen.getRegister();
     ctx.js(/* js */ `var ${rSize} = ${requiredFields.length};`);
-    
+
     // Count optional fields that exist
     for (const field of optionalFields) {
       const key = field.key;
       const accessor = normalizeAccessor(key);
       ctx.js(/* js */ `if (${r}${accessor} !== undefined) ${rSize}++;`);
     }
-    
+
     ctx.js(/* js */ `encoder.writeObjHdr(${rSize});`);
-    
+
     // Encode required fields
     for (const field of requiredFields) {
       const key = field.key;
@@ -150,7 +135,7 @@ const obj = (
       ctx.js(/* js */ `encoder.writeStr(${JSON.stringify(key)});`);
       encodeFn(ctx, new JsExpression(() => `${r}${accessor}`), field.value);
     }
-    
+
     // Encode optional fields
     for (const field of optionalFields) {
       const key = field.key;
@@ -163,12 +148,7 @@ const obj = (
   }
 };
 
-const map = (
-  ctx: CborEncoderCodegenContext,
-  value: JsExpression,
-  type: Type,
-  encodeFn: CborEncoderFunction,
-): void => {
+const map = (ctx: CborEncoderCodegenContext, value: JsExpression, type: Type, encodeFn: CborEncoderFunction): void => {
   const mapType = type as any; // MapType
   const codegen = ctx.codegen;
   const r = codegen.var(value.use());
@@ -176,7 +156,7 @@ const map = (
   const rKey = codegen.var();
   const rLen = codegen.var(`${rKeys}.length`);
   const ri = codegen.var('0');
-  
+
   ctx.js(/* js */ `var ${rKeys} = Object.keys(${r}), ${rLen} = ${rKeys}.length, ${rKey}, ${ri} = 0;`);
   ctx.js(/* js */ `encoder.writeObjHdr(${rLen});`);
   ctx.js(/* js */ `for (; ${ri} < ${rLen}; ${ri}++) {`);
@@ -186,11 +166,7 @@ const map = (
   ctx.js(`}`);
 };
 
-const ref = (
-  ctx: CborEncoderCodegenContext,
-  value: JsExpression,
-  type: Type,
-): void => {
+const ref = (ctx: CborEncoderCodegenContext, value: JsExpression, type: Type): void => {
   const refType = type as any; // RefType
   const system = ctx.options.system || refType.system;
   if (!system) throw new Error('NO_SYSTEM');
@@ -199,12 +175,7 @@ const ref = (
   ctx.js(`${d}(${value.use()}, encoder);`);
 };
 
-const or = (
-  ctx: CborEncoderCodegenContext,
-  value: JsExpression,
-  type: Type,
-  encodeFn: CborEncoderFunction,
-): void => {
+const or = (ctx: CborEncoderCodegenContext, value: JsExpression, type: Type, encodeFn: CborEncoderFunction): void => {
   const orType = type as any; // OrType
   const codegen = ctx.codegen;
   const discriminator = orType.discriminator();
@@ -225,11 +196,7 @@ const or = (
  * Main router function that dispatches CBOR encoding to the appropriate
  * encoder function based on the type's kind.
  */
-export const generate = (
-  ctx: CborEncoderCodegenContext,
-  value: JsExpression,
-  type: Type,
-): void => {
+export const generate = (ctx: CborEncoderCodegenContext, value: JsExpression, type: Type): void => {
   const kind = type.getTypeName();
 
   switch (kind) {
