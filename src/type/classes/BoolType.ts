@@ -26,32 +26,6 @@ export class BoolType extends AbsType<schema.BooleanSchema> {
     super();
   }
 
-  public codegenValidator(ctx: ValidatorCodegenContext, path: ValidationPath, r: string): void {
-    const err = ctx.err(ValidationError.BOOL, path);
-    ctx.js(/* js */ `if(typeof ${r} !== "boolean") return ${err};`);
-    ctx.emitCustomValidators(this, path, r);
-  }
-
-  public codegenJsonTextEncoder(ctx: JsonTextEncoderCodegenContext, value: JsExpression): void {
-    ctx.js(/* js */ `s += ${value.use()} ? 'true' : 'false';`);
-  }
-
-  protected codegenBinaryEncoder(ctx: BinaryEncoderCodegenContext<BinaryJsonEncoder>, value: JsExpression): void {
-    ctx.js(/* js */ `encoder.writeBoolean(${value.use()});`);
-  }
-
-  public codegenCborEncoder(ctx: CborEncoderCodegenContext, value: JsExpression): void {
-    this.codegenBinaryEncoder(ctx, value);
-  }
-
-  public codegenMessagePackEncoder(ctx: MessagePackEncoderCodegenContext, value: JsExpression): void {
-    this.codegenBinaryEncoder(ctx, value);
-  }
-
-  public codegenJsonEncoder(ctx: JsonEncoderCodegenContext, value: JsExpression): void {
-    this.codegenBinaryEncoder(ctx, value);
-  }
-
   public toJson(value: unknown, system: TypeSystem | undefined = this.system) {
     return (value ? 'true' : 'false') as json_string<boolean>;
   }

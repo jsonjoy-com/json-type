@@ -41,7 +41,7 @@ const codegenBinaryEncoder = (ctx: BinaryEncoderCodegenContext<BinaryJsonEncoder
       break;
     }
     case 'bool': {
-      ctx.js(/* js */ `encoder.writeBool(${v});`);
+      ctx.js(/* js */ `encoder.writeBoolean(${v});`);
       break;
     }
     default: {
@@ -108,7 +108,7 @@ export const arr = (
   const rl = codegen.getRegister(); // array.length
   const ri = codegen.getRegister(); // index
   ctx.js(/* js */ `var ${r} = ${value.use()}, ${rl} = ${r}.length, ${ri} = 0;`);
-  ctx.js(/* js */ `encoder.writeArrayHead(${rl});`);
+  ctx.js(/* js */ `encoder.writeArrHdr(${rl});`);
   ctx.js(/* js */ `for(; ${ri} < ${rl}; ${ri}++) ` + '{');
   encodeFn(ctx, new JsExpression(() => `${r}[${ri}]`), arrType.type);
   ctx.js(`}`);
@@ -124,7 +124,7 @@ export const tup = (
   const codegen = ctx.codegen;
   const r = codegen.var(value.use());
   const types = tupType.types;
-  ctx.js(/* js */ `encoder.writeArrayHead(${types.length});`);
+  ctx.js(/* js */ `encoder.writeArrHdr(${types.length});`);
   for (let i = 0; i < types.length; i++) {
     encodeFn(ctx, new JsExpression(() => `${r}[${i}]`), types[i]);
   }
@@ -152,7 +152,7 @@ export const obj = (
   
   if (optionalFields.length === 0) {
     // All fields are required
-    ctx.js(/* js */ `encoder.writeObjectHead(${fields.length});`);
+    ctx.js(/* js */ `encoder.writeObjHdr(${fields.length});`);
     for (const field of fields) {
       const key = field.key;
       const accessor = normalizeAccessor(key);
@@ -171,7 +171,7 @@ export const obj = (
       ctx.js(/* js */ `if (${r}${accessor} !== undefined) ${rSize}++;`);
     }
     
-    ctx.js(/* js */ `encoder.writeObjectHead(${rSize});`);
+    ctx.js(/* js */ `encoder.writeObjHdr(${rSize});`);
     
     // Encode required fields
     for (const field of requiredFields) {
@@ -208,7 +208,7 @@ export const map = (
   const ri = codegen.var('0');
   
   ctx.js(/* js */ `var ${rKeys} = Object.keys(${r}), ${rLen} = ${rKeys}.length, ${rKey}, ${ri} = 0;`);
-  ctx.js(/* js */ `encoder.writeObjectHead(${rLen});`);
+  ctx.js(/* js */ `encoder.writeObjHdr(${rLen});`);
   ctx.js(/* js */ `for (; ${ri} < ${rLen}; ${ri}++) {`);
   ctx.js(/* js */ `${rKey} = ${rKeys}[${ri}];`);
   ctx.js(/* js */ `encoder.writeStr(${rKey});`);

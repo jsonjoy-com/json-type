@@ -15,7 +15,7 @@ export const any = (ctx: ValidatorCodegenContext, path: ValidationPath, r: strin
   const rt = codegen.getRegister();
   ctx.js(/* js */ `var ${rv} = ${r}, ${rt} = ${rv} instanceof Value ? ${rv}.type : null;`);
   ctx.js(/* js */ `if (${rt}) {`);
-  ctx.js(/* js */ `var res = ${rt}.validator(${JSON.stringify(ctx.errors)})(${rv}.data);`);
+  ctx.js(/* js */ `var res = ${rt}.validator(${JSON.stringify(ctx.options.errors)})(${rv}.data);`);
   ctx.js(/* js */ `if (res) return res;`);
   ctx.js(/* js */ `}`);
   ctx.emitCustomValidators(type, path, r);
@@ -34,45 +34,45 @@ export const num = (ctx: ValidatorCodegenContext, path: ValidationPath, r: strin
   ctx.js(/* js */ `if(typeof ${r} !== "number") return ${error};`);
 
   if (int || format) {
-    const intErr = ctx.err(ValidationError.NUM_INT, path);
+    const intErr = ctx.err(ValidationError.INT, path);
     ctx.js(/* js */ `if(${r} !== (${r} | 0)) return ${intErr};`);
   }
 
   if (typeof gte === 'number') {
-    const err = ctx.err(ValidationError.NUM_MIN, path);
+    const err = ctx.err(ValidationError.GTE, path);
     ctx.js(/* js */ `if(${r} < ${gte}) return ${err};`);
   }
   if (typeof gt === 'number') {
-    const err = ctx.err(ValidationError.NUM_MIN, path);
+    const err = ctx.err(ValidationError.GT, path);
     ctx.js(/* js */ `if(${r} <= ${gt}) return ${err};`);
   }
   if (typeof lte === 'number') {
-    const err = ctx.err(ValidationError.NUM_MAX, path);
+    const err = ctx.err(ValidationError.LTE, path);
     ctx.js(/* js */ `if(${r} > ${lte}) return ${err};`);
   }
   if (typeof lt === 'number') {
-    const err = ctx.err(ValidationError.NUM_MAX, path);
+    const err = ctx.err(ValidationError.LT, path);
     ctx.js(/* js */ `if(${r} >= ${lt}) return ${err};`);
   }
 
   const customFormatValidation = () => {
     if (format === 'u8') {
-      const err = ctx.err(ValidationError.NUM_TYPE, path);
+      const err = ctx.err(ValidationError.UINT, path);
       ctx.js(/* js */ `if(${r} < 0 || ${r} > 255) return ${err};`);
     } else if (format === 'u16') {
-      const err = ctx.err(ValidationError.NUM_TYPE, path);
+      const err = ctx.err(ValidationError.UINT, path);
       ctx.js(/* js */ `if(${r} < 0 || ${r} > 65535) return ${err};`);
     } else if (format === 'u32') {
-      const err = ctx.err(ValidationError.NUM_TYPE, path);
+      const err = ctx.err(ValidationError.UINT, path);
       ctx.js(/* js */ `if(${r} < 0 || ${r} > 4294967295) return ${err};`);
     } else if (format === 'i8') {
-      const err = ctx.err(ValidationError.NUM_TYPE, path);
+      const err = ctx.err(ValidationError.INT, path);
       ctx.js(/* js */ `if(${r} < -128 || ${r} > 127) return ${err};`);
     } else if (format === 'i16') {
-      const err = ctx.err(ValidationError.NUM_TYPE, path);
+      const err = ctx.err(ValidationError.INT, path);
       ctx.js(/* js */ `if(${r} < -32768 || ${r} > 32767) return ${err};`);
     } else if (format === 'i32') {
-      const err = ctx.err(ValidationError.NUM_TYPE, path);
+      const err = ctx.err(ValidationError.INT, path);
       ctx.js(/* js */ `if(${r} < -2147483648 || ${r} > 2147483647) return ${err};`);
     }
   };
@@ -173,7 +173,7 @@ export const tup = (ctx: ValidatorCodegenContext, path: ValidationPath, r: strin
   const ri = ctx.codegen.getRegister();
   const rv = ctx.codegen.getRegister();
   const err = ctx.err(ValidationError.TUP, path);
-  const errLen = ctx.err(ValidationError.TUP_LEN, path);
+  const errLen = ctx.err(ValidationError.ARR_LEN, path);
   const types = tupType.types;
   ctx.js(/* js */ `if (!Array.isArray(${r})) return ${err};`);
   ctx.js(`if (${r}.length !== ${types.length}) return ${errLen};`);
@@ -218,7 +218,7 @@ export const obj = (
       ctx.js(`var ${rv} = ${r}${accessor};`);
       validateFn(ctx, [...path, {r: JSON.stringify(key)}], rv, field.value);
     } else {
-      const keyErr = ctx.err(ValidationError.OBJ_KEY, [...path, {r: JSON.stringify(key)}]);
+      const keyErr = ctx.err(ValidationError.KEY, [...path, {r: JSON.stringify(key)}]);
       ctx.js(`var ${rv} = ${r}${accessor};`);
       ctx.js(`if (${rv} === undefined) return ${keyErr};`);
       validateFn(ctx, [...path, {r: JSON.stringify(key)}], rv, field.value);
@@ -239,7 +239,7 @@ export const obj = (
   // Check for unknown fields if necessary
   if (!ctx.options.skipObjectExtraFieldsCheck && !objType.schema.unknownFields) {
     const knownKeys = fields.map((field: any) => field.key);
-    const unknownFieldsError = ctx.err(ValidationError.OBJ_EXTRA, path);
+    const unknownFieldsError = ctx.err(ValidationError.KEYS, path);
     const rk = ctx.codegen.getRegister();
     const rkl = ctx.codegen.getRegister();
     const ri = ctx.codegen.getRegister();
@@ -247,7 +247,7 @@ export const obj = (
     ctx.js(`var ${rk} = Object.keys(${r}), ${rkl} = ${rk}.length, ${ri} = 0, ${rkey};`);
     ctx.js(`for (; ${ri} < ${rkl}; ${ri}++) {`);
     ctx.js(`${rkey} = ${rk}[${ri}];`);
-    const knownKeysCheck = knownKeys.map(key => `${rkey} !== ${JSON.stringify(key)}`).join(' && ');
+    const knownKeysCheck = knownKeys.map((key: string) => `${rkey} !== ${JSON.stringify(key)}`).join(' && ');
     if (knownKeysCheck) {
       ctx.js(`if (${knownKeysCheck}) return ${unknownFieldsError};`);
     }
@@ -291,7 +291,7 @@ export const ref = (
   const refType = type as any; // RefType
   const system = ctx.options.system || refType.system;
   if (!system) throw new Error('NO_SYSTEM');
-  const validator = system.resolve(refType.schema.ref).type.validator(ctx.errors);
+  const validator = system.resolve(refType.schema.ref).type.validator(ctx.options.errors);
   const d = ctx.codegen.linkDependency(validator);
   const rv = ctx.codegen.getRegister();
   ctx.js(`var ${rv} = ${d}(${r});`);
