@@ -198,7 +198,7 @@ export const obj = (
   const fields = objType.fields;
   const requiredFields: any[] = [];
   const optionalFields: any[] = [];
-  
+
   for (const field of fields) {
     if (field.optional || field.constructor?.name === 'ObjectOptionalFieldType') {
       optionalFields.push(field);
@@ -213,7 +213,7 @@ export const obj = (
     const accessor = normalizeAccessor(key);
     const canSkipUndefinedCheck = canSkipObjectKeyUndefinedCheck(field.value);
     const rv = ctx.codegen.getRegister();
-    
+
     if (canSkipUndefinedCheck) {
       ctx.js(`var ${rv} = ${r}${accessor};`);
       validateFn(ctx, [...path, {r: JSON.stringify(key)}], rv, field.value);
@@ -271,7 +271,7 @@ export const map = (
   const ri = ctx.codegen.getRegister();
   const rkey = ctx.codegen.getRegister();
   const rv = ctx.codegen.getRegister();
-  
+
   ctx.js(/* js */ `if(!${r} || typeof ${r} !== "object" || Array.isArray(${r})) return ${err};`);
   ctx.js(`var ${rk} = Object.keys(${r}), ${rkl} = ${rk}.length, ${ri} = 0, ${rkey}, ${rv};`);
   ctx.js(`for (; ${ri} < ${rkl}; ${ri}++) {`);
@@ -282,12 +282,7 @@ export const map = (
   ctx.emitCustomValidators(type, path, r);
 };
 
-export const ref = (
-  ctx: ValidatorCodegenContext,
-  path: ValidationPath,
-  r: string,
-  type: Type,
-): void => {
+export const ref = (ctx: ValidatorCodegenContext, path: ValidationPath, r: string, type: Type): void => {
   const refType = type as any; // RefType
   const system = ctx.options.system || refType.system;
   if (!system) throw new Error('NO_SYSTEM');
@@ -332,12 +327,7 @@ export const or = (
  * Main router function that dispatches validation to the appropriate
  * validator function based on the type's kind.
  */
-export const generate = (
-  ctx: ValidatorCodegenContext,
-  path: ValidationPath,
-  r: string,
-  type: Type,
-): void => {
+export const generate = (ctx: ValidatorCodegenContext, path: ValidationPath, r: string, type: Type): void => {
   const kind = type.getTypeName();
 
   switch (kind) {

@@ -1,5 +1,5 @@
 import type {JsonTextEncoderCodegenContext} from './JsonTextEncoderCodegenContext';
-import type {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
+import {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
 import type {Type} from '../../type';
 import {asString} from '@jsonjoy.com/util/lib/strings/asString';
 import {normalizeAccessor} from '@jsonjoy.com/util/lib/codegen/util/normalizeAccessor';
@@ -115,7 +115,7 @@ export const obj = (
   const codegen = ctx.codegen;
   const r = codegen.var(value.use());
   const encodeUnknownFields = !!objType.schema.encodeUnknownFields;
-  
+
   if (encodeUnknownFields) {
     const asStringFn = codegen.linkDependency(asString);
     ctx.js(/* js */ `s += ${asStringFn}(${r});`);
@@ -124,13 +124,13 @@ export const obj = (
 
   const fields = objType.fields;
   ctx.writeText('{');
-  
+
   let hasFields = false;
   for (const field of fields) {
     const key = field.key;
     const accessor = normalizeAccessor(key);
     const isOptional = field.optional || field.constructor?.name === 'ObjectOptionalFieldType';
-    
+
     const writeField = () => {
       if (hasFields) ctx.writeText(',');
       ctx.writeText(`"${key}":`);
@@ -146,7 +146,7 @@ export const obj = (
       writeField();
     }
   }
-  
+
   ctx.writeText('}');
 };
 
@@ -164,7 +164,7 @@ export const map = (
   const rLen = codegen.var(`${rKeys}.length`);
   const ri = codegen.var('0');
   const rll = codegen.var(`${rLen} - 1`);
-  
+
   ctx.writeText('{');
   ctx.js(`var ${rKeys}, ${rKey}, ${rLen}, ${ri}, ${rll};`);
   ctx.js(`${rKeys} = Object.keys(${r});`);
@@ -184,11 +184,7 @@ export const map = (
   ctx.writeText('}');
 };
 
-export const ref = (
-  ctx: JsonTextEncoderCodegenContext,
-  value: JsExpression,
-  type: Type,
-): void => {
+export const ref = (ctx: JsonTextEncoderCodegenContext, value: JsExpression, type: Type): void => {
   const refType = type as any; // RefType
   const system = ctx.options.system || refType.system;
   if (!system) throw new Error('NO_SYSTEM');
@@ -223,11 +219,7 @@ export const or = (
  * Main router function that dispatches JSON text encoding to the appropriate
  * encoder function based on the type's kind.
  */
-export const generate = (
-  ctx: JsonTextEncoderCodegenContext,
-  value: JsExpression,
-  type: Type,
-): void => {
+export const generate = (ctx: JsonTextEncoderCodegenContext, value: JsExpression, type: Type): void => {
   const kind = type.getTypeName();
 
   switch (kind) {

@@ -1,16 +1,21 @@
 import type {MessagePackEncoderCodegenContext} from './MessagePackEncoderCodegenContext';
-import type {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
+import {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
 import type {Type} from '../../type';
 import type {BinaryJsonEncoder} from '@jsonjoy.com/json-pack/lib/types';
 import type {BinaryEncoderCodegenContext} from './BinaryEncoderCodegenContext';
 import {normalizeAccessor} from '@jsonjoy.com/util/lib/codegen/util/normalizeAccessor';
+import {EncodingFormat} from '@jsonjoy.com/json-pack/lib/constants';
 
 type MessagePackEncoderFunction = (ctx: MessagePackEncoderCodegenContext, value: JsExpression, type: Type) => void;
 
-const codegenBinaryEncoder = (ctx: BinaryEncoderCodegenContext<BinaryJsonEncoder>, value: JsExpression, type: Type): void => {
+const codegenBinaryEncoder = (
+  ctx: BinaryEncoderCodegenContext<BinaryJsonEncoder>,
+  value: JsExpression,
+  type: Type,
+): void => {
   const kind = type.getTypeName();
   const v = value.use();
-  
+
   switch (kind) {
     case 'str': {
       const strType = type as any; // StrType
@@ -75,7 +80,7 @@ export const any = (ctx: MessagePackEncoderCodegenContext, value: JsExpression, 
 };
 
 export const bool = (ctx: MessagePackEncoderCodegenContext, value: JsExpression): void => {
-  codegenBinaryEncoder(ctx, value, { getTypeName: () => 'bool' } as Type);
+  codegenBinaryEncoder(ctx, value, {getTypeName: () => 'bool'} as Type);
 };
 
 export const num = (ctx: MessagePackEncoderCodegenContext, value: JsExpression, type: Type): void => {
@@ -140,7 +145,7 @@ export const obj = (
   const codegen = ctx.codegen;
   const r = codegen.var(value.use());
   const encodeUnknownFields = !!objType.schema.encodeUnknownFields;
-  
+
   if (encodeUnknownFields) {
     ctx.js(/* js */ `encoder.writeAny(${r});`);
     return;
@@ -149,7 +154,7 @@ export const obj = (
   const fields = objType.fields;
   const requiredFields = fields.filter((f: any) => !f.optional && f.constructor?.name !== 'ObjectOptionalFieldType');
   const optionalFields = fields.filter((f: any) => f.optional || f.constructor?.name === 'ObjectOptionalFieldType');
-  
+
   if (optionalFields.length === 0) {
     // All fields are required
     ctx.js(/* js */ `encoder.writeObjHdr(${fields.length});`);
@@ -163,16 +168,16 @@ export const obj = (
     // Mixed fields - need to count optional ones dynamically
     const rSize = codegen.getRegister();
     ctx.js(/* js */ `var ${rSize} = ${requiredFields.length};`);
-    
+
     // Count optional fields that exist
     for (const field of optionalFields) {
       const key = field.key;
       const accessor = normalizeAccessor(key);
       ctx.js(/* js */ `if (${r}${accessor} !== undefined) ${rSize}++;`);
     }
-    
+
     ctx.js(/* js */ `encoder.writeObjHdr(${rSize});`);
-    
+
     // Encode required fields
     for (const field of requiredFields) {
       const key = field.key;
@@ -180,7 +185,7 @@ export const obj = (
       ctx.js(/* js */ `encoder.writeStr(${JSON.stringify(key)});`);
       encodeFn(ctx, new JsExpression(() => `${r}${accessor}`), field.value);
     }
-    
+
     // Encode optional fields
     for (const field of optionalFields) {
       const key = field.key;
@@ -206,7 +211,7 @@ export const map = (
   const rKey = codegen.var();
   const rLen = codegen.var(`${rKeys}.length`);
   const ri = codegen.var('0');
-  
+
   ctx.js(/* js */ `var ${rKeys} = Object.keys(${r}), ${rLen} = ${rKeys}.length, ${rKey}, ${ri} = 0;`);
   ctx.js(/* js */ `encoder.writeObjHdr(${rLen});`);
   ctx.js(/* js */ `for (; ${ri} < ${rLen}; ${ri}++) {`);
@@ -216,15 +221,12 @@ export const map = (
   ctx.js(`}`);
 };
 
-export const ref = (
-  ctx: MessagePackEncoderCodegenContext,
-  value: JsExpression,
-  type: Type,
-): void => {
+export const ref = (ctx: MessagePackEncoderCodegenContext, value: JsExpression, type: Type): void => {
   const refType = type as any; // RefType
   const system = ctx.options.system || refType.system;
   if (!system) throw new Error('NO_SYSTEM');
-  const encoder = system.resolve(refType.schema.ref).type.encoder(ctx.encoder.format);
+  const format = EncodingFormat.MsgPack;
+  const encoder = system.resolve(refType.schema.ref).type.encoder(format);
   const d = ctx.codegen.linkDependency(encoder);
   ctx.js(`${d}(${value.use()}, encoder);`);
 };
@@ -255,11 +257,7 @@ export const or = (
  * Main router function that dispatches MessagePack encoding to the appropriate
  * encoder function based on the type's kind.
  */
-export const generate = (
-  ctx: MessagePackEncoderCodegenContext,
-  value: JsExpression,
-  type: Type,
-): void => {
+export const generate = (ctx: MessagePackEncoderCodegenContext, value: JsExpression, type: Type): void => {
   const kind = type.getTypeName();
 
   switch (kind) {
