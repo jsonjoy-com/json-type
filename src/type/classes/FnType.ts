@@ -4,6 +4,7 @@ import {AbsType} from './AbsType';
 import type {SchemaOf, Type} from '../types';
 import type {ResolveType} from '../../system';
 import type {Observable} from 'rxjs';
+import {Value} from '../../value';
 
 const fnNotImplemented: schema.FunctionValue<any, any> = async () => {
   throw new Error('NOT_IMPLEMENTED');
@@ -40,26 +41,38 @@ export class FnType<Req extends Type, Res extends Type, Ctx = unknown> extends A
     } as any;
   }
 
-  public request<T extends Type>(req: T): FnType<T, Res> {
+  public input<T extends Type>(req: T): FnType<T, Res> {
+    return this.inp(req);
+  }
+
+  public inp<T extends Type>(req: T): FnType<T, Res> {
     (this as any).req = req;
     return this as any;
   }
 
-  public inp<T extends Type>(req: T): FnType<T, Res> {
-    return this.request(req);
+  public output<T extends Type>(res: T): FnType<Req, T> {
+    return this.out(res);
   }
 
-  public response<T extends Type>(res: T): FnType<Req, T> {
+  public out<T extends Type>(res: T): FnType<Req, T> {
     (this as any).res = res;
     return this as any;
   }
 
-  public out<T extends Type>(res: T): FnType<Req, T> {
-    return this.response(res);
+  public io<I extends Type, O extends Type>(request: I, response: O): FnType<I, O, Ctx> {
+    return this.inp(request).out(response) as FnType<I, O, Ctx>;
+  }
+
+  public signature<I extends Type, O extends Type>(request: I, response: O): FnType<I, O, Ctx> {
+    return this.io(request, response) as FnType<I, O, Ctx>;
   }
 
   public ctx<T>(): FnType<Req, Res, T> {
     return this as any;
+  }
+
+  public value(data: ResolveType<FnType<Req, Res, Ctx>>) {
+    return new Value<FnType<Req, Res, Ctx>>(this, data);
   }
 
   public getSchema(): schema.FunctionSchema<SchemaOf<Req>, SchemaOf<Res>, Ctx> {
@@ -68,13 +81,6 @@ export class FnType<Req extends Type, Res extends Type, Ctx = unknown> extends A
       req: this.req.getSchema() as SchemaOf<Req>,
       res: this.res.getSchema() as SchemaOf<Res>,
     };
-  }
-
-  public singleton?: FunctionImpl<Req, Res, Ctx> = undefined;
-
-  public implement(singleton: FunctionImpl<Req, Res, Ctx>): this {
-    this.singleton = singleton;
-    return this;
   }
 
   public toString(tab: string = ''): string {
@@ -129,13 +135,6 @@ export class FnRxType<Req extends Type, Res extends Type, Ctx = unknown> extends
       req: this.req.getSchema() as SchemaOf<Req>,
       res: this.res.getSchema() as SchemaOf<Res>,
     };
-  }
-
-  public singleton?: FunctionStreamingImpl<Req, Res, Ctx> = undefined;
-
-  public implement(singleton: FunctionStreamingImpl<Req, Res, Ctx>): this {
-    this.singleton = singleton;
-    return this;
   }
 
   public toString(tab: string = ''): string {
