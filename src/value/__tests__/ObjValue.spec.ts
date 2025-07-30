@@ -81,11 +81,13 @@ describe('.set()', () => {
       t.str.title('User ID').description('ID of the user to retrieve').getSchema(),
     );
     expect(router.get('getUser').type.res.getSchema()).toEqual(
-      t.object({
-        id: t.str,
-        name: t.str.title('User full name').min(1).max(32),
-        friends: t.fn.input(t.str).out(t.str.title('Friend name')),
-      }).getSchema(),
+      t
+        .object({
+          id: t.str,
+          name: t.str.title('User full name').min(1).max(32),
+          friends: t.fn.input(t.str).out(t.str.title('Friend name')),
+        })
+        .getSchema(),
     );
     expect(router.get('echo').type.req.getSchema()).toEqual(t.any.getSchema());
   });

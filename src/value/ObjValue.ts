@@ -67,16 +67,11 @@ export class ObjValue<T extends classes.ObjType<any>> extends Value<T> implement
     return this.field(t.prop(key, type), data);
   }
 
-  public set<K extends string, V extends classes.Type>(
-    key: K,
-    value: Value<V>,
-  ) {
+  public set<K extends string, V extends classes.Type>(key: K, value: Value<V>) {
     return this.add(key, value.type, value.data);
   }
 
-  public merge<O extends ObjValue<any>>(
-    obj: O,
-  ): ObjValue<classes.ObjType<[...UnObjType<T>, ...UnObjType<O['type']>]>> {
+  public merge<O extends ObjValue<any>>(obj: O): ObjValue<classes.ObjType<[...UnObjType<T>, ...UnObjType<O['type']>]>> {
     Object.assign(this.data as object, obj.data);
     const type = this.type;
     const system = type.system;
