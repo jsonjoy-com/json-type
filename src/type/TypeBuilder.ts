@@ -246,22 +246,22 @@ export class TypeBuilder {
     return type;
   }
 
-  public Function<Req extends Type, Res extends Type>(
+  public Function<Req extends Type, Res extends Type, Ctx = unknown>(
     req: Req,
     res: Res,
     options?: schema.Optional<schema.FunctionSchema>,
   ) {
-    const fn = new classes.FnType<Req, Res>(req, res, options);
+    const fn = new classes.FnType<Req, Res, Ctx>(req, res, options);
     fn.system = this.system;
     return fn;
   }
 
-  public Function$<Req extends Type, Res extends Type>(
+  public Function$<Req extends Type, Res extends Type, Ctx = unknown>(
     req: Req,
     res: Res,
     options?: schema.Optional<schema.FunctionStreamingSchema>,
   ) {
-    const fn = new classes.FunctionStreamingType<Req, Res>(req, res, options);
+    const fn = new classes.FunctionStreamingType<Req, Res, Ctx>(req, res, options);
     fn.system = this.system;
     return fn;
   }
