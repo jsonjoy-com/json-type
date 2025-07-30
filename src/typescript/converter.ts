@@ -1,5 +1,6 @@
 import type * as ts from './types';
 import type * as schema from '../schema';
+import type {ObjType} from '../type/classes';
 
 /**
  * Main router function that converts any Schema to TypeScript AST.
@@ -242,3 +243,23 @@ export function toTypeScriptAst(schema: schema.Schema): ts.TsType {
     }
   }
 }
+
+export const objToModule = (obj: ObjType<any>): ts.TsModuleDeclaration => {
+  const node: ts.TsModuleDeclaration = {
+    node: 'ModuleDeclaration',
+    name: 'Router',
+    export: true,
+    statements: [
+      {
+        node: 'TypeAliasDeclaration',
+        name: 'Routes',
+        type: toTypeScriptAst(obj.getSchema()),
+        export: true,
+      },
+    ],
+  };
+  const system = obj.system;
+  if (!system) throw new Error('system is undefined');
+  for (const alias of system.aliases.values()) node.statements.push({...alias.toTypeScriptAst(), export: true});
+  return node;
+};

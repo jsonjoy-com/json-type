@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`can print to string 1`] = `
-"ObjectValue
+"ObjValue
 └─ obj
    └─ "foo":
        └─ str"
