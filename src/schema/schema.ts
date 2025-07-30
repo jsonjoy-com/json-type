@@ -412,19 +412,22 @@ export interface OrSchema<T extends TType[] = TType[]> extends TType {
 
 export type FunctionValue<Req, Res, Ctx = unknown> = (req: Req, ctx?: Ctx) => Res | Promise<Res>;
 
-export interface FunctionSchema<Req extends TType = TType, Res extends TType = TType> extends TType {
+export interface FunctionSchema<Req extends TType = TType, Res extends TType = TType, Ctx = unknown> extends TType {
   kind: 'fn';
   req: Req;
   res: Res;
+  __ctx_brand?: Ctx;
 }
 
 export type FunctionStreamingValue<Req, Res, Ctx = unknown> = (req: Observable<Req>, ctx?: Ctx) => Observable<Res>;
 
-export interface FunctionStreamingSchema<Req extends TType = TType, Res extends TType = TType> extends TType {
+export interface FunctionStreamingSchema<Req extends TType = TType, Res extends TType = TType, Ctx = unknown>
+  extends TType {
   /** @todo Rename to `fn`. Make it a property on the schema instead. */
   kind: 'fn$';
   req: Req;
   res: Res;
+  __ctx_brand?: Ctx;
 }
 
 export interface TypeSystemSchema {
@@ -480,10 +483,10 @@ export type TypeOfValue<T> = T extends BooleanSchema
                 ? Record<string, TypeOf<U>>
                 : T extends BinarySchema
                   ? Uint8Array
-                  : T extends FunctionSchema<infer Req, infer Res>
-                    ? (req: TypeOf<Req>, ctx?: unknown) => Promise<TypeOf<Res>>
-                    : T extends FunctionStreamingSchema<infer Req, infer Res>
-                      ? (req$: Observable<TypeOf<Req>>, ctx?: unknown) => Observable<TypeOf<Res>>
+                  : T extends FunctionSchema<infer Req, infer Res, infer Ctx>
+                    ? (req: TypeOf<Req>, ctx: Ctx) => UndefToVoid<TypeOf<Res>> | Promise<UndefToVoid<TypeOf<Res>>>
+                    : T extends FunctionStreamingSchema<infer Req, infer Res, infer Ctx>
+                      ? (req$: Observable<TypeOf<Req>>, ctx: Ctx) => Observable<UndefToVoid<TypeOf<Res>>>
                       : never;
 
 export type TypeOfMap<M extends Record<string, Schema>> = {
@@ -509,6 +512,8 @@ type FieldsAdjustedForOptional<T> = Pick<T, RequiredFields<T>> & Partial<Pick<T,
 type TypeOfFieldMap<T> = {[K in keyof T]: TypeOf<FieldValue<T[K]>>};
 
 type FieldValue<F> = F extends ObjectFieldSchema<any, infer V> ? V : never;
+
+type UndefToVoid<T> = T extends undefined ? void : T;
 
 export type OptionalProps<T extends object> = Exclude<
   {

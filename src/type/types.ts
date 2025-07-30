@@ -20,8 +20,8 @@ export type Type =
   | classes.MapType<any>
   | classes.RefType<any>
   | classes.OrType<any>
-  | classes.FnType<any, any>
-  | classes.FunctionStreamingType<any, any>;
+  | classes.FnType<any, any, any>
+  | classes.FnRxType<any, any, any>;
 
 export type SchemaOf<T extends Type | Type[]> = T extends BaseType<infer U> ? U : never;
 export type SchemaOfMap<M extends Record<string, Type>> = {
@@ -41,13 +41,13 @@ export type SchemaOfObjectFields<F> = {
 export type TypeMap = {[name: string]: schema.Schema};
 
 export type FilterFunctions<T> = {
-  [K in keyof T as T[K] extends classes.FnType<any, any>
+  [K in keyof T as T[K] extends classes.FnType<any, any, any>
     ? K
-    : T[K] extends classes.FunctionStreamingType<any, any>
+    : T[K] extends classes.FnRxType<any, any, any>
       ? K
-      : never]: T[K] extends classes.FnType<any, any>
+      : never]: T[K] extends classes.FnType<any, any, any>
     ? T[K]
-    : T[K] extends classes.FunctionStreamingType<any, any>
+    : T[K] extends classes.FnRxType<any, any, any>
       ? T[K]
       : never;
 };

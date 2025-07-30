@@ -2,7 +2,6 @@ import {printTree} from 'tree-dump/lib/printTree';
 import * as schema from '../../schema';
 import {AbsType} from './AbsType';
 import type {SchemaOf, Type} from '../types';
-import type * as ts from '../../typescript/types';
 import type {ResolveType} from '../../system';
 import type {Observable} from 'rxjs';
 
@@ -10,7 +9,7 @@ const fnNotImplemented: schema.FunctionValue<any, any> = async () => {
   throw new Error('NOT_IMPLEMENTED');
 };
 
-const toStringTree = (tab: string = '', type: FnType<Type, Type> | FunctionStreamingType<Type, Type>) => {
+const toStringTree = (tab: string = '', type: FnType<Type, Type, any> | FnRxType<Type, Type, any>) => {
   return printTree(tab, [
     (tab) => 'req: ' + type.req.toString(tab + '     '),
     (tab) => 'res: ' + type.res.toString(tab + '     '),
@@ -20,12 +19,12 @@ const toStringTree = (tab: string = '', type: FnType<Type, Type> | FunctionStrea
 type FunctionImpl<Req extends Type, Res extends Type, Ctx = unknown> = (
   req: ResolveType<Req>,
   ctx: Ctx,
-) => Promise<ResolveType<Res>>;
+) => ResolveType<Res> | Promise<ResolveType<Res>>;
 
-export class FnType<Req extends Type, Res extends Type> extends AbsType<
-  schema.FunctionSchema<SchemaOf<Req>, SchemaOf<Res>>
+export class FnType<Req extends Type, Res extends Type, Ctx = unknown> extends AbsType<
+  schema.FunctionSchema<SchemaOf<Req>, SchemaOf<Res>, Ctx>
 > {
-  protected schema: schema.FunctionSchema<SchemaOf<Req>, SchemaOf<Res>>;
+  protected schema: schema.FunctionSchema<SchemaOf<Req>, SchemaOf<Res>, Ctx>;
 
   public fn: schema.FunctionValue<schema.TypeOf<SchemaOf<Req>>, schema.TypeOf<SchemaOf<Res>>> = fnNotImplemented;
 
@@ -59,7 +58,11 @@ export class FnType<Req extends Type, Res extends Type> extends AbsType<
     return this.response(res);
   }
 
-  public getSchema(): schema.FunctionSchema<SchemaOf<Req>, SchemaOf<Res>> {
+  public ctx<T>(): FnType<Req, Res, T> {
+    return this as any;
+  }
+
+  public getSchema(): schema.FunctionSchema<SchemaOf<Req>, SchemaOf<Res>, Ctx> {
     return {
       ...this.schema,
       req: this.req.getSchema() as SchemaOf<Req>,
@@ -67,9 +70,9 @@ export class FnType<Req extends Type, Res extends Type> extends AbsType<
     };
   }
 
-  public singleton?: FunctionImpl<Req, Res, any> = undefined;
+  public singleton?: FunctionImpl<Req, Res, Ctx> = undefined;
 
-  public implement<Ctx = unknown>(singleton: FunctionImpl<Req, Res, Ctx>): this {
+  public implement(singleton: FunctionImpl<Req, Res, Ctx>): this {
     this.singleton = singleton;
     return this;
   }
@@ -84,11 +87,11 @@ type FunctionStreamingImpl<Req extends Type, Res extends Type, Ctx = unknown> = 
   ctx: Ctx,
 ) => Observable<ResolveType<Res>>;
 
-export class FunctionStreamingType<Req extends Type, Res extends Type> extends AbsType<
-  schema.FunctionStreamingSchema<SchemaOf<Req>, SchemaOf<Res>>
+export class FnRxType<Req extends Type, Res extends Type, Ctx = unknown> extends AbsType<
+  schema.FunctionStreamingSchema<SchemaOf<Req>, SchemaOf<Res>, Ctx>
 > {
   public readonly isStreaming = true;
-  protected schema: schema.FunctionStreamingSchema<SchemaOf<Req>, SchemaOf<Res>>;
+  protected schema: schema.FunctionStreamingSchema<SchemaOf<Req>, SchemaOf<Res>, Ctx>;
 
   constructor(
     public readonly req: Req,
@@ -120,7 +123,7 @@ export class FunctionStreamingType<Req extends Type, Res extends Type> extends A
     return this.response(res);
   }
 
-  public getSchema(): schema.FunctionStreamingSchema<SchemaOf<Req>, SchemaOf<Res>> {
+  public getSchema(): schema.FunctionStreamingSchema<SchemaOf<Req>, SchemaOf<Res>, Ctx> {
     return {
       ...this.schema,
       req: this.req.getSchema() as SchemaOf<Req>,
@@ -128,9 +131,9 @@ export class FunctionStreamingType<Req extends Type, Res extends Type> extends A
     };
   }
 
-  public singleton?: FunctionStreamingImpl<Req, Res, any> = undefined;
+  public singleton?: FunctionStreamingImpl<Req, Res, Ctx> = undefined;
 
-  public implement<Ctx = unknown>(singleton: FunctionStreamingImpl<Req, Res, Ctx>): this {
+  public implement(singleton: FunctionStreamingImpl<Req, Res, Ctx>): this {
     this.singleton = singleton;
     return this;
   }

@@ -1,8 +1,8 @@
 export * from './types';
 export * from './classes';
 
-import type {TypeOf} from '../schema';
 import {TypeBuilder} from './TypeBuilder';
+import type {TypeOf} from '../schema';
 import type {SchemaOf, Type} from './types';
 
 export const t = new TypeBuilder();
