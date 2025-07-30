@@ -421,7 +421,8 @@ export interface FunctionSchema<Req extends TType = TType, Res extends TType = T
 
 export type FunctionStreamingValue<Req, Res, Ctx = unknown> = (req: Observable<Req>, ctx?: Ctx) => Observable<Res>;
 
-export interface FunctionStreamingSchema<Req extends TType = TType, Res extends TType = TType, Ctx = unknown> extends TType {
+export interface FunctionStreamingSchema<Req extends TType = TType, Res extends TType = TType, Ctx = unknown>
+  extends TType {
   /** @todo Rename to `fn`. Make it a property on the schema instead. */
   kind: 'fn$';
   req: Req;
@@ -483,7 +484,7 @@ export type TypeOfValue<T> = T extends BooleanSchema
                 : T extends BinarySchema
                   ? Uint8Array
                   : T extends FunctionSchema<infer Req, infer Res, infer Ctx>
-                    ? (req: TypeOf<Req>, ctx: Ctx) => (UndefToVoid<TypeOf<Res>> | Promise<UndefToVoid<TypeOf<Res>>>)
+                    ? (req: TypeOf<Req>, ctx: Ctx) => UndefToVoid<TypeOf<Res>> | Promise<UndefToVoid<TypeOf<Res>>>
                     : T extends FunctionStreamingSchema<infer Req, infer Res, infer Ctx>
                       ? (req$: Observable<TypeOf<Req>>, ctx: Ctx) => Observable<UndefToVoid<TypeOf<Res>>>
                       : never;

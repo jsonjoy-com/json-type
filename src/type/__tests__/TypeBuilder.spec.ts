@@ -125,8 +125,7 @@ test('can specify function with context', () => {
     fn: t.fn.inp(t.str).out(t.undef).ctx<{ip: string}>(),
   });
   // console.log(MyObject + '');
-  const MyObject2 = t.obj
-    .prop('fn', t.Function(t.str, t.undef).ctx<{ip: string}>());
+  const MyObject2 = t.obj.prop('fn', t.Function(t.str, t.undef).ctx<{ip: string}>());
   expect(MyObject.getSchema()).toEqual(MyObject2.getSchema());
   type ObjType = t.infer<typeof MyObject>;
   type ObjType2 = t.infer<typeof MyObject2>;
