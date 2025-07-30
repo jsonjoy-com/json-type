@@ -261,7 +261,7 @@ export class TypeBuilder {
     res: Res,
     options?: schema.Optional<schema.FunctionStreamingSchema>,
   ) {
-    const fn = new classes.FunctionStreamingType<Req, Res, Ctx>(req, res, options);
+    const fn = new classes.FnRxType<Req, Res, Ctx>(req, res, options);
     fn.system = this.system;
     return fn;
   }

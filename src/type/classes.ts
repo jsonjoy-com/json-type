@@ -11,7 +11,7 @@ import {ObjType, ObjectFieldType, ObjectOptionalFieldType} from './classes/ObjTy
 import {MapType} from './classes/MapType';
 import {RefType} from './classes/RefType';
 import {OrType} from './classes/OrType';
-import {FnType, FunctionStreamingType} from './classes/FnType';
+import {FnType, FnRxType} from './classes/FnType';
 
 export {
   AbsType,
@@ -30,5 +30,5 @@ export {
   RefType,
   OrType,
   FnType,
-  FunctionStreamingType,
+  FnRxType,
 };

@@ -9,7 +9,7 @@ const fnNotImplemented: schema.FunctionValue<any, any> = async () => {
   throw new Error('NOT_IMPLEMENTED');
 };
 
-const toStringTree = (tab: string = '', type: FnType<Type, Type, any> | FunctionStreamingType<Type, Type, any>) => {
+const toStringTree = (tab: string = '', type: FnType<Type, Type, any> | FnRxType<Type, Type, any>) => {
   return printTree(tab, [
     (tab) => 'req: ' + type.req.toString(tab + '     '),
     (tab) => 'res: ' + type.res.toString(tab + '     '),
@@ -87,7 +87,7 @@ type FunctionStreamingImpl<Req extends Type, Res extends Type, Ctx = unknown> = 
   ctx: Ctx,
 ) => Observable<ResolveType<Res>>;
 
-export class FunctionStreamingType<Req extends Type, Res extends Type, Ctx = unknown> extends AbsType<
+export class FnRxType<Req extends Type, Res extends Type, Ctx = unknown> extends AbsType<
   schema.FunctionStreamingSchema<SchemaOf<Req>, SchemaOf<Res>, Ctx>
 > {
   public readonly isStreaming = true;
