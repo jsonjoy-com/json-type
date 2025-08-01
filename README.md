@@ -16,6 +16,111 @@ Features of the library:
 - Custom validation rules can be added using the JSON Expression language.
 - Can generate random JSON values that match the schema.
 
+## Quick Start
+
+Define a user schema and validate data in just a few lines:
+
+```ts
+import {t} from '@jsonjoy.com/json-type';
+
+// Define a user type
+const User = t.object({
+  id: t.num,
+  name: t.str,
+  email: t.str,
+}).optional({
+  age: t.num.gte(0).lte(120),
+});
+
+// Validate data
+const isValid = User.validateSchema();
+User.validate({
+  id: 1,
+  name: "Alice",
+  email: "alice@example.com",
+  age: 30
+}); // ✅ Valid
+
+// Generate random test data
+const randomUser = User.random();
+// { id: 42, name: "xyz123", email: "abc", age: 25 }
+```
+
+## Advanced Features
+
+JSON Type goes beyond basic validation with powerful JIT compilation:
+
+```ts
+// Compile ultra-fast validators
+const validator = User.compileValidator({errors: 'boolean'});
+const isValid = validator(userData); // Blazing fast validation
+
+// Generate TypeScript types
+const tsCode = User.toTypeScript();
+// type User = { id: number; name: string; email: string; age?: number; }
+
+// Compile optimized serializers
+const toJson = User.compileEncoder('json');
+const jsonString = toJson(userData); // Faster than JSON.stringify
+
+const toCbor = User.compileCborEncoder();
+const cborBytes = toCbor(userData); // Binary serialization
+```
+
+## Real-World Example
+
+Build type-safe APIs with complex schemas:
+
+```ts
+import {t} from '@jsonjoy.com/json-type';
+
+// Define API request/response types
+const CreatePostRequest = t.object({
+  title: t.str.options({min: 1, max: 100}),
+  content: t.str.options({min: 10}),
+  tags: t.array(t.str).options({max: 5}),
+  published: t.bool,
+});
+
+const Post = t.object({
+  id: t.str,
+  title: t.str,
+  content: t.str,
+  tags: t.array(t.str),
+  published: t.bool,
+  createdAt: t.num.options({format: 'u64'}),
+  author: t.object({
+    id: t.str,
+    name: t.str,
+  }),
+});
+
+const CreatePostResponse = t.object({
+  success: t.bool,
+  post: Post,
+}).optional({
+  error: t.str,
+});
+
+// Extract TypeScript types using t.infer
+type PostType = t.infer<typeof Post>;
+type CreateRequestType = t.infer<typeof CreatePostRequest>;
+type CreateResponseType = t.infer<typeof CreatePostResponse>;
+
+// Now you have full type safety!
+const newPost: PostType = {
+  id: "123",
+  title: "My Blog Post",
+  content: "This is the content...",
+  tags: ["typescript", "json"],
+  published: true,
+  createdAt: Date.now(),
+  author: {
+    id: "user456",
+    name: "John Doe"
+  }
+};
+```
 
 ## Usage
 
