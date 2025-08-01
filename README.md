@@ -16,6 +16,99 @@ Features of the library:
 - Custom validation rules can be added using the JSON Expression language.
 - Can generate random JSON values that match the schema.
 
+## Quick Start
+
+Define a user schema and validate data in just a few lines:
+
+```ts
+import {t} from '@jsonjoy.com/json-type';
+
+// Define a user type
+const User = t.Object([
+  t.prop('id', t.Number()),
+  t.prop('name', t.String()),
+  t.prop('email', t.String()),
+  t.propOpt('age', t.Number({gte: 0, lte: 120}))
+]);
+
+// Validate data
+const isValid = User.validateSchema();
+User.validate({
+  id: 1,
+  name: "Alice",
+  email: "alice@example.com",
+  age: 30
+}); // ✅ Valid
+
+// Generate random test data
+const randomUser = User.random();
+// { id: 42, name: "xyz123", email: "abc", age: 25 }
+```
+
+## Advanced Features
+
+JSON Type goes beyond basic validation with powerful JIT compilation:
+
+```ts
+// Compile ultra-fast validators
+const validator = User.compileValidator({errors: 'boolean'});
+const isValid = validator(userData); // Blazing fast validation
+
+// Generate TypeScript types
+const tsCode = User.toTypeScript();
+// type User = { id: number; name: string; email: string; age?: number; }
+
+// Compile optimized serializers
+const toJson = User.compileEncoder('json');
+const jsonString = toJson(userData); // Faster than JSON.stringify
+
+const toCbor = User.compileCborEncoder();
+const cborBytes = toCbor(userData); // Binary serialization
+```
+
+## Real-World Example
+
+Build type-safe APIs with complex schemas:
+
+```ts
+import {t} from '@jsonjoy.com/json-type';
+
+// Define API request/response types
+const CreatePostRequest = t.Object([
+  t.prop('title', t.String({min: 1, max: 100})),
+  t.prop('content', t.String({min: 10})),
+  t.prop('tags', t.Array(t.String(), {max: 5})),
+  t.prop('published', t.Boolean())
+]);
+
+const Post = t.Object([
+  t.prop('id', t.String()),
+  t.prop('title', t.String()),
+  t.prop('content', t.String()),
+  t.prop('tags', t.Array(t.String())),
+  t.prop('published', t.Boolean()),
+  t.prop('createdAt', t.Number({format: 'u64'})),
+  t.prop('author', t.Object([
+    t.prop('id', t.String()),
+    t.prop('name', t.String())
+  ]))
+]);
+
+const CreatePostResponse = t.Object([
+  t.prop('success', t.Boolean()),
+  t.prop('post', Post),
+  t.propOpt('error', t.String())
+]);
+
+// Use in your API
+function createPost(data: unknown) {
+  CreatePostRequest.validate(data); // Throws if invalid
+  
+  // Your business logic here...
+  
+  return CreatePostResponse.random(); // Type-safe response
+}
+```
 
 ## Usage
 
