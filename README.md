@@ -24,12 +24,13 @@ Define a user schema and validate data in just a few lines:
 import {t} from '@jsonjoy.com/json-type';
 
 // Define a user type
-const User = t.Object([
-  t.prop('id', t.Number()),
-  t.prop('name', t.String()),
-  t.prop('email', t.String()),
-  t.propOpt('age', t.Number({gte: 0, lte: 120}))
-]);
+const User = t.object({
+  id: t.num,
+  name: t.str,
+  email: t.str,
+}).optional({
+  age: t.num.gte(0).lte(120),
+});
 
 // Validate data
 const isValid = User.validateSchema();
@@ -74,40 +75,51 @@ Build type-safe APIs with complex schemas:
 import {t} from '@jsonjoy.com/json-type';
 
 // Define API request/response types
-const CreatePostRequest = t.Object([
-  t.prop('title', t.String({min: 1, max: 100})),
-  t.prop('content', t.String({min: 10})),
-  t.prop('tags', t.Array(t.String(), {max: 5})),
-  t.prop('published', t.Boolean())
-]);
+const CreatePostRequest = t.object({
+  title: t.str.options({min: 1, max: 100}),
+  content: t.str.options({min: 10}),
+  tags: t.array(t.str).options({max: 5}),
+  published: t.bool,
+});
 
-const Post = t.Object([
-  t.prop('id', t.String()),
-  t.prop('title', t.String()),
-  t.prop('content', t.String()),
-  t.prop('tags', t.Array(t.String())),
-  t.prop('published', t.Boolean()),
-  t.prop('createdAt', t.Number({format: 'u64'})),
-  t.prop('author', t.Object([
-    t.prop('id', t.String()),
-    t.prop('name', t.String())
-  ]))
-]);
+const Post = t.object({
+  id: t.str,
+  title: t.str,
+  content: t.str,
+  tags: t.array(t.str),
+  published: t.bool,
+  createdAt: t.num.options({format: 'u64'}),
+  author: t.object({
+    id: t.str,
+    name: t.str,
+  }),
+});
 
-const CreatePostResponse = t.Object([
-  t.prop('success', t.Boolean()),
-  t.prop('post', Post),
-  t.propOpt('error', t.String())
-]);
+const CreatePostResponse = t.object({
+  success: t.bool,
+  post: Post,
+}).optional({
+  error: t.str,
+});
 
-// Use in your API
-function createPost(data: unknown) {
-  CreatePostRequest.validate(data); // Throws if invalid
-  
-  // Your business logic here...
-  
-  return CreatePostResponse.random(); // Type-safe response
-}
+// Extract TypeScript types using t.infer
+type PostType = t.infer<typeof Post>;
+type CreateRequestType = t.infer<typeof CreatePostRequest>;
+type CreateResponseType = t.infer<typeof CreatePostResponse>;
+
+// Now you have full type safety!
+const newPost: PostType = {
+  id: "123",
+  title: "My Blog Post",
+  content: "This is the content...",
+  tags: ["typescript", "json"],
+  published: true,
+  createdAt: Date.now(),
+  author: {
+    id: "user456",
+    name: "John Doe"
+  }
+};
 ```
 
 ## Usage
