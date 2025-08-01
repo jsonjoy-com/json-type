@@ -1,5 +1,6 @@
 import type * as ts from './types';
 import type * as schema from '../schema';
+import type {ObjType} from '../type/classes';
 
 /**
  * Main router function that converts any Schema to TypeScript AST.
@@ -17,7 +18,7 @@ export function toTypeScriptAst(schema: schema.Schema): ts.TsType {
       const node: ts.TsBooleanKeyword = {node: 'BooleanKeyword'};
       return node;
     }
-    case 'const': {
+    case 'con': {
       const constSchema = schema as schema.ConstSchema;
       const value = constSchema.value;
       const valueType = typeof value;
@@ -79,16 +80,16 @@ export function toTypeScriptAst(schema: schema.Schema): ts.TsType {
     }
     case 'arr': {
       const arraySchema = schema as schema.ArraySchema;
-      const node: ts.TsArrayType = {
-        node: 'ArrayType',
+      const node: ts.TsArrType = {
+        node: 'ArrType',
         elementType: toTypeScriptAst(arraySchema.type) as ts.TsType,
       };
       return node;
     }
     case 'tup': {
       const tupleSchema = schema as schema.TupleSchema;
-      const node: ts.TsTupleType = {
-        node: 'TupleType',
+      const node: ts.TsTupType = {
+        node: 'TupType',
         elements: tupleSchema.types.map((type: any) => toTypeScriptAst(type) as ts.TsType),
       };
       return node;
@@ -106,7 +107,7 @@ export function toTypeScriptAst(schema: schema.Schema): ts.TsType {
           const member: ts.TsPropertySignature = {
             node: 'PropertySignature',
             name: field.key,
-            type: toTypeScriptAst(field.type) as ts.TsType,
+            type: toTypeScriptAst(field.value) as ts.TsType,
           };
           if (field.optional === true) {
             member.optional = true;
@@ -147,7 +148,7 @@ export function toTypeScriptAst(schema: schema.Schema): ts.TsType {
       const node: ts.TsTypeReference = {
         node: 'TypeReference',
         typeName: 'Record',
-        typeArguments: [{node: 'StringKeyword'}, toTypeScriptAst(mapSchema.type)],
+        typeArguments: [{node: 'StringKeyword'}, toTypeScriptAst(mapSchema.value)],
       };
       return node;
     }
@@ -176,8 +177,8 @@ export function toTypeScriptAst(schema: schema.Schema): ts.TsType {
       const reqSchema = (fnSchema.req as any).getSchema ? (fnSchema.req as any).getSchema() : fnSchema.req;
       const resSchema = (fnSchema.res as any).getSchema ? (fnSchema.res as any).getSchema() : fnSchema.res;
 
-      const node: ts.TsFunctionType = {
-        node: 'FunctionType',
+      const node: ts.TsFnType = {
+        node: 'FnType',
         parameters: [
           {
             node: 'Parameter',
@@ -205,8 +206,8 @@ export function toTypeScriptAst(schema: schema.Schema): ts.TsType {
       const reqSchema = (fnSchema.req as any).getSchema ? (fnSchema.req as any).getSchema() : fnSchema.req;
       const resSchema = (fnSchema.res as any).getSchema ? (fnSchema.res as any).getSchema() : fnSchema.res;
 
-      const node: ts.TsFunctionType = {
-        node: 'FunctionType',
+      const node: ts.TsFnType = {
+        node: 'FnType',
         parameters: [
           {
             node: 'Parameter',
@@ -242,3 +243,23 @@ export function toTypeScriptAst(schema: schema.Schema): ts.TsType {
     }
   }
 }
+
+export const objToModule = (obj: ObjType<any>): ts.TsModuleDeclaration => {
+  const node: ts.TsModuleDeclaration = {
+    node: 'ModuleDeclaration',
+    name: 'Router',
+    export: true,
+    statements: [
+      {
+        node: 'TypeAliasDeclaration',
+        name: 'Routes',
+        type: toTypeScriptAst(obj.getSchema()),
+        export: true,
+      },
+    ],
+  };
+  const system = obj.system;
+  if (!system) throw new Error('system is undefined');
+  for (const alias of system.aliases.values()) node.statements.push({...alias.toTypeScriptAst(), export: true});
+  return node;
+};

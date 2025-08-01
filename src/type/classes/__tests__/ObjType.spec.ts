@@ -19,9 +19,9 @@ describe('.prop()', () => {
     expect(object.getSchema()).toMatchObject({
       kind: 'obj',
       fields: [
-        {kind: 'field', key: 'a', type: {kind: 'str'}},
-        {kind: 'field', key: 'b', type: {kind: 'num'}, title: 'B'},
-        {kind: 'field', key: 'c', type: {kind: 'bool'}, description: 'C'},
+        {kind: 'field', key: 'a', value: {kind: 'str'}},
+        {kind: 'field', key: 'b', value: {kind: 'num'}, title: 'B'},
+        {kind: 'field', key: 'c', value: {kind: 'bool'}, description: 'C'},
       ],
     });
   });
@@ -37,10 +37,10 @@ describe('.opt()', () => {
     expect(object.getSchema()).toMatchObject({
       kind: 'obj',
       fields: [
-        {kind: 'field', key: 'a', type: {kind: 'str'}},
-        {kind: 'field', key: 'b', type: {kind: 'num'}, title: 'B'},
-        {kind: 'field', key: 'c', type: {kind: 'bool'}, description: 'C'},
-        {kind: 'field', key: 'd', type: {kind: 'const', value: null}, description: 'D', optional: true},
+        {kind: 'field', key: 'a', value: {kind: 'str'}},
+        {kind: 'field', key: 'b', value: {kind: 'num'}, title: 'B'},
+        {kind: 'field', key: 'c', value: {kind: 'bool'}, description: 'C'},
+        {kind: 'field', key: 'd', value: {kind: 'con', value: null}, description: 'D', optional: true},
       ],
     });
   });

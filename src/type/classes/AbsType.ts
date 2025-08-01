@@ -48,7 +48,7 @@ import type {Validators} from './types';
 import type * as jtd from '../../jtd/types';
 import {random} from '../../random/generator';
 
-export abstract class AbstractType<S extends schema.Schema> implements BaseType<S>, Printable {
+export abstract class AbsType<S extends schema.Schema> implements BaseType<S>, Printable {
   /** Default type system to use, if any. */
   public system?: TypeSystem;
 
@@ -178,7 +178,9 @@ export abstract class AbstractType<S extends schema.Schema> implements BaseType<
   }
 
   public codegenJsonTextEncoder(ctx: JsonTextEncoderCodegenContext, value: JsExpression): void {
-    throw new Error(`${this.toStringName()}.codegenJsonTextEncoder() not implemented`);
+    // Use the centralized router function
+    const {generate} = require('../../codegen/json/jsonTextEncoders');
+    generate(ctx, value, this as any);
   }
 
   private __jsonEncoder: JsonEncoderFn | undefined;
@@ -228,7 +230,9 @@ export abstract class AbstractType<S extends schema.Schema> implements BaseType<
   }
 
   public codegenValidator(ctx: ValidatorCodegenContext, path: ValidationPath, r: string): void {
-    throw new Error(`${this.toStringName()}.codegenValidator() not implemented`);
+    // Use the centralized router function
+    const {generate} = require('../../codegen/validator/validators');
+    generate(ctx, path, r, this as any);
   }
 
   public compileCborEncoder(
@@ -247,7 +251,9 @@ export abstract class AbstractType<S extends schema.Schema> implements BaseType<
   }
 
   public codegenCborEncoder(ctx: CborEncoderCodegenContext, value: JsExpression): void {
-    throw new Error(`${this.toStringName()}.codegenCborEncoder() not implemented`);
+    // Use the centralized router function
+    const {generate} = require('../../codegen/binary/cborEncoders');
+    generate(ctx, value, this as any);
   }
 
   public compileMessagePackEncoder(
@@ -266,7 +272,9 @@ export abstract class AbstractType<S extends schema.Schema> implements BaseType<
   }
 
   public codegenMessagePackEncoder(ctx: MessagePackEncoderCodegenContext, value: JsExpression): void {
-    throw new Error(`${this.toStringName()}.codegenMessagePackEncoder() not implemented`);
+    // Use the centralized router function
+    const {generate} = require('../../codegen/binary/messagePackEncoders');
+    generate(ctx, value, this as any);
   }
 
   public compileJsonEncoder(
@@ -286,7 +294,9 @@ export abstract class AbstractType<S extends schema.Schema> implements BaseType<
   }
 
   public codegenJsonEncoder(ctx: JsonEncoderCodegenContext, value: JsExpression): void {
-    throw new Error(`${this.toStringName()}.codegenJsonEncoder() not implemented`);
+    // Use the centralized router function
+    const {generate} = require('../../codegen/binary/jsonEncoders');
+    generate(ctx, value, this as any);
   }
 
   public codegenCapacityEstimator(ctx: CapacityEstimatorCodegenContext, value: JsExpression): void {
@@ -343,7 +353,7 @@ export abstract class AbstractType<S extends schema.Schema> implements BaseType<
   }
 
   protected toStringName(): string {
-    return 'AbstractType';
+    return 'AbsType';
   }
 
   public toString(tab: string = ''): string {

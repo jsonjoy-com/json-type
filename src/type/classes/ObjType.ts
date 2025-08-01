@@ -13,7 +13,7 @@ import type {CborEncoderCodegenContext} from '../../codegen/binary/CborEncoderCo
 import type {JsonEncoderCodegenContext} from '../../codegen/binary/JsonEncoderCodegenContext';
 import type {MessagePackEncoderCodegenContext} from '../../codegen/binary/MessagePackEncoderCodegenContext';
 import type {CapacityEstimatorCodegenContext} from '../../codegen/capacity/CapacityEstimatorCodegenContext';
-import {AbstractType} from './AbstractType';
+import {AbsType} from './AbsType';
 import type * as jsonSchema from '../../json-schema';
 import type {SchemaOf, SchemaOfObjectFields, Type} from '../types';
 import type {TypeSystem} from '../../system/TypeSystem';
@@ -35,7 +35,7 @@ const augmentWithComment = (
   }
 };
 
-export class ObjectFieldType<K extends string, V extends Type> extends AbstractType<
+export class ObjectFieldType<K extends string, V extends Type> extends AbsType<
   schema.ObjectFieldSchema<K, SchemaOf<V>>
 > {
   protected schema: schema.ObjectFieldSchema<K, any>;
@@ -51,12 +51,12 @@ export class ObjectFieldType<K extends string, V extends Type> extends AbstractT
   public getSchema(): schema.ObjectFieldSchema<K, SchemaOf<V>> {
     return {
       ...this.schema,
-      type: this.value.getSchema() as any,
+      value: this.value.getSchema() as any,
     };
   }
 
   public getOptions(): schema.Optional<schema.ObjectFieldSchema<K, SchemaOf<V>>> {
-    const {kind, key, type, optional, ...options} = this.schema;
+    const {kind, key, value, optional, ...options} = this.schema;
     return options as any;
   }
 
@@ -85,7 +85,7 @@ export class ObjectOptionalFieldType<K extends string, V extends Type> extends O
   }
 }
 
-export class ObjectType<F extends ObjectFieldType<any, any>[] = ObjectFieldType<any, any>[]> extends AbstractType<
+export class ObjType<F extends ObjectFieldType<any, any>[] = ObjectFieldType<any, any>[]> extends AbsType<
   schema.ObjectSchema<SchemaOfObjectFields<F>>
 > {
   protected schema: schema.ObjectSchema<any> = schema.s.obj;
@@ -114,7 +114,7 @@ export class ObjectType<F extends ObjectFieldType<any, any>[] = ObjectFieldType<
     key: K,
     value: V,
     options?: schema.Optional<schema.ObjectFieldSchema<K, SchemaOf<V>>>,
-  ): ObjectType<[...F, ObjectFieldType<K, V>]> {
+  ): ObjType<[...F, ObjectFieldType<K, V>]> {
     this._field(new ObjectFieldType<K, V>(key, value), options);
     return <any>this;
   }
@@ -130,7 +130,7 @@ export class ObjectType<F extends ObjectFieldType<any, any>[] = ObjectFieldType<
     key: K,
     value: V,
     options?: schema.Optional<schema.ObjectFieldSchema<K, SchemaOf<V>>>,
-  ): ObjectType<[...F, ObjectOptionalFieldType<K, V>]> {
+  ): ObjType<[...F, ObjectOptionalFieldType<K, V>]> {
     this._field(new ObjectOptionalFieldType<K, V>(key, value), options);
     return <any>this;
   }
@@ -153,26 +153,26 @@ export class ObjectType<F extends ObjectFieldType<any, any>[] = ObjectFieldType<
     return this.fields.find((f) => f.key === key);
   }
 
-  public extend<F2 extends ObjectFieldType<any, any>[]>(o: ObjectType<F2>): ObjectType<[...F, ...F2]> {
-    const type = new ObjectType([...this.fields, ...o.fields]) as ObjectType<[...F, ...F2]>;
+  public extend<F2 extends ObjectFieldType<any, any>[]>(o: ObjType<F2>): ObjType<[...F, ...F2]> {
+    const type = new ObjType([...this.fields, ...o.fields]) as ObjType<[...F, ...F2]>;
     type.system = this.system;
     return type;
   }
 
   public omit<K extends keyof schema.TypeOf<schema.ObjectSchema<SchemaOfObjectFields<F>>>>(
     key: K,
-  ): ObjectType<ExcludeFromTuple<F, ObjectFieldType<K extends string ? K : never, any>>> {
-    const type = new ObjectType(this.fields.filter((f) => f.key !== key) as any);
+  ): ObjType<ExcludeFromTuple<F, ObjectFieldType<K extends string ? K : never, any>>> {
+    const type = new ObjType(this.fields.filter((f) => f.key !== key) as any);
     type.system = this.system;
     return type;
   }
 
   public pick<K extends keyof schema.TypeOf<schema.ObjectSchema<SchemaOfObjectFields<F>>>>(
     key: K,
-  ): ObjectType<PickFromTuple<F, ObjectFieldType<K extends string ? K : never, any>>> {
+  ): ObjType<PickFromTuple<F, ObjectFieldType<K extends string ? K : never, any>>> {
     const field = this.fields.find((f) => f.key === key);
     if (!field) throw new Error('FIELD_NOT_FOUND');
-    const type = new ObjectType([field] as any);
+    const type = new ObjType([field] as any);
     type.system = this.system;
     return type;
   }
@@ -180,8 +180,8 @@ export class ObjectType<F extends ObjectFieldType<any, any>[] = ObjectFieldType<
   public codegenValidator(ctx: ValidatorCodegenContext, path: ValidationPath, r: string): void {
     const fields = this.fields;
     const length = fields.length;
-    const canSkipObjectTypeCheck = ctx.options.unsafeMode && length > 0;
-    if (!canSkipObjectTypeCheck) {
+    const canSkipObjTypeCheck = ctx.options.unsafeMode && length > 0;
+    if (!canSkipObjTypeCheck) {
       const err = ctx.err(ValidationError.OBJ, path);
       ctx.js(/* js */ `if (typeof ${r} !== 'object' || !${r} || (${r} instanceof Array)) return ${err};`);
     }
@@ -207,7 +207,7 @@ export class ObjectType<F extends ObjectFieldType<any, any>[] = ObjectFieldType<
         field.value.codegenValidator(ctx, keyPath, rv);
         ctx.js(`}`);
       } else {
-        if (!canSkipObjectKeyUndefinedCheck((field.value as AbstractType<any>).getSchema().kind)) {
+        if (!canSkipObjectKeyUndefinedCheck((field.value as AbsType<any>).getSchema().kind)) {
           const err = ctx.err(ValidationError.KEY, [...path, field.key]);
           ctx.js(/* js */ `var ${rv} = ${r}${accessor};`);
           ctx.js(/* js */ `if (!(${JSON.stringify(field.key)} in ${r})) return ${err};`);

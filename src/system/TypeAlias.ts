@@ -1,5 +1,5 @@
 import {printTree} from 'tree-dump/lib/printTree';
-import {ObjectType} from '../type/classes';
+import {ObjType} from '../type/classes';
 import {toText} from '../typescript/toText';
 import type {JsonSchemaGenericKeywords, JsonSchemaValueNode} from '../json-schema';
 import {typeToJsonSchema} from '../json-schema';
@@ -30,7 +30,7 @@ export class TypeAlias<K extends string, T extends Type> implements Printable {
 
   public toTypeScriptAst(): ts.TsInterfaceDeclaration | ts.TsTypeAliasDeclaration {
     const type = this.type;
-    if (type instanceof ObjectType) {
+    if (type instanceof ObjType) {
       const ast = this.type.toTypeScriptAst() as ts.TsTypeLiteral;
       const node: ts.TsInterfaceDeclaration = {
         node: 'InterfaceDeclaration',

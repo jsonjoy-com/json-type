@@ -1,34 +1,34 @@
-import {AbstractType} from './classes/AbstractType';
+import {AbsType} from './classes/AbsType';
 import {AnyType} from './classes/AnyType';
-import {ConstType} from './classes/ConstType';
-import {BooleanType} from './classes/BooleanType';
-import {NumberType} from './classes/NumberType';
-import {StringType} from './classes/StringType';
-import {BinaryType} from './classes/BinaryType';
-import {ArrayType} from './classes/ArrayType';
-import {TupleType} from './classes/TupleType';
-import {ObjectType, ObjectFieldType, ObjectOptionalFieldType} from './classes/ObjectType';
+import {ConType} from './classes/ConType';
+import {BoolType} from './classes/BoolType';
+import {NumType} from './classes/NumType';
+import {StrType} from './classes/StrType';
+import {BinType} from './classes/BinType';
+import {ArrType} from './classes/ArrType';
+import {TupType} from './classes/TupType';
+import {ObjType, ObjectFieldType, ObjectOptionalFieldType} from './classes/ObjType';
 import {MapType} from './classes/MapType';
 import {RefType} from './classes/RefType';
 import {OrType} from './classes/OrType';
-import {FunctionType, FunctionStreamingType} from './classes/FunctionType';
+import {FnType, FnRxType} from './classes/FnType';
 
 export {
-  AbstractType,
+  AbsType,
   AnyType,
-  ConstType,
-  BooleanType,
-  NumberType,
-  StringType,
-  BinaryType,
-  ArrayType,
-  TupleType,
+  ConType,
+  BoolType,
+  NumType,
+  StrType,
+  BinType,
+  ArrType,
+  TupType,
   ObjectFieldType,
   ObjectOptionalFieldType,
-  ObjectType,
+  ObjType,
   MapType,
   RefType,
   OrType,
-  FunctionType,
-  FunctionStreamingType,
+  FnType,
+  FnRxType,
 };

@@ -1,6 +1,6 @@
 export const canSkipObjectKeyUndefinedCheck = (type: string): boolean => {
   switch (type) {
-    case 'const':
+    case 'con':
     case 'bool':
     case 'num':
     case 'str':

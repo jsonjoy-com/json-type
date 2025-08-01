@@ -1,5 +1,5 @@
 import {ValidationError} from '../../constants';
-import {AbstractType} from './AbstractType';
+import {AbsType} from './AbsType';
 import {deepEqualCodegen} from '@jsonjoy.com/util/lib/json-equal/deepEqualCodegen';
 import type * as schema from '../../schema';
 import type {ValidatorCodegenContext} from '../../codegen/validator/ValidatorCodegenContext';
@@ -15,7 +15,7 @@ import type {TypeSystem} from '../../system/TypeSystem';
 import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
 import type * as ts from '../../typescript/types';
 
-export class ConstType<V = any> extends AbstractType<schema.ConstSchema<V>> {
+export class ConType<V = any> extends AbsType<schema.ConstSchema<V>> {
   private __json: json_string<V>;
 
   constructor(protected schema: schema.ConstSchema<any>) {

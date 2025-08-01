@@ -27,7 +27,7 @@ export function toJtdForm(schema: schema.Schema): jtd.JtdForm {
       const form: jtd.JtdTypeForm = {type: 'boolean'};
       return form;
     }
-    case 'const': {
+    case 'con': {
       const constSchema = schema as schema.ConstSchema;
       const value = constSchema.value;
       const valueType = typeof value;
@@ -77,7 +77,7 @@ export function toJtdForm(schema: schema.Schema): jtd.JtdForm {
 
         for (const field of objSchema.fields) {
           const fieldName = field.key;
-          const fieldType = field.type;
+          const fieldType = field.value;
 
           if (fieldType) {
             const fieldJtd = toJtdForm(fieldType);
@@ -107,7 +107,7 @@ export function toJtdForm(schema: schema.Schema): jtd.JtdForm {
     case 'map': {
       const mapSchema = schema as schema.MapSchema;
       return {
-        values: toJtdForm(mapSchema.type),
+        values: toJtdForm(mapSchema.value),
       };
     }
     case 'ref': {

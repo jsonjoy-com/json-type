@@ -240,10 +240,10 @@ describe('random generators', () => {
 
     test('handles edge cases and constraints', () => {
       // Empty array constraint
-      const emptyArrayType = t.Array(t.String(), {max: 0});
-      const emptyArray = emptyArrayType.random();
+      const emptyArrType = t.Array(t.String(), {max: 0});
+      const emptyArray = emptyArrType.random();
       expect(emptyArray).toEqual([]);
-      emptyArrayType.validate(emptyArray);
+      emptyArrType.validate(emptyArray);
 
       // Single item array constraint
       const singleItemType = t.Array(t.Number(), {min: 1, max: 1});

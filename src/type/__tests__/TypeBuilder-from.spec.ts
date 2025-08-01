@@ -19,36 +19,36 @@ test('can create a schema for a deeply nested object', () => {
     undef: undefined,
   });
   expect(type + '').toMatchInlineSnapshot(`
-    "obj
-    ├─ "id":
-    │   └─ num
-    ├─ "foo":
-    │   └─ str
-    ├─ "verified":
-    │   └─ bool
-    ├─ "tags":
-    │   └─ arr
-    │      └─ str
-    ├─ "emptyArr":
-    │   └─ arr
-    │      └─ any
-    ├─ "vectorClockIsTuple":
-    │   └─ tup
-    │      ├─ str
-    │      └─ num
-    ├─ "tupleOfObjectsAndArrays":
-    │   └─ tup
-    │      ├─ arr
-    │      │  └─ any
-    │      ├─ obj
-    │      └─ const → null
-    ├─ "nested":
-    │   └─ obj
-    │      └─ "id":
-    │          └─ num
-    ├─ "nil":
-    │   └─ const → null
-    └─ "undef":
-        └─ const → undefined"
-  `);
+"obj
+├─ "id":
+│   └─ num
+├─ "foo":
+│   └─ str
+├─ "verified":
+│   └─ bool
+├─ "tags":
+│   └─ arr
+│      └─ str
+├─ "emptyArr":
+│   └─ arr
+│      └─ any
+├─ "vectorClockIsTuple":
+│   └─ tup
+│      ├─ str
+│      └─ num
+├─ "tupleOfObjectsAndArrays":
+│   └─ tup
+│      ├─ arr
+│      │  └─ any
+│      ├─ obj
+│      └─ con → null
+├─ "nested":
+│   └─ obj
+│      └─ "id":
+│          └─ num
+├─ "nil":
+│   └─ con → null
+└─ "undef":
+    └─ con → undefined"
+`);
 });

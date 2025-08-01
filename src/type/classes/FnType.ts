@@ -1,16 +1,16 @@
 import {printTree} from 'tree-dump/lib/printTree';
 import * as schema from '../../schema';
-import {AbstractType} from './AbstractType';
+import {AbsType} from './AbsType';
 import type {SchemaOf, Type} from '../types';
-import type * as ts from '../../typescript/types';
 import type {ResolveType} from '../../system';
 import type {Observable} from 'rxjs';
+import {Value} from '../../value';
 
 const fnNotImplemented: schema.FunctionValue<any, any> = async () => {
   throw new Error('NOT_IMPLEMENTED');
 };
 
-const toStringTree = (tab: string = '', type: FunctionType<Type, Type> | FunctionStreamingType<Type, Type>) => {
+const toStringTree = (tab: string = '', type: FnType<Type, Type, any> | FnRxType<Type, Type, any>) => {
   return printTree(tab, [
     (tab) => 'req: ' + type.req.toString(tab + '     '),
     (tab) => 'res: ' + type.res.toString(tab + '     '),
@@ -20,12 +20,12 @@ const toStringTree = (tab: string = '', type: FunctionType<Type, Type> | Functio
 type FunctionImpl<Req extends Type, Res extends Type, Ctx = unknown> = (
   req: ResolveType<Req>,
   ctx: Ctx,
-) => Promise<ResolveType<Res>>;
+) => ResolveType<Res> | Promise<ResolveType<Res>>;
 
-export class FunctionType<Req extends Type, Res extends Type> extends AbstractType<
-  schema.FunctionSchema<SchemaOf<Req>, SchemaOf<Res>>
+export class FnType<Req extends Type, Res extends Type, Ctx = unknown> extends AbsType<
+  schema.FunctionSchema<SchemaOf<Req>, SchemaOf<Res>, Ctx>
 > {
-  protected schema: schema.FunctionSchema<SchemaOf<Req>, SchemaOf<Res>>;
+  protected schema: schema.FunctionSchema<SchemaOf<Req>, SchemaOf<Res>, Ctx>;
 
   public fn: schema.FunctionValue<schema.TypeOf<SchemaOf<Req>>, schema.TypeOf<SchemaOf<Res>>> = fnNotImplemented;
 
@@ -41,37 +41,46 @@ export class FunctionType<Req extends Type, Res extends Type> extends AbstractTy
     } as any;
   }
 
-  public request<T extends Type>(req: T): FunctionType<T, Res> {
+  public input<T extends Type>(req: T): FnType<T, Res> {
+    return this.inp(req);
+  }
+
+  public inp<T extends Type>(req: T): FnType<T, Res> {
     (this as any).req = req;
     return this as any;
   }
 
-  public inp<T extends Type>(req: T): FunctionType<T, Res> {
-    return this.request(req);
+  public output<T extends Type>(res: T): FnType<Req, T> {
+    return this.out(res);
   }
 
-  public response<T extends Type>(res: T): FunctionType<Req, T> {
+  public out<T extends Type>(res: T): FnType<Req, T> {
     (this as any).res = res;
     return this as any;
   }
 
-  public out<T extends Type>(res: T): FunctionType<Req, T> {
-    return this.response(res);
+  public io<I extends Type, O extends Type>(request: I, response: O): FnType<I, O, Ctx> {
+    return this.inp(request).out(response) as FnType<I, O, Ctx>;
   }
 
-  public getSchema(): schema.FunctionSchema<SchemaOf<Req>, SchemaOf<Res>> {
+  public signature<I extends Type, O extends Type>(request: I, response: O): FnType<I, O, Ctx> {
+    return this.io(request, response) as FnType<I, O, Ctx>;
+  }
+
+  public ctx<T>(): FnType<Req, Res, T> {
+    return this as any;
+  }
+
+  public value(data: ResolveType<FnType<Req, Res, Ctx>>) {
+    return new Value<FnType<Req, Res, Ctx>>(this, data);
+  }
+
+  public getSchema(): schema.FunctionSchema<SchemaOf<Req>, SchemaOf<Res>, Ctx> {
     return {
       ...this.schema,
       req: this.req.getSchema() as SchemaOf<Req>,
       res: this.res.getSchema() as SchemaOf<Res>,
     };
-  }
-
-  public singleton?: FunctionImpl<Req, Res, any> = undefined;
-
-  public implement<Ctx = unknown>(singleton: FunctionImpl<Req, Res, Ctx>): this {
-    this.singleton = singleton;
-    return this;
   }
 
   public toString(tab: string = ''): string {
@@ -84,11 +93,11 @@ type FunctionStreamingImpl<Req extends Type, Res extends Type, Ctx = unknown> = 
   ctx: Ctx,
 ) => Observable<ResolveType<Res>>;
 
-export class FunctionStreamingType<Req extends Type, Res extends Type> extends AbstractType<
-  schema.FunctionStreamingSchema<SchemaOf<Req>, SchemaOf<Res>>
+export class FnRxType<Req extends Type, Res extends Type, Ctx = unknown> extends AbsType<
+  schema.FunctionStreamingSchema<SchemaOf<Req>, SchemaOf<Res>, Ctx>
 > {
   public readonly isStreaming = true;
-  protected schema: schema.FunctionStreamingSchema<SchemaOf<Req>, SchemaOf<Res>>;
+  protected schema: schema.FunctionStreamingSchema<SchemaOf<Req>, SchemaOf<Res>, Ctx>;
 
   constructor(
     public readonly req: Req,
@@ -102,37 +111,30 @@ export class FunctionStreamingType<Req extends Type, Res extends Type> extends A
     } as any;
   }
 
-  public request<T extends Type>(req: T): FunctionType<T, Res> {
+  public request<T extends Type>(req: T): FnType<T, Res> {
     (this as any).req = req;
     return this as any;
   }
 
-  public inp<T extends Type>(req: T): FunctionType<T, Res> {
+  public inp<T extends Type>(req: T): FnType<T, Res> {
     return this.request(req);
   }
 
-  public response<T extends Type>(res: T): FunctionType<Req, T> {
+  public response<T extends Type>(res: T): FnType<Req, T> {
     (this as any).res = res;
     return this as any;
   }
 
-  public out<T extends Type>(res: T): FunctionType<Req, T> {
+  public out<T extends Type>(res: T): FnType<Req, T> {
     return this.response(res);
   }
 
-  public getSchema(): schema.FunctionStreamingSchema<SchemaOf<Req>, SchemaOf<Res>> {
+  public getSchema(): schema.FunctionStreamingSchema<SchemaOf<Req>, SchemaOf<Res>, Ctx> {
     return {
       ...this.schema,
       req: this.req.getSchema() as SchemaOf<Req>,
       res: this.res.getSchema() as SchemaOf<Res>,
     };
-  }
-
-  public singleton?: FunctionStreamingImpl<Req, Res, any> = undefined;
-
-  public implement<Ctx = unknown>(singleton: FunctionStreamingImpl<Req, Res, Ctx>): this {
-    this.singleton = singleton;
-    return this;
   }
 
   public toString(tab: string = ''): string {

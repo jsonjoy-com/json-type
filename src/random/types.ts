@@ -1,3 +1,3 @@
-import type {AbstractType} from '../type/classes/AbstractType';
+import type {AbsType} from '../type/classes/AbsType';
 
-export type RandomGeneratorFunction = (type: AbstractType<any>) => unknown;
+export type RandomGeneratorFunction = (type: AbsType<any>) => unknown;

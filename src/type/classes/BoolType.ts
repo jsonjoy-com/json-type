@@ -13,7 +13,7 @@ import type {MessagePackEncoderCodegenContext} from '../../codegen/binary/Messag
 import type {BinaryJsonEncoder} from '@jsonjoy.com/json-pack/lib/types';
 import type {CapacityEstimatorCodegenContext} from '../../codegen/capacity/CapacityEstimatorCodegenContext';
 import {MaxEncodingOverhead} from '@jsonjoy.com/util/lib/json-size';
-import {AbstractType} from './AbstractType';
+import {AbsType} from './AbsType';
 import type * as jsonSchema from '../../json-schema';
 import type {TypeSystem} from '../../system/TypeSystem';
 import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
@@ -21,35 +21,9 @@ import type * as ts from '../../typescript/types';
 import type {TypeExportContext} from '../../system/TypeExportContext';
 import type * as jtd from '../../jtd/types';
 
-export class BooleanType extends AbstractType<schema.BooleanSchema> {
+export class BoolType extends AbsType<schema.BooleanSchema> {
   constructor(protected schema: schema.BooleanSchema) {
     super();
-  }
-
-  public codegenValidator(ctx: ValidatorCodegenContext, path: ValidationPath, r: string): void {
-    const err = ctx.err(ValidationError.BOOL, path);
-    ctx.js(/* js */ `if(typeof ${r} !== "boolean") return ${err};`);
-    ctx.emitCustomValidators(this, path, r);
-  }
-
-  public codegenJsonTextEncoder(ctx: JsonTextEncoderCodegenContext, value: JsExpression): void {
-    ctx.js(/* js */ `s += ${value.use()} ? 'true' : 'false';`);
-  }
-
-  protected codegenBinaryEncoder(ctx: BinaryEncoderCodegenContext<BinaryJsonEncoder>, value: JsExpression): void {
-    ctx.js(/* js */ `encoder.writeBoolean(${value.use()});`);
-  }
-
-  public codegenCborEncoder(ctx: CborEncoderCodegenContext, value: JsExpression): void {
-    this.codegenBinaryEncoder(ctx, value);
-  }
-
-  public codegenMessagePackEncoder(ctx: MessagePackEncoderCodegenContext, value: JsExpression): void {
-    this.codegenBinaryEncoder(ctx, value);
-  }
-
-  public codegenJsonEncoder(ctx: JsonEncoderCodegenContext, value: JsExpression): void {
-    this.codegenBinaryEncoder(ctx, value);
   }
 
   public toJson(value: unknown, system: TypeSystem | undefined = this.system) {

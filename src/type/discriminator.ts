@@ -1,18 +1,18 @@
-import {BooleanType, ConstType, NumberType, type ObjectFieldType, ObjectType, StringType, TupleType} from './classes';
+import {BoolType, ConType, NumType, type ObjectFieldType, ObjType, StrType, TupType} from './classes';
 import type {Expr} from '@jsonjoy.com/json-expression';
 import type {Type} from './types';
 
 export class Discriminator {
   public static findConst(type: Type): Discriminator | undefined {
-    if (type instanceof ConstType) return new Discriminator('', type);
-    else if (type instanceof TupleType) {
+    if (type instanceof ConType) return new Discriminator('', type);
+    else if (type instanceof TupType) {
       const types = type.types;
       for (let i = 0; i < types.length; i++) {
         const t = types[i];
         const d = Discriminator.findConst(t);
         if (d) return new Discriminator('/' + i + d.path, d.type);
       }
-    } else if (type instanceof ObjectType) {
+    } else if (type instanceof ObjType) {
       const fields = type.fields as ObjectFieldType<string, Type>[];
       for (let i = 0; i < fields.length; i++) {
         const f = fields[i];
@@ -54,10 +54,10 @@ export class Discriminator {
   ) {}
 
   condition(): Expr {
-    if (this.type instanceof ConstType) return ['==', this.type.value(), ['$', this.path]];
-    if (this.type instanceof BooleanType) return ['==', ['type', ['$', this.path]], 'boolean'];
-    if (this.type instanceof NumberType) return ['==', ['type', ['$', this.path]], 'number'];
-    if (this.type instanceof StringType) return ['==', ['type', ['$', this.path]], 'string'];
+    if (this.type instanceof ConType) return ['==', this.type.value(), ['$', this.path]];
+    if (this.type instanceof BoolType) return ['==', ['type', ['$', this.path]], 'boolean'];
+    if (this.type instanceof NumType) return ['==', ['type', ['$', this.path]], 'number'];
+    if (this.type instanceof StrType) return ['==', ['type', ['$', this.path]], 'string'];
     switch (this.typeSpecifier()) {
       case 'obj':
         return ['==', ['type', ['$', this.path]], 'object'];
@@ -73,7 +73,7 @@ export class Discriminator {
       case 'bool':
       case 'str':
       case 'num':
-      case 'const':
+      case 'con':
         return mnemonic;
       case 'obj':
       case 'map':
@@ -92,7 +92,7 @@ export class Discriminator {
     const type = this.type;
     const path = this.path;
     const typeSpecifier = this.typeSpecifier();
-    const value = type instanceof ConstType ? type.value() : 0;
+    const value = type instanceof ConType ? type.value() : 0;
     return JSON.stringify([path, typeSpecifier, value]);
   }
 }

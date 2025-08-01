@@ -1,7 +1,7 @@
 import * as schema from '../../schema';
 import {ValidationError} from '../../constants';
 import {MessagePackEncoderCodegenContext} from '../../codegen/binary/MessagePackEncoderCodegenContext';
-import {AbstractType} from './AbstractType';
+import {AbsType} from './AbsType';
 import {CborEncoderCodegenContext} from '../../codegen/binary/CborEncoderCodegenContext';
 import {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
 import {printTree} from 'tree-dump';
@@ -14,10 +14,9 @@ import type {BinaryEncoderCodegenContext} from '../../codegen/binary/BinaryEncod
 import type {SchemaOf, Type} from '../types';
 import type {TypeSystem} from '../../system/TypeSystem';
 import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
-import type * as ts from '../../typescript/types';
 import type {TypeExportContext} from '../../system/TypeExportContext';
 
-export class ArrayType<T extends Type> extends AbstractType<schema.ArraySchema<SchemaOf<T>>> {
+export class ArrType<T extends Type> extends AbsType<schema.ArraySchema<SchemaOf<T>>> {
   protected schema: schema.ArraySchema<any>;
 
   constructor(

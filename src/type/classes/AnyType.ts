@@ -12,13 +12,13 @@ import {EncodingFormat} from '@jsonjoy.com/json-pack/lib/constants';
 import type {BinaryJsonEncoder} from '@jsonjoy.com/json-pack/lib/types';
 import type {CapacityEstimatorCodegenContext} from '../../codegen/capacity/CapacityEstimatorCodegenContext';
 import {maxEncodingCapacity} from '@jsonjoy.com/util/lib/json-size';
-import {AbstractType} from './AbstractType';
+import {AbsType} from './AbsType';
 import type * as jsonSchema from '../../json-schema';
 import type * as ts from '../../typescript/types';
 import type {TypeExportContext} from '../../system/TypeExportContext';
 import type * as jtd from '../../jtd/types';
 
-export class AnyType extends AbstractType<schema.AnySchema> {
+export class AnyType extends AbsType<schema.AnySchema> {
   constructor(protected schema: schema.AnySchema) {
     super();
   }

@@ -10,8 +10,8 @@ import {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
 import type {MessagePackEncoderCodegenContext} from '../../codegen/binary/MessagePackEncoderCodegenContext';
 import type {CapacityEstimatorCodegenContext} from '../../codegen/capacity/CapacityEstimatorCodegenContext';
 import {MaxEncodingOverhead} from '@jsonjoy.com/util/lib/json-size';
-import {AbstractType} from './AbstractType';
-import {ObjectFieldType} from './ObjectType';
+import {AbsType} from './AbsType';
+import {ObjectFieldType} from './ObjType';
 import type * as jsonSchema from '../../json-schema';
 import type {SchemaOf, Type} from '../types';
 import type {TypeSystem} from '../../system/TypeSystem';
@@ -32,7 +32,7 @@ type SchemaOfTupleElement<T> = T extends ObjectFieldType<any, infer V>
 // Helper type for the schema mapping
 type TupleSchemaMapping<T extends TupleElement[]> = {[K in keyof T]: SchemaOfTupleElement<T[K]>};
 
-export class TupleType<T extends TupleElement[]> extends AbstractType<schema.TupleSchema<any>> {
+export class TupType<T extends TupleElement[]> extends AbsType<schema.TupleSchema<any>> {
   protected schema: schema.TupleSchema<any>;
 
   constructor(
