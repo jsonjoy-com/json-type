@@ -11,6 +11,7 @@ import type {MessagePackEncoderCodegenContext} from '../../codegen/binary/Messag
 import type {CapacityEstimatorCodegenContext} from '../../codegen/capacity/CapacityEstimatorCodegenContext';
 import {MaxEncodingOverhead} from '@jsonjoy.com/util/lib/json-size';
 import {AbsType} from './AbsType';
+import {ObjectFieldType} from './ObjType';
 import type * as jsonSchema from '../../json-schema';
 import type {SchemaOf, Type} from '../types';
 import type {TypeSystem} from '../../system/TypeSystem';
@@ -18,7 +19,20 @@ import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
 import type * as ts from '../../typescript/types';
 import type {TypeExportContext} from '../../system/TypeExportContext';
 
-export class TupType<T extends Type[]> extends AbsType<schema.TupleSchema<{[K in keyof T]: SchemaOf<T[K]>}>> {
+// Helper type to extract the underlying type from either Type or ObjectFieldType
+type TupleElement = Type | ObjectFieldType<any, any>;
+
+// Helper type to extract the schema from a tuple element
+type SchemaOfTupleElement<T> = T extends ObjectFieldType<any, infer V>
+  ? SchemaOf<V>
+  : T extends Type
+    ? SchemaOf<T>
+    : never;
+
+// Helper type for the schema mapping
+type TupleSchemaMapping<T extends TupleElement[]> = {[K in keyof T]: SchemaOfTupleElement<T[K]>};
+
+export class TupType<T extends TupleElement[]> extends AbsType<schema.TupleSchema<any>> {
   protected schema: schema.TupleSchema<any>;
 
   constructor(
@@ -29,14 +43,24 @@ export class TupType<T extends Type[]> extends AbsType<schema.TupleSchema<{[K in
     this.schema = {...schema.s.Tuple(), ...options};
   }
 
-  public getSchema(): schema.TupleSchema<{[K in keyof T]: SchemaOf<T[K]>}> {
+  public getSchema(): schema.TupleSchema<any> {
     return {
       ...this.schema,
-      types: this.types.map((type) => type.getSchema()) as any,
+      types: this.types.map((type) => {
+        // If it's an ObjectFieldType, wrap in a field structure, otherwise get the type's schema directly
+        if (type instanceof ObjectFieldType) {
+          return {
+            kind: 'field',
+            key: type.key,
+            value: type.value.getSchema(),
+          };
+        }
+        return type.getSchema();
+      }) as any,
     };
   }
 
-  public getOptions(): schema.Optional<schema.TupleSchema<{[K in keyof T]: SchemaOf<T[K]>}>> {
+  public getOptions(): schema.Optional<schema.TupleSchema<any>> {
     const {kind, types, ...options} = this.schema;
     return options as any;
   }
@@ -48,7 +72,10 @@ export class TupType<T extends Type[]> extends AbsType<schema.TupleSchema<{[K in
     for (let i = 0; i < this.types.length; i++) {
       const rv = ctx.codegen.getRegister();
       ctx.js(/* js */ `var ${rv} = ${r}[${i}];`);
-      types[i].codegenValidator(ctx, [...path, i], rv);
+      const type = types[i];
+      // If it's an ObjectFieldType, validate the value type
+      const typeToValidate = type instanceof ObjectFieldType ? type.value : type;
+      typeToValidate.codegenValidator(ctx, [...path, i], rv);
     }
     ctx.emitCustomValidators(this, path, r);
   }
@@ -59,10 +86,14 @@ export class TupType<T extends Type[]> extends AbsType<schema.TupleSchema<{[K in
     const length = types.length;
     const last = length - 1;
     for (let i = 0; i < last; i++) {
-      types[i].codegenJsonTextEncoder(ctx, new JsExpression(() => `${value.use()}[${i}]`));
+      const type = types[i];
+      const typeToEncode = type instanceof ObjectFieldType ? type.value : type;
+      typeToEncode.codegenJsonTextEncoder(ctx, new JsExpression(() => `${value.use()}[${i}]`));
       ctx.writeText(',');
     }
-    types[last].codegenJsonTextEncoder(ctx, new JsExpression(() => `${value.use()}[${last}]`));
+    const lastType = types[last];
+    const lastTypeToEncode = lastType instanceof ObjectFieldType ? lastType.value : lastType;
+    lastTypeToEncode.codegenJsonTextEncoder(ctx, new JsExpression(() => `${value.use()}[${last}]`));
     ctx.writeText(']');
   }
 
@@ -79,10 +110,13 @@ export class TupType<T extends Type[]> extends AbsType<schema.TupleSchema<{[K in
     );
     const r = ctx.codegen.r();
     ctx.js(/* js */ `var ${r} = ${value.use()};`);
-    for (let i = 0; i < length; i++)
+    for (let i = 0; i < length; i++) {
+      const type = types[i];
+      const typeToEncode = type instanceof ObjectFieldType ? type.value : type;
       if (ctx instanceof CborEncoderCodegenContext)
-        types[i].codegenCborEncoder(ctx, new JsExpression(() => `${r}[${i}]`));
-      else types[i].codegenMessagePackEncoder(ctx, new JsExpression(() => `${r}[${i}]`));
+        typeToEncode.codegenCborEncoder(ctx, new JsExpression(() => `${r}[${i}]`));
+      else typeToEncode.codegenMessagePackEncoder(ctx, new JsExpression(() => `${r}[${i}]`));
+    }
   }
 
   public codegenCborEncoder(ctx: CborEncoderCodegenContext, value: JsExpression): void {
@@ -110,9 +144,10 @@ export class TupType<T extends Type[]> extends AbsType<schema.TupleSchema<{[K in
     });
     for (let i = 0; i < length; i++) {
       const type = types[i];
+      const typeToEncode = type instanceof ObjectFieldType ? type.value : type;
       const isLast = i === length - 1;
       codegen.js(`${rItem} = ${r}[${i}];`);
-      type.codegenJsonEncoder(ctx, expr);
+      typeToEncode.codegenJsonEncoder(ctx, expr);
       if (!isLast) ctx.blob(arrSepBlob);
     }
     ctx.blob(
@@ -128,12 +163,30 @@ export class TupType<T extends Type[]> extends AbsType<schema.TupleSchema<{[K in
     if (!length) return '[]' as json_string<unknown>;
     const last = length - 1;
     let str = '[';
-    for (let i = 0; i < last; i++) str += (types[i] as any).toJson((value as unknown[])[i] as any, system) + ',';
-    str += (types[last] as any).toJson((value as unknown[])[last] as any, system);
+    for (let i = 0; i < last; i++) {
+      const type = types[i];
+      const typeToEncode = type instanceof ObjectFieldType ? type.value : type;
+      str += (typeToEncode as any).toJson((value as unknown[])[i] as any, system) + ',';
+    }
+    const lastType = types[last];
+    const lastTypeToEncode = lastType instanceof ObjectFieldType ? lastType.value : lastType;
+    str += (lastTypeToEncode as any).toJson((value as unknown[])[last] as any, system);
     return (str + ']') as json_string<unknown>;
   }
 
   public toString(tab: string = ''): string {
-    return super.toString(tab) + printTree(tab, [...this.types.map((type) => (tab: string) => type.toString(tab))]);
+    return (
+      super.toString(tab) +
+      printTree(tab, [
+        ...this.types.map((type) => (tab: string) => {
+          const typeToShow = type instanceof ObjectFieldType ? type.value : type;
+          const key = type instanceof ObjectFieldType ? type.key : undefined;
+          if (key) {
+            return `"${key}": ${typeToShow.toString(tab)}`;
+          }
+          return typeToShow.toString(tab);
+        }),
+      ])
+    );
   }
 }

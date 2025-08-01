@@ -96,7 +96,7 @@ export class TypeBuilder {
       options,
     );
 
-  public readonly tuple = <F extends Type[]>(...types: F) => this.Tuple(...types);
+  public readonly tuple = <F extends (Type | classes.ObjectFieldType<any, any>)[]>(...types: F) => this.Tuple(...types);
 
   /**
    * Creates an object type with the specified properties. This is a shorthand for
@@ -204,7 +204,7 @@ export class TypeBuilder {
     return arr;
   }
 
-  public Tuple<F extends Type[]>(...types: F) {
+  public Tuple<F extends (Type | classes.ObjectFieldType<any, any>)[]>(...types: F) {
     const tup = new classes.TupType<F>(types);
     tup.system = this.system;
     return tup;
