@@ -136,6 +136,13 @@ export class SchemaBuilder {
     return {kind: 'con', value: value as any, ...options};
   }
 
+  public Vec<const Head extends Schema[], T extends Schema, const Tail extends [] | Schema[]>(head: Head, type?: T, tail?: Tail): ArrSchema<T, Head, Tail> {
+    const schema: ArrSchema<T, Head, Tail> =  {kind: 'arr', head};
+    if (type) schema.type = type;
+    if (tail) schema.tail = tail;
+    return schema;
+  }
+
   public Tuple<T extends Schema[]>(...types: T): TupSchema<T> {
     return {kind: 'tup', types};
   }

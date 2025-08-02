@@ -55,7 +55,7 @@ test('can infer a simple "boolean" type', () => {
   const bool4: TypeOf<typeof schema4> = false;
 });
 
-test('can infer a simple "binary" type', () => {
+test('can infer a simple "bin" type', () => {
   const schema1 = s.bin;
   const schema2 = s.Binary(s.any);
   const schema3 = s.Binary(s.any, {});
@@ -67,7 +67,7 @@ test('can infer a simple "binary" type', () => {
   const arr3: T3 = Buffer.allocUnsafe(0);
 });
 
-test('can infer a simple "array" type', () => {
+test('can infer a simple "arr" type', () => {
   const schema1 = s.arr;
   const schema2 = s.Array(s.num);
   const schema3 = s.Array(s.str, {});
@@ -77,6 +77,27 @@ test('can infer a simple "array" type', () => {
   const arr1: T1 = [null];
   const arr2: T2 = [1, 2, 3];
   const arr3: T3 = ['foo', 'bar', 'baz'];
+});
+
+test('can infer head, type, and tail in "arr" type', () => {
+  const schema1 = s.Vec([s.str, s.num], s.str, [s.bool]);
+  type T1 = TypeOf<typeof schema1>;
+  const arr1: T1 = ['foo', 1, 'bar', true] satisfies [string, number, ...string[], boolean];
+  const arr2: [string, number, ...string[], boolean] = ['foo', 1, 'bar', true] satisfies T1;
+});
+
+test('can infer head and type in "arr" type', () => {
+  const schema1 = s.Vec([s.str, s.num], s.str);
+  type T1 = TypeOf<typeof schema1>;
+  const arr1: T1 = ['foo', 1, 'bar'] satisfies [string, number, ...string[]];
+  const arr2: [string, number, ...string[]] = ['foo', 1, 'bar'] satisfies T1;
+});
+
+test('can infer head in "arr" type', () => {
+  const schema1 = s.Vec([s.str, s.num]);
+  type T1 = TypeOf<typeof schema1>;
+  const arr1: T1 = ['foo', 1] satisfies [string, number];
+  const arr2: [string, number] = ['foo', 1] satisfies T1;
 });
 
 test('can infer a simple "const" type', () => {
@@ -102,7 +123,7 @@ test('can infer a simple "tuple" type', () => {
   const value1: T1 = ['replace', 'foo', 'bar'];
 });
 
-test('can infer a simple object type', () => {
+test('can infer a simple "obj" type', () => {
   const schema1 = s.obj;
   const schema2 = s.Object(s.prop('foo', s.str), s.propOpt('bar', s.num));
   const schema3 = s.Object({
@@ -119,7 +140,7 @@ test('can infer a simple object type', () => {
   const obj4: T4 = {baz: 123, bazOptional: false};
 });
 
-test('can infer a map type', () => {
+test('can infer a "map" type', () => {
   const schema1 = s.map;
   const schema2 = s.Map(s.str);
   const schema3 = s.Map(s.Array(s.num));
@@ -131,7 +152,7 @@ test('can infer a map type', () => {
   const obj3: T3 = {bar: [1, 2, 3]};
 });
 
-test('can infer a simple union type', () => {
+test('can infer a simple "or" type', () => {
   const schema1 = s.Or(s.str, s.num);
   const schema2 = s.Or(s.str, s.num, s.bool);
   const schema3 = s.Or(s.str, s.num, s.bool, s.nil);

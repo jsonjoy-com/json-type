@@ -264,10 +264,14 @@ export interface BinSchema<T extends TType = any> extends TType, WithValidator {
  * }
  * ```
  */
-export interface ArrSchema<T extends TType = any> extends TType<Array<unknown>>, WithValidator {
+export interface ArrSchema<T extends TType = any, Head extends TType[] = [], Tail extends TType[] = []> extends TType<Array<unknown>>, WithValidator {
   kind: 'arr';
   /** One or more "one-of" types that array contains. */
-  type: T;
+  type?: T;
+  /** Head tuple types. */
+  head?: Head;
+  /** Tail tuple types. */
+  tail?: Tail;
   /** Minimum number of elements. */
   min?: number;
   /** Maximum number of elements. */
@@ -471,8 +475,8 @@ export type TypeOfValue<T> = T extends BoolSchema
     ? number
     : T extends StrSchema
       ? string
-      : T extends ArrSchema<infer U>
-        ? TypeOf<U>[]
+      : T extends ArrSchema<infer U, infer Head, infer Tail>
+        ? [...{[K in keyof Head]: TypeOf<Head[K]>}, ...(Schema extends U ? [] : TypeOf<U>[]), ...(Tail extends JsonSchema[] ? {[K in keyof Tail]: TypeOf<Tail[K]>} : [])]
         : T extends ConSchema<infer U>
           ? U
           : T extends TupSchema<infer U>
