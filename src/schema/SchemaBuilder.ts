@@ -101,14 +101,14 @@ export class SchemaBuilder {
   public Array<T extends Schema>(
     id: string,
     type: T,
-    options?: Omit<NoT<ArrSchema<T>>, 'id' | 'type'>,
+    options?: Omit<NoT<ArrSchema<T, [], []>>, 'id' | 'type'>,
   ): ArrSchema<T>;
-  public Array<T extends Schema>(type: T, options?: Omit<NoT<ArrSchema<T>>, 'type'>): ArrSchema<T>;
+  public Array<T extends Schema>(type: T, options?: Omit<NoT<ArrSchema<T>>, 'type'>): ArrSchema<T, [], []>;
   public Array<T extends Schema>(
     a: string | T,
     b?: T | Omit<NoT<ArrSchema<T>>, 'type'>,
     c?: Omit<NoT<ArrSchema<T>>, 'id' | 'type'>,
-  ): ArrSchema<T> {
+  ): ArrSchema<T, [], []> {
     if (typeof a === 'string') return this.Array(b as T, {id: a, ...(c || {})});
     return {
       kind: 'arr',
