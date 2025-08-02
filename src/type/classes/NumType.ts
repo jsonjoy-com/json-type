@@ -16,32 +16,32 @@ import type * as ts from '../../typescript/types';
 import type * as schema from '../../schema';
 import type * as jtd from '../../jtd/types';
 
-export class NumType extends AbsType<schema.NumberSchema> {
-  constructor(protected schema: schema.NumberSchema) {
+export class NumType extends AbsType<schema.NumSchema> {
+  constructor(protected schema: schema.NumSchema) {
     super();
   }
 
-  public format(format: schema.NumberSchema['format']): this {
+  public format(format: schema.NumSchema['format']): this {
     this.schema.format = format;
     return this;
   }
 
-  public gt(gt: schema.NumberSchema['gt']): this {
+  public gt(gt: schema.NumSchema['gt']): this {
     this.schema.gt = gt;
     return this;
   }
 
-  public gte(gte: schema.NumberSchema['gte']): this {
+  public gte(gte: schema.NumSchema['gte']): this {
     this.schema.gte = gte;
     return this;
   }
 
-  public lt(lt: schema.NumberSchema['lt']): this {
+  public lt(lt: schema.NumSchema['lt']): this {
     this.schema.lt = lt;
     return this;
   }
 
-  public lte(lte: schema.NumberSchema['lte']): this {
+  public lte(lte: schema.NumSchema['lte']): this {
     this.schema.lte = lte;
     return this;
   }

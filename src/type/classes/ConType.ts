@@ -15,10 +15,10 @@ import type {TypeSystem} from '../../system/TypeSystem';
 import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
 import type * as ts from '../../typescript/types';
 
-export class ConType<V = any> extends AbsType<schema.ConstSchema<V>> {
+export class ConType<V = any> extends AbsType<schema.ConSchema<V>> {
   private __json: json_string<V>;
 
-  constructor(protected schema: schema.ConstSchema<any>) {
+  constructor(protected schema: schema.ConSchema<any>) {
     super();
     this.__json = JSON.stringify(schema.value) as any;
   }
@@ -27,7 +27,7 @@ export class ConType<V = any> extends AbsType<schema.ConstSchema<V>> {
     return this.schema.value;
   }
 
-  public getOptions(): schema.Optional<schema.ConstSchema<V>> {
+  public getOptions(): schema.Optional<schema.ConSchema<V>> {
     const {kind, value, ...options} = this.schema;
     return options as any;
   }

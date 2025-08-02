@@ -18,25 +18,25 @@ import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
 import type * as ts from '../../typescript/types';
 import type {TypeExportContext} from '../../system/TypeExportContext';
 
-export class TupType<T extends Type[]> extends AbsType<schema.TupleSchema<{[K in keyof T]: SchemaOf<T[K]>}>> {
-  protected schema: schema.TupleSchema<any>;
+export class TupType<T extends Type[]> extends AbsType<schema.TupSchema<{[K in keyof T]: SchemaOf<T[K]>}>> {
+  protected schema: schema.TupSchema<any>;
 
   constructor(
     public readonly types: T,
-    options?: Omit<schema.TupleSchema, 'kind' | 'type'>,
+    options?: Omit<schema.TupSchema, 'kind' | 'type'>,
   ) {
     super();
     this.schema = {...schema.s.Tuple(), ...options};
   }
 
-  public getSchema(): schema.TupleSchema<{[K in keyof T]: SchemaOf<T[K]>}> {
+  public getSchema(): schema.TupSchema<{[K in keyof T]: SchemaOf<T[K]>}> {
     return {
       ...this.schema,
       types: this.types.map((type) => type.getSchema()) as any,
     };
   }
 
-  public getOptions(): schema.Optional<schema.TupleSchema<{[K in keyof T]: SchemaOf<T[K]>}>> {
+  public getOptions(): schema.Optional<schema.TupSchema<{[K in keyof T]: SchemaOf<T[K]>}>> {
     const {kind, types, ...options} = this.schema;
     return options as any;
   }

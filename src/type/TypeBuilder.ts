@@ -86,11 +86,11 @@ export class TypeBuilder {
   public readonly string = () => this.str;
   public readonly binary = () => this.bin;
 
-  public readonly con = <V>(value: schema.Narrow<V>, options?: schema.Optional<schema.ConstSchema>) =>
+  public readonly con = <V>(value: schema.Narrow<V>, options?: schema.Optional<schema.ConSchema>) =>
     this.Const(value, options);
   public readonly literal = this.con;
 
-  public readonly array = <T>(type?: T, options?: schema.Optional<schema.ArraySchema>) =>
+  public readonly array = <T>(type?: T, options?: schema.Optional<schema.ArrSchema>) =>
     this.Array<T extends Type ? T : classes.AnyType>(
       (type ?? this.any) as T extends Type ? T : classes.AnyType,
       options,
@@ -159,7 +159,7 @@ export class TypeBuilder {
     return type;
   }
 
-  public Const<V>(value: schema.Narrow<V>, options?: schema.Optional<schema.ConstSchema>) {
+  public Const<V>(value: schema.Narrow<V>, options?: schema.Optional<schema.ConSchema>) {
     type V2 = string extends V
       ? never
       : number extends V
@@ -174,31 +174,31 @@ export class TypeBuilder {
     return type;
   }
 
-  public Boolean(options?: schema.Optional<schema.BooleanSchema>) {
+  public Boolean(options?: schema.Optional<schema.BoolSchema>) {
     const type = new classes.BoolType(s.Boolean(options));
     type.system = this.system;
     return type;
   }
 
-  public Number(options?: schema.Optional<schema.NumberSchema>) {
+  public Number(options?: schema.Optional<schema.NumSchema>) {
     const type = new classes.NumType(s.Number(options));
     type.system = this.system;
     return type;
   }
 
-  public String(options?: schema.Optional<schema.StringSchema>) {
+  public String(options?: schema.Optional<schema.StrSchema>) {
     const type = new classes.StrType(s.String(options));
     type.system = this.system;
     return type;
   }
 
-  public Binary<T extends Type>(type: T, options: schema.Optional<schema.BinarySchema> = {}) {
+  public Binary<T extends Type>(type: T, options: schema.Optional<schema.BinSchema> = {}) {
     const bin = new classes.BinType(type, options);
     bin.system = this.system;
     return bin;
   }
 
-  public Array<T extends Type>(type: T, options?: schema.Optional<schema.ArraySchema>) {
+  public Array<T extends Type>(type: T, options?: schema.Optional<schema.ArrSchema>) {
     const arr = new classes.ArrType<T>(type, options);
     arr.system = this.system;
     return arr;
@@ -249,7 +249,7 @@ export class TypeBuilder {
   public Function<Req extends Type, Res extends Type, Ctx = unknown>(
     req: Req,
     res: Res,
-    options?: schema.Optional<schema.FunctionSchema>,
+    options?: schema.Optional<schema.FnSchema>,
   ) {
     const fn = new classes.FnType<Req, Res, Ctx>(req, res, options);
     fn.system = this.system;
@@ -259,7 +259,7 @@ export class TypeBuilder {
   public Function$<Req extends Type, Res extends Type, Ctx = unknown>(
     req: Req,
     res: Res,
-    options?: schema.Optional<schema.FunctionStreamingSchema>,
+    options?: schema.Optional<schema.FnStreamingSchema>,
   ) {
     const fn = new classes.FnRxType<Req, Res, Ctx>(req, res, options);
     fn.system = this.system;

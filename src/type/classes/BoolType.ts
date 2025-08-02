@@ -21,8 +21,8 @@ import type * as ts from '../../typescript/types';
 import type {TypeExportContext} from '../../system/TypeExportContext';
 import type * as jtd from '../../jtd/types';
 
-export class BoolType extends AbsType<schema.BooleanSchema> {
-  constructor(protected schema: schema.BooleanSchema) {
+export class BoolType extends AbsType<schema.BoolSchema> {
+  constructor(protected schema: schema.BoolSchema) {
     super();
   }
 

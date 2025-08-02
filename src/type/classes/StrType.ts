@@ -17,22 +17,22 @@ import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
 import type * as ts from '../../typescript/types';
 import type * as jtd from '../../jtd/types';
 
-export class StrType extends AbsType<schema.StringSchema> {
-  constructor(protected schema: schema.StringSchema) {
+export class StrType extends AbsType<schema.StrSchema> {
+  constructor(protected schema: schema.StrSchema) {
     super();
   }
 
-  public format(format: schema.StringSchema['format']): this {
+  public format(format: schema.StrSchema['format']): this {
     this.schema.format = format;
     return this;
   }
 
-  public min(min: schema.StringSchema['min']): this {
+  public min(min: schema.StrSchema['min']): this {
     this.schema.min = min;
     return this;
   }
 
-  public max(max: schema.StringSchema['max']): this {
+  public max(max: schema.StrSchema['max']): this {
     this.schema.max = max;
     return this;
   }

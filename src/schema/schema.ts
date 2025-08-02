@@ -82,6 +82,22 @@ export interface AnySchema extends TType<unknown>, WithValidator {
 }
 
 /**
+ * Represents a constant value.
+ * Example:
+ * ```json
+ * {
+ *   "kind": "con",
+ *   "value": 42
+ * }
+ * ```
+ */
+export interface ConSchema<V = any> extends TType, WithValidator {
+  kind: 'con';
+  /** The value. */
+  value: V;
+}
+
+/**
  * Represents a JSON boolean.
  *
  * Example:
@@ -95,7 +111,7 @@ export interface AnySchema extends TType<unknown>, WithValidator {
  * }
  * ```
  */
-export interface BooleanSchema extends TType<boolean>, WithValidator {
+export interface BoolSchema extends TType<boolean>, WithValidator {
   kind: 'bool';
 }
 
@@ -113,7 +129,7 @@ export interface BooleanSchema extends TType<boolean>, WithValidator {
  * }
  * ```
  */
-export interface NumberSchema extends TType<number>, WithValidator {
+export interface NumSchema extends TType<number>, WithValidator {
   kind: 'num';
 
   /**
@@ -164,7 +180,7 @@ export interface NumberSchema extends TType<number>, WithValidator {
  * }
  * ```
  */
-export interface StringSchema extends TType<string>, WithValidator {
+export interface StrSchema extends TType<string>, WithValidator {
   kind: 'str';
 
   /**
@@ -216,7 +232,7 @@ export interface StringSchema extends TType<string>, WithValidator {
  * }
  * ```
  */
-export interface BinarySchema<T extends TType = any> extends TType, WithValidator {
+export interface BinSchema<T extends TType = any> extends TType, WithValidator {
   kind: 'bin';
 
   /** Type of value encoded in the binary data. */
@@ -248,7 +264,7 @@ export interface BinarySchema<T extends TType = any> extends TType, WithValidato
  * }
  * ```
  */
-export interface ArraySchema<T extends TType = any> extends TType<Array<unknown>>, WithValidator {
+export interface ArrSchema<T extends TType = any> extends TType<Array<unknown>>, WithValidator {
   kind: 'arr';
   /** One or more "one-of" types that array contains. */
   type: T;
@@ -259,25 +275,9 @@ export interface ArraySchema<T extends TType = any> extends TType<Array<unknown>
 }
 
 /**
- * Represents a constant value.
- * Example:
- * ```json
- * {
- *   "kind": "con",
- *   "value": 42
- * }
- * ```
- */
-export interface ConstSchema<V = any> extends TType, WithValidator {
-  kind: 'con';
-  /** The value. */
-  value: V;
-}
-
-/**
  * Represents a JSON array.
  */
-export interface TupleSchema<T extends TType[] = any> extends TType, WithValidator {
+export interface TupSchema<T extends TType[] = any> extends TType, WithValidator {
   kind: 'tup';
   // types: any[] extends T ? never : T;
   types: T;
@@ -313,8 +313,8 @@ export interface TupleSchema<T extends TType[] = any> extends TType, WithValidat
  * }
  * ```
  */
-export interface ObjectSchema<
-  Fields extends ObjectFieldSchema<string, TType>[] | readonly ObjectFieldSchema<string, TType>[] = any,
+export interface ObjSchema<
+  Fields extends ObjFieldSchema<string, TType>[] | readonly ObjFieldSchema<string, TType>[] = any,
 > extends TType<object>,
     WithValidator {
   kind: 'obj';
@@ -352,7 +352,7 @@ export interface ObjectSchema<
 /**
  * Represents a single field of an object.
  */
-export interface ObjectFieldSchema<K extends string = string, V extends TType = TType> extends TType<[K, V]>, Display {
+export interface ObjFieldSchema<K extends string = string, V extends TType = TType> extends TType<[K, V]>, Display {
   kind: 'field';
   /** Key name of the field. */
   key: K;
@@ -365,8 +365,8 @@ export interface ObjectFieldSchema<K extends string = string, V extends TType = 
   optional?: boolean;
 }
 
-export interface ObjectOptionalFieldSchema<K extends string = string, V extends TType = TType>
-  extends ObjectFieldSchema<K, V> {
+export interface ObjOptionalFieldSchema<K extends string = string, V extends TType = TType>
+  extends ObjFieldSchema<K, V> {
   optional: true;
 }
 
@@ -412,16 +412,16 @@ export interface OrSchema<T extends TType[] = TType[]> extends TType {
 
 export type FunctionValue<Req, Res, Ctx = unknown> = (req: Req, ctx?: Ctx) => Res | Promise<Res>;
 
-export interface FunctionSchema<Req extends TType = TType, Res extends TType = TType, Ctx = unknown> extends TType {
+export interface FnSchema<Req extends TType = TType, Res extends TType = TType, Ctx = unknown> extends TType {
   kind: 'fn';
   req: Req;
   res: Res;
   __ctx_brand?: Ctx;
 }
 
-export type FunctionStreamingValue<Req, Res, Ctx = unknown> = (req: Observable<Req>, ctx?: Ctx) => Observable<Res>;
+export type FnStreamingValue<Req, Res, Ctx = unknown> = (req: Observable<Req>, ctx?: Ctx) => Observable<Res>;
 
-export interface FunctionStreamingSchema<Req extends TType = TType, Res extends TType = TType, Ctx = unknown>
+export interface FnStreamingSchema<Req extends TType = TType, Res extends TType = TType, Ctx = unknown>
   extends TType {
   /** @todo Rename to `fn`. Make it a property on the schema instead. */
   kind: 'fn$';
@@ -441,19 +441,19 @@ export interface TypeSystemSchema {
  * Any valid JSON type.
  */
 export type JsonSchema =
-  | BooleanSchema
-  | NumberSchema
-  | StringSchema
-  | BinarySchema
-  | ArraySchema
-  | ConstSchema
-  | TupleSchema
-  | ObjectSchema
-  | ObjectFieldSchema
-  | ObjectOptionalFieldSchema
+  | BoolSchema
+  | NumSchema
+  | StrSchema
+  | BinSchema
+  | ArrSchema
+  | ConSchema
+  | TupSchema
+  | ObjSchema
+  | ObjFieldSchema
+  | ObjOptionalFieldSchema
   | MapSchema;
 
-export type Schema = JsonSchema | RefSchema | OrSchema | AnySchema | FunctionSchema | FunctionStreamingSchema;
+export type Schema = JsonSchema | RefSchema | OrSchema | AnySchema | FnSchema | FnStreamingSchema;
 
 export type NoT<T extends TType> = Omit<T, 'kind'>;
 
@@ -465,27 +465,27 @@ export type TypeOf<T> = T extends OrSchema<any>
       ? unknown
       : TypeOfValue<T>;
 
-export type TypeOfValue<T> = T extends BooleanSchema
+export type TypeOfValue<T> = T extends BoolSchema
   ? boolean
-  : T extends NumberSchema
+  : T extends NumSchema
     ? number
-    : T extends StringSchema
+    : T extends StrSchema
       ? string
-      : T extends ArraySchema<infer U>
+      : T extends ArrSchema<infer U>
         ? TypeOf<U>[]
-        : T extends ConstSchema<infer U>
+        : T extends ConSchema<infer U>
           ? U
-          : T extends TupleSchema<infer U>
+          : T extends TupSchema<infer U>
             ? {[K in keyof U]: TypeOf<U[K]>}
-            : T extends ObjectSchema<infer F>
+            : T extends ObjSchema<infer F>
               ? NoEmptyInterface<TypeFields<Mutable<F>>>
               : T extends MapSchema<infer U>
                 ? Record<string, TypeOf<U>>
-                : T extends BinarySchema
+                : T extends BinSchema
                   ? Uint8Array
-                  : T extends FunctionSchema<infer Req, infer Res, infer Ctx>
+                  : T extends FnSchema<infer Req, infer Res, infer Ctx>
                     ? (req: TypeOf<Req>, ctx: Ctx) => UndefToVoid<TypeOf<Res>> | Promise<UndefToVoid<TypeOf<Res>>>
-                    : T extends FunctionStreamingSchema<infer Req, infer Res, infer Ctx>
+                    : T extends FnStreamingSchema<infer Req, infer Res, infer Ctx>
                       ? (req$: Observable<TypeOf<Req>>, ctx: Ctx) => Observable<UndefToVoid<TypeOf<Res>>>
                       : never;
 
@@ -497,12 +497,12 @@ type TypeFields<F> = TypeOfFieldMap<FieldsAdjustedForOptional<ToObject<{[K in ke
 
 type ToObject<T> = T extends [string, unknown][] ? {[K in T[number] as K[0]]: K[1]} : never;
 
-type ObjectFieldToTuple<F> = F extends ObjectFieldSchema<infer K, infer V> ? [K, F] : never;
+type ObjectFieldToTuple<F> = F extends ObjFieldSchema<infer K, infer V> ? [K, F] : never;
 
 type NoEmptyInterface<I> = keyof I extends never ? Record<string, never> : I;
 
 type OptionalFields<T> = {
-  [K in keyof T]-?: T[K] extends ObjectOptionalFieldSchema ? K : never;
+  [K in keyof T]-?: T[K] extends ObjOptionalFieldSchema ? K : never;
 }[keyof T];
 
 type RequiredFields<T> = Exclude<keyof T, OptionalFields<T>>;
@@ -511,7 +511,7 @@ type FieldsAdjustedForOptional<T> = Pick<T, RequiredFields<T>> & Partial<Pick<T,
 
 type TypeOfFieldMap<T> = {[K in keyof T]: TypeOf<FieldValue<T[K]>>};
 
-type FieldValue<F> = F extends ObjectFieldSchema<any, infer V> ? V : never;
+type FieldValue<F> = F extends ObjFieldSchema<any, infer V> ? V : never;
 
 type UndefToVoid<T> = T extends undefined ? void : T;
 

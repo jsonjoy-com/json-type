@@ -19,7 +19,7 @@ export function toTypeScriptAst(schema: schema.Schema): ts.TsType {
       return node;
     }
     case 'con': {
-      const constSchema = schema as schema.ConstSchema;
+      const constSchema = schema as schema.ConSchema;
       const value = constSchema.value;
       const valueType = typeof value;
       switch (valueType) {
@@ -79,7 +79,7 @@ export function toTypeScriptAst(schema: schema.Schema): ts.TsType {
       return node;
     }
     case 'arr': {
-      const arraySchema = schema as schema.ArraySchema;
+      const arraySchema = schema as schema.ArrSchema;
       const node: ts.TsArrType = {
         node: 'ArrType',
         elementType: toTypeScriptAst(arraySchema.type) as ts.TsType,
@@ -87,7 +87,7 @@ export function toTypeScriptAst(schema: schema.Schema): ts.TsType {
       return node;
     }
     case 'tup': {
-      const tupleSchema = schema as schema.TupleSchema;
+      const tupleSchema = schema as schema.TupSchema;
       const node: ts.TsTupType = {
         node: 'TupType',
         elements: tupleSchema.types.map((type: any) => toTypeScriptAst(type) as ts.TsType),
@@ -95,7 +95,7 @@ export function toTypeScriptAst(schema: schema.Schema): ts.TsType {
       return node;
     }
     case 'obj': {
-      const objSchema = schema as schema.ObjectSchema;
+      const objSchema = schema as schema.ObjSchema;
       const node: ts.TsTypeLiteral = {
         node: 'TypeLiteral',
         members: [],
@@ -172,7 +172,7 @@ export function toTypeScriptAst(schema: schema.Schema): ts.TsType {
       return node;
     }
     case 'fn': {
-      const fnSchema = schema as schema.FunctionSchema;
+      const fnSchema = schema as schema.FnSchema;
       // Extract schemas from the type instances
       const reqSchema = (fnSchema.req as any).getSchema ? (fnSchema.req as any).getSchema() : fnSchema.req;
       const resSchema = (fnSchema.res as any).getSchema ? (fnSchema.res as any).getSchema() : fnSchema.res;
@@ -201,7 +201,7 @@ export function toTypeScriptAst(schema: schema.Schema): ts.TsType {
       return node;
     }
     case 'fn$': {
-      const fnSchema = schema as schema.FunctionStreamingSchema;
+      const fnSchema = schema as schema.FnStreamingSchema;
       // Extract schemas from the type instances
       const reqSchema = (fnSchema.req as any).getSchema ? (fnSchema.req as any).getSchema() : fnSchema.req;
       const resSchema = (fnSchema.res as any).getSchema ? (fnSchema.res as any).getSchema() : fnSchema.res;

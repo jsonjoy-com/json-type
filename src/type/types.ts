@@ -29,9 +29,9 @@ export type SchemaOfMap<M extends Record<string, Type>> = {
 };
 
 export type SchemaOfObjectFieldType<F> = F extends classes.ObjectOptionalFieldType<infer K, infer V>
-  ? schema.ObjectOptionalFieldSchema<K, SchemaOf<V>>
+  ? schema.ObjOptionalFieldSchema<K, SchemaOf<V>>
   : F extends classes.ObjectFieldType<infer K, infer V>
-    ? schema.ObjectFieldSchema<K, SchemaOf<V>>
+    ? schema.ObjFieldSchema<K, SchemaOf<V>>
     : never;
 
 export type SchemaOfObjectFields<F> = {

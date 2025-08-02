@@ -17,40 +17,40 @@ import type {TypeSystem} from '../../system/TypeSystem';
 import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
 import type * as ts from '../../typescript/types';
 
-export class BinType<T extends Type> extends AbsType<schema.BinarySchema> {
-  protected schema: schema.BinarySchema;
+export class BinType<T extends Type> extends AbsType<schema.BinSchema> {
+  protected schema: schema.BinSchema;
 
   constructor(
     protected type: T,
-    options?: schema.Optional<schema.BinarySchema>,
+    options?: schema.Optional<schema.BinSchema>,
   ) {
     super();
     this.schema = schema.s.Binary(schema.s.any, options);
   }
 
-  public format(format: schema.BinarySchema['format']): this {
+  public format(format: schema.BinSchema['format']): this {
     this.schema.format = format;
     return this;
   }
 
-  public min(min: schema.BinarySchema['min']): this {
+  public min(min: schema.BinSchema['min']): this {
     this.schema.min = min;
     return this;
   }
 
-  public max(max: schema.BinarySchema['max']): this {
+  public max(max: schema.BinSchema['max']): this {
     this.schema.max = max;
     return this;
   }
 
-  public getSchema(): schema.BinarySchema<SchemaOf<T>> {
+  public getSchema(): schema.BinSchema<SchemaOf<T>> {
     return {
       ...this.schema,
       type: this.type.getSchema() as any,
     };
   }
 
-  public getOptions(): schema.Optional<schema.ArraySchema<SchemaOf<T>>> {
+  public getOptions(): schema.Optional<schema.ArrSchema<SchemaOf<T>>> {
     const {kind, type, ...options} = this.schema;
     return options as any;
   }

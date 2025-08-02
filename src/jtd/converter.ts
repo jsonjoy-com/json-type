@@ -28,7 +28,7 @@ export function toJtdForm(schema: schema.Schema): jtd.JtdForm {
       return form;
     }
     case 'con': {
-      const constSchema = schema as schema.ConstSchema;
+      const constSchema = schema as schema.ConSchema;
       const value = constSchema.value;
       const valueType = typeof value;
       switch (valueType) {
@@ -53,7 +53,7 @@ export function toJtdForm(schema: schema.Schema): jtd.JtdForm {
       return form;
     }
     case 'num': {
-      const numSchema = schema as schema.NumberSchema;
+      const numSchema = schema as schema.NumSchema;
       return {
         type: (NUMS_TYPE_MAPPING.get(numSchema.format || '') ?? 'float64') as jtd.JtdType,
       };
@@ -62,13 +62,13 @@ export function toJtdForm(schema: schema.Schema): jtd.JtdForm {
       return {type: 'string'};
     }
     case 'arr': {
-      const arraySchema = schema as schema.ArraySchema;
+      const arraySchema = schema as schema.ArrSchema;
       return {
         elements: [toJtdForm(arraySchema.type)],
       };
     }
     case 'obj': {
-      const objSchema = schema as schema.ObjectSchema;
+      const objSchema = schema as schema.ObjSchema;
       const form: jtd.JtdPropertiesForm = {};
 
       if (objSchema.fields && objSchema.fields.length > 0) {
@@ -99,7 +99,7 @@ export function toJtdForm(schema: schema.Schema): jtd.JtdForm {
       return form;
     }
     case 'tup': {
-      const tupleSchema = schema as schema.TupleSchema;
+      const tupleSchema = schema as schema.TupSchema;
       return {
         elements: tupleSchema.types.map((element: any) => toJtdForm(element)),
       };

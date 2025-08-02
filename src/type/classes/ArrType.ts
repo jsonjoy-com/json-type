@@ -16,35 +16,35 @@ import type {TypeSystem} from '../../system/TypeSystem';
 import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
 import type {TypeExportContext} from '../../system/TypeExportContext';
 
-export class ArrType<T extends Type> extends AbsType<schema.ArraySchema<SchemaOf<T>>> {
-  protected schema: schema.ArraySchema<any>;
+export class ArrType<T extends Type> extends AbsType<schema.ArrSchema<SchemaOf<T>>> {
+  protected schema: schema.ArrSchema<any>;
 
   constructor(
     protected type: T,
-    options?: schema.Optional<schema.ArraySchema>,
+    options?: schema.Optional<schema.ArrSchema>,
   ) {
     super();
     this.schema = schema.s.Array(schema.s.any, options);
   }
 
-  public min(min: schema.ArraySchema['min']): this {
+  public min(min: schema.ArrSchema['min']): this {
     this.schema.min = min;
     return this;
   }
 
-  public max(max: schema.ArraySchema['max']): this {
+  public max(max: schema.ArrSchema['max']): this {
     this.schema.max = max;
     return this;
   }
 
-  public getSchema(ctx?: TypeExportContext): schema.ArraySchema<SchemaOf<T>> {
+  public getSchema(ctx?: TypeExportContext): schema.ArrSchema<SchemaOf<T>> {
     return {
       ...this.schema,
       type: this.type.getSchema(ctx) as any,
     };
   }
 
-  public getOptions(): schema.Optional<schema.ArraySchema<SchemaOf<T>>> {
+  public getOptions(): schema.Optional<schema.ArrSchema<SchemaOf<T>>> {
     const {kind, type, ...options} = this.schema;
     return options as any;
   }
