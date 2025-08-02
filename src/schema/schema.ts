@@ -264,7 +264,7 @@ export interface BinSchema<T extends TType = any> extends TType, WithValidator {
  * }
  * ```
  */
-export interface ArrSchema<T extends TType = any, Head extends TType[] = [], Tail extends TType[] = []> extends TType<Array<unknown>>, WithValidator {
+export interface ArrSchema<T extends TType = any, Head extends TType[] = any, Tail extends TType[] = any> extends TType<Array<unknown>>, WithValidator {
   kind: 'arr';
   /** One or more "one-of" types that array contains. */
   type?: T;
