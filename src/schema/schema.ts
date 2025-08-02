@@ -279,15 +279,6 @@ export interface ArrSchema<T extends TType = any, Head extends TType[] = any, Ta
 }
 
 /**
- * Represents a JSON array.
- */
-export interface TupSchema<T extends TType[] = any> extends TType, WithValidator {
-  kind: 'tup';
-  // types: any[] extends T ? never : T;
-  types: T;
-}
-
-/**
  * Represents a JSON object type, the "object" type excluding "null" in JavaScript,
  * the "object" type in JSON Schema, and the "obj" type in MessagePack.
  * Example:
@@ -355,6 +346,8 @@ export interface ObjSchema<
 
 /**
  * Represents a single field of an object.
+ *
+ * @todo Rename to `key`.
  */
 export interface ObjFieldSchema<K extends string = string, V extends TType = TType> extends TType<[K, V]>, Display {
   kind: 'field';
@@ -451,7 +444,6 @@ export type JsonSchema =
   | BinSchema
   | ArrSchema
   | ConSchema
-  | TupSchema
   | ObjSchema
   | ObjFieldSchema
   | ObjOptionalFieldSchema
@@ -479,19 +471,17 @@ export type TypeOfValue<T> = T extends BoolSchema
         ? [...{[K in keyof Head]: TypeOf<Head[K]>}, ...(Schema extends U ? [] : TypeOf<U>[]), ...(Tail extends JsonSchema[] ? {[K in keyof Tail]: TypeOf<Tail[K]>} : [])]
         : T extends ConSchema<infer U>
           ? U
-          : T extends TupSchema<infer U>
-            ? {[K in keyof U]: TypeOf<U[K]>}
-            : T extends ObjSchema<infer F>
-              ? NoEmptyInterface<TypeFields<Mutable<F>>>
-              : T extends MapSchema<infer U>
-                ? Record<string, TypeOf<U>>
-                : T extends BinSchema
-                  ? Uint8Array
-                  : T extends FnSchema<infer Req, infer Res, infer Ctx>
-                    ? (req: TypeOf<Req>, ctx: Ctx) => UndefToVoid<TypeOf<Res>> | Promise<UndefToVoid<TypeOf<Res>>>
-                    : T extends FnStreamingSchema<infer Req, infer Res, infer Ctx>
-                      ? (req$: Observable<TypeOf<Req>>, ctx: Ctx) => Observable<UndefToVoid<TypeOf<Res>>>
-                      : never;
+          : T extends ObjSchema<infer F>
+            ? NoEmptyInterface<TypeFields<Mutable<F>>>
+            : T extends MapSchema<infer U>
+              ? Record<string, TypeOf<U>>
+              : T extends BinSchema
+                ? Uint8Array
+                : T extends FnSchema<infer Req, infer Res, infer Ctx>
+                  ? (req: TypeOf<Req>, ctx: Ctx) => UndefToVoid<TypeOf<Res>> | Promise<UndefToVoid<TypeOf<Res>>>
+                  : T extends FnStreamingSchema<infer Req, infer Res, infer Ctx>
+                    ? (req$: Observable<TypeOf<Req>>, ctx: Ctx) => Observable<UndefToVoid<TypeOf<Res>>>
+                    : never;
 
 export type TypeOfMap<M extends Record<string, Schema>> = {
   [K in keyof M]: TypeOf<M[K]>;

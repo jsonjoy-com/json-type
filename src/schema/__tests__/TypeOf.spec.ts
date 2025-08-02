@@ -80,21 +80,21 @@ test('can infer a simple "arr" type', () => {
 });
 
 test('can infer head, type, and tail in "arr" type', () => {
-  const schema1 = s.Vec([s.str, s.num], s.str, [s.bool]);
+  const schema1 = s.Tuple([s.str, s.num], s.str, [s.bool]);
   type T1 = TypeOf<typeof schema1>;
   const arr1: T1 = ['foo', 1, 'bar', true] satisfies [string, number, ...string[], boolean];
   const arr2: [string, number, ...string[], boolean] = ['foo', 1, 'bar', true] satisfies T1;
 });
 
 test('can infer head and type in "arr" type', () => {
-  const schema1 = s.Vec([s.str, s.num], s.str);
+  const schema1 = s.Tuple([s.str, s.num], s.str);
   type T1 = TypeOf<typeof schema1>;
   const arr1: T1 = ['foo', 1, 'bar'] satisfies [string, number, ...string[]];
   const arr2: [string, number, ...string[]] = ['foo', 1, 'bar'] satisfies T1;
 });
 
 test('can infer head in "arr" type', () => {
-  const schema1 = s.Vec([s.str, s.num]);
+  const schema1 = s.Tuple([s.str, s.num]);
   type T1 = TypeOf<typeof schema1>;
   const arr1: T1 = ['foo', 1] satisfies [string, number];
   const arr2: [string, number] = ['foo', 1] satisfies T1;
@@ -118,7 +118,7 @@ test('can infer a simple "const" type', () => {
 });
 
 test('can infer a simple "tuple" type', () => {
-  const schema1 = s.Tuple(s.Const('replace' as const), s.str, s.str);
+  const schema1 = s.Tuple([s.Const('replace' as const), s.str, s.str]);
   type T1 = TypeOf<typeof schema1>;
   const value1: T1 = ['replace', 'foo', 'bar'];
 });

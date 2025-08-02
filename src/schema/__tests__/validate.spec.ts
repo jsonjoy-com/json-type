@@ -288,7 +288,7 @@ describe('validateSchema', () => {
     });
   });
 
-  describe('array schema', () => {
+  describe('"arr" schema', () => {
     test('validates valid array schema', () => {
       const schema: Schema = {
         kind: 'arr',
@@ -316,7 +316,7 @@ describe('validateSchema', () => {
     test('validates valid array with tail only', () => {
       const schema: Schema = {
         kind: 'arr',
-        tail: [{kind: 'str'}, {kind: 'num'}],
+        head: [{kind: 'str'}, {kind: 'num'}],
       };
       expect(() => validateSchema(schema)).not.toThrow();
     });
@@ -387,26 +387,24 @@ describe('validateSchema', () => {
       };
       expect(() => validateSchema(schema)).toThrow();
     });
+
+    test('validates valid tuple schema', () => {
+      const schema: Schema = {
+        kind: 'arr',
+        head: [{kind: 'str'}, {kind: 'num'}],
+      };
+      expect(() => validateSchema(schema)).not.toThrow();
+    });
+
+    test('throws for invalid type property', () => {
+      expect(() => validateSchema({kind: 'arr', type: 'not-array'} as any)).toThrow('INVALID_SCHEMA');
+    });
   });
 
   describe('const schema', () => {
     test('validates valid const schema', () => {
       const schema: Schema = {kind: 'con', value: 'test'};
       expect(() => validateSchema(schema)).not.toThrow();
-    });
-  });
-
-  describe('tuple schema', () => {
-    test('validates valid tuple schema', () => {
-      const schema: Schema = {
-        kind: 'tup',
-        types: [{kind: 'str'}, {kind: 'num'}],
-      };
-      expect(() => validateSchema(schema)).not.toThrow();
-    });
-
-    test('throws for invalid types property', () => {
-      expect(() => validateSchema({kind: 'tup', types: 'not-array'} as any)).toThrow('TYPES_TYPE');
     });
   });
 

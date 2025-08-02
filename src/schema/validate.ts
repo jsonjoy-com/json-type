@@ -45,23 +45,20 @@ const validateMinMax = (min: number | undefined, max: number | undefined) => {
   if (min !== undefined && max !== undefined && min > max) throw new Error('MIN_MAX');
 };
 
-// Individual schema validation functions for each type
-
 const validateAnySchema = (schema: any): void => {
   validateTType(schema, 'any');
   validateWithValidator(schema);
 };
 
-const validateBooleanSchema = (schema: any): void => {
+const validateBoolSchema = (schema: any): void => {
   validateTType(schema, 'bool');
   validateWithValidator(schema);
 };
 
-const validateNumberSchema = (schema: any): void => {
+const validateNumSchema = (schema: any): void => {
   validateTType(schema, 'num');
   validateWithValidator(schema);
   const {format, gt, gte, lt, lte} = schema;
-
   if (gt !== undefined && typeof gt !== 'number') throw new Error('GT_TYPE');
   if (gte !== undefined && typeof gte !== 'number') throw new Error('GTE_TYPE');
   if (lt !== undefined && typeof lt !== 'number') throw new Error('LT_TYPE');
@@ -70,7 +67,6 @@ const validateNumberSchema = (schema: any): void => {
   if (lt !== undefined && lte !== undefined) throw new Error('LT_LTE');
   if ((gt !== undefined || gte !== undefined) && (lt !== undefined || lte !== undefined))
     if ((gt ?? gte)! > (lt ?? lte)!) throw new Error('GT_LT');
-
   if (format !== undefined) {
     if (typeof format !== 'string') throw new Error('FORMAT_TYPE');
     if (!format) throw new Error('FORMAT_EMPTY');
@@ -95,7 +91,7 @@ const validateNumberSchema = (schema: any): void => {
   }
 };
 
-const validateStringSchema = (schema: any): void => {
+const validateStrSchema = (schema: any): void => {
   validateTType(schema, 'str');
   validateWithValidator(schema);
   const {min, max, ascii, noJsonEscape, format} = schema;
@@ -121,7 +117,7 @@ const validateStringSchema = (schema: any): void => {
 
 const binaryFormats = new Set(['bencode', 'bson', 'cbor', 'ion', 'json', 'msgpack', 'resp3', 'ubjson']);
 
-const validateBinarySchema = (schema: any): void => {
+const validateBinSchema = (schema: any): void => {
   validateTType(schema, 'bin');
   validateWithValidator(schema);
   const {min, max, format} = schema;
@@ -132,32 +128,25 @@ const validateBinarySchema = (schema: any): void => {
   validateSchema(schema.type);
 };
 
-const validateArraySchema = (schema: any): void => {
+const validateArrSchema = (schema: any): void => {
   validateTType(schema, 'arr');
   validateWithValidator(schema);
   const {min, max} = schema;
   validateMinMax(min, max);
   if (!('head' in schema) && !('type' in schema) && !('tail' in schema)) throw new Error('EMPTY_ARR');
+  if ('tail' in schema && !('type' in schema)) throw new Error('LONE_TAIL');
   const {head, type, tail} = schema;
   if (type) validateSchema(type);
   if (head) for (const h of head) validateSchema(h);
   if (tail) for (const t of tail) validateSchema(t);
 };
 
-const validateConstSchema = (schema: any): void => {
+const validateConSchema = (schema: any): void => {
   validateTType(schema, 'con');
   validateWithValidator(schema);
 };
 
-const validateTupleSchema = (schema: any): void => {
-  validateTType(schema, 'tup');
-  validateWithValidator(schema);
-  const {types} = schema;
-  if (!Array.isArray(types)) throw new Error('TYPES_TYPE');
-  for (const type of types) validateSchema(type);
-};
-
-const validateObjectSchema = (schema: any): void => {
+const validateObjSchema = (schema: any): void => {
   validateTType(schema, 'obj');
   validateWithValidator(schema);
   const {fields, unknownFields} = schema;
@@ -217,33 +206,31 @@ const validateFunctionStreamingSchema = (schema: any): void => {
  * This replaces the individual validateSchema() methods from type classes.
  */
 export const validateSchema = (schema: Schema): void => {
+  if (typeof schema !== 'object') throw new Error('INVALID_SCHEMA');
   switch (schema.kind) {
     case 'any':
       validateAnySchema(schema);
       break;
     case 'bool':
-      validateBooleanSchema(schema);
+      validateBoolSchema(schema);
       break;
     case 'num':
-      validateNumberSchema(schema);
+      validateNumSchema(schema);
       break;
     case 'str':
-      validateStringSchema(schema);
+      validateStrSchema(schema);
       break;
     case 'bin':
-      validateBinarySchema(schema);
+      validateBinSchema(schema);
       break;
     case 'arr':
-      validateArraySchema(schema);
+      validateArrSchema(schema);
       break;
     case 'con':
-      validateConstSchema(schema);
-      break;
-    case 'tup':
-      validateTupleSchema(schema);
+      validateConSchema(schema);
       break;
     case 'obj':
-      validateObjectSchema(schema);
+      validateObjSchema(schema);
       break;
     case 'field':
       validateFieldSchema(schema);
