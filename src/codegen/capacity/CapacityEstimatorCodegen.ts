@@ -110,9 +110,9 @@ export class CapacityEstimatorCodegen {
     );
   };
 
-  protected genArr(ctx: CapacityEstimatorCodegen, value: JsExpression, type: ArrType<any, any, any>): void {
-    const codegen = ctx.codegen;
-    ctx.inc(MaxEncodingOverhead.Array);
+  protected genArr(value: JsExpression, type: ArrType<any, any, any>): void {
+    const codegen = this.codegen;
+    this.inc(MaxEncodingOverhead.Array);
     const rLen = codegen.var(`${value.use()}.length`);
     codegen.js(`size += ${MaxEncodingOverhead.ArrayElement} * ${rLen}`);
     const elementType =  type._type as (Type | undefined);
@@ -236,26 +236,26 @@ export class CapacityEstimatorCodegen {
       case 'any':
         this.genAny(value);
         break;
-      // case 'bool':
-      //   ctx.inc(MaxEncodingOverhead.Boolean);
-      //   break;
-      // case 'num':
-      //   ctx.inc(MaxEncodingOverhead.Number);
-      //   break;
-      // case 'str':
-      //   ctx.inc(MaxEncodingOverhead.String);
-      //   ctx.codegen.js(`size += ${MaxEncodingOverhead.StringLengthMultiplier} * ${value.use()}.length;`);
-      //   break;
-      // case 'bin':
-      //   ctx.inc(MaxEncodingOverhead.Binary);
-      //   ctx.codegen.js(`size += ${MaxEncodingOverhead.BinaryLengthMultiplier} * ${value.use()}.length;`);
-      //   break;
-      // case 'con':
-      //   ctx.inc(maxEncodingCapacity((type as ConType).literal()));
-      //   break;
-      // case 'arr':
-      //   arr(ctx, value, type as ArrType<any, any, any>);
-      //   break;
+      case 'bool':
+        this.inc(MaxEncodingOverhead.Boolean);
+        break;
+      case 'num':
+        this.inc(MaxEncodingOverhead.Number);
+        break;
+      case 'str':
+        this.inc(MaxEncodingOverhead.String);
+        this.codegen.js(`size += ${MaxEncodingOverhead.StringLengthMultiplier} * ${value.use()}.length;`);
+        break;
+      case 'bin':
+        this.inc(MaxEncodingOverhead.Binary);
+        this.codegen.js(`size += ${MaxEncodingOverhead.BinaryLengthMultiplier} * ${value.use()}.length;`);
+        break;
+      case 'con':
+        this.inc(maxEncodingCapacity((type as ConType).literal()));
+        break;
+      case 'arr':
+        this.genArr(value, type as ArrType<any, any, any>);
+        break;
       // case 'obj':
       //   obj(ctx, value, type, generate);
       //   break;

@@ -116,9 +116,6 @@ test('can build type using lowercase shortcuts', () => {
     enum: 'three',
     optional: undefined,
   } satisfies ObjType2;
-  // TODO: re-enable?
-  // MyObject.validate(obj);
-  // MyObject2.validate(obj);
 });
 
 test('can specify function with context', () => {

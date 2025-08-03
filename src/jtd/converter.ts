@@ -64,6 +64,7 @@ export function toJtdForm(schema: schema.Schema): jtd.JtdForm {
     case 'arr': {
       const arraySchema = schema as schema.ArrSchema;
       return {
+        // TODO: create union type with head and tail
         elements: [toJtdForm(arraySchema.type)],
       };
     }
@@ -97,12 +98,6 @@ export function toJtdForm(schema: schema.Schema): jtd.JtdForm {
       }
 
       return form;
-    }
-    case 'tup': {
-      const tupleSchema = schema as schema.TupSchema;
-      return {
-        elements: tupleSchema.types.map((element: any) => toJtdForm(element)),
-      };
     }
     case 'map': {
       const mapSchema = schema as schema.MapSchema;

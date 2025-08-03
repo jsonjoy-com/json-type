@@ -2,6 +2,7 @@ import {maxEncodingCapacity} from '@jsonjoy.com/util/lib/json-size';
 // import {TypeSystem} from '../../../system';
 import {CapacityEstimatorCodegen} from '../CapacityEstimatorCodegen';
 import {t} from '../../../type';
+import {TypeSystem} from '../../../system';
 
 describe('"any" type', () => {
   test('returns the same result as maxEncodingCapacity()', () => {
@@ -13,103 +14,102 @@ describe('"any" type', () => {
   });
 });
 
-// describe('const', () => {
-//   test('returns exactly the same size as maxEncodingCapacity()', () => {
-//     const system = new TypeSystem();
-//     const type = system.t.Const({foo: [123]});
-//     const estimator = type.compileCapacityEstimator({});
-//     expect(estimator(null)).toBe(maxEncodingCapacity({foo: [123]}));
-//   });
-// });
+describe('const', () => {
+  test('returns exactly the same size as maxEncodingCapacity()', () => {
+    const system = new TypeSystem();
+    const type = system.t.Const({foo: [123]});
+    const estimator = CapacityEstimatorCodegen.compile({type});
+    expect(estimator(null)).toBe(maxEncodingCapacity({foo: [123]}));
+  });
+});
 
-// describe('null', () => {
-//   test('returns exactly the same size as maxEncodingCapacity()', () => {
-//     const system = new TypeSystem();
-//     const type = system.t.nil;
-//     const estimator = type.compileCapacityEstimator({});
-//     expect(estimator(null)).toBe(maxEncodingCapacity(null));
-//   });
-// });
+describe('null', () => {
+  test('returns exactly the same size as maxEncodingCapacity()', () => {
+    const system = new TypeSystem();
+    const type = system.t.nil;
+    const estimator = CapacityEstimatorCodegen.compile({type});
+    expect(estimator(null)).toBe(maxEncodingCapacity(null));
+  });
+});
 
-// describe('boolean', () => {
-//   test('returns 5', () => {
-//     const system = new TypeSystem();
-//     const type = system.t.bool;
-//     const estimator = type.compileCapacityEstimator({});
-//     expect(estimator(null)).toBe(5);
-//   });
-// });
+describe('boolean', () => {
+  test('returns 5', () => {
+    const system = new TypeSystem();
+    const type = system.t.bool;
+    const estimator = CapacityEstimatorCodegen.compile({type});
+    expect(estimator(null)).toBe(5);
+  });
+});
 
-// describe('number', () => {
-//   test('returns 22', () => {
-//     const system = new TypeSystem();
-//     const type = system.t.num;
-//     const estimator = type.compileCapacityEstimator({});
-//     expect(estimator(null)).toBe(22);
-//   });
-// });
+describe('number', () => {
+  test('returns 22', () => {
+    const system = new TypeSystem();
+    const type = system.t.num;
+    const estimator = CapacityEstimatorCodegen.compile({type});
+    expect(estimator(null)).toBe(22);
+  });
+});
 
-// describe('string', () => {
-//   test('empty string', () => {
-//     const system = new TypeSystem();
-//     const type = system.t.str;
-//     const estimator = type.compileCapacityEstimator({});
-//     expect(estimator('')).toBe(maxEncodingCapacity(''));
-//   });
+describe('string', () => {
+  test('empty string', () => {
+    const system = new TypeSystem();
+    const type = system.t.str;
+    const estimator = CapacityEstimatorCodegen.compile({type});
+    expect(estimator('')).toBe(maxEncodingCapacity(''));
+  });
 
-//   test('short string', () => {
-//     const system = new TypeSystem();
-//     const type = system.t.str;
-//     const estimator = type.compileCapacityEstimator({});
-//     expect(estimator('asdf')).toBe(maxEncodingCapacity('asdf'));
-//   });
-// });
+  test('short string', () => {
+    const system = new TypeSystem();
+    const type = system.t.str;
+    const estimator = CapacityEstimatorCodegen.compile({type});
+    expect(estimator('asdf')).toBe(maxEncodingCapacity('asdf'));
+  });
+});
 
-// describe('binary', () => {
-//   test('empty', () => {
-//     const system = new TypeSystem();
-//     const type = system.t.bin;
-//     const estimator = type.compileCapacityEstimator({});
-//     expect(estimator(new Uint8Array())).toBe(maxEncodingCapacity(new Uint8Array()));
-//   });
+describe('binary', () => {
+  test('empty', () => {
+    const system = new TypeSystem();
+    const type = system.t.bin;
+    const estimator = CapacityEstimatorCodegen.compile({type});
+    expect(estimator(new Uint8Array())).toBe(maxEncodingCapacity(new Uint8Array()));
+  });
 
-//   test('small buffer', () => {
-//     const system = new TypeSystem();
-//     const type = system.t.bin;
-//     const estimator = type.compileCapacityEstimator({});
-//     expect(estimator(new Uint8Array([1, 2, 3]))).toBe(maxEncodingCapacity(new Uint8Array([1, 2, 3])));
-//   });
-// });
+  test('small buffer', () => {
+    const system = new TypeSystem();
+    const type = system.t.bin;
+    const estimator = CapacityEstimatorCodegen.compile({type});
+    expect(estimator(new Uint8Array([1, 2, 3]))).toBe(maxEncodingCapacity(new Uint8Array([1, 2, 3])));
+  });
+});
 
-// describe('array', () => {
-//   test('empty', () => {
-//     const system = new TypeSystem();
-//     const type = system.t.arr;
-//     const estimator = type.compileCapacityEstimator({});
-//     expect(estimator([])).toBe(maxEncodingCapacity([]));
-//   });
+describe('array', () => {
+  test('empty', () => {
+    const type = t.arr;
+    const estimator = CapacityEstimatorCodegen.compile({type});
+    expect(estimator([])).toBe(maxEncodingCapacity([]));
+  });
 
-//   test('simple elements', () => {
-//     const system = new TypeSystem();
-//     const type = system.t.arr;
-//     const estimator = type.compileCapacityEstimator({});
-//     expect(estimator([1, true, 'asdf'])).toBe(maxEncodingCapacity([1, true, 'asdf']));
-//   });
+  test('simple elements', () => {
+    const system = new TypeSystem();
+    const type = system.t.arr;
+    const estimator = CapacityEstimatorCodegen.compile({type});
+    expect(estimator([1, true, 'asdf'])).toBe(maxEncodingCapacity([1, true, 'asdf']));
+  });
 
-//   test('typed array, optimizes computation', () => {
-//     const system = new TypeSystem();
-//     const type = system.t.Array(system.t.num);
-//     const estimator = type.compileCapacityEstimator({});
-//     expect(estimator([1, 2, 3])).toBe(maxEncodingCapacity([1, 2, 3]));
-//   });
+  test('typed array, optimizes computation', () => {
+    const system = new TypeSystem();
+    const type = system.t.Array(system.t.num);
+    const estimator = CapacityEstimatorCodegen.compile({type});
+    expect(estimator([1, 2, 3])).toBe(maxEncodingCapacity([1, 2, 3]));
+  });
 
-//   test('array of strings', () => {
-//     const system = new TypeSystem();
-//     const type = system.t.Array(system.t.str);
-//     const estimator = type.compileCapacityEstimator({});
-//     expect(estimator(['a', 'asdf'])).toBe(maxEncodingCapacity(['a', 'asdf']));
-//   });
-// });
+  test('array of strings', () => {
+    const system = new TypeSystem();
+    const type = system.t.Array(system.t.str);
+    const estimator = CapacityEstimatorCodegen.compile({type});
+    expect(estimator(['a', 'asdf'])).toBe(maxEncodingCapacity(['a', 'asdf']));
+  });
+});
 
 // describe('tuple', () => {
 //   test('empty', () => {
