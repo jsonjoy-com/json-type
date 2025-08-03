@@ -33,7 +33,7 @@ export class TypeSystem implements Printable {
 
   public readonly resolve = <K extends string>(id: K): TypeAlias<K, Type> => {
     const alias = this.unalias(id);
-    return alias.type instanceof RefType ? this.resolve<K>(alias.type.getRef() as K) : alias;
+    return alias.type instanceof RefType ? this.resolve<K>(alias.type.ref() as K) : alias;
   };
 
   protected readonly customValidators: Map<string, CustomValidator> = new Map();

@@ -67,37 +67,39 @@ test('can infer a simple "bin" type', () => {
   const arr3: T3 = Buffer.allocUnsafe(0);
 });
 
-test('can infer a simple "arr" type', () => {
-  const schema1 = s.arr;
-  const schema2 = s.Array(s.num);
-  const schema3 = s.Array(s.str, {});
-  type T1 = TypeOf<typeof schema1>;
-  type T2 = TypeOf<typeof schema2>;
-  type T3 = TypeOf<typeof schema3>;
-  const arr1: T1 = [null];
-  const arr2: T2 = [1, 2, 3];
-  const arr3: T3 = ['foo', 'bar', 'baz'];
-});
+describe('"arr" kind', () => {
+  test('can infer a simple "arr" type', () => {
+    const schema1 = s.arr;
+    const schema2 = s.Array(s.num);
+    const schema3 = s.Array(s.str, {});
+    type T1 = TypeOf<typeof schema1>;
+    type T2 = TypeOf<typeof schema2>;
+    type T3 = TypeOf<typeof schema3>;
+    const arr1: T1 = [null];
+    const arr2: T2 = [1, 2, 3];
+    const arr3: T3 = ['foo', 'bar', 'baz'];
+  });
 
-test('can infer head, type, and tail in "arr" type', () => {
-  const schema1 = s.Tuple([s.str, s.num], s.str, [s.bool]);
-  type T1 = TypeOf<typeof schema1>;
-  const arr1: T1 = ['foo', 1, 'bar', true] satisfies [string, number, ...string[], boolean];
-  const arr2: [string, number, ...string[], boolean] = ['foo', 1, 'bar', true] satisfies T1;
-});
+  test('can infer head, type, and tail in "arr" type', () => {
+    const schema1 = s.Tuple([s.str, s.num], s.str, [s.bool]);
+    type T1 = TypeOf<typeof schema1>;
+    const arr1: T1 = ['foo', 1, 'bar', true] satisfies [string, number, ...string[], boolean];
+    const arr2: [string, number, ...string[], boolean] = ['foo', 1, 'bar', true] satisfies T1;
+  });
 
-test('can infer head and type in "arr" type', () => {
-  const schema1 = s.Tuple([s.str, s.num], s.str);
-  type T1 = TypeOf<typeof schema1>;
-  const arr1: T1 = ['foo', 1, 'bar'] satisfies [string, number, ...string[]];
-  const arr2: [string, number, ...string[]] = ['foo', 1, 'bar'] satisfies T1;
-});
+  test('can infer head and type in "arr" type', () => {
+    const schema1 = s.Tuple([s.str, s.num], s.str);
+    type T1 = TypeOf<typeof schema1>;
+    const arr1: T1 = ['foo', 1, 'bar'] satisfies [string, number, ...string[]];
+    const arr2: [string, number, ...string[]] = ['foo', 1, 'bar'] satisfies T1;
+  });
 
-test('can infer head in "arr" type', () => {
-  const schema1 = s.Tuple([s.str, s.num]);
-  type T1 = TypeOf<typeof schema1>;
-  const arr1: T1 = ['foo', 1] satisfies [string, number];
-  const arr2: [string, number] = ['foo', 1] satisfies T1;
+  test('can infer head in "arr" type', () => {
+    const schema1 = s.Tuple([s.str, s.num]);
+    type T1 = TypeOf<typeof schema1>;
+    const arr1: T1 = ['foo', 1] satisfies [string, number];
+    const arr2: [string, number] = ['foo', 1] satisfies T1;
+  });
 });
 
 test('can infer a simple "const" type', () => {

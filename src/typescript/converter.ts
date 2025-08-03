@@ -2,6 +2,19 @@ import type * as ts from './types';
 import type * as schema from '../schema';
 import type {ObjType} from '../type/classes';
 
+const augmentWithComment = (
+  type: schema.Schema | schema.ObjFieldSchema,
+  node: ts.TsDeclaration | ts.TsPropertySignature | ts.TsTypeLiteral,
+) => {
+  if (type.title || type.description) {
+    let comment = '';
+    if (type.title) comment += '# ' + type.title;
+    if (type.title && type.description) comment += '\n\n';
+    if (type.description) comment += type.description;
+    node.comment = comment;
+  }
+};
+
 /**
  * Main router function that converts any Schema to TypeScript AST.
  * Uses a switch statement to route to the appropriate converter logic.
@@ -80,17 +93,15 @@ export function toTypeScriptAst(schema: schema.Schema): ts.TsType {
     }
     case 'arr': {
       const arraySchema = schema as schema.ArrSchema;
+      // TODO: add head and tail tuple type support
+      // const tupleSchema = schema as schema.TupSchema;
+      // const node: ts.TsTupType = {
+      //   node: 'TupType',
+      //   elements: tupleSchema.types.map((type: any) => toTypeScriptAst(type) as ts.TsType),
+      // };
       const node: ts.TsArrType = {
         node: 'ArrType',
         elementType: toTypeScriptAst(arraySchema.type) as ts.TsType,
-      };
-      return node;
-    }
-    case 'tup': {
-      const tupleSchema = schema as schema.TupSchema;
-      const node: ts.TsTupType = {
-        node: 'TupType',
-        elements: tupleSchema.types.map((type: any) => toTypeScriptAst(type) as ts.TsType),
       };
       return node;
     }
@@ -133,13 +144,7 @@ export function toTypeScriptAst(schema: schema.Schema): ts.TsType {
       }
 
       // Add comment to the type literal itself using the same logic as augmentWithComment
-      if (objSchema.title || objSchema.description) {
-        let comment = '';
-        if (objSchema.title) comment += '# ' + objSchema.title;
-        if (objSchema.title && objSchema.description) comment += '\n\n';
-        if (objSchema.description) comment += objSchema.description;
-        node.comment = comment;
-      }
+      augmentWithComment(objSchema, node);
 
       return node;
     }

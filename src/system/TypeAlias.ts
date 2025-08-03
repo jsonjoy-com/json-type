@@ -28,31 +28,31 @@ export class TypeAlias<K extends string, T extends Type> implements Printable {
     return this.id + printTree(tab, [(tab) => this.type.toString(tab)]);
   }
 
-  public toTypeScriptAst(): ts.TsInterfaceDeclaration | ts.TsTypeAliasDeclaration {
-    const type = this.type;
-    if (type instanceof ObjType) {
-      const ast = this.type.toTypeScriptAst() as ts.TsTypeLiteral;
-      const node: ts.TsInterfaceDeclaration = {
-        node: 'InterfaceDeclaration',
-        name: this.id,
-        members: ast.members,
-      };
-      return node;
-    } else {
-      const node: ts.TsTypeAliasDeclaration = {
-        node: 'TypeAliasDeclaration',
-        name: this.id,
-        type: type.toTypeScriptAst(),
-      };
-      // TODO: Figure out if this is still needed, and possibly bring it back.
-      // augmentWithComment(type, node);
-      return node;
-    }
-  }
+  // public toTypeScriptAst(): ts.TsInterfaceDeclaration | ts.TsTypeAliasDeclaration {
+  //   const type = this.type;
+  //   if (type instanceof ObjType) {
+  //     const ast = this.type.toTypeScriptAst() as ts.TsTypeLiteral;
+  //     const node: ts.TsInterfaceDeclaration = {
+  //       node: 'InterfaceDeclaration',
+  //       name: this.id,
+  //       members: ast.members,
+  //     };
+  //     return node;
+  //   } else {
+  //     const node: ts.TsTypeAliasDeclaration = {
+  //       node: 'TypeAliasDeclaration',
+  //       name: this.id,
+  //       type: type.toTypeScriptAst(),
+  //     };
+  //     // TODO: Figure out if this is still needed, and possibly bring it back.
+  //     // augmentWithComment(type, node);
+  //     return node;
+  //   }
+  // }
 
-  public toTypeScript(): string {
-    return toText(this.toTypeScriptAst());
-  }
+  // public toTypeScript(): string {
+  //   return toText(this.toTypeScriptAst());
+  // }
 
   public toJsonSchema(): JsonSchemaGenericKeywords {
     const node: JsonSchemaGenericKeywords = {

@@ -401,14 +401,14 @@ describe('validateSchema', () => {
     });
   });
 
-  describe('const schema', () => {
+  describe('"con" schema', () => {
     test('validates valid const schema', () => {
       const schema: Schema = {kind: 'con', value: 'test'};
       expect(() => validateSchema(schema)).not.toThrow();
     });
   });
 
-  describe('object schema', () => {
+  describe('"obj" schema', () => {
     test('validates valid object schema', () => {
       const schema: Schema = {
         kind: 'obj',

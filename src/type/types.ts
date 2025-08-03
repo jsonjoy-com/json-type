@@ -14,8 +14,7 @@ export type Type =
   | classes.NumType
   | classes.StrType
   | classes.BinType<any>
-  | classes.ArrType<any>
-  | classes.TupType<any>
+  | classes.ArrType<any, any, any>
   | classes.ObjType<any>
   | classes.MapType<any>
   | classes.RefType<any>

@@ -79,6 +79,7 @@ export class TypeBuilder {
 
   // --------------------------------------------------------------- shorthands
 
+  public readonly or = <F extends Type[]>(...types: F) => this.Or(...types);
   public readonly undefined = () => this.undef;
   public readonly null = () => this.nil;
   public readonly boolean = () => this.bool;
@@ -96,7 +97,7 @@ export class TypeBuilder {
       options,
     );
 
-  public readonly tuple = <F extends Type[]>(...types: F) => this.Tuple(...types);
+  public readonly tuple = <F extends Type[]>(...types: F) => this.Tuple(types);
 
   /**
    * Creates an object type with the specified properties. This is a shorthand for
@@ -199,15 +200,15 @@ export class TypeBuilder {
   }
 
   public Array<T extends Type>(type: T, options?: schema.Optional<schema.ArrSchema>) {
-    const arr = new classes.ArrType<T>(type, options);
+    const arr = new classes.ArrType<T, [], []>(type, void 0, void 0, options);
     arr.system = this.system;
     return arr;
   }
 
-  public Tuple<F extends Type[]>(...types: F) {
-    const tup = new classes.TupType<F>(types);
-    tup.system = this.system;
-    return tup;
+  public Tuple<const Head extends Type[], Item extends Type | void, const Tail extends Type[]>(head: Head, item?: Item, tail?: Tail, options?: schema.Optional<schema.ArrSchema>) {
+    const arr = new classes.ArrType(item, head, tail, options);
+    arr.system = this.system;
+    return arr;
   }
 
   public Object<F extends classes.ObjectFieldType<any, any>[]>(...fields: F) {
@@ -280,8 +281,6 @@ export class TypeBuilder {
         return this.Binary(this.import(node.type), node);
       case 'arr':
         return this.Array(this.import(node.type), node);
-      case 'tup':
-        return this.Tuple(...node.types.map((t: schema.Schema) => this.import(t))).options(node);
       case 'obj': {
         return this.Object(
           ...node.fields.map((f: any) =>
@@ -336,9 +335,10 @@ export class TypeBuilder {
             }
           };
           const allElementsOfTheSameType = value.every((v) => getType(v) === getType(value[0]));
+          this.Array(this.from(value[0]))
           return allElementsOfTheSameType
             ? this.Array(this.from(value[0]))
-            : this.Tuple(...value.map((v) => this.from(v)));
+            : this.tuple(...value.map((v) => this.from(v)));
         }
         return this.Object(...Object.entries(value).map(([key, value]) => this.prop(key, this.from(value))));
       default:

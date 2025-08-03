@@ -45,18 +45,64 @@ test('string', () => {
   const v: T = 'abc';
 });
 
-test('array', () => {
-  const type = t.arr;
-  type S = SchemaOf<typeof type>;
-  type T = TypeOf<S>;
-  const v: T = [];
-});
+describe('"arr" type', () => {
+  test('default array', () => {
+    const type = t.arr;
+    type S = SchemaOf<typeof type>;
+    type T = TypeOf<S>;
+    const v1: T = [] satisfies unknown[];
+  });
 
-test('array', () => {
-  const type = t.Tuple(t.num, t.str);
-  type S = SchemaOf<typeof type>;
-  type T = TypeOf<S>;
-  const v: T = [123, 'abc'];
+  test('2-tuple', () => {
+    const type = t.Tuple([t.num, t.str]);
+    type S = SchemaOf<typeof type>;
+    type T = TypeOf<S>;
+    const v1: T = [123, 'abc'];
+    // @ts-expect-error
+    const v2: T = [123, 'abc', 1];
+  });
+
+  test('2-tuple using shorthand', () => {
+    const type = t.tuple(t.num, t.str);
+    type S = SchemaOf<typeof type>;
+    type T = TypeOf<S>;
+    const v1: T = [123, 'abc'];
+    // @ts-expect-error
+    const v2: T = [123, 'abc', 1];
+  });
+
+  test('2-tuple with item type', () => {
+    const type = t.Tuple([t.num, t.str], t.bool);
+    type S = SchemaOf<typeof type>;
+    type T = TypeOf<S>;
+    const v1: T = [123, 'abc'];
+    const v2: T = [123, 'abc', true];
+    const v3: T = [123, 'abc', true, false];
+    // @ts-expect-error
+    const v4: T = [123, 'abc', 1];
+  });
+
+  test('2-tuple tail with item type', () => {
+    const type = t.Tuple([], t.bool, [t.num, t.str]);
+    type S = SchemaOf<typeof type>;
+    type T = TypeOf<S>;
+    const v1: T = [true, 123, 'abc'];
+    const v2: T = [false, true, 123, 'abc'];
+    const v3: T = [123, 'abc'];
+    // @ts-expect-error
+    const v4: T = [123, 'abc', 1];
+  });
+
+  test('2-tuple head & tail with item type', () => {
+    const type = t.Tuple([t.con(false), t.nil], t.bool, [t.num, t.str]);
+    type S = SchemaOf<typeof type>;
+    type T = TypeOf<S>;
+    const v1: T = [false, null, true, 123, 'abc'];
+    const v2: T = [false, null, false, true, 123, 'abc'];
+    const v3: T = [false, null, 123, 'abc'];
+    // @ts-expect-error
+    const v4: T = [123, 'abc', 1];
+  });
 });
 
 test('object', () => {
@@ -120,23 +166,23 @@ describe('fn', () => {
 });
 
 test('string patch', () => {
-  const StringOperationInsert = t.Tuple(t.Const(1), t.str).options({
+  const StringOperationInsert = t.tuple(t.con(1), t.str).options({
     title: 'Insert String',
     description: 'Inserts a string at the current position in the source string.',
   });
-  const StringOperationEqual = t.Tuple(t.Const(0), t.str).options({
+  const StringOperationEqual = t.tuple(t.con(0), t.str).options({
     title: 'Equal String',
     description: 'Keeps the current position in the source string unchanged.',
   });
-  const StringOperationDelete = t.Tuple(t.Const(-1), t.str).options({
+  const StringOperationDelete = t.tuple(t.con(-1), t.str).options({
     title: 'Delete String',
     description: 'Deletes the current position in the source string.',
   });
-  const StringPatch = t.Array(t.Or(StringOperationInsert, StringOperationEqual, StringOperationDelete)).options({
-    title: 'String Patch',
-    description:
+  const StringPatch = t.array(t.or(StringOperationInsert, StringOperationEqual, StringOperationDelete))
+    .title('String Patch')
+    .description(
       'A list of string operations that can be applied to a source string to produce a destination string, or vice versa.',
-  });
+    );
 
   type T = system.infer<typeof StringPatch>;
   const v: T = [
