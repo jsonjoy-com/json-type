@@ -799,6 +799,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jsonjoy.com/codegen@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@jsonjoy.com/codegen@npm:1.0.0"
+  peerDependencies:
+    tslib: 2
+  checksum: 10c0/54686352248440ad1484ce7db0270a5a72424fb9651b090e5f1c8e2cd8e55e6c7a3f67dfe4ed90c689cf01ed949e794764a8069f5f52510eaf0a2d0c41d324cd
+  languageName: node
+  linkType: hard
+
 "@jsonjoy.com/json-expression@npm:^1.1.0":
   version: 1.1.0
   resolution: "@jsonjoy.com/json-expression@npm:1.1.0"
@@ -841,6 +850,7 @@ __metadata:
   resolution: "@jsonjoy.com/json-type@workspace:."
   dependencies:
     "@biomejs/biome": "npm:^1.9.3"
+    "@jsonjoy.com/codegen": "npm:^1.0.0"
     "@jsonjoy.com/json-expression": "npm:^1.1.0"
     "@jsonjoy.com/json-pack": "npm:^1.2.0"
     "@jsonjoy.com/util": "npm:^1.6.0"

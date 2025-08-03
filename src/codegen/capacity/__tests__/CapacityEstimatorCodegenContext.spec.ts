@@ -127,35 +127,35 @@ describe('array', () => {
 //   });
 // });
 
-// describe('object', () => {
-//   test('empty', () => {
-//     const system = new TypeSystem();
-//     const type = system.t.obj;
-//     const estimator = type.compileCapacityEstimator({});
-//     expect(estimator(123)).toBe(maxEncodingCapacity({}));
-//   });
+describe('object', () => {
+  test('empty', () => {
+    const system = new TypeSystem();
+    const type = system.t.obj;
+    const estimator = CapacityEstimatorCodegen.compile({type});
+    expect(estimator(123)).toBe(maxEncodingCapacity({}));
+  });
 
-//   test('object with unknown fields', () => {
-//     const system = new TypeSystem();
-//     const type = system.t.obj.options({encodeUnknownFields: true});
-//     const estimator = type.compileCapacityEstimator({});
-//     expect(estimator({foo: 'bar'})).toBe(maxEncodingCapacity({foo: 'bar'}));
-//   });
+  test('object with unknown fields', () => {
+    const system = new TypeSystem();
+    const type = system.t.obj.options({encodeUnknownFields: true});
+    const estimator = CapacityEstimatorCodegen.compile({type});
+    expect(estimator({foo: 'bar'})).toBe(maxEncodingCapacity({foo: 'bar'}));
+  });
 
-//   test('one required key', () => {
-//     const system = new TypeSystem();
-//     const type = system.t.Object(system.t.prop('abc', system.t.str));
-//     const estimator = type.compileCapacityEstimator({});
-//     expect(estimator({abc: 'foo'})).toBe(maxEncodingCapacity({abc: 'foo'}));
-//   });
+  test('one required key', () => {
+    const system = new TypeSystem();
+    const type = system.t.Object(system.t.prop('abc', system.t.str));
+    const estimator = CapacityEstimatorCodegen.compile({type});
+    expect(estimator({abc: 'foo'})).toBe(maxEncodingCapacity({abc: 'foo'}));
+  });
 
-//   test('one required and one optional keys', () => {
-//     const system = new TypeSystem();
-//     const type = system.t.Object(system.t.prop('abc', system.t.str), system.t.propOpt('key', system.t.num));
-//     const estimator = type.compileCapacityEstimator({});
-//     expect(estimator({abc: 'foo', key: 111})).toBe(maxEncodingCapacity({abc: 'foo', key: 111}));
-//   });
-// });
+  test('one required and one optional keys', () => {
+    const system = new TypeSystem();
+    const type = system.t.Object(system.t.prop('abc', system.t.str), system.t.propOpt('key', system.t.num));
+    const estimator = CapacityEstimatorCodegen.compile({type});
+    expect(estimator({abc: 'foo', key: 111})).toBe(maxEncodingCapacity({abc: 'foo', key: 111}));
+  });
+});
 
 // describe('map', () => {
 //   test('empty', () => {

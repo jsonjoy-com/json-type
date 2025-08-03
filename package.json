@@ -56,6 +56,7 @@
     "tslib": "2"
   },
   "dependencies": {
+    "@jsonjoy.com/codegen": "^1.0.0",
     "@jsonjoy.com/json-expression": "^1.1.0",
     "@jsonjoy.com/json-pack": "^1.2.0",
     "@jsonjoy.com/util": "^1.6.0",

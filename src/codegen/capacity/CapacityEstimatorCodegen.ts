@@ -1,8 +1,9 @@
 import {Codegen, CodegenStepExecJs} from '@jsonjoy.com/util/lib/codegen';
 import {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
+import {normalizeAccessor} from '@jsonjoy.com/codegen/lib/util/normalizeAccessor';
 import {MaxEncodingOverhead, maxEncodingCapacity} from '@jsonjoy.com/util/lib/json-size';
 import {Value} from '../../value/Value';
-import {BoolType, ConType, NumType, type ArrType, type MapType, type RefType, type Type} from '../../type';
+import {BoolType, ConType, NumType, type ObjKeyType, type ArrType, type MapType, type RefType, type Type, ObjKeyOptType} from '../../type';
 import type {TypeSystem} from '../../system';
 
 export type CompiledCapacityEstimator = (value: unknown) => number;
@@ -150,33 +151,29 @@ export class CapacityEstimatorCodegen {
 // //   }
 // // };
 
-// export const obj = (
-//   ctx: CapacityEstimatorCodegen,
-//   value: JsExpression,
-//   type: Type,
-//   estimateCapacityFn: EstimatorFunction,
-// ): void => {
-//   const codegen = ctx.codegen;
-//   const r = codegen.var(value.use());
-//   const objectType = type as any; // ObjType
-//   const encodeUnknownFields = !!objectType.schema.encodeUnknownFields;
-//   if (encodeUnknownFields) {
-//     codegen.js(`size += maxEncodingCapacity(${r});`);
-//     return;
-//   }
-//   const fields = objectType.fields;
-//   const overhead = MaxEncodingOverhead.Object + fields.length * MaxEncodingOverhead.ObjectElement;
-//   ctx.inc(overhead);
-//   for (const field of fields) {
-//     ctx.inc(maxEncodingCapacity(field.key));
-//     const accessor = normalizeAccessor(field.key);
-//     const isOptional = field.optional;
-//     const block = () => estimateCapacityFn(ctx, new JsExpression(() => `${r}${accessor}`), field.value);
-//     if (isOptional) {
-//       codegen.if(`${JSON.stringify(accessor)} in ${r}`, block);
-//     } else block();
-//   }
-// };
+  protected genObj(value: JsExpression, type: Type): void {
+    const codegen = this.codegen;
+    const r = codegen.var(value.use());
+    const objectType = type as any; // ObjType
+    const encodeUnknownFields = !!objectType.schema.encodeUnknownFields;
+    if (encodeUnknownFields) {
+      codegen.js(`size += maxEncodingCapacity(${r});`);
+      return;
+    }
+    const fields = objectType.fields;
+    const overhead = MaxEncodingOverhead.Object + fields.length * MaxEncodingOverhead.ObjectElement;
+    this.inc(overhead);
+    for (const f of fields) {
+      const field = f as {} as ObjKeyType<any, any>;
+      this.inc(maxEncodingCapacity(field.key));
+      const accessor = normalizeAccessor(field.key);
+      const fieldExpression = new JsExpression(() => `${r}${accessor}`);
+      const block = () => this.generate(fieldExpression, field.val);
+      const isOptional = field instanceof ObjKeyOptType;
+      if (isOptional) codegen.if(`${JSON.stringify(field.key)} in ${r}`, block);
+      else block();
+    }
+  }
 
 // export const map = (ctx: CapacityEstimatorCodegen, value: JsExpression, type: MapType<any>): void => {
 //   const codegen = ctx.codegen;
@@ -256,9 +253,9 @@ export class CapacityEstimatorCodegen {
       case 'arr':
         this.genArr(value, type as ArrType<any, any, any>);
         break;
-      // case 'obj':
-      //   obj(ctx, value, type, generate);
-      //   break;
+      case 'obj':
+        this.genObj(value, type);
+        break;
       // case 'map':
       //   map(ctx, value, type as MapType<any>);
       //   break;
