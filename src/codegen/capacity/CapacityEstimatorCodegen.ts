@@ -3,7 +3,7 @@ import {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
 import {normalizeAccessor} from '@jsonjoy.com/codegen/lib/util/normalizeAccessor';
 import {MaxEncodingOverhead, maxEncodingCapacity} from '@jsonjoy.com/util/lib/json-size';
 import {Value} from '../../value/Value';
-import {BoolType, ConType, NumType, type ObjKeyType, type ArrType, type MapType, type RefType, type Type, ObjKeyOptType} from '../../type';
+import {BoolType, ConType, NumType, type ObjKeyType, type ArrType, type MapType, type RefType, type Type, ObjKeyOptType, OrType} from '../../type';
 import type {TypeSystem} from '../../system';
 
 export type CompiledCapacityEstimator = (value: unknown) => number;
@@ -18,15 +18,12 @@ export interface CapacityEstimatorCodegenOptions {
   /** Type for which to generate the encoder. */
   type: Type;
 
-  /** Type system to use for alias and validator resolution. */
-  system?: TypeSystem;
-
   /** Name to concatenate to the end of the generated function. */
   name?: string;
 }
 
 export class CapacityEstimatorCodegen {
-  public static readonly compile = (options: CapacityEstimatorCodegenOptions) => {
+  public static readonly get = (options: CapacityEstimatorCodegenOptions) => {
     const estimator = CACHE.get(options.type);
     if (estimator) return estimator;
     const codegen = new CapacityEstimatorCodegen(options);
@@ -46,9 +43,6 @@ export class CapacityEstimatorCodegen {
       args: ['r0'],
       prologue: /* js */ `var size = 0;`,
       epilogue: /* js */ `return size;`,
-      linkable: {
-        Value,
-      },
       processSteps: (steps) => {
         const stepsJoined: CodegenStepExecJs[] = [];
         for (let i = 0; i < steps.length; i++) {
@@ -73,37 +67,20 @@ export class CapacityEstimatorCodegen {
   }
 
   public compileForType(type: Type): CompiledCapacityEstimator {
-    return CapacityEstimatorCodegen.compile({...this.options, type});
+    return CapacityEstimatorCodegen.get({...this.options, type});
   }
 
   protected genAny(value: JsExpression): void {
     const codegen = this.codegen;
-    codegen.link('Value');
     const r = codegen.var(value.use());
-    codegen.if(
-      `${r} instanceof Value`,
-      () => {
-        codegen.if(
-          `${r}.type`,
-          () => {
-            codegen.js(`size += ${r}.type.capacityEstimator()(${r}.data);`);
-          },
-          () => {
-            codegen.js(`size += maxEncodingCapacity(${r}.data);`);
-          },
-        );
-      },
-      () => {
-        codegen.js(`size += maxEncodingCapacity(${r});`);
-      },
-    );
+    codegen.js(/* js */ `size += maxEncodingCapacity(${r});`);
   };
 
   protected genArr(value: JsExpression, type: ArrType<any, any, any>): void {
     const codegen = this.codegen;
     this.inc(MaxEncodingOverhead.Array);
-    const rLen = codegen.var(`${value.use()}.length`);
-    codegen.js(`size += ${MaxEncodingOverhead.ArrayElement} * ${rLen}`);
+    const rLen = codegen.var(/* js */ `${value.use()}.length`);
+    codegen.js(/* js */ `size += ${MaxEncodingOverhead.ArrayElement} * ${rLen}`);
     const itemType =  type._type as (Type | undefined);
     const headType = type._head as Type[] | undefined;
     const tailType = type._tail as Type[] | undefined;
@@ -114,12 +91,12 @@ export class CapacityEstimatorCodegen {
       const isConstantSizeType = type instanceof ConType || type instanceof BoolType || type instanceof NumType;
       if (isConstantSizeType) {
         const elementSize = fn(void 0);
-        codegen.js(`size += ${rLen} * ${elementSize};`);
+        codegen.js(/* js */ `size += ${rLen} * ${elementSize};`);
       } else {
         const r = codegen.var(value.use());
         const rFn = codegen.linkDependency(fn);
         const ri = codegen.getRegister();
-        codegen.js(`for(var ${ri} = ${headLength}; ${ri} < ${rLen} - ${tailLength}; ${ri}++) size += ${rFn}(${r}[${ri}]);`);
+        codegen.js(/* js */ `for(var ${ri} = ${headLength}; ${ri} < ${rLen} - ${tailLength}; ${ri}++) size += ${rFn}(${r}[${ri}]);`);
       }
     }
     if (headLength > 0) {
@@ -128,7 +105,7 @@ export class CapacityEstimatorCodegen {
         const elementType = headType![i];
         const fn = this.compileForType(elementType);
         const rFn = codegen.linkDependency(fn);
-        codegen.js(`size += ${rFn}(${r}[${i}]);`);
+        codegen.js(/* js */ `size += ${rFn}(${r}[${i}]);`);
       }
     }
     if (tailLength > 0) {
@@ -137,7 +114,7 @@ export class CapacityEstimatorCodegen {
         const elementType = tailType![i];
         const fn = this.compileForType(elementType);
         const rFn = codegen.linkDependency(fn);
-        codegen.js(`size += ${rFn}(${r}[${rLen} - ${i + 1}]);`);
+        codegen.js(/* js */ `size += ${rFn}(${r}[${rLen} - ${i + 1}]);`);
       }
     }
   }
@@ -148,7 +125,7 @@ export class CapacityEstimatorCodegen {
     const objectType = type as any; // ObjType
     const encodeUnknownFields = !!objectType.schema.encodeUnknownFields;
     if (encodeUnknownFields) {
-      codegen.js(`size += maxEncodingCapacity(${r});`);
+      codegen.js(/* js */ `size += maxEncodingCapacity(${r});`);
       return;
     }
     const fields = objectType.fields;
@@ -161,7 +138,7 @@ export class CapacityEstimatorCodegen {
       const fieldExpression = new JsExpression(() => `${r}${accessor}`);
       const block = () => this.generate(fieldExpression, field.val);
       const isOptional = field instanceof ObjKeyOptType;
-      if (isOptional) codegen.if(`${JSON.stringify(field.key)} in ${r}`, block);
+      if (isOptional) codegen.if(/* js */ `${JSON.stringify(field.key)} in ${r}`, block);
       else block();
     }
   }
@@ -170,39 +147,38 @@ export class CapacityEstimatorCodegen {
     const codegen = this.codegen;
     this.inc(MaxEncodingOverhead.Object);
     const r = codegen.var(value.use());
-    const rKeys = codegen.var(`Object.keys(${r})`);
+    const rKeys = codegen.var(/* js */ `Object.keys(${r})`);
     const rKey = codegen.var();
-    const rLen = codegen.var(`${rKeys}.length`);
-    codegen.js(`size += ${MaxEncodingOverhead.ObjectElement} * ${rLen}`);
+    const rLen = codegen.var(/* js */ `${rKeys}.length`);
+    codegen.js(/* js */ `size += ${MaxEncodingOverhead.ObjectElement} * ${rLen}`);
     const valueType = type._value;
     const fn = this.compileForType(valueType);
     const rFn = codegen.linkDependency(fn);
     const ri = codegen.var('0');
-    codegen.js(`for (; ${ri} < ${rLen}; ${ri}++) {`);
-    codegen.js(`${rKey} = ${rKeys}[${ri}];`);
+    codegen.js(/* js */ `for (; ${ri} < ${rLen}; ${ri}++) {`);
+    codegen.js(/* js */ `${rKey} = ${rKeys}[${ri}];`);
     codegen.js(
-      `size += ${MaxEncodingOverhead.String} + ${MaxEncodingOverhead.StringLengthMultiplier} * ${rKey}.length;`,
+      /* js */ `size += ${MaxEncodingOverhead.String} + ${MaxEncodingOverhead.StringLengthMultiplier} * ${rKey}.length;`,
     );
-    codegen.js(`size += ${rFn}(${r}[${rKey}]);`);
-    codegen.js(`}`);
+    codegen.js(/* js */ `size += ${rFn}(${r}[${rKey}]);`);
+    codegen.js(/* js */ `}`);
   }
 
   protected genRef(value: JsExpression, type: RefType<any>): void {
-    const system = this.options.system || type.system;
+    const system = type.system;
     if (!system) throw new Error('NO_SYSTEM');
     const estimator = this.compileForType(system.resolve(type.ref()).type);
     const d = this.codegen.linkDependency(estimator);
-    this.codegen.js(`size += ${d}(${value.use()});`);
+    this.codegen.js(/* js */ `size += ${d}(${value.use()});`);
   }
 
-  protected genOr(value: JsExpression, type: Type): void {
+  protected genOr(value: JsExpression, type: OrType<any>): void {
     const codegen = this.codegen;
-    const orType = type as any; // OrType
-    const discriminator = orType.discriminator();
+    const discriminator = type.discriminator();
     const d = codegen.linkDependency(discriminator);
-    const types = orType.types;
+    const types = type.types;
     codegen.switch(
-      `${d}(${value.use()})`,
+      /* js */ `${d}(${value.use()})`,
       types.map((childType: Type, index: number) => [
         index,
         () => {
@@ -248,7 +224,7 @@ export class CapacityEstimatorCodegen {
         this.genRef(value, type as RefType<any>);
         break;
       case 'or':
-        this.genOr(value, type);
+        this.genOr(value, type as OrType<any>);
         break;
       default:
         throw new Error(`"${kind}" type capacity estimation not implemented`);

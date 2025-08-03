@@ -9,7 +9,7 @@ import type {SchemaOf, Type} from '../types';
 
 export class OrType<T extends Type[]> extends AbsType<schema.OrSchema<{[K in keyof T]: SchemaOf<T[K]>}>> {
   constructor(
-    protected types: T,
+    public types: T,
     options?: Omit<schema.OrSchema, 'kind' | 'type'>,
   ) {
     super({
