@@ -175,23 +175,26 @@ export class CapacityEstimatorCodegen {
     }
   }
 
-// export const map = (ctx: CapacityEstimatorCodegen, value: JsExpression, type: MapType<any>): void => {
-//   const codegen = ctx.codegen;
-//   ctx.inc(MaxEncodingOverhead.Object);
-//   const r = codegen.var(value.use());
-//   const rKeys = codegen.var(`Object.keys(${r})`);
-//   const rKey = codegen.var();
-//   const rLen = codegen.var(`${rKeys}.length`);
-//   codegen.js(`size += ${MaxEncodingOverhead.ObjectElement} * ${rLen}`);
-//   const valueType = type._value;
-//   const fn = compile({...ctx.options, type: valueType});
-//   const rFn = codegen.linkDependency(fn);
-//   const ri = codegen.var('0');
-//   codegen.js(`for (; ${ri} < ${rLen}; ${ri}++) {`);
-//   codegen.js(`${rKey} = ${rKeys}[${ri}];`);
-//   codegen.js(`size += maxEncodingCapacity(${rKey}) + ${rFn}(${r}[${rKey}]);`);
-//   codegen.js(`}`);
-// };
+  protected genMap(value: JsExpression, type: MapType<any>): void {
+    const codegen = this.codegen;
+    this.inc(MaxEncodingOverhead.Object);
+    const r = codegen.var(value.use());
+    const rKeys = codegen.var(`Object.keys(${r})`);
+    const rKey = codegen.var();
+    const rLen = codegen.var(`${rKeys}.length`);
+    codegen.js(`size += ${MaxEncodingOverhead.ObjectElement} * ${rLen}`);
+    const valueType = type._value;
+    const fn = this.compileForType(valueType);
+    const rFn = codegen.linkDependency(fn);
+    const ri = codegen.var('0');
+    codegen.js(`for (; ${ri} < ${rLen}; ${ri}++) {`);
+    codegen.js(`${rKey} = ${rKeys}[${ri}];`);
+    codegen.js(
+      `size += ${MaxEncodingOverhead.String} + ${MaxEncodingOverhead.StringLengthMultiplier} * ${rKey}.length;`,
+    );
+    codegen.js(`size += ${rFn}(${r}[${rKey}]);`);
+    codegen.js(`}`);
+  }
 
 // export const ref = (ctx: CapacityEstimatorCodegen, value: JsExpression, type: RefType<any>): void => {
 //   const system = ctx.options.system || type.system;
@@ -256,9 +259,9 @@ export class CapacityEstimatorCodegen {
       case 'obj':
         this.genObj(value, type);
         break;
-      // case 'map':
-      //   map(ctx, value, type as MapType<any>);
-      //   break;
+      case 'map':
+        this.genMap(value, type as MapType<any>);
+        break;
       // case 'ref':
       //   ref(ctx, value, type as RefType<any>);
       //   break;
