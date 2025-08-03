@@ -189,17 +189,17 @@ describe('map', () => {
   });
 });
 
-// describe('ref', () => {
-//   test('two hops', () => {
-//     const system = new TypeSystem();
-//     system.alias('Id', system.t.str);
-//     system.alias('User', system.t.Object(system.t.prop('id', system.t.Ref('Id')), system.t.prop('name', system.t.str)));
-//     const type = system.t.Ref('User');
-//     const value = {id: 'asdf', name: 'foo'};
-//     const estimator = type.capacityEstimator();
-//     expect(estimator(value)).toBe(maxEncodingCapacity(value));
-//   });
-// });
+describe('ref', () => {
+  test('two hops', () => {
+    const system = new TypeSystem();
+    system.alias('Id', system.t.str);
+    system.alias('User', system.t.Object(system.t.prop('id', system.t.Ref('Id')), system.t.prop('name', system.t.str)));
+    const type = system.t.Ref('User');
+    const value = {id: 'asdf', name: 'foo'};
+    const estimator = CapacityEstimatorCodegen.compile({type});
+    expect(estimator(value)).toBe(maxEncodingCapacity(value));
+  });
+});
 
 // describe('or', () => {
 //   test('empty', () => {

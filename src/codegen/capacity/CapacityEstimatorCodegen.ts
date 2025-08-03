@@ -196,13 +196,13 @@ export class CapacityEstimatorCodegen {
     codegen.js(`}`);
   }
 
-// export const ref = (ctx: CapacityEstimatorCodegen, value: JsExpression, type: RefType<any>): void => {
-//   const system = ctx.options.system || type.system;
-//   if (!system) throw new Error('NO_SYSTEM');
-//   const estimator = ctx.compileForType(system.resolve(type.ref()).type);
-//   const d = ctx.codegen.linkDependency(estimator);
-//   ctx.codegen.js(`size += ${d}(${value.use()});`);
-// };
+  protected genRef(value: JsExpression, type: RefType<any>): void {
+    const system = this.options.system || type.system;
+    if (!system) throw new Error('NO_SYSTEM');
+    const estimator = this.compileForType(system.resolve(type.ref()).type);
+    const d = this.codegen.linkDependency(estimator);
+    this.codegen.js(`size += ${d}(${value.use()});`);
+  }
 
 // export const or = (
 //   ctx: CapacityEstimatorCodegen,
@@ -262,9 +262,9 @@ export class CapacityEstimatorCodegen {
       case 'map':
         this.genMap(value, type as MapType<any>);
         break;
-      // case 'ref':
-      //   ref(ctx, value, type as RefType<any>);
-      //   break;
+      case 'ref':
+        this.genRef(value, type as RefType<any>);
+        break;
       // case 'or':
       //   or(ctx, value, type, generate);
       //   break;
