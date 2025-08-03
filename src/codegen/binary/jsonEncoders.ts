@@ -13,7 +13,7 @@ const codegenBinaryEncoder = (
   value: JsExpression,
   type: Type,
 ): void => {
-  const kind = type.getTypeName();
+  const kind = type.kind();
   const v = value.use();
 
   switch (kind) {
@@ -80,7 +80,7 @@ export const any = (ctx: JsonEncoderCodegenContext, value: JsExpression, type: T
 };
 
 export const bool = (ctx: JsonEncoderCodegenContext, value: JsExpression): void => {
-  codegenBinaryEncoder(ctx, value, {getTypeName: () => 'bool'} as Type);
+  codegenBinaryEncoder(ctx, value, {kind: () => 'bool'} as Type);
 };
 
 export const num = (ctx: JsonEncoderCodegenContext, value: JsExpression, type: Type): void => {
@@ -258,7 +258,7 @@ export const or = (
  * encoder function based on the type's kind.
  */
 export const generate = (ctx: JsonEncoderCodegenContext, value: JsExpression, type: Type): void => {
-  const kind = type.getTypeName();
+  const kind = type.kind();
 
   switch (kind) {
     case 'any':
