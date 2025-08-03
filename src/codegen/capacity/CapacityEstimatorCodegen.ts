@@ -68,18 +68,6 @@ export class CapacityEstimatorCodegen {
     this.codegen.step(new IncrementSizeStep(inc));
   }
 
-//   /**
-//  * Standalone function to compile a capacity estimator for a given type.
-//  */
-// export const compile = (options: CapacityEstimatorCodegenOptions): CompiledCapacityEstimator => {
-//   const ctx = new CapacityEstimatorCodegen(options);
-//   const r = ctx.codegen.options.args[0];
-//   const value = new JsExpression(() => r);
-//   generate(ctx, value, options.type);
-//   return ctx.compile();
-// };
-
-
   public compile(): CompiledCapacityEstimator {
     return this.codegen.compile();
   }
