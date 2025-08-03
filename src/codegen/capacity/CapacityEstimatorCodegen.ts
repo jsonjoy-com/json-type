@@ -116,10 +116,13 @@ export class CapacityEstimatorCodegen {
     this.inc(MaxEncodingOverhead.Array);
     const rLen = codegen.var(`${value.use()}.length`);
     codegen.js(`size += ${MaxEncodingOverhead.ArrayElement} * ${rLen}`);
-    const elementType =  type._type as (Type | undefined);
-    if (elementType) {
-      const fn = this.compileForType(elementType);
-      // TODO: Add support for head and tail types.
+    const itemType =  type._type as (Type | undefined);
+    const headType = type._head as Type[] | undefined;
+    const tailType = type._tail as Type[] | undefined;
+    const headLength = headType ? headType.length : 0;
+    const tailLength = tailType ? tailType.length : 0;
+    if (itemType) {
+      const fn = this.compileForType(itemType);
       const isConstantSizeType = type instanceof ConType || type instanceof BoolType || type instanceof NumType;
       if (isConstantSizeType) {
         const elementSize = fn(void 0);
@@ -128,28 +131,28 @@ export class CapacityEstimatorCodegen {
         const r = codegen.var(value.use());
         const rFn = codegen.linkDependency(fn);
         const ri = codegen.getRegister();
-        codegen.js(`for(var ${ri} = ${rLen}; ${ri}-- !== 0;) size += ${rFn}(${r}[${ri}]);`);
+        codegen.js(`for(var ${ri} = ${headLength}; ${ri} < ${rLen} - ${tailLength}; ${ri}++) size += ${rFn}(${r}[${ri}]);`);
+      }
+    }
+    if (headLength > 0) {
+      const r = codegen.var(value.use());
+      for (let i = 0; i < headLength; i++) {
+        const elementType = headType![i];
+        const fn = this.compileForType(elementType);
+        const rFn = codegen.linkDependency(fn);
+        codegen.js(`size += ${rFn}(${r}[${i}]);`);
+      }
+    }
+    if (tailLength > 0) {
+      const r = codegen.var(value.use());
+      for (let i = 0; i < tailLength; i++) {
+        const elementType = tailType![i];
+        const fn = this.compileForType(elementType);
+        const rFn = codegen.linkDependency(fn);
+        codegen.js(`size += ${rFn}(${r}[${rLen} - ${i + 1}]);`);
       }
     }
   }
-
-// // const tup = (ctx: CapacityEstimatorCodegenContext, value: JsExpression, type: Type): void => {
-// //   const codegen = ctx.codegen;
-// //   const r = codegen.var(value.use());
-// //   const tupleType = type as any; // TupType
-// //   const types = tupleType.types;
-// //   const overhead = MaxEncodingOverhead.Array + MaxEncodingOverhead.ArrayElement * types.length;
-// //   ctx.inc(overhead);
-// //   for (let i = 0; i < types.length; i++) {
-// //     const elementType = types[i];
-// //     const fn = elementType.compileCapacityEstimator({
-// //       system: ctx.options.system,
-// //       name: ctx.options.name,
-// //     });
-// //     const rFn = codegen.linkDependency(fn);
-// //     codegen.js(`size += ${rFn}(${r}[${i}]);`);
-// //   }
-// // };
 
   protected genObj(value: JsExpression, type: Type): void {
     const codegen = this.codegen;
@@ -204,32 +207,23 @@ export class CapacityEstimatorCodegen {
     this.codegen.js(`size += ${d}(${value.use()});`);
   }
 
-// export const or = (
-//   ctx: CapacityEstimatorCodegen,
-//   value: JsExpression,
-//   type: Type,
-//   estimateCapacityFn: EstimatorFunction,
-// ): void => {
-//   const codegen = ctx.codegen;
-//   const orType = type as any; // OrType
-//   const discriminator = orType.discriminator();
-//   const d = codegen.linkDependency(discriminator);
-//   const types = orType.types;
-//   codegen.switch(
-//     `${d}(${value.use()})`,
-//     types.map((childType: Type, index: number) => [
-//       index,
-//       () => {
-//         estimateCapacityFn(ctx, value, childType);
-//       },
-//     ]),
-//   );
-// };
+  protected genOr(value: JsExpression, type: Type): void {
+    const codegen = this.codegen;
+    const orType = type as any; // OrType
+    const discriminator = orType.discriminator();
+    const d = codegen.linkDependency(discriminator);
+    const types = orType.types;
+    codegen.switch(
+      `${d}(${value.use()})`,
+      types.map((childType: Type, index: number) => [
+        index,
+        () => {
+          this.generate(value, childType);
+        },
+      ]),
+    );
+  }
 
-  /**
-   * Codegens an estimator for maximum capacity required to encode a given value
-   * to some JSON-like encoding format.
-   */
   protected generate(value: JsExpression, type: Type): void {
     const kind = type.kind();
     switch (kind) {
@@ -265,9 +259,9 @@ export class CapacityEstimatorCodegen {
       case 'ref':
         this.genRef(value, type as RefType<any>);
         break;
-      // case 'or':
-      //   or(ctx, value, type, generate);
-      //   break;
+      case 'or':
+        this.genOr(value, type);
+        break;
       default:
         throw new Error(`"${kind}" type capacity estimation not implemented`);
       }
