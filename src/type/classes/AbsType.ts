@@ -17,6 +17,11 @@ export abstract class AbsType<S extends schema.Schema> implements BaseType<S>, P
 
   constructor(protected schema: S) {}
 
+  public sys(system: TypeSystem | undefined): this {
+    this.system = system;
+    return this;
+  }
+
   public getSystem(): TypeSystem {
     const system = this.system;
     if (!system) throw new Error('NO_SYSTEM');
