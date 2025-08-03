@@ -11,7 +11,6 @@ import type {ObjType} from '../type/classes/ObjType';
 import type {OrType} from '../type/classes/OrType';
 import type {RefType} from '../type/classes/RefType';
 import type {StrType} from '../type/classes/StrType';
-import type {TupType} from '../type/classes/TupType';
 
 import * as gen from './generators';
 
@@ -20,13 +19,13 @@ import * as gen from './generators';
  * This replaces the individual random() methods in each type class.
  */
 export function random(type: AbsType<any>): unknown {
-  const kind = type.getTypeName();
+  const kind = type.kind();
 
   switch (kind) {
     case 'any':
       return gen.any(type as AnyType);
     case 'arr':
-      return gen.arr(type as ArrType<any>);
+      return gen.arr(type as ArrType<any, any, any>);
     case 'bin':
       return gen.bin(type as BinType<any>);
     case 'bool':
@@ -48,8 +47,6 @@ export function random(type: AbsType<any>): unknown {
       return gen.ref(type as RefType<any>);
     case 'str':
       return gen.str(type as StrType);
-    case 'tup':
-      return gen.tup(type as TupType<any>);
     default:
       // Fallback to generic random JSON for unknown types
       return gen.any(type as AnyType);

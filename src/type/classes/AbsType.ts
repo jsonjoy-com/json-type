@@ -97,11 +97,11 @@ export abstract class AbsType<S extends schema.Schema> implements BaseType<S>, P
     return options as any;
   }
 
-  /** Validates own schema, throws on errors. */
-  public validateSchema(): void {
-    const {validateSchema} = require('../../schema/validate');
-    validateSchema(this.getSchema());
-  }
+  // /** Validates own schema, throws on errors. */
+  // public validateSchema(): void {
+  //   const {validateSchema} = require('../../schema/validate');
+  //   validateSchema(this.getSchema());
+  // }
 
   // public validate(value: unknown): void {
   //   const validator = this.validator('string');

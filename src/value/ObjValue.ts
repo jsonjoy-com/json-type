@@ -8,8 +8,8 @@ import type {ResolveType} from '../system/types';
 
 export type UnObjType<T> = T extends classes.ObjType<infer U> ? U : never;
 export type UnObjValue<T> = T extends ObjValue<infer U> ? U : never;
-export type UnObjFieldTypeVal<T> = T extends classes.ObjectFieldType<any, infer U> ? U : never;
-export type ObjFieldToTuple<F> = F extends classes.ObjectFieldType<infer K, infer V> ? [K, V] : never;
+export type UnObjFieldTypeVal<T> = T extends classes.ObjKeyType<any, infer U> ? U : never;
+export type ObjFieldToTuple<F> = F extends classes.ObjKeyType<infer K, infer V> ? [K, V] : never;
 export type ToObject<T> = T extends [string, unknown][] ? {[K in T[number] as K[0]]: K[1]} : never;
 export type ObjValueToTypeMap<F> = ToObject<{
   [K in keyof F]: ObjFieldToTuple<F[K]>;
@@ -28,7 +28,7 @@ export class ObjValue<T extends classes.ObjType<any>> extends Value<T> implement
 
   public keys(): string[] {
     const type = this.type as T;
-    return type.fields.map((field: classes.ObjectFieldType<string, any>) => field.key);
+    return type.fields.map((field: classes.ObjKeyType<string, any>) => field.key);
   }
 
   public get<K extends keyof ObjValueToTypeMap<UnObjType<T>>>(
@@ -38,17 +38,16 @@ export class ObjValue<T extends classes.ObjType<any>> extends Value<T> implement
   > {
     const field = this.type.getField(<string>key);
     if (!field) throw new Error('NO_FIELD');
-    const type = field.value;
-    const data = this.data[<string>key];
-    return new Value(type, data) as any;
+    const data = (this.data as Record<string, unknown>)[<string>key];
+    return new Value(field.val, data) as any;
   }
 
-  public field<F extends classes.ObjectFieldType<any, any>>(
+  public field<F extends classes.ObjKeyType<any, any>>(
     field: F | ((t: TypeBuilder) => F),
     data: ResolveType<UnObjFieldTypeVal<F>>,
   ): ObjValue<classes.ObjType<[...UnObjType<T>, F]>> {
     field = typeof field === 'function' ? field((this.type as classes.ObjType<any>).getSystem().t) : field;
-    this.data[field.key] = data;
+    (this.data as any)[field.key] = data;
     const type = this.type;
     const system = type.system;
     if (!system) throw new Error('NO_SYSTEM');

@@ -328,7 +328,7 @@ export const or = (
  * validator function based on the type's kind.
  */
 export const generate = (ctx: ValidatorCodegenContext, path: ValidationPath, r: string, type: Type): void => {
-  const kind = type.getTypeName();
+  const kind = type.kind();
 
   switch (kind) {
     case 'any':

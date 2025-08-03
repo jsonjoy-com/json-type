@@ -21,7 +21,7 @@ type ObjValueTuple<T, KS extends any[] = UnionToTuple<keyof T>, R extends any[] 
   : R;
 
 type RecordToFields<O extends Record<string, Type>> = ObjValueTuple<{
-  [K in keyof O]: classes.ObjectFieldType<K extends string ? K : never, O[K]>;
+  [K in keyof O]: classes.ObjKeyType<K extends string ? K : never, O[K]>;
 }>;
 
 export class TypeBuilder {
@@ -121,7 +121,7 @@ export class TypeBuilder {
    * @returns An object type.
    */
   public readonly object = <R extends Record<string, Type>>(record: R): classes.ObjType<RecordToFields<R>> => {
-    const fields: classes.ObjectFieldType<any, any>[] = [];
+    const fields: classes.ObjKeyType<any, any>[] = [];
     for (const [key, value] of Object.entries(record)) fields.push(this.prop(key, value));
     return new classes.ObjType<RecordToFields<R>>(fields as any).sys(this.system);
   };
@@ -193,16 +193,16 @@ export class TypeBuilder {
     return new classes.ArrType(item, head, tail, options).sys(this.system);
   }
 
-  public Object<F extends classes.ObjectFieldType<any, any>[]>(...fields: F) {
+  public Object<F extends classes.ObjKeyType<any, any>[]>(...fields: F) {
     return new classes.ObjType<F>(fields).sys(this.system);
   }
 
   public prop<K extends string, V extends Type>(key: K, value: V) {
-    return new classes.ObjectFieldType<K, V>(key, value).sys(this.system);
+    return new classes.ObjKeyType<K, V>(key, value).sys(this.system);
   }
 
   public propOpt<K extends string, V extends Type>(key: K, value: V) {
-    return new classes.ObjectOptionalFieldType<K, V>(key, value).sys(this.system);
+    return new classes.ObjKeyOptType<K, V>(key, value).sys(this.system);
   }
 
   public Map<T extends Type>(val: T, key?: Type, options?: schema.Optional<schema.MapSchema>) {

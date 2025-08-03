@@ -12,13 +12,15 @@ import type {ObjType} from '../type/classes/ObjType';
 import type {OrType} from '../type/classes/OrType';
 import type {RefType} from '../type/classes/RefType';
 import type {StrType} from '../type/classes/StrType';
-import type {TupType} from '../type/classes/TupType';
 
 export const any = (type: AnyType): unknown => {
   return RandomJson.generate({nodeCount: 5});
 };
 
-export const arr = (type: ArrType<any>): unknown[] => {
+/**
+ * @todo Handle head and tail tuples.
+ */
+export const arr = (type: ArrType<any, any, any>): unknown[] => {
   let length = Math.round(Math.random() * 10);
   const schema = type.getSchema();
   const {min, max} = schema;
@@ -147,8 +149,4 @@ export const str = (type: StrType): string => {
   if (min !== undefined && length < min) length = min + length;
   if (max !== undefined && length > max) length = max;
   return RandomJson.genString(length);
-};
-
-export const tup = (type: TupType<any>): unknown[] => {
-  return (type as any).types.map((subType: any) => subType.random());
 };

@@ -220,7 +220,7 @@ export const or = (
  * encoder function based on the type's kind.
  */
 export const generate = (ctx: JsonTextEncoderCodegenContext, value: JsExpression, type: Type): void => {
-  const kind = type.getTypeName();
+  const kind = type.kind();
 
   switch (kind) {
     case 'any':

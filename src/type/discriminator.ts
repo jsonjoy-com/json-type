@@ -1,4 +1,4 @@
-import {ArrType, BoolType, ConType, NumType, type ObjectFieldType, ObjType, StrType} from './classes';
+import {ArrType, BoolType, ConType, NumType, type ObjKeyType, ObjType, StrType} from './classes';
 import type {Expr} from '@jsonjoy.com/json-expression';
 import type {Type} from './types';
 
@@ -17,7 +17,7 @@ export class Discriminator {
       }
 
     } else if (type instanceof ObjType) {
-      const fields = type.fields as ObjectFieldType<string, Type>[];
+      const fields = type.fields as ObjKeyType<string, Type>[];
       for (let i = 0; i < fields.length; i++) {
         const f = fields[i];
         const d = Discriminator.findConst(f.val);
