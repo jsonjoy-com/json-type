@@ -2,7 +2,8 @@ import {Codegen, CodegenStepExecJs} from '@jsonjoy.com/util/lib/codegen';
 import {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
 import {normalizeAccessor} from '@jsonjoy.com/codegen/lib/util/normalizeAccessor';
 import {MaxEncodingOverhead, maxEncodingCapacity} from '@jsonjoy.com/util/lib/json-size';
-import {BoolType, ConType, NumType, type ObjKeyType, type ArrType, type MapType, type RefType, type Type, ObjKeyOptType, OrType} from '../../type';
+import {BoolType, ConType, NumType, ObjKeyOptType} from '../../type';
+import type {ObjKeyType, ArrType, MapType, RefType, Type, OrType} from '../../type';
 import {lazy} from '@jsonjoy.com/util/lib/lazyFunction';
 
 export type CompiledCapacityEstimator = (value: unknown) => number;
@@ -113,18 +114,24 @@ export class CapacityEstimatorCodegen {
       codegen.js(/* js */ `size += maxEncodingCapacity(${r});`);
       return;
     }
+    this.inc(MaxEncodingOverhead.Object);
     const fields = objectType.fields;
-    const overhead = MaxEncodingOverhead.Object + fields.length * MaxEncodingOverhead.ObjectElement;
-    this.inc(overhead);
     for (const f of fields) {
-      const field = f as {} as ObjKeyType<any, any>;
-      this.inc(maxEncodingCapacity(field.key));
+      const field = f as ObjKeyType<any, any>;
       const accessor = normalizeAccessor(field.key);
       const fieldExpression = new JsExpression(() => `${r}${accessor}`);
-      const block = () => this.onNode(fieldExpression, field.val);
       const isOptional = field instanceof ObjKeyOptType;
-      if (isOptional) codegen.if(/* js */ `${JSON.stringify(field.key)} in ${r}`, block);
-      else block();
+      if (isOptional) {
+        codegen.if(/* js */ `${JSON.stringify(field.key)} in ${r}`, () => {
+          this.inc(MaxEncodingOverhead.ObjectElement);
+          this.inc(maxEncodingCapacity(field.key));
+          this.onNode(fieldExpression, field.val);
+        });
+      } else {
+        this.inc(MaxEncodingOverhead.ObjectElement);
+        this.inc(maxEncodingCapacity(field.key));
+        this.onNode(fieldExpression, field.val);
+      }
     }
   }
 

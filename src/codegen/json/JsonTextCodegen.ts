@@ -5,7 +5,8 @@ import {toBase64} from '@jsonjoy.com/base64/lib/toBase64';
 import {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
 import {stringify} from '@jsonjoy.com/json-pack/lib/json-binary/codec';
 import {normalizeAccessor} from '@jsonjoy.com/util/lib/codegen/util/normalizeAccessor';
-import {ArrType, MapType, ObjKeyOptType, OrType, RefType, type ConType, type ObjType, type StrType, type Type} from '../../type';
+import {ObjKeyOptType} from '../../type';
+import type {ArrType, MapType, OrType, RefType, ConType, ObjType, StrType, Type} from '../../type';
 import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
 
 export type JsonEncoderFn = <T>(value: T) => json_string<T>;
