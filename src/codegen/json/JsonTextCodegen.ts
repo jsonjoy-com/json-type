@@ -1,4 +1,5 @@
 import {Codegen, CodegenStepExecJs} from '@jsonjoy.com/util/lib/codegen';
+import {lazy} from '@jsonjoy.com/util/lib/lazyFunction';
 import {asString} from '@jsonjoy.com/util/lib/strings/asString';
 import {toBase64} from '@jsonjoy.com/base64/lib/toBase64';
 import {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
@@ -21,13 +22,15 @@ export class JsonTextCodegen {
   public static readonly get = (type: Type, name?: string) => {
     const fn = CACHE.get(type);
     if (fn) return fn;
-    const codegen = new JsonTextCodegen(type, name);
-    const r = codegen.codegen.options.args[0];
-    const expression = new JsExpression(() => r);
-    codegen.onNode(expression, type);
-    const newFn = codegen.compile();
-    CACHE.set(type, newFn);
-    return newFn;
+    return lazy(() => {
+      const codegen = new JsonTextCodegen(type, name);
+      const r = codegen.codegen.options.args[0];
+      const expression = new JsExpression(() => r);
+      codegen.onNode(expression, type);
+      const newFn = codegen.compile();
+      CACHE.set(type, newFn);
+      return newFn;
+    });
   };
 
   public readonly codegen: Codegen<JsonEncoderFn>;
