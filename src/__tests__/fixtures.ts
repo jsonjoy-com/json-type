@@ -42,7 +42,7 @@ export const compositeSchemas = {
     ),
     s.prop('tags', s.Array(s.String())),
   ]),
-  tuple: s.Tuple(s.String(), s.Number(), s.Boolean()),
+  tuple: s.Tuple([s.String(), s.Number(), s.Boolean()]),
   map: s.Map(s.String()),
   mapWithComplexValue: s.Map(s.Object([s.prop('value', s.Number()), s.prop('label', s.String())])),
   union: s.Or(s.String(), s.Number(), s.Boolean()),

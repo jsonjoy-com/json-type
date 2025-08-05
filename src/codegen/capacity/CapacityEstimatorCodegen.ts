@@ -3,8 +3,8 @@ import {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
 import {normalizeAccessor} from '@jsonjoy.com/codegen/lib/util/normalizeAccessor';
 import {MaxEncodingOverhead, maxEncodingCapacity} from '@jsonjoy.com/util/lib/json-size';
 import {BoolType, ConType, NumType, ObjKeyOptType} from '../../type';
-import type {ObjKeyType, ArrType, MapType, RefType, Type, OrType} from '../../type';
 import {lazy} from '@jsonjoy.com/util/lib/lazyFunction';
+import type {ObjKeyType, ArrType, MapType, RefType, Type, OrType} from '../../type';
 
 export type CompiledCapacityEstimator = (value: unknown) => number;
 
@@ -192,11 +192,11 @@ export class CapacityEstimatorCodegen {
         break;
       case 'str':
         this.inc(MaxEncodingOverhead.String);
-        this.codegen.js(`size += ${MaxEncodingOverhead.StringLengthMultiplier} * ${value.use()}.length;`);
+        this.codegen.js(/* js */ `size += ${MaxEncodingOverhead.StringLengthMultiplier} * ${value.use()}.length;`);
         break;
       case 'bin':
         this.inc(MaxEncodingOverhead.Binary);
-        this.codegen.js(`size += ${MaxEncodingOverhead.BinaryLengthMultiplier} * ${value.use()}.length;`);
+        this.codegen.js(/* js */ `size += ${MaxEncodingOverhead.BinaryLengthMultiplier} * ${value.use()}.length;`);
         break;
       case 'con':
         this.inc(maxEncodingCapacity((type as ConType).literal()));

@@ -799,6 +799,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jsonjoy.com/buffers@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@jsonjoy.com/buffers@npm:1.0.0"
+  peerDependencies:
+    tslib: 2
+  checksum: 10c0/ae6cbd083c418b4fa39a64107eb4d25cfa3a3c856b2f657ba3bfb00d72a9bf2f0f385f5262917cd62d0237988b355e2f7214e697a5f57d22b5b8eabf6749febc
+  languageName: node
+  linkType: hard
+
 "@jsonjoy.com/codegen@npm:^1.0.0":
   version: 1.0.0
   resolution: "@jsonjoy.com/codegen@npm:1.0.0"
@@ -845,6 +854,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jsonjoy.com/json-random@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "@jsonjoy.com/json-random@npm:1.2.0"
+  dependencies:
+    "@jsonjoy.com/buffers": "npm:^1.0.0"
+  peerDependencies:
+    tslib: 2
+  checksum: 10c0/c11cd26628526696782a20c3b0d3cb964e1c11740f77eaa290b621ca59353606a0ec46537ec08e4156b654ec5fa0692253434f60db6160ae53f8e63f55fb2306
+  languageName: node
+  linkType: hard
+
 "@jsonjoy.com/json-type@workspace:.":
   version: 0.0.0-use.local
   resolution: "@jsonjoy.com/json-type@workspace:."
@@ -853,6 +873,7 @@ __metadata:
     "@jsonjoy.com/codegen": "npm:^1.0.0"
     "@jsonjoy.com/json-expression": "npm:^1.1.0"
     "@jsonjoy.com/json-pack": "npm:^1.2.0"
+    "@jsonjoy.com/json-random": "npm:^1.2.0"
     "@jsonjoy.com/util": "npm:^1.6.0"
     "@types/benchmark": "npm:^2.1.5"
     "@types/jest": "npm:^29.5.12"
