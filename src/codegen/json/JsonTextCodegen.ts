@@ -4,7 +4,7 @@ import {toBase64} from '@jsonjoy.com/base64/lib/toBase64';
 import {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
 import {stringify} from '@jsonjoy.com/json-pack/lib/json-binary/codec';
 import {normalizeAccessor} from '@jsonjoy.com/util/lib/codegen/util/normalizeAccessor';
-import {ArrType, MapType, ObjKeyOptType, RefType, type ConType, type ObjType, type StrType, type Type} from '../../type';
+import {ArrType, MapType, ObjKeyOptType, OrType, RefType, type ConType, type ObjType, type StrType, type Type} from '../../type';
 import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
 
 export type JsonEncoderFn = <T>(value: T) => json_string<T>;
@@ -79,7 +79,7 @@ export class JsonTextCodegen {
     return this.codegen.compile();
   }
 
-  onArr(value: JsExpression, type: ArrType<any, any, any>): void {
+  protected onArr(value: JsExpression, type: ArrType<any, any, any>): void {
     this.writeText('[');
     const codegen = this.codegen;
     const r = codegen.getRegister(); // array
@@ -171,7 +171,7 @@ if (${rLength}) {
     this.writeText('}');
   }
 
-  onMap(value: JsExpression, type: MapType<any>): void {
+  protected onMap(value: JsExpression, type: MapType<any>): void {
       this.writeText('{');
       const r = this.codegen.var(value.use());
       const rKeys = this.codegen.var(/* js */ `Object.keys(${r})`);
@@ -192,7 +192,7 @@ if (${rLength}) {
       this.writeText('}');
   }
 
-  onRef(value: JsExpression, ref: RefType<any>): void {
+  protected onRef(value: JsExpression, ref: RefType<any>): void {
     const system = ref.system;
     if (!system) throw new Error('NO_SYSTEM');
     const alias = system.resolve(ref.ref());
@@ -201,27 +201,22 @@ if (${rLength}) {
     this.js(/* js */ `s += ${d}(${value.use()});`);
   }
 
-// export const or = (
-//   ctx: JsonTextCodegen,
-//   value: JsExpression,
-//   type: Type,
-//   encodeFn: JsonTextEncoderFunction,
-// ): void => {
-//   const orType = type as any; // OrType
-//   const codegen = ctx.codegen;
-//   const discriminator = orType.discriminator();
-//   const d = codegen.linkDependency(discriminator);
-//   const types = orType.types;
-//   codegen.switch(
-//     `${d}(${value.use()})`,
-//     types.map((childType: Type, index: number) => [
-//       index,
-//       () => {
-//         encodeFn(ctx, value, childType);
-//       },
-//     ]),
-//   );
-// };
+  protected onOr(value: JsExpression, type: Type): void {
+    const orType = type as any; // OrType
+    const codegen = this.codegen;
+    const discriminator = orType.discriminator();
+    const d = codegen.linkDependency(discriminator);
+    const types = orType.types;
+    codegen.switch(
+      `${d}(${value.use()})`,
+      types.map((childType: Type, index: number) => [
+        index,
+        () => {
+          this.onNode(value, childType);
+        },
+      ]),
+    );
+  }
 
   public onNode(value: JsExpression, type: Type): void {
     const kind = type.kind();
@@ -282,9 +277,10 @@ if (${rLength}) {
         this.onRef(value, type as RefType<any>);
         break;
       }
-      // case 'or':
-      //   or(ctx, value, type, generate);
-      //   break;
+      case 'or': {
+        this.onOr(value, type as OrType<any>);
+        break;
+      }
       default:
         throw new Error(`${kind} type JSON text encoding not implemented`);
     }

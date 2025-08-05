@@ -88,6 +88,15 @@ describe('"obj" type', () => {
   });
 });
 
+describe('"or" type', () => {
+  test('string or number', () => {
+    const type = t.or(t.str, t.num);
+    const encoder = JsonTextCodegen.get(type);
+    expect(encoder('xyz')).toBe('"xyz"');
+    expect(encoder(123)).toBe('123');
+  });
+});
+
 // test('encodes extra fields with "encodeUnknownFields" when referenced by ref', () => {
 //   const system = new TypeSystem();
 //   const {t} = system;
