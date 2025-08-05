@@ -4,11 +4,8 @@ import {toBase64} from '@jsonjoy.com/base64/lib/toBase64';
 import {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
 import {stringify} from '@jsonjoy.com/json-pack/lib/json-binary/codec';
 import {normalizeAccessor} from '@jsonjoy.com/util/lib/codegen/util/normalizeAccessor';
-import type {TypeSystem} from '../../system';
-import {ObjKeyOptType, type ConType, type ObjType, type StrType, type Type} from '../../type';
+import {ArrType, MapType, ObjKeyOptType, RefType, type ConType, type ObjType, type StrType, type Type} from '../../type';
 import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
-
-// type JsonTextEncoderFunction = (ctx: JsonTextCodegen, value: JsExpression, type: Type) => void;
 
 export type JsonEncoderFn = <T>(value: T) => json_string<T>;
 
@@ -82,29 +79,23 @@ export class JsonTextCodegen {
     return this.codegen.compile();
   }
 
-// export const arr = (
-//   ctx: JsonTextCodegen,
-//   value: JsExpression,
-//   type: Type,
-//   encodeFn: JsonTextEncoderFunction,
-// ): void => {
-//   const arrType = type as any; // ArrType
-//   ctx.writeText('[');
-//   const codegen = ctx.codegen;
-//   const r = codegen.getRegister(); // array
-//   const rl = codegen.getRegister(); // array.length
-//   const rll = codegen.getRegister(); // last
-//   const ri = codegen.getRegister(); // index
-//   ctx.js(/* js */ `var ${r} = ${value.use()}, ${rl} = ${r}.length, ${rll} = ${rl} - 1, ${ri} = 0;`);
-//   ctx.js(/* js */ `for(; ${ri} < ${rll}; ${ri}++) ` + '{');
-//   encodeFn(ctx, new JsExpression(() => `${r}[${ri}]`), arrType.type);
-//   ctx.js(/* js */ `s += ',';`);
-//   ctx.js(`}`);
-//   ctx.js(`if (${rl}) {`);
-//   encodeFn(ctx, new JsExpression(() => `${r}[${rll}]`), arrType.type);
-//   ctx.js(`}`);
-//   ctx.writeText(']');
-// };
+  onArr(value: JsExpression, type: ArrType<any, any, any>): void {
+    this.writeText('[');
+    const codegen = this.codegen;
+    const r = codegen.getRegister(); // array
+    const rl = codegen.getRegister(); // array.length
+    const rll = codegen.getRegister(); // last
+    const ri = codegen.getRegister(); // index
+    this.js(/* js */ `var ${r} = ${value.use()}, ${rl} = ${r}.length, ${rll} = ${rl} - 1, ${ri} = 0;`);
+    this.js(/* js */ `for(; ${ri} < ${rll}; ${ri}++) ` + '{');
+    this.onNode(new JsExpression(() => `${r}[${ri}]`), type._type);
+    this.js(/* js */ `s += ',';`);
+    this.js(/* js */ `}`);
+    this.js(/* js */ `if (${rl}) {`);
+    this.onNode(new JsExpression(() => `${r}[${rll}]`), type._type);
+    this.js(/* js */ `}`);
+    this.writeText(']');
+  }
 
 // export const tup = (
 //   ctx: JsonTextCodegen,
@@ -125,80 +116,90 @@ export class JsonTextCodegen {
 // };
 
   protected onObj(value: JsExpression, objType: ObjType): void {
+    const {fields} = objType;
+    const schema = objType.getOptions();
     const codegen = this.codegen;
-    const r = codegen.var(value.use());
-    const encodeUnknownFields = !!objType.getOptions().encodeUnknownFields;
-    if (encodeUnknownFields) {
-      const asStringFn = codegen.linkDependency(asString);
-      this.js(/* js */ `s += ${asStringFn}(${r});`);
-      return;
+    const r = codegen.getRegister();
+    this.js(/* js */ `var ${r} = ${value.use()};`);
+    const rKeys = this.codegen.getRegister();
+    if (schema.encodeUnknownFields) {
+      this.js(/* js */ `var ${rKeys} = new Set(Object.keys(${r}));`);
     }
-    const fields = objType.fields;
+    const requiredFields = fields.filter((field) => !(field instanceof ObjKeyOptType));
+    const optionalFields = fields.filter((field) => field instanceof ObjKeyOptType) as ObjKeyOptType<string, Type>[];
     this.writeText('{');
-    let hasFields = false;
-    for (const field of fields) {
-      const key = field.key;
-      const accessor = normalizeAccessor(key);
-      const isOptional = field instanceof ObjKeyOptType;
-      const writeField = () => {
-        if (hasFields) this.writeText(',');
-        this.writeText(`"${key}":`);
-        this.onNode(new JsExpression(() => `${r}${accessor}`), field.val);
-        hasFields = true;
-      };
-      if (isOptional) {
-        this.js(`if (${r}${accessor} !== undefined) {`);
-        writeField();
-        this.js(`}`);
+    for (let i = 0; i < requiredFields.length; i++) {
+      const field = requiredFields[i];
+      if (i) this.writeText(',');
+      this.writeText(JSON.stringify(field.key) + ':');
+      const accessor = normalizeAccessor(field.key);
+      const valueExpression = new JsExpression(() => `${r}${accessor}`);
+      if (schema.encodeUnknownFields) this.js(/* js */ `${rKeys}.delete(${JSON.stringify(field.key)});`);
+      this.onNode(valueExpression, field.val);
+    }
+    const rHasFields = codegen.getRegister();
+    if (!requiredFields.length) this.js(/* js */ `var ${rHasFields} = false;`);
+    for (let i = 0; i < optionalFields.length; i++) {
+      const field = optionalFields[i];
+      const accessor = normalizeAccessor(field.key);
+      const rValue = codegen.getRegister();
+      if (schema.encodeUnknownFields) this.js(/* js */ `${rKeys}.delete(${JSON.stringify(field.key)});`);
+      this.js(/* js */ `var ${rValue} = ${r}${accessor};`);
+      this.js(`if (${rValue} !== undefined) {`);
+      if (requiredFields.length) {
+        this.writeText(',');
       } else {
-        writeField();
+        this.js(`if (${rHasFields}) s += ',';`);
+        this.js(/* js */ `${rHasFields} = true;`);
       }
+      this.writeText(JSON.stringify(field.key) + ':');
+      const valueExpression = new JsExpression(() => `${rValue}`);
+      this.onNode(valueExpression, field.val);
+      this.js(`}`);
+    }
+    if (schema.encodeUnknownFields) {
+      const [rList, ri, rLength, rk] = [codegen.r(), codegen.r(), codegen.r(), codegen.r()];
+      this.js(`var ${rLength} = ${rKeys}.size;
+if (${rLength}) {
+  var ${rk}, ${rList} = Array.from(${rKeys}.values());
+  for (var ${ri} = 0; ${ri} < ${rLength}; ${ri}++) {
+    ${rk} = ${rList}[${ri}];
+    s += ',' + asString(${rk}) + ':' + stringify(${r}[${rk}]);
+  }
+}`);
     }
     this.writeText('}');
   }
 
-// export const map = (
-//   ctx: JsonTextCodegen,
-//   value: JsExpression,
-//   type: Type,
-//   encodeFn: JsonTextEncoderFunction,
-// ): void => {
-//   const mapType = type as any; // MapType
-//   const codegen = ctx.codegen;
-//   const r = codegen.var(value.use());
-//   const rKeys = codegen.var(`Object.keys(${r})`);
-//   const rKey = codegen.var();
-//   const rLen = codegen.var(`${rKeys}.length`);
-//   const ri = codegen.var('0');
-//   const rll = codegen.var(`${rLen} - 1`);
+  onMap(value: JsExpression, type: MapType<any>): void {
+      this.writeText('{');
+      const r = this.codegen.var(value.use());
+      const rKeys = this.codegen.var(/* js */ `Object.keys(${r})`);
+      const rLength = this.codegen.var(/* js */ `${rKeys}.length`);
+      const rKey = this.codegen.var();
+      this.codegen.if(/* js */ `${rLength}`, () => {
+        this.js(/* js */ `${rKey} = ${rKeys}[0];`);
+        this.js(/* js */ `s += asString(${rKey}) + ':';`);
+        const innerValue = new JsExpression(() => /* js */ `${r}[${rKey}]`);
+        this.onNode(innerValue, type._value);
+      });
+      this.js(/* js */ `for (var i = 1; i < ${rLength}; i++) {`);
+      this.js(/* js */ `${rKey} = ${rKeys}[i];`);
+      this.js(/* js */ `s += ',' + asString(${rKey}) + ':';`);
+      const innerValue = new JsExpression(() => /* js */ `${r}[${rKey}]`);
+      this.onNode(innerValue, type._value);
+      this.js(/* js */ `}`);
+      this.writeText('}');
+  }
 
-//   ctx.writeText('{');
-//   ctx.js(`var ${rKeys}, ${rKey}, ${rLen}, ${ri}, ${rll};`);
-//   ctx.js(`${rKeys} = Object.keys(${r});`);
-//   ctx.js(`${rLen} = ${rKeys}.length;`);
-//   ctx.js(`${rll} = ${rLen} - 1;`);
-//   ctx.js(`for (; ${ri} < ${rll}; ${ri}++) {`);
-//   ctx.js(`${rKey} = ${rKeys}[${ri}];`);
-//   ctx.js(`s += '"' + ${rKey} + '":';`);
-//   encodeFn(ctx, new JsExpression(() => `${r}[${rKey}]`), mapType.valueType);
-//   ctx.js(`s += ',';`);
-//   ctx.js(`}`);
-//   ctx.js(`if (${rLen}) {`);
-//   ctx.js(`${rKey} = ${rKeys}[${rll}];`);
-//   ctx.js(`s += '"' + ${rKey} + '":';`);
-//   encodeFn(ctx, new JsExpression(() => `${r}[${rKey}]`), mapType.valueType);
-//   ctx.js(`}`);
-//   ctx.writeText('}');
-// };
-
-// export const ref = (ctx: JsonTextCodegen, value: JsExpression, type: Type): void => {
-//   const refType = type as any; // RefType
-//   const system = ctx.options.system || refType.system;
-//   if (!system) throw new Error('NO_SYSTEM');
-//   const encoder = system.resolve(refType.schema.ref).type.jsonTextEncoder();
-//   const d = ctx.codegen.linkDependency(encoder);
-//   ctx.js(`s += ${d}(${value.use()});`);
-// };
+  onRef(value: JsExpression, ref: RefType<any>): void {
+    const system = ref.system;
+    if (!system) throw new Error('NO_SYSTEM');
+    const alias = system.resolve(ref.ref());
+    const fn = JsonTextCodegen.get(alias.type, alias.id);
+    const d = this.codegen.linkDependency(fn);
+    this.js(/* js */ `s += ${d}(${value.use()});`);
+  }
 
 // export const or = (
 //   ctx: JsonTextCodegen,
@@ -262,9 +263,10 @@ export class JsonTextCodegen {
         this.js(/* js */ `s += ${JSON.stringify(stringify(constType.literal()))}`);
         break;
       }
-      // case 'arr':
-      //   arr(ctx, value, type, generate);
-      //   break;
+      case 'arr': {
+        this.onArr(value, type as ArrType<any, any, any>);
+        break;
+      }
       // case 'tup':
       //   tup(ctx, value, type, generate);
       //   break;
@@ -272,12 +274,14 @@ export class JsonTextCodegen {
         this.onObj(value, type as ObjType);
         break;
       }
-      // case 'map':
-      //   map(ctx, value, type, generate);
-      //   break;
-      // case 'ref':
-      //   ref(ctx, value, type);
-      //   break;
+      case 'map': {
+        this.onMap(value, type as MapType<any>);
+        break;
+      }
+      case 'ref': {
+        this.onRef(value, type as RefType<any>);
+        break;
+      }
       // case 'or':
       //   or(ctx, value, type, generate);
       //   break;

@@ -1,10 +1,11 @@
 import {type Schema, s} from '../../../schema';
-import {TypeSystem} from '../../../system';
+import {t} from '../../../type';
+import {TypeSystem} from '../../../system/TypeSystem';
+import {JsonTextCodegen} from '../JsonTextCodegen';
 
 const exec = (schema: Schema, json: unknown, expected: unknown = json) => {
-  const system = new TypeSystem();
-  const type = system.t.import(schema);
-  const fn = type.jsonTextEncoder();
+  const type = t.import(schema);
+  const fn = JsonTextCodegen.get(type);
   // console.log(fn.toString());
   const serialized = fn(json);
   // console.log('serialized', serialized);
@@ -212,7 +213,7 @@ describe('"ref" type', () => {
     system.alias('ID', system.t.str);
     const schema = s.Object([s.prop('name', s.str), s.prop('id', s.Ref<any>('ID')), s.prop('createdAt', s.num)]);
     const type = system.t.import(schema);
-    const fn = type.jsonTextEncoder();
+    const fn = JsonTextCodegen.get(type);
     const json = {
       name: 'John',
       id: '123',
