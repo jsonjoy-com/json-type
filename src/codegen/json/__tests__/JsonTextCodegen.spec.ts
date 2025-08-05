@@ -60,7 +60,7 @@ describe('"bin" type', () => {
   });
 });
 
-describe('"const" type', () => {
+describe('"con" type', () => {
   test('stringify string const', () => {
     const encoder = JsonTextCodegen.get(t.con('xyz'));
     expect(encoder('xyz')).toBe('"xyz"');
@@ -71,6 +71,20 @@ describe('"const" type', () => {
     const encoder = JsonTextCodegen.get(t.con({foo: 'bar'}));
     expect(encoder({foo: 'bar'})).toBe('{"foo":"bar"}');
     expect(encoder({})).toBe('{"foo":"bar"}');
+  });
+});
+
+describe('"obj" type', () => {
+  test('stringify simple object', () => {
+    const encoder = JsonTextCodegen.get(t.object({foo: t.str}));
+    expect(encoder({foo: 'xyz'})).toBe('{"foo":"xyz"}');
+    expect(encoder({foo: ''})).toBe('{"foo":""}');
+  });
+
+  test('stringify optional field', () => {
+    const encoder = JsonTextCodegen.get(t.obj.opt('foo', t.str));
+    expect(encoder({foo: 'xyz'})).toBe('{"foo":"xyz"}');
+    expect(encoder({foo: ''})).toBe('{"foo":""}');
   });
 });
 

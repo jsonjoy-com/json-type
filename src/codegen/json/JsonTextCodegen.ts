@@ -5,7 +5,7 @@ import {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
 import {stringify} from '@jsonjoy.com/json-pack/lib/json-binary/codec';
 import {normalizeAccessor} from '@jsonjoy.com/util/lib/codegen/util/normalizeAccessor';
 import type {TypeSystem} from '../../system';
-import type {ConType, StrType, Type} from '../../type';
+import {ObjKeyOptType, type ConType, type ObjType, type StrType, type Type} from '../../type';
 import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
 
 // type JsonTextEncoderFunction = (ctx: JsonTextCodegen, value: JsExpression, type: Type) => void;
@@ -27,7 +27,7 @@ export class JsonTextCodegen {
     const codegen = new JsonTextCodegen(type, name);
     const r = codegen.codegen.options.args[0];
     const expression = new JsExpression(() => r);
-    codegen.generate(expression, type);
+    codegen.onNode(expression, type);
     const newFn = codegen.compile();
     CACHE.set(type, newFn);
     return newFn;
@@ -124,50 +124,38 @@ export class JsonTextCodegen {
 //   ctx.writeText(']');
 // };
 
-// export const obj = (
-//   ctx: JsonTextCodegen,
-//   value: JsExpression,
-//   type: Type,
-//   encodeFn: JsonTextEncoderFunction,
-// ): void => {
-//   const objType = type as any; // ObjType
-//   const codegen = ctx.codegen;
-//   const r = codegen.var(value.use());
-//   const encodeUnknownFields = !!objType.schema.encodeUnknownFields;
-
-//   if (encodeUnknownFields) {
-//     const asStringFn = codegen.linkDependency(asString);
-//     ctx.js(/* js */ `s += ${asStringFn}(${r});`);
-//     return;
-//   }
-
-//   const fields = objType.fields;
-//   ctx.writeText('{');
-
-//   let hasFields = false;
-//   for (const field of fields) {
-//     const key = field.key;
-//     const accessor = normalizeAccessor(key);
-//     const isOptional = field.optional || field.constructor?.name === 'ObjectOptionalFieldType';
-
-//     const writeField = () => {
-//       if (hasFields) ctx.writeText(',');
-//       ctx.writeText(`"${key}":`);
-//       encodeFn(ctx, new JsExpression(() => `${r}${accessor}`), field.value);
-//       hasFields = true;
-//     };
-
-//     if (isOptional) {
-//       ctx.js(`if (${r}${accessor} !== undefined) {`);
-//       writeField();
-//       ctx.js(`}`);
-//     } else {
-//       writeField();
-//     }
-//   }
-
-//   ctx.writeText('}');
-// };
+  protected onObj(value: JsExpression, objType: ObjType): void {
+    const codegen = this.codegen;
+    const r = codegen.var(value.use());
+    const encodeUnknownFields = !!objType.getOptions().encodeUnknownFields;
+    if (encodeUnknownFields) {
+      const asStringFn = codegen.linkDependency(asString);
+      this.js(/* js */ `s += ${asStringFn}(${r});`);
+      return;
+    }
+    const fields = objType.fields;
+    this.writeText('{');
+    let hasFields = false;
+    for (const field of fields) {
+      const key = field.key;
+      const accessor = normalizeAccessor(key);
+      const isOptional = field instanceof ObjKeyOptType;
+      const writeField = () => {
+        if (hasFields) this.writeText(',');
+        this.writeText(`"${key}":`);
+        this.onNode(new JsExpression(() => `${r}${accessor}`), field.val);
+        hasFields = true;
+      };
+      if (isOptional) {
+        this.js(`if (${r}${accessor} !== undefined) {`);
+        writeField();
+        this.js(`}`);
+      } else {
+        writeField();
+      }
+    }
+    this.writeText('}');
+  }
 
 // export const map = (
 //   ctx: JsonTextCodegen,
@@ -234,7 +222,7 @@ export class JsonTextCodegen {
 //   );
 // };
 
-  public generate(value: JsExpression, type: Type): void {
+  public onNode(value: JsExpression, type: Type): void {
     const kind = type.kind();
     const codegen = this.codegen;
     switch (kind) {
@@ -280,9 +268,10 @@ export class JsonTextCodegen {
       // case 'tup':
       //   tup(ctx, value, type, generate);
       //   break;
-      // case 'obj':
-      //   obj(ctx, value, type, generate);
-      //   break;
+      case 'obj': {
+        this.onObj(value, type as ObjType);
+        break;
+      }
       // case 'map':
       //   map(ctx, value, type, generate);
       //   break;
