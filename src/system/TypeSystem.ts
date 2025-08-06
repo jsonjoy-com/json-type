@@ -1,8 +1,7 @@
-import {TypeAlias} from './TypeAlias';
-import {TypeBuilder} from '../type/TypeBuilder';
 import {RefType} from '../type/classes';
+import {TypeBuilder} from '../type/TypeBuilder';
+import {TypeAlias} from './TypeAlias';
 import {printTree} from 'tree-dump/lib/printTree';
-import type {CustomValidator} from './types';
 import type {Type, TypeMap} from '../type';
 import type {Printable} from 'tree-dump/lib/types';
 
@@ -36,20 +35,6 @@ export class TypeSystem implements Printable {
     return alias.type instanceof RefType ? this.resolve<K>(alias.type.ref() as K) : alias;
   };
 
-  protected readonly customValidators: Map<string, CustomValidator> = new Map();
-
-  public readonly addCustomValidator = (validator: CustomValidator): void => {
-    if (this.customValidators.has(validator.name))
-      throw new Error(`Validator [name = ${validator.name}] already exists.`);
-    this.customValidators.set(validator.name, validator);
-  };
-
-  public readonly getCustomValidator = (name: string): CustomValidator => {
-    const validator = this.customValidators.get(name);
-    if (!validator) throw new Error(`Validator [name = ${name}] not found.`);
-    return validator;
-  };
-
   public exportTypes() {
     const result: Record<string, unknown> = {};
     for (const [id, alias] of this.aliases.entries()) {
@@ -72,7 +57,6 @@ export class TypeSystem implements Printable {
   }
 
   public toString(tab: string = '') {
-    const nl = () => '';
     return (
       'TypeSystem' +
       printTree(tab, [
@@ -81,13 +65,6 @@ export class TypeSystem implements Printable {
           printTree(
             tab,
             [...this.aliases.values()].map((alias) => (tab) => alias.toString(tab)),
-          ),
-        this.customValidators.size ? nl : null,
-        (tab) =>
-          'validators' +
-          printTree(
-            tab,
-            [...this.customValidators.keys()].map((validator) => (tab) => `"${validator}"`),
           ),
       ])
     );

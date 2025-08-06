@@ -2,7 +2,7 @@ import * as schema from '../../schema';
 import {AbsType} from './AbsType';
 import type {SchemaOf, Type} from '../types';
 
-export class RefType<T extends Type> extends AbsType<schema.RefSchema<SchemaOf<T>>> {
+export class RefType<T extends Type = any> extends AbsType<schema.RefSchema<SchemaOf<T>>> {
   constructor(ref: string) {
     super(schema.s.Ref<SchemaOf<T>>(ref));
   }

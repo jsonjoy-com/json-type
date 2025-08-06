@@ -50,14 +50,6 @@ export interface TExample<Value = unknown> extends Display {
 }
 
 /**
- * A type for which an explicit validation function can be applied.
- */
-export interface WithValidator {
-  /** Name of the validation to apply. */
-  validator?: string | string[];
-}
-
-/**
  * Represents something of which type is not known.
  *
  * Example:
@@ -71,7 +63,7 @@ export interface WithValidator {
  * }
  * ```
  */
-export interface AnySchema extends TType<unknown>, WithValidator {
+export interface AnySchema extends TType<unknown> {
   kind: 'any';
 
   /**
@@ -91,7 +83,7 @@ export interface AnySchema extends TType<unknown>, WithValidator {
  * }
  * ```
  */
-export interface ConSchema<V = any> extends TType, WithValidator {
+export interface ConSchema<V = any> extends TType {
   kind: 'con';
   /** The value. */
   value: V;
@@ -111,7 +103,7 @@ export interface ConSchema<V = any> extends TType, WithValidator {
  * }
  * ```
  */
-export interface BoolSchema extends TType<boolean>, WithValidator {
+export interface BoolSchema extends TType<boolean> {
   kind: 'bool';
 }
 
@@ -129,7 +121,7 @@ export interface BoolSchema extends TType<boolean>, WithValidator {
  * }
  * ```
  */
-export interface NumSchema extends TType<number>, WithValidator {
+export interface NumSchema extends TType<number> {
   kind: 'num';
 
   /**
@@ -180,7 +172,7 @@ export interface NumSchema extends TType<number>, WithValidator {
  * }
  * ```
  */
-export interface StrSchema extends TType<string>, WithValidator {
+export interface StrSchema extends TType<string> {
   kind: 'str';
 
   /**
@@ -232,7 +224,7 @@ export interface StrSchema extends TType<string>, WithValidator {
  * }
  * ```
  */
-export interface BinSchema<T extends TType = any> extends TType, WithValidator {
+export interface BinSchema<T extends TType = any> extends TType {
   kind: 'bin';
 
   /** Type of value encoded in the binary data. */
@@ -264,7 +256,7 @@ export interface BinSchema<T extends TType = any> extends TType, WithValidator {
  * }
  * ```
  */
-export interface ArrSchema<T extends TType = any, Head extends TType[] = any, Tail extends TType[] = any> extends TType<Array<unknown>>, WithValidator {
+export interface ArrSchema<T extends TType = any, Head extends TType[] = any, Tail extends TType[] = any> extends TType<Array<unknown>> {
   kind: 'arr';
   /** One or more "one-of" types that array contains. */
   type?: T;
@@ -310,8 +302,7 @@ export interface ArrSchema<T extends TType = any, Head extends TType[] = any, Ta
  */
 export interface ObjSchema<
   Fields extends ObjFieldSchema<string, TType>[] | readonly ObjFieldSchema<string, TType>[] = any,
-> extends TType<object>,
-    WithValidator {
+> extends TType<object> {
   kind: 'obj';
 
   /**
@@ -372,8 +363,7 @@ export interface ObjOptionalFieldSchema<K extends string = string, V extends TTy
  * values are of the same type.
  */
 export interface MapSchema<V extends TType = any, K extends TType = any>
-  extends TType<Record<string, unknown>>,
-    WithValidator {
+  extends TType<Record<string, unknown>> {
   kind: 'map';
   /**
    * Type of all keys in the map. Defaults to string type.

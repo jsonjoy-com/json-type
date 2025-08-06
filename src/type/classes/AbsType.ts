@@ -2,18 +2,14 @@ import {Value} from '../../value';
 import type * as schema from '../../schema';
 import type {Printable} from 'tree-dump/lib/types';
 import type {TExample} from '../../schema';
-import type * as jsonSchema from '../../json-schema';
 import type {BaseType} from '../types';
 import type {TypeSystem} from '../../system/TypeSystem';
-import type {TypeExportContext} from '../../system/TypeExportContext';
-import type {Validators} from './types';
 
 export abstract class AbsType<S extends schema.Schema> implements BaseType<S>, Printable {
   /** Default type system to use, if any. */
   public system?: TypeSystem;
 
-  protected validators: Validators = {};
-  // protected encoders = new Map<EncodingFormat, CompiledBinaryEncoder>();
+  public readonly validators: schema.TypeOf<S>[] = [];
 
   constructor(protected schema: S) {}
 
@@ -43,16 +39,15 @@ export abstract class AbsType<S extends schema.Schema> implements BaseType<S>, P
     return this.schema;
   }
 
-  public getValidatorNames(): string[] {
-    const {validator} = this.schema as schema.WithValidator;
-    if (!validator) return [];
-    return Array.isArray(validator) ? validator : [validator];
-  }
-
-  public toJsonSchema(ctx?: TypeExportContext): jsonSchema.JsonSchemaNode {
-    // Use dynamic import to avoid circular dependency
-    const converter = require('../../json-schema/converter');
-    return converter.typeToJsonSchema(this, ctx);
+  /**
+   * Sets a custom runtime validator for this type.
+   *
+   * @param validator Function that validates the value of this type.
+   * @returns `this` for chaining.
+   */
+  public validator(validator: schema.TypeOf<S>): this {
+    this.validators.push(validator);
+    return this;
   }
 
   public options(options: schema.Optional<S>): this {

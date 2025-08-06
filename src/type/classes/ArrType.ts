@@ -4,7 +4,7 @@ import {printTree} from 'tree-dump';
 import type {SchemaOf, Type} from '../types';
 import type {TypeExportContext} from '../../system/TypeExportContext';
 
-export class ArrType<T extends Type | void, const Head extends Type[], const Tail extends Type[]>
+export class ArrType<T extends Type | void = any, const Head extends Type[] = any, const Tail extends Type[] = any>
   extends AbsType<schema.ArrSchema<
     T extends void ? schema.Schema : SchemaOf<T extends Type ? T : never>,
     {[K in keyof Head]: SchemaOf<Head[K]>},

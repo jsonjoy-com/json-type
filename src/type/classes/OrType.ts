@@ -7,7 +7,7 @@ import {Discriminator} from '../discriminator';
 import {AbsType} from './AbsType';
 import type {SchemaOf, Type} from '../types';
 
-export class OrType<T extends Type[]> extends AbsType<schema.OrSchema<{[K in keyof T]: SchemaOf<T[K]>}>> {
+export class OrType<T extends Type[] = any> extends AbsType<schema.OrSchema<{[K in keyof T]: SchemaOf<T[K]>}>> {
   constructor(
     public types: T,
     options?: Omit<schema.OrSchema, 'kind' | 'type'>,

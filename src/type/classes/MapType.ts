@@ -4,7 +4,7 @@ import {AbsType} from './AbsType';
 import type {SchemaOf, Type} from '../types';
 import type {TypeExportContext} from '../../system/TypeExportContext';
 
-export class MapType<T extends Type> extends AbsType<schema.MapSchema<SchemaOf<T>>> {
+export class MapType<T extends Type = any> extends AbsType<schema.MapSchema<SchemaOf<T>>> {
   constructor(
     public readonly _value: T,
     public readonly _key?: Type,

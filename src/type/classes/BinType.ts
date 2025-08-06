@@ -3,7 +3,7 @@ import * as schema from '../../schema';
 import {AbsType} from './AbsType';
 import type {SchemaOf, Type} from '../types';
 
-export class BinType<T extends Type> extends AbsType<schema.BinSchema> {
+export class BinType<T extends Type = any> extends AbsType<schema.BinSchema> {
   constructor(
     protected type: T,
     options?: schema.Optional<schema.BinSchema>,

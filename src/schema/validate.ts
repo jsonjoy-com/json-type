@@ -1,5 +1,5 @@
 import type {Display} from './common';
-import type {TExample, TType, WithValidator, Schema} from './schema';
+import type {TExample, TType, Schema} from './schema';
 
 const validateDisplay = ({title, description, intro}: Display): void => {
   if (title !== undefined && typeof title !== 'string') throw new Error('INVALID_TITLE');
@@ -23,14 +23,6 @@ export const validateTType = (tType: TType, kind: string): void => {
   }
 };
 
-const validateWithValidator = ({validator}: WithValidator): void => {
-  if (validator !== undefined) {
-    if (Array.isArray(validator)) {
-      for (const v of validator) if (typeof v !== 'string') throw new Error('INVALID_VALIDATOR');
-    } else if (typeof validator !== 'string') throw new Error('INVALID_VALIDATOR');
-  }
-};
-
 const validateMinMax = (min: number | undefined, max: number | undefined) => {
   if (min !== undefined) {
     if (typeof min !== 'number') throw new Error('MIN_TYPE');
@@ -47,17 +39,14 @@ const validateMinMax = (min: number | undefined, max: number | undefined) => {
 
 const validateAnySchema = (schema: any): void => {
   validateTType(schema, 'any');
-  validateWithValidator(schema);
 };
 
 const validateBoolSchema = (schema: any): void => {
   validateTType(schema, 'bool');
-  validateWithValidator(schema);
 };
 
 const validateNumSchema = (schema: any): void => {
   validateTType(schema, 'num');
-  validateWithValidator(schema);
   const {format, gt, gte, lt, lte} = schema;
   if (gt !== undefined && typeof gt !== 'number') throw new Error('GT_TYPE');
   if (gte !== undefined && typeof gte !== 'number') throw new Error('GTE_TYPE');
@@ -93,7 +82,6 @@ const validateNumSchema = (schema: any): void => {
 
 const validateStrSchema = (schema: any): void => {
   validateTType(schema, 'str');
-  validateWithValidator(schema);
   const {min, max, ascii, noJsonEscape, format} = schema;
 
   validateMinMax(min, max);
@@ -119,7 +107,6 @@ const binaryFormats = new Set(['bencode', 'bson', 'cbor', 'ion', 'json', 'msgpac
 
 const validateBinSchema = (schema: any): void => {
   validateTType(schema, 'bin');
-  validateWithValidator(schema);
   const {min, max, format} = schema;
   validateMinMax(min, max);
   if (format !== undefined) {
@@ -130,7 +117,6 @@ const validateBinSchema = (schema: any): void => {
 
 const validateArrSchema = (schema: any): void => {
   validateTType(schema, 'arr');
-  validateWithValidator(schema);
   const {min, max} = schema;
   validateMinMax(min, max);
   if (!('head' in schema) && !('type' in schema) && !('tail' in schema)) throw new Error('EMPTY_ARR');
@@ -143,12 +129,10 @@ const validateArrSchema = (schema: any): void => {
 
 const validateConSchema = (schema: any): void => {
   validateTType(schema, 'con');
-  validateWithValidator(schema);
 };
 
 const validateObjSchema = (schema: any): void => {
   validateTType(schema, 'obj');
-  validateWithValidator(schema);
   const {fields, unknownFields} = schema;
   if (!Array.isArray(fields)) throw new Error('FIELDS_TYPE');
   if (unknownFields !== undefined && typeof unknownFields !== 'boolean') throw new Error('UNKNOWN_FIELDS_TYPE');
@@ -157,7 +141,6 @@ const validateObjSchema = (schema: any): void => {
 
 const validateFieldSchema = (schema: any): void => {
   validateTType(schema, 'field');
-  validateWithValidator(schema);
   const {key, optional} = schema;
   if (typeof key !== 'string') throw new Error('KEY_TYPE');
   if (optional !== undefined && typeof optional !== 'boolean') throw new Error('OPTIONAL_TYPE');
@@ -166,7 +149,6 @@ const validateFieldSchema = (schema: any): void => {
 
 const validateMapSchema = (schema: any): void => {
   validateTType(schema, 'map');
-  validateWithValidator(schema);
   validateSchema(schema.value);
   if (schema.key) {
     validateSchema(schema.key);
