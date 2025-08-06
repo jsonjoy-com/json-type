@@ -3,10 +3,10 @@ import {b} from '@jsonjoy.com/util/lib/buffers/b';
 import {ValidationError} from '../../../constants';
 import {type OrSchema, s, type Schema} from '../../../schema';
 // import {TypeSystem} from '../../../system';
-import {ValidatorCodegen} from '../ValidatorCodegen';
+import {ValidatorCodegen, ValidatorCodegenOptions} from '../ValidatorCodegen';
 import {TypeSystem} from '../../../system';
 
-const exec = (schema: Schema, json: unknown, error: any, options: Partial<ValidatorCodegen> = {}) => {
+const exec = (schema: Schema, json: unknown, error: any, options: Partial<ValidatorCodegenOptions> = {}) => {
   const system = new TypeSystem();
   const type = system.t.import(schema);
   // const type = t.import(schema);
@@ -71,60 +71,6 @@ const exec = (schema: Schema, json: unknown, error: any, options: Partial<Valida
 //     'bin.': new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
 //   };
 //   exec(type, json, null);
-// });
-
-// test('object can have a field of any type', () => {
-//   const type = s.Object({
-//     fields: [s.Field('foo', s.any)],
-//   });
-//   exec(type, {foo: 123}, null);
-//   exec(type, {foo: null}, null);
-//   exec(type, {foo: 'asdf'}, null);
-//   exec(
-//     type,
-//     {},
-//     {
-//       code: 'KEY',
-//       errno: ValidationError.KEY,
-//       message: 'Missing key.',
-//       path: ['foo'],
-//     },
-//   );
-// });
-
-// test('can detect extra properties in object', () => {
-//   const type = s.Object({
-//     fields: [s.prop('foo', s.any), s.propOpt('zup', s.any)],
-//   });
-//   exec(type, {foo: 123}, null);
-//   exec(type, {foo: 123, zup: 'asdf'}, null);
-//   exec(
-//     type,
-//     {foo: 123, bar: 'asdf'},
-//     {
-//       code: 'KEYS',
-//       errno: ValidationError.KEYS,
-//       message: 'Too many or missing object keys.',
-//       path: ['bar'],
-//     },
-//     undefined,
-//   );
-// });
-
-// test('can disable extra property check', () => {
-//   const type = s.Object({
-//     fields: [s.Field('foo', s.any), s.FieldOpt('zup', s.any)],
-//   });
-//   exec(type, {foo: 123}, null, {skipObjectExtraFieldsCheck: true});
-//   exec(type, {foo: 123, zup: 'asdf'}, null, {
-//     skipObjectExtraFieldsCheck: true,
-//   });
-//   exec(type, {foo: 123, bar: 'asdf'}, null, {
-//     skipObjectExtraFieldsCheck: true,
-//   });
-//   exec(type, {foo: 123, zup: '1', bar: 'asdf'}, null, {
-//     skipObjectExtraFieldsCheck: true,
-//   });
 // });
 
 
@@ -884,6 +830,78 @@ describe('"arr" type', () => {
   });
 });
 
+describe('"obj" type', () => {
+  test('object can have unknown fields', () => {
+    const type = s.obj;
+    exec(type, {}, null);
+    exec(type, {a: 'b'}, null);
+  });
+
+  test('"null" is not of type "obj"', () => {
+    const type = s.obj;
+    exec(type, null, {
+      code: 'OBJ',
+      errno: ValidationError.OBJ,
+      message: 'Not an object.',
+      path: [],
+    });
+  });
+
+  test('object can have a field of any type', () => {
+    const type = s.Object({
+      fields: [s.Field('foo', s.any)],
+    });
+    exec(type, {foo: 123}, null);
+    exec(type, {foo: null}, null);
+    exec(type, {foo: 'asdf'}, null);
+    exec(
+      type,
+      {},
+      {
+        code: 'KEY',
+        errno: ValidationError.KEY,
+        message: 'Missing key.',
+        path: ['foo'],
+      },
+    );
+  });
+
+  test('can detect extra properties in object', () => {
+    const type = s.Object({
+      fields: [s.prop('foo', s.any), s.propOpt('zup', s.any)],
+    });
+    exec(type, {foo: 123}, null);
+    exec(type, {foo: 123, zup: 'asdf'}, null);
+    exec(
+      type,
+      {foo: 123, bar: 'asdf'},
+      {
+        code: 'KEYS',
+        errno: ValidationError.KEYS,
+        message: 'Too many or missing object keys.',
+        path: ['bar'],
+      },
+      undefined,
+    );
+  });
+
+  test('can disable extra property check', () => {
+    const type = s.Object({
+      fields: [s.Field('foo', s.any), s.FieldOpt('zup', s.any)],
+    });
+    exec(type, {foo: 123}, null, {skipObjectExtraFieldsCheck: true});
+    exec(type, {foo: 123, zup: 'asdf'}, null, {
+      skipObjectExtraFieldsCheck: true,
+    });
+    exec(type, {foo: 123, bar: 'asdf'}, null, {
+      skipObjectExtraFieldsCheck: true,
+    });
+    exec(type, {foo: 123, zup: '1', bar: 'asdf'}, null, {
+      skipObjectExtraFieldsCheck: true,
+    });
+  });
+});
+
 // describe('"or" type', () => {
 //   test('object key can be of multiple types', () => {
 //     const type = s.Object({
@@ -970,24 +988,6 @@ describe('"arr" type', () => {
 //       code: 'OR',
 //       errno: ValidationError.OR,
 //       message: 'None of types matched.',
-//       path: [],
-//     });
-//   });
-// });
-
-// describe('"obj" type', () => {
-//   test('object can have unknown fields', () => {
-//     const type = s.obj;
-//     exec(type, {}, null);
-//     exec(type, {a: 'b'}, null);
-//   });
-
-//   test('"null" is not of type "obj"', () => {
-//     const type = s.obj;
-//     exec(type, null, {
-//       code: 'OBJ',
-//       errno: ValidationError.OBJ,
-//       message: 'Not an object.',
 //       path: [],
 //     });
 //   });

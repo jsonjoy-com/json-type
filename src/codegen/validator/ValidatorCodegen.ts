@@ -6,9 +6,11 @@ import {deepEqual} from '@jsonjoy.com/util/lib/json-equal/deepEqual';
 import {AbstractCodegen} from '../AbstractCodege';
 import {floats, ints, uints} from '../../util';
 import {isAscii, isUtf8} from '../../util/stringFormats';
-import type {AnyType, ArrType, BinType, BoolType, ConType, MapType, NumType, ObjType, OrType, RefType, StrType, Type} from '../../type';
+import {AbsType, ObjKeyOptType, type AnyType, type ArrType, type BinType, type BoolType, type ConType, type MapType, type NumType, type ObjType, type OrType, type RefType, type StrType, type Type} from '../../type';
 import type {JsonTypeValidator} from './types';
 import type {SchemaPath} from '../types';
+import {normalizeAccessor} from '@jsonjoy.com/codegen/lib/util/normalizeAccessor';
+import {canSkipObjectKeyUndefinedCheck} from './util';
 
 const CACHE = new WeakMap<Type, (value: unknown) => void>;
 
@@ -318,7 +320,45 @@ export class ValidatorCodegen extends AbstractCodegen {
   }
 
   protected onObj(path: SchemaPath, r: JsExpression, type: ObjType): void {
-    throw new Error('not implemented');
+    const codegen = this.codegen;
+    const fields = type.fields;
+    const length = fields.length;
+    const canSkipObjectTypeCheck = this.options.unsafeMode && length > 0;
+    if (!canSkipObjectTypeCheck) {
+      const err = this.err(ValidationError.OBJ, path);
+      codegen.js(/* js */ `if (typeof ${r.use()} !== 'object' || !${r.use()} || (${r.use()} instanceof Array)) return ${err};`);
+    }
+    const checkExtraKeys = length && !type.getOptions().unknownFields && !this.options.skipObjectExtraFieldsCheck;
+    if (checkExtraKeys) {
+      const rk = codegen.getRegister();
+      codegen.js(/* js */ `for (var ${rk} in ${r.use()}) {`);
+      codegen.js(
+        /* js */ `switch (${rk}) { case ${fields
+          .map((field) => JSON.stringify(field.key))
+          .join(': case ')}: break; default: return ${this.err(ValidationError.KEYS, [...path, {r: rk}])};}`,
+      );
+      codegen.js(/* js */ `}`);
+    }
+    for (let i = 0; i < length; i++) {
+      const field = fields[i];
+      const rv = codegen.getRegister();
+      const accessor = normalizeAccessor(field.key);
+      const keyPath = [...path, field.key];
+      codegen.js(/* js */ `var ${rv} = ${r.use()}${accessor};`);
+      if (field instanceof ObjKeyOptType) {
+        codegen.js(/* js */ `if (${rv} !== undefined) {`);
+        this.onNode(keyPath, new JsExpression(() => rv), field.val);
+        codegen.js(/* js */ `}`);
+      } else {
+        if (!canSkipObjectKeyUndefinedCheck(field.val.kind())) {
+          const err = this.err(ValidationError.KEY, [...path, field.key]);
+          codegen.js(/* js */ `var ${rv} = ${r.use()}${accessor};`);
+          codegen.js(/* js */ `if (!(${JSON.stringify(field.key)} in ${r.use()})) return ${err};`);
+        }
+        this.onNode(keyPath, new JsExpression(() => rv), field.val);
+      }
+    }
+    this.emitCustomValidators(path, r, type);
   }
 
   protected onMap(path: SchemaPath, r: JsExpression, type: MapType): void {
@@ -332,95 +372,6 @@ export class ValidatorCodegen extends AbstractCodegen {
   protected onOr(path: SchemaPath, r: JsExpression, type: OrType): void {
     throw new Error('not implemented');
   }
-
-// export const tup = (ctx: ValidatorCodegenContext, path: ValidationPath, r: string, type: Type): void => {
-//   const tupType = type as any; // TupType
-//   const ri = ctx.codegen.getRegister();
-//   const rv = ctx.codegen.getRegister();
-//   const err = ctx.err(ValidationError.TUP, path);
-//   const errLen = ctx.err(ValidationError.ARR_LEN, path);
-//   const types = tupType.types;
-//   ctx.js(/* js */ `if (!Array.isArray(${r})) return ${err};`);
-//   ctx.js(`if (${r}.length !== ${types.length}) return ${errLen};`);
-//   for (let i = 0; i < types.length; i++) {
-//     ctx.js(`var ${rv} = ${r}[${i}];`);
-//     generate(ctx, [...path, {r: JSON.stringify(i)}], rv, types[i]);
-//   }
-//   ctx.emitCustomValidators(type, path, r);
-// };
-
-// export const obj = (
-//   ctx: ValidatorCodegenContext,
-//   path: ValidationPath,
-//   r: string,
-//   type: Type,
-//   validateFn: ValidatorFunction,
-// ): void => {
-//   const objType = type as any; // ObjType
-//   const err = ctx.err(ValidationError.OBJ, path);
-//   ctx.js(/* js */ `if(!${r} || typeof ${r} !== "object" || Array.isArray(${r})) return ${err};`);
-
-//   const fields = objType.fields;
-//   const requiredFields: any[] = [];
-//   const optionalFields: any[] = [];
-
-//   for (const field of fields) {
-//     if (field.optional || field.constructor?.name === 'ObjectOptionalFieldType') {
-//       optionalFields.push(field);
-//     } else {
-//       requiredFields.push(field);
-//     }
-//   }
-
-//   // Validate required fields
-//   for (const field of requiredFields) {
-//     const key = field.key;
-//     const accessor = normalizeAccessor(key);
-//     const canSkipUndefinedCheck = canSkipObjectKeyUndefinedCheck(field.value);
-//     const rv = ctx.codegen.getRegister();
-
-//     if (canSkipUndefinedCheck) {
-//       ctx.js(`var ${rv} = ${r}${accessor};`);
-//       validateFn(ctx, [...path, {r: JSON.stringify(key)}], rv, field.value);
-//     } else {
-//       const keyErr = ctx.err(ValidationError.KEY, [...path, {r: JSON.stringify(key)}]);
-//       ctx.js(`var ${rv} = ${r}${accessor};`);
-//       ctx.js(`if (${rv} === undefined) return ${keyErr};`);
-//       validateFn(ctx, [...path, {r: JSON.stringify(key)}], rv, field.value);
-//     }
-//   }
-
-//   // Validate optional fields
-//   for (const field of optionalFields) {
-//     const key = field.key;
-//     const accessor = normalizeAccessor(key);
-//     const rv = ctx.codegen.getRegister();
-//     ctx.js(`var ${rv} = ${r}${accessor};`);
-//     ctx.js(`if (${rv} !== undefined) {`);
-//     validateFn(ctx, [...path, {r: JSON.stringify(key)}], rv, field.value);
-//     ctx.js(`}`);
-//   }
-
-//   // Check for unknown fields if necessary
-//   if (!ctx.options.skipObjectExtraFieldsCheck && !objType.schema.unknownFields) {
-//     const knownKeys = fields.map((field: any) => field.key);
-//     const unknownFieldsError = ctx.err(ValidationError.KEYS, path);
-//     const rk = ctx.codegen.getRegister();
-//     const rkl = ctx.codegen.getRegister();
-//     const ri = ctx.codegen.getRegister();
-//     const rkey = ctx.codegen.getRegister();
-//     ctx.js(`var ${rk} = Object.keys(${r}), ${rkl} = ${rk}.length, ${ri} = 0, ${rkey};`);
-//     ctx.js(`for (; ${ri} < ${rkl}; ${ri}++) {`);
-//     ctx.js(`${rkey} = ${rk}[${ri}];`);
-//     const knownKeysCheck = knownKeys.map((key: string) => `${rkey} !== ${JSON.stringify(key)}`).join(' && ');
-//     if (knownKeysCheck) {
-//       ctx.js(`if (${knownKeysCheck}) return ${unknownFieldsError};`);
-//     }
-//     ctx.js(`}`);
-//   }
-
-//   ctx.emitCustomValidators(type, path, r);
-// };
 
 // export const map = (
 //   ctx: ValidatorCodegenContext,
