@@ -4,11 +4,8 @@ import {lazy} from '@jsonjoy.com/util/lib/lazyFunction';
 import {ValidationError, ValidationErrorMessage} from '../../constants';
 import {deepEqual} from '@jsonjoy.com/util/lib/json-equal/deepEqual';
 import {AbstractCodegen} from '../AbstractCodege';
+import {floats, ints, uints} from '../../util';
 import {isAscii, isUtf8} from '../../util/stringFormats';
-// import {isAscii, isUtf8} from '../../util/stringFormats';
-// import {canSkipObjectKeyUndefinedCheck} from './util';
-// import {normalizeAccessor} from '@jsonjoy.com/util/lib/codegen/util/normalizeAccessor';
-// import type {TypeSystem} from '../../system';
 import type {AnyType, ArrType, BinType, BoolType, ConType, MapType, NumType, ObjType, OrType, RefType, StrType, Type} from '../../type';
 import type {JsonTypeValidator} from './types';
 import type {SchemaPath} from '../types';
@@ -181,7 +178,68 @@ export class ValidatorCodegen extends AbstractCodegen {
   }
 
   protected onNum(path: SchemaPath, r: JsExpression, type: NumType): void {
-    throw new Error('not implemented');
+    const codegen = this.codegen;
+    const {format, gt, gte, lt, lte} = type.getSchema();
+    if (format && ints.has(format)) {
+      const errInt = this.err(ValidationError.INT, path);
+      codegen.js(/* js */ `if(!Number.isInteger(${r.use()})) return ${errInt};`);
+      if (uints.has(format)) {
+        const err = this.err(ValidationError.UINT, path);
+        codegen.js(/* js */ `if(${r.use()} < 0) return ${err};`);
+        switch (format) {
+          case 'u8': {
+            codegen.js(/* js */ `if(${r.use()} > 0xFF) return ${err};`);
+            break;
+          }
+          case 'u16': {
+            codegen.js(/* js */ `if(${r.use()} > 0xFFFF) return ${err};`);
+            break;
+          }
+          case 'u32': {
+            codegen.js(/* js */ `if(${r.use()} > 0xFFFFFFFF) return ${err};`);
+            break;
+          }
+        }
+      } else {
+        switch (format) {
+          case 'i8': {
+            codegen.js(/* js */ `if(${r.use()} > 0x7F || ${r.use()} < -0x80) return ${errInt};`);
+            break;
+          }
+          case 'i16': {
+            codegen.js(/* js */ `if(${r.use()} > 0x7FFF || ${r.use()} < -0x8000) return ${errInt};`);
+            break;
+          }
+          case 'i32': {
+            codegen.js(/* js */ `if(${r.use()} > 0x7FFFFFFF || ${r.use()} < -0x80000000) return ${errInt};`);
+            break;
+          }
+        }
+      }
+    } else if (floats.has(format)) {
+      const err = this.err(ValidationError.NUM, path);
+      codegen.js(/* js */ `if(!Number.isFinite(${r.use()})) return ${err};`);
+    } else {
+      const err = this.err(ValidationError.NUM, path);
+      codegen.js(/* js */ `if(typeof ${r.use()} !== "number") return ${err};`);
+    }
+    if (gt !== undefined) {
+      const err = this.err(ValidationError.GT, path);
+      codegen.js(/* js */ `if(${r.use()} <= ${gt}) return ${err};`);
+    }
+    if (gte !== undefined) {
+      const err = this.err(ValidationError.GTE, path);
+      codegen.js(/* js */ `if(${r.use()} < ${gte}) return ${err};`);
+    }
+    if (lt !== undefined) {
+      const err = this.err(ValidationError.LT, path);
+      codegen.js(/* js */ `if(${r.use()} >= ${lt}) return ${err};`);
+    }
+    if (lte !== undefined) {
+      const err = this.err(ValidationError.LTE, path);
+      codegen.js(/* js */ `if(${r.use()} > ${lte}) return ${err};`);
+    }
+    this.emitCustomValidators(path, r, type);
   }
 
   protected onStr(path: SchemaPath, r: JsExpression, type: StrType): void {
@@ -259,60 +317,6 @@ export class ValidatorCodegen extends AbstractCodegen {
   protected onOr(path: SchemaPath, r: JsExpression, type: OrType): void {
     throw new Error('not implemented');
   }
-
-// export const num = (ctx: ValidatorCodegenContext, path: ValidationPath, r: string, type: Type): void => {
-//   const numType = type as any; // NumType
-//   const {format, gte, gt, lte, lt, int} = numType.schema;
-//   const error = ctx.err(ValidationError.NUM, path);
-//   ctx.js(/* js */ `if(typeof ${r} !== "number") return ${error};`);
-
-//   if (int || format) {
-//     const intErr = ctx.err(ValidationError.INT, path);
-//     ctx.js(/* js */ `if(${r} !== (${r} | 0)) return ${intErr};`);
-//   }
-
-//   if (typeof gte === 'number') {
-//     const err = ctx.err(ValidationError.GTE, path);
-//     ctx.js(/* js */ `if(${r} < ${gte}) return ${err};`);
-//   }
-//   if (typeof gt === 'number') {
-//     const err = ctx.err(ValidationError.GT, path);
-//     ctx.js(/* js */ `if(${r} <= ${gt}) return ${err};`);
-//   }
-//   if (typeof lte === 'number') {
-//     const err = ctx.err(ValidationError.LTE, path);
-//     ctx.js(/* js */ `if(${r} > ${lte}) return ${err};`);
-//   }
-//   if (typeof lt === 'number') {
-//     const err = ctx.err(ValidationError.LT, path);
-//     ctx.js(/* js */ `if(${r} >= ${lt}) return ${err};`);
-//   }
-
-//   const customFormatValidation = () => {
-//     if (format === 'u8') {
-//       const err = ctx.err(ValidationError.UINT, path);
-//       ctx.js(/* js */ `if(${r} < 0 || ${r} > 255) return ${err};`);
-//     } else if (format === 'u16') {
-//       const err = ctx.err(ValidationError.UINT, path);
-//       ctx.js(/* js */ `if(${r} < 0 || ${r} > 65535) return ${err};`);
-//     } else if (format === 'u32') {
-//       const err = ctx.err(ValidationError.UINT, path);
-//       ctx.js(/* js */ `if(${r} < 0 || ${r} > 4294967295) return ${err};`);
-//     } else if (format === 'i8') {
-//       const err = ctx.err(ValidationError.INT, path);
-//       ctx.js(/* js */ `if(${r} < -128 || ${r} > 127) return ${err};`);
-//     } else if (format === 'i16') {
-//       const err = ctx.err(ValidationError.INT, path);
-//       ctx.js(/* js */ `if(${r} < -32768 || ${r} > 32767) return ${err};`);
-//     } else if (format === 'i32') {
-//       const err = ctx.err(ValidationError.INT, path);
-//       ctx.js(/* js */ `if(${r} < -2147483648 || ${r} > 2147483647) return ${err};`);
-//     }
-//   };
-
-//   if (format) customFormatValidation();
-//   ctx.emitCustomValidators(type, path, r);
-// };
 
 // export const arr = (ctx: ValidatorCodegenContext, path: ValidationPath, r: string, type: Type): void => {
 //   const arrType = type as any; // ArrType

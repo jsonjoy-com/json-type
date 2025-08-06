@@ -166,6 +166,43 @@ const exec = (schema: Schema, json: unknown, error: any, options: Partial<Valida
 
 
 
+describe('"any" type', () => {
+  test('accepts any value', () => {
+    const type = s.any;
+    exec(type, 123, null);
+    exec(type, 'abc', null);
+    exec(type, {}, null);
+    exec(type, [], null);
+    exec(type, null, null);
+    exec(type, undefined, null);
+  });
+});
+
+describe('"con" type', () => {
+  test('validates constant value', () => {
+    const type = s.Const<'foo'>('foo');
+    exec(type, 'foo', null);
+    exec(type, 'bar', {
+      code: 'CONST',
+      errno: ValidationError.CONST,
+      message: 'Invalid constant.',
+      path: [],
+    });
+    exec(type, 123, {
+      code: 'CONST',
+      errno: ValidationError.CONST,
+      message: 'Invalid constant.',
+      path: [],
+    });
+    exec(type, null, {
+      code: 'CONST',
+      errno: ValidationError.CONST,
+      message: 'Invalid constant.',
+      path: [],
+    });
+  });
+});
+
 describe('"str" type', () => {
   test('validates a basic string', () => {
     const type = s.str;
@@ -395,385 +432,384 @@ describe('"bin" type', () => {
       path: [],
     });
   });
+
 });
 
+describe('"num" type', () => {
+  test('validates general number type', () => {
+    const type = s.num;
+    exec(type, 123, null);
+    exec(type, -123, null);
+    exec(type, 0, null);
+    exec(type, '123', {
+      code: 'NUM',
+      errno: ValidationError.NUM,
+      message: 'Not a number.',
+      path: [],
+    });
+    exec(type, '-123', {
+      code: 'NUM',
+      errno: ValidationError.NUM,
+      message: 'Not a number.',
+      path: [],
+    });
+    exec(type, '0', {
+      code: 'NUM',
+      errno: ValidationError.NUM,
+      message: 'Not a number.',
+      path: [],
+    });
+    exec(type, '', {
+      code: 'NUM',
+      errno: ValidationError.NUM,
+      message: 'Not a number.',
+      path: [],
+    });
+    exec(type, null, {
+      code: 'NUM',
+      errno: ValidationError.NUM,
+      message: 'Not a number.',
+      path: [],
+    });
+  });
 
+  test('validates integer type', () => {
+    const type = s.Number({format: 'i'});
+    exec(type, 123, null);
+    exec(type, -123, null);
+    exec(type, 0, null);
+    exec(type, 123.4, {
+      code: 'INT',
+      errno: ValidationError.INT,
+      message: 'Not an integer.',
+      path: [],
+    });
+    exec(type, -1.1, {
+      code: 'INT',
+      errno: ValidationError.INT,
+      message: 'Not an integer.',
+      path: [],
+    });
+  });
 
-// describe('"num" type', () => {
-//   test('validates general number type', () => {
-//     const type = s.num;
-//     exec(type, 123, null);
-//     exec(type, -123, null);
-//     exec(type, 0, null);
-//     exec(type, '123', {
-//       code: 'NUM',
-//       errno: ValidationError.NUM,
-//       message: 'Not a number.',
-//       path: [],
-//     });
-//     exec(type, '-123', {
-//       code: 'NUM',
-//       errno: ValidationError.NUM,
-//       message: 'Not a number.',
-//       path: [],
-//     });
-//     exec(type, '0', {
-//       code: 'NUM',
-//       errno: ValidationError.NUM,
-//       message: 'Not a number.',
-//       path: [],
-//     });
-//     exec(type, '', {
-//       code: 'NUM',
-//       errno: ValidationError.NUM,
-//       message: 'Not a number.',
-//       path: [],
-//     });
-//     exec(type, null, {
-//       code: 'NUM',
-//       errno: ValidationError.NUM,
-//       message: 'Not a number.',
-//       path: [],
-//     });
-//   });
+  test('validates unsigned integer type', () => {
+    const type = s.Number({format: 'u'});
+    exec(type, 123, null);
+    exec(type, 0, null);
+    exec(type, -123, {
+      code: 'UINT',
+      errno: ValidationError.UINT,
+      message: 'Not an unsigned integer.',
+      path: [],
+    });
+    exec(type, 123.4, {
+      code: 'INT',
+      errno: ValidationError.INT,
+      message: 'Not an integer.',
+      path: [],
+    });
+    exec(type, -1.1, {
+      code: 'INT',
+      errno: ValidationError.INT,
+      message: 'Not an integer.',
+      path: [],
+    });
+  });
 
-//   test('validates integer type', () => {
-//     const type = s.Number({format: 'i'});
-//     exec(type, 123, null);
-//     exec(type, -123, null);
-//     exec(type, 0, null);
-//     exec(type, 123.4, {
-//       code: 'INT',
-//       errno: ValidationError.INT,
-//       message: 'Not an integer.',
-//       path: [],
-//     });
-//     exec(type, -1.1, {
-//       code: 'INT',
-//       errno: ValidationError.INT,
-//       message: 'Not an integer.',
-//       path: [],
-//     });
-//   });
+  test('validates i8', () => {
+    const type = s.Number({format: 'i8'});
+    exec(type, 123, null);
+    exec(type, 0, null);
+    exec(type, -12, null);
+    exec(type, 127, null);
+    exec(type, -127, null);
+    exec(type, -128, null);
+    exec(type, 128, {
+      code: 'INT',
+      errno: ValidationError.INT,
+      message: 'Not an integer.',
+      path: [],
+    });
+    exec(type, -129, {
+      code: 'INT',
+      errno: ValidationError.INT,
+      message: 'Not an integer.',
+      path: [],
+    });
+  });
 
-//   test('validates unsigned integer type', () => {
-//     const type = s.Number({format: 'u'});
-//     exec(type, 123, null);
-//     exec(type, 0, null);
-//     exec(type, -123, {
-//       code: 'UINT',
-//       errno: ValidationError.UINT,
-//       message: 'Not an unsigned integer.',
-//       path: [],
-//     });
-//     exec(type, 123.4, {
-//       code: 'INT',
-//       errno: ValidationError.INT,
-//       message: 'Not an integer.',
-//       path: [],
-//     });
-//     exec(type, -1.1, {
-//       code: 'INT',
-//       errno: ValidationError.INT,
-//       message: 'Not an integer.',
-//       path: [],
-//     });
-//   });
+  test('validates u8', () => {
+    const type = s.Number({format: 'u8'});
+    exec(type, 123, null);
+    exec(type, 0, null);
+    exec(type, -12, {
+      code: 'UINT',
+      errno: ValidationError.UINT,
+      message: 'Not an unsigned integer.',
+      path: [],
+    });
+    exec(type, 127, null);
+    exec(type, 222, null);
+    exec(type, 255, null);
+    exec(type, 256, {
+      code: 'UINT',
+      errno: ValidationError.UINT,
+      message: 'Not an unsigned integer.',
+      path: [],
+    });
+    exec(type, 333, {
+      code: 'UINT',
+      errno: ValidationError.UINT,
+      message: 'Not an unsigned integer.',
+      path: [],
+    });
+  });
 
-//   test('validates i8', () => {
-//     const type = s.Number({format: 'i8'});
-//     exec(type, 123, null);
-//     exec(type, 0, null);
-//     exec(type, -12, null);
-//     exec(type, 127, null);
-//     exec(type, -127, null);
-//     exec(type, -128, null);
-//     exec(type, 128, {
-//       code: 'INT',
-//       errno: ValidationError.INT,
-//       message: 'Not an integer.',
-//       path: [],
-//     });
-//     exec(type, -129, {
-//       code: 'INT',
-//       errno: ValidationError.INT,
-//       message: 'Not an integer.',
-//       path: [],
-//     });
-//   });
+  test('validates i16', () => {
+    const type = s.Number({format: 'i16'});
+    exec(type, 123, null);
+    exec(type, 0x33, null);
+    exec(type, 0x3333, null);
+    exec(type, -0x33, null);
+    exec(type, -0x3333, null);
+    exec(type, 0, null);
+    exec(type, -44, null);
+    exec(type, 0x7fff - 1, null);
+    exec(type, 0x7fff, null);
+    exec(type, 0x7fff + 1, {
+      code: 'INT',
+      errno: ValidationError.INT,
+      message: 'Not an integer.',
+      path: [],
+    });
+    exec(type, -0x8000 + 1, null);
+    exec(type, -0x8000, null);
+    exec(type, -0x8000 - 1, {
+      code: 'INT',
+      errno: ValidationError.INT,
+      message: 'Not an integer.',
+      path: [],
+    });
+  });
 
-//   test('validates u8', () => {
-//     const type = s.Number({format: 'u8'});
-//     exec(type, 123, null);
-//     exec(type, 0, null);
-//     exec(type, -12, {
-//       code: 'UINT',
-//       errno: ValidationError.UINT,
-//       message: 'Not an unsigned integer.',
-//       path: [],
-//     });
-//     exec(type, 127, null);
-//     exec(type, 222, null);
-//     exec(type, 255, null);
-//     exec(type, 256, {
-//       code: 'UINT',
-//       errno: ValidationError.UINT,
-//       message: 'Not an unsigned integer.',
-//       path: [],
-//     });
-//     exec(type, 333, {
-//       code: 'UINT',
-//       errno: ValidationError.UINT,
-//       message: 'Not an unsigned integer.',
-//       path: [],
-//     });
-//   });
+  test('validates u16', () => {
+    const type = s.Number({format: 'u16'});
+    exec(type, 123, null);
+    exec(type, 0x33, null);
+    exec(type, 0x3333, null);
+    exec(type, -0x33, {
+      code: 'UINT',
+      errno: ValidationError.UINT,
+      message: 'Not an unsigned integer.',
+      path: [],
+    });
+    exec(type, -0x3333, {
+      code: 'UINT',
+      errno: ValidationError.UINT,
+      message: 'Not an unsigned integer.',
+      path: [],
+    });
+    exec(type, 0, null);
+    exec(type, -44, {
+      code: 'UINT',
+      errno: ValidationError.UINT,
+      message: 'Not an unsigned integer.',
+      path: [],
+    });
+    exec(type, 0x7fff - 1, null);
+    exec(type, 0x7fff, null);
+    exec(type, 0xffff - 1, null);
+    exec(type, 0xffff, null);
+    exec(type, 0xffff + 1, {
+      code: 'UINT',
+      errno: ValidationError.UINT,
+      message: 'Not an unsigned integer.',
+      path: [],
+    });
+    exec(type, -0x8000 + 1, {
+      code: 'UINT',
+      errno: ValidationError.UINT,
+      message: 'Not an unsigned integer.',
+      path: [],
+    });
+    exec(type, -0x8000, {
+      code: 'UINT',
+      errno: ValidationError.UINT,
+      message: 'Not an unsigned integer.',
+      path: [],
+    });
+  });
 
-//   test('validates i16', () => {
-//     const type = s.Number({format: 'i16'});
-//     exec(type, 123, null);
-//     exec(type, 0x33, null);
-//     exec(type, 0x3333, null);
-//     exec(type, -0x33, null);
-//     exec(type, -0x3333, null);
-//     exec(type, 0, null);
-//     exec(type, -44, null);
-//     exec(type, 0x7fff - 1, null);
-//     exec(type, 0x7fff, null);
-//     exec(type, 0x7fff + 1, {
-//       code: 'INT',
-//       errno: ValidationError.INT,
-//       message: 'Not an integer.',
-//       path: [],
-//     });
-//     exec(type, -0x8000 + 1, null);
-//     exec(type, -0x8000, null);
-//     exec(type, -0x8000 - 1, {
-//       code: 'INT',
-//       errno: ValidationError.INT,
-//       message: 'Not an integer.',
-//       path: [],
-//     });
-//   });
+  test('validates i32', () => {
+    const type = s.Number({format: 'i32'});
+    exec(type, 123, null);
+    exec(type, 0x33, null);
+    exec(type, 0x3333, null);
+    exec(type, 0x333333, null);
+    exec(type, 0x33333333, null);
+    exec(type, -0x33, null);
+    exec(type, -0x3333, null);
+    exec(type, -0x333333, null);
+    exec(type, -0x33333333, null);
+    exec(type, 0, null);
+    exec(type, -44, null);
+    exec(type, 0x7fffffff - 1, null);
+    exec(type, 0x7fffffff, null);
+    exec(type, 0x7fffffff + 1, {
+      code: 'INT',
+      errno: ValidationError.INT,
+      message: 'Not an integer.',
+      path: [],
+    });
+    exec(type, -0x80000000 + 1, null);
+    exec(type, -0x80000000, null);
+    exec(type, -0x80000000 - 1, {
+      code: 'INT',
+      errno: ValidationError.INT,
+      message: 'Not an integer.',
+      path: [],
+    });
+  });
 
-//   test('validates u16', () => {
-//     const type = s.Number({format: 'u16'});
-//     exec(type, 123, null);
-//     exec(type, 0x33, null);
-//     exec(type, 0x3333, null);
-//     exec(type, -0x33, {
-//       code: 'UINT',
-//       errno: ValidationError.UINT,
-//       message: 'Not an unsigned integer.',
-//       path: [],
-//     });
-//     exec(type, -0x3333, {
-//       code: 'UINT',
-//       errno: ValidationError.UINT,
-//       message: 'Not an unsigned integer.',
-//       path: [],
-//     });
-//     exec(type, 0, null);
-//     exec(type, -44, {
-//       code: 'UINT',
-//       errno: ValidationError.UINT,
-//       message: 'Not an unsigned integer.',
-//       path: [],
-//     });
-//     exec(type, 0x7fff - 1, null);
-//     exec(type, 0x7fff, null);
-//     exec(type, 0xffff - 1, null);
-//     exec(type, 0xffff, null);
-//     exec(type, 0xffff + 1, {
-//       code: 'UINT',
-//       errno: ValidationError.UINT,
-//       message: 'Not an unsigned integer.',
-//       path: [],
-//     });
-//     exec(type, -0x8000 + 1, {
-//       code: 'UINT',
-//       errno: ValidationError.UINT,
-//       message: 'Not an unsigned integer.',
-//       path: [],
-//     });
-//     exec(type, -0x8000, {
-//       code: 'UINT',
-//       errno: ValidationError.UINT,
-//       message: 'Not an unsigned integer.',
-//       path: [],
-//     });
-//   });
+  test('validates u32', () => {
+    const type = s.Number({format: 'u32'});
+    exec(type, 123, null);
+    exec(type, 0x33, null);
+    exec(type, 0x3333, null);
+    exec(type, -0x33, {
+      code: 'UINT',
+      errno: ValidationError.UINT,
+      message: 'Not an unsigned integer.',
+      path: [],
+    });
+    exec(type, -0x3333, {
+      code: 'UINT',
+      errno: ValidationError.UINT,
+      message: 'Not an unsigned integer.',
+      path: [],
+    });
+    exec(type, 0, null);
+    exec(type, -44, {
+      code: 'UINT',
+      errno: ValidationError.UINT,
+      message: 'Not an unsigned integer.',
+      path: [],
+    });
+    exec(type, 0x7fff - 1, null);
+    exec(type, 0x7fff, null);
+    exec(type, 0xffff - 1, null);
+    exec(type, 0xffff, null);
+    exec(type, 0xffffffff, null);
+    exec(type, 0xffffffff + 1, {
+      code: 'UINT',
+      errno: ValidationError.UINT,
+      message: 'Not an unsigned integer.',
+      path: [],
+    });
+    exec(type, -0x8000 + 1, {
+      code: 'UINT',
+      errno: ValidationError.UINT,
+      message: 'Not an unsigned integer.',
+      path: [],
+    });
+    exec(type, -0x8000, {
+      code: 'UINT',
+      errno: ValidationError.UINT,
+      message: 'Not an unsigned integer.',
+      path: [],
+    });
+  });
 
-//   test('validates i32', () => {
-//     const type = s.Number({format: 'i32'});
-//     exec(type, 123, null);
-//     exec(type, 0x33, null);
-//     exec(type, 0x3333, null);
-//     exec(type, 0x333333, null);
-//     exec(type, 0x33333333, null);
-//     exec(type, -0x33, null);
-//     exec(type, -0x3333, null);
-//     exec(type, -0x333333, null);
-//     exec(type, -0x33333333, null);
-//     exec(type, 0, null);
-//     exec(type, -44, null);
-//     exec(type, 0x7fffffff - 1, null);
-//     exec(type, 0x7fffffff, null);
-//     exec(type, 0x7fffffff + 1, {
-//       code: 'INT',
-//       errno: ValidationError.INT,
-//       message: 'Not an integer.',
-//       path: [],
-//     });
-//     exec(type, -0x80000000 + 1, null);
-//     exec(type, -0x80000000, null);
-//     exec(type, -0x80000000 - 1, {
-//       code: 'INT',
-//       errno: ValidationError.INT,
-//       message: 'Not an integer.',
-//       path: [],
-//     });
-//   });
+  test('validates i64', () => {
+    const type = s.Number({format: 'i64'});
+    exec(type, 123, null);
+    exec(type, 0x33, null);
+    exec(type, 0x3333, null);
+    exec(type, 0x333333, null);
+    exec(type, 0x33333333, null);
+    exec(type, 0x3333333333, null);
+    exec(type, 0x333333333333, null);
+    exec(type, -0x33, null);
+    exec(type, -0x3333, null);
+    exec(type, -0x333333, null);
+    exec(type, -0x33333333, null);
+    exec(type, -0x3333333333, null);
+    exec(type, -0x333333333333, null);
+    exec(type, 0, null);
+    exec(type, -44.123, {
+      code: 'INT',
+      errno: ValidationError.INT,
+      message: 'Not an integer.',
+      path: [],
+    });
+    exec(type, 1.1, {
+      code: 'INT',
+      errno: ValidationError.INT,
+      message: 'Not an integer.',
+      path: [],
+    });
+  });
 
-//   test('validates u32', () => {
-//     const type = s.Number({format: 'u32'});
-//     exec(type, 123, null);
-//     exec(type, 0x33, null);
-//     exec(type, 0x3333, null);
-//     exec(type, -0x33, {
-//       code: 'UINT',
-//       errno: ValidationError.UINT,
-//       message: 'Not an unsigned integer.',
-//       path: [],
-//     });
-//     exec(type, -0x3333, {
-//       code: 'UINT',
-//       errno: ValidationError.UINT,
-//       message: 'Not an unsigned integer.',
-//       path: [],
-//     });
-//     exec(type, 0, null);
-//     exec(type, -44, {
-//       code: 'UINT',
-//       errno: ValidationError.UINT,
-//       message: 'Not an unsigned integer.',
-//       path: [],
-//     });
-//     exec(type, 0x7fff - 1, null);
-//     exec(type, 0x7fff, null);
-//     exec(type, 0xffff - 1, null);
-//     exec(type, 0xffff, null);
-//     exec(type, 0xffffffff, null);
-//     exec(type, 0xffffffff + 1, {
-//       code: 'UINT',
-//       errno: ValidationError.UINT,
-//       message: 'Not an unsigned integer.',
-//       path: [],
-//     });
-//     exec(type, -0x8000 + 1, {
-//       code: 'UINT',
-//       errno: ValidationError.UINT,
-//       message: 'Not an unsigned integer.',
-//       path: [],
-//     });
-//     exec(type, -0x8000, {
-//       code: 'UINT',
-//       errno: ValidationError.UINT,
-//       message: 'Not an unsigned integer.',
-//       path: [],
-//     });
-//   });
-
-//   test('validates i64', () => {
-//     const type = s.Number({format: 'i64'});
-//     exec(type, 123, null);
-//     exec(type, 0x33, null);
-//     exec(type, 0x3333, null);
-//     exec(type, 0x333333, null);
-//     exec(type, 0x33333333, null);
-//     exec(type, 0x3333333333, null);
-//     exec(type, 0x333333333333, null);
-//     exec(type, -0x33, null);
-//     exec(type, -0x3333, null);
-//     exec(type, -0x333333, null);
-//     exec(type, -0x33333333, null);
-//     exec(type, -0x3333333333, null);
-//     exec(type, -0x333333333333, null);
-//     exec(type, 0, null);
-//     exec(type, -44.123, {
-//       code: 'INT',
-//       errno: ValidationError.INT,
-//       message: 'Not an integer.',
-//       path: [],
-//     });
-//     exec(type, 1.1, {
-//       code: 'INT',
-//       errno: ValidationError.INT,
-//       message: 'Not an integer.',
-//       path: [],
-//     });
-//   });
-
-//   test('validates u64', () => {
-//     const type = s.Number({format: 'u64'});
-//     exec(type, 123, null);
-//     exec(type, 0x33, null);
-//     exec(type, 0x3333, null);
-//     exec(type, 0x333333, null);
-//     exec(type, 0x33333333, null);
-//     exec(type, 0x3333333333, null);
-//     exec(type, 0x333333333333, null);
-//     exec(type, -0x33, {
-//       code: 'UINT',
-//       errno: ValidationError.UINT,
-//       message: 'Not an unsigned integer.',
-//       path: [],
-//     });
-//     exec(type, -0x3333, {
-//       code: 'UINT',
-//       errno: ValidationError.UINT,
-//       message: 'Not an unsigned integer.',
-//       path: [],
-//     });
-//     exec(type, -0x333333, {
-//       code: 'UINT',
-//       errno: ValidationError.UINT,
-//       message: 'Not an unsigned integer.',
-//       path: [],
-//     });
-//     exec(type, -0x33333333, {
-//       code: 'UINT',
-//       errno: ValidationError.UINT,
-//       message: 'Not an unsigned integer.',
-//       path: [],
-//     });
-//     exec(type, -0x3333333333, {
-//       code: 'UINT',
-//       errno: ValidationError.UINT,
-//       message: 'Not an unsigned integer.',
-//       path: [],
-//     });
-//     exec(type, -0x333333333333, {
-//       code: 'UINT',
-//       errno: ValidationError.UINT,
-//       message: 'Not an unsigned integer.',
-//       path: [],
-//     });
-//     exec(type, 0, null);
-//     exec(type, -44.123, {
-//       code: 'INT',
-//       errno: ValidationError.INT,
-//       message: 'Not an integer.',
-//       path: [],
-//     });
-//     exec(type, 1.1, {
-//       code: 'INT',
-//       errno: ValidationError.INT,
-//       message: 'Not an integer.',
-//       path: [],
-//     });
-//   });
-// });
+  test('validates u64', () => {
+    const type = s.Number({format: 'u64'});
+    exec(type, 123, null);
+    exec(type, 0x33, null);
+    exec(type, 0x3333, null);
+    exec(type, 0x333333, null);
+    exec(type, 0x33333333, null);
+    exec(type, 0x3333333333, null);
+    exec(type, 0x333333333333, null);
+    exec(type, -0x33, {
+      code: 'UINT',
+      errno: ValidationError.UINT,
+      message: 'Not an unsigned integer.',
+      path: [],
+    });
+    exec(type, -0x3333, {
+      code: 'UINT',
+      errno: ValidationError.UINT,
+      message: 'Not an unsigned integer.',
+      path: [],
+    });
+    exec(type, -0x333333, {
+      code: 'UINT',
+      errno: ValidationError.UINT,
+      message: 'Not an unsigned integer.',
+      path: [],
+    });
+    exec(type, -0x33333333, {
+      code: 'UINT',
+      errno: ValidationError.UINT,
+      message: 'Not an unsigned integer.',
+      path: [],
+    });
+    exec(type, -0x3333333333, {
+      code: 'UINT',
+      errno: ValidationError.UINT,
+      message: 'Not an unsigned integer.',
+      path: [],
+    });
+    exec(type, -0x333333333333, {
+      code: 'UINT',
+      errno: ValidationError.UINT,
+      message: 'Not an unsigned integer.',
+      path: [],
+    });
+    exec(type, 0, null);
+    exec(type, -44.123, {
+      code: 'INT',
+      errno: ValidationError.INT,
+      message: 'Not an integer.',
+      path: [],
+    });
+    exec(type, 1.1, {
+      code: 'INT',
+      errno: ValidationError.INT,
+      message: 'Not an integer.',
+      path: [],
+    });
+  });
+});
 
 // describe('"or" type', () => {
 //   test('object key can be of multiple types', () => {
@@ -1169,3 +1205,4 @@ describe('"bin" type', () => {
 //     });
 //   });
 // });
+
