@@ -6,11 +6,11 @@ import {deepEqual} from '@jsonjoy.com/util/lib/json-equal/deepEqual';
 import {AbstractCodegen} from '../AbstractCodege';
 import {floats, ints, uints} from '../../util';
 import {isAscii, isUtf8} from '../../util/stringFormats';
-import {AbsType, ObjKeyOptType, type AnyType, type ArrType, type BinType, type BoolType, type ConType, type MapType, type NumType, type ObjType, type OrType, type RefType, type StrType, type Type} from '../../type';
-import type {JsonTypeValidator} from './types';
-import type {SchemaPath} from '../types';
+import {ObjKeyOptType, type AnyType, type ArrType, type BinType, type BoolType, type ConType, type MapType, type NumType, type ObjType, type OrType, type RefType, type StrType, type Type} from '../../type';
 import {normalizeAccessor} from '@jsonjoy.com/codegen/lib/util/normalizeAccessor';
 import {canSkipObjectKeyUndefinedCheck} from './util';
+import type {JsonTypeValidator} from './types';
+import type {SchemaPath} from '../types';
 
 const CACHE = new WeakMap<Type, (value: unknown) => void>;
 
@@ -362,7 +362,18 @@ export class ValidatorCodegen extends AbstractCodegen {
   }
 
   protected onMap(path: SchemaPath, r: JsExpression, type: MapType): void {
-    throw new Error('not implemented');
+    const codegen = this.codegen;
+    const err = this.err(ValidationError.MAP, path);
+    const rMap = codegen.var(r.use());
+    codegen.js(/* js */ `if (!${rMap} || (typeof ${rMap} !== 'object') || (${rMap}.constructor !== Object)) return ${err};`);
+    const rKeys = codegen.var(/* js */ `Object.keys(${rMap});`);
+    const rLength = codegen.var(/* js */ `${rKeys}.length`);
+    const rKey = codegen.r();
+    codegen.js(/* js */ `for (var ${rKey}, i = 0; i < ${rLength}; i++) {`);
+    codegen.js(/* js */ `${rKey} = ${rKeys}[i];`);
+    this.onNode([...path, {r: rKey}], new JsExpression(() => /* js */ `${rMap}[${rKey}]`), type._value);
+    codegen.js(/* js */ `}`);
+    this.emitCustomValidators(path, r, type);
   }
 
   protected onRef(path: SchemaPath, r: JsExpression, type: RefType): void {
@@ -372,31 +383,6 @@ export class ValidatorCodegen extends AbstractCodegen {
   protected onOr(path: SchemaPath, r: JsExpression, type: OrType): void {
     throw new Error('not implemented');
   }
-
-// export const map = (
-//   ctx: ValidatorCodegenContext,
-//   path: ValidationPath,
-//   r: string,
-//   type: Type,
-//   validateFn: ValidatorFunction,
-// ): void => {
-//   const mapType = type as any; // MapType
-//   const err = ctx.err(ValidationError.MAP, path);
-//   const rk = ctx.codegen.getRegister();
-//   const rkl = ctx.codegen.getRegister();
-//   const ri = ctx.codegen.getRegister();
-//   const rkey = ctx.codegen.getRegister();
-//   const rv = ctx.codegen.getRegister();
-
-//   ctx.js(/* js */ `if(!${r} || typeof ${r} !== "object" || Array.isArray(${r})) return ${err};`);
-//   ctx.js(`var ${rk} = Object.keys(${r}), ${rkl} = ${rk}.length, ${ri} = 0, ${rkey}, ${rv};`);
-//   ctx.js(`for (; ${ri} < ${rkl}; ${ri}++) {`);
-//   ctx.js(`${rkey} = ${rk}[${ri}];`);
-//   ctx.js(`${rv} = ${r}[${rkey}];`);
-//   validateFn(ctx, [...path, {r: rkey}], rv, mapType.valueType);
-//   ctx.js(`}`);
-//   ctx.emitCustomValidators(type, path, r);
-// };
 
 // export const ref = (ctx: ValidatorCodegenContext, path: ValidationPath, r: string, type: Type): void => {
 //   const refType = type as any; // RefType

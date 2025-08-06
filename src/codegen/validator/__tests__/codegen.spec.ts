@@ -902,6 +902,48 @@ describe('"obj" type', () => {
   });
 });
 
+describe('"map" type', () => {
+  test('can have a map of unknown values', () => {
+    const type = s.Map(s.any);
+    exec(type, {}, null);
+    exec(type, {a: 'b'}, null);
+    exec(type, {a: 123}, null);
+    exec(type, {a: null}, null);
+    exec(type, {a: {}}, null);
+    exec(type, {a: []}, null);
+    exec(
+      type,
+      [],
+      {
+        code: 'MAP',
+        errno: ValidationError.MAP,
+        message: 'Not a map.',
+        path: [],
+      },
+    );
+  });
+
+  test('can have a map of numbers', () => {
+    const type = s.Map(s.num);
+    exec(type, {}, null);
+    exec(type, {a: 123}, null);
+    exec(type, {a: -123}, null);
+    exec(type, {a: 0}, null);
+    exec(type, {a: '123'}, {
+      code: 'NUM',
+      errno: ValidationError.NUM,
+      message: 'Not a number.',
+      path: ['a'],
+    });
+    exec(type, {_: 123, a: '123'}, {
+      code: 'NUM',
+      errno: ValidationError.NUM,
+      message: 'Not a number.',
+      path: ['a'],
+    });
+  });
+});
+
 // describe('"or" type', () => {
 //   test('object key can be of multiple types', () => {
 //     const type = s.Object({
@@ -993,103 +1035,101 @@ describe('"obj" type', () => {
 //   });
 // });
 
-// describe('single root element', () => {
-//   test('null', () => {
-//     const type = s.nil;
-//     exec(type, null, null);
-//     exec(type, '123', {
-//       code: 'CONST',
-//       errno: ValidationError.CONST,
-//       message: 'Invalid constant.',
-//       path: [],
-//     });
-//   });
+describe('single root element', () => {
+  test('null', () => {
+    const type = s.nil;
+    exec(type, null, null);
+    exec(type, '123', {
+      code: 'CONST',
+      errno: ValidationError.CONST,
+      message: 'Invalid constant.',
+      path: [],
+    });
+  });
 
-//   test('number', () => {
-//     const type = s.num;
-//     exec(type, 123, null);
-//     exec(type, 1.123, null);
-//     exec(type, -123, null);
-//     exec(type, -5.5, null);
-//     exec(type, '123', {
-//       code: 'NUM',
-//       errno: ValidationError.NUM,
-//       message: 'Not a number.',
-//       path: [],
-//     });
-//   });
+  test('number', () => {
+    const type = s.num;
+    exec(type, 123, null);
+    exec(type, 1.123, null);
+    exec(type, -123, null);
+    exec(type, -5.5, null);
+    exec(type, '123', {
+      code: 'NUM',
+      errno: ValidationError.NUM,
+      message: 'Not a number.',
+      path: [],
+    });
+  });
 
-//   test('const number', () => {
-//     const type = s.Const<66>(66);
-//     exec(type, 66, null);
-//     exec(type, 67, {
-//       code: 'CONST',
-//       errno: ValidationError.CONST,
-//       message: 'Invalid constant.',
-//       path: [],
-//     });
-//   });
+  test('const number', () => {
+    const type = s.Const<66>(66);
+    exec(type, 66, null);
+    exec(type, 67, {
+      code: 'CONST',
+      errno: ValidationError.CONST,
+      message: 'Invalid constant.',
+      path: [],
+    });
+  });
 
-//   test('falsy const number', () => {
-//     const type = s.Const<0>(0);
-//     exec(type, 0, null);
-//     exec(type, 1, {
-//       code: 'CONST',
-//       errno: ValidationError.CONST,
-//       message: 'Invalid constant.',
-//       path: [],
-//     });
-//   });
+  test('falsy const number', () => {
+    const type = s.Const<0>(0);
+    exec(type, 0, null);
+    exec(type, 1, {
+      code: 'CONST',
+      errno: ValidationError.CONST,
+      message: 'Invalid constant.',
+      path: [],
+    });
+  });
 
-//   test('string', () => {
-//     const type = s.str;
-//     exec(type, '', null);
-//     exec(type, 'a', null);
-//     exec(type, 'asdf', null);
-//     exec(type, 123, {
-//       code: 'STR',
-//       errno: ValidationError.STR,
-//       message: 'Not a string.',
-//       path: [],
-//     });
-//   });
+  test('string', () => {
+    const type = s.str;
+    exec(type, '', null);
+    exec(type, 'a', null);
+    exec(type, 'asdf', null);
+    exec(type, 123, {
+      code: 'STR',
+      errno: ValidationError.STR,
+      message: 'Not a string.',
+      path: [],
+    });
+  });
 
-//   test('const string', () => {
-//     const type = s.Const<'asdf'>('asdf');
-//     exec(type, 'asdf', null);
-//     exec(type, '', {
-//       code: 'CONST',
-//       errno: ValidationError.CONST,
-//       message: 'Invalid constant.',
-//       path: [],
-//     });
-//     exec(type, 123, {
-//       code: 'CONST',
-//       errno: ValidationError.CONST,
-//       message: 'Invalid constant.',
-//       path: [],
-//     });
-//   });
+  test('const string', () => {
+    const type = s.Const<'asdf'>('asdf');
+    exec(type, 'asdf', null);
+    exec(type, '', {
+      code: 'CONST',
+      errno: ValidationError.CONST,
+      message: 'Invalid constant.',
+      path: [],
+    });
+    exec(type, 123, {
+      code: 'CONST',
+      errno: ValidationError.CONST,
+      message: 'Invalid constant.',
+      path: [],
+    });
+  });
 
-//   test('falsy const string', () => {
-//     const type = s.Const<''>('');
-//     exec(type, '', null);
-//     exec(type, 'asdf', {
-//       code: 'CONST',
-//       errno: ValidationError.CONST,
-//       message: 'Invalid constant.',
-//       path: [],
-//     });
-//     exec(type, 123, {
-//       code: 'CONST',
-//       errno: ValidationError.CONST,
-//       message: 'Invalid constant.',
-//       path: [],
-//     });
-//   });
-
-
-// });
+  test('falsy const string', () => {
+    const type = s.Const<''>('');
+    exec(type, '', null);
+    exec(type, 'asdf', {
+      code: 'CONST',
+      errno: ValidationError.CONST,
+      message: 'Invalid constant.',
+      path: [],
+    });
+    exec(type, 123, {
+      code: 'CONST',
+      errno: ValidationError.CONST,
+      message: 'Invalid constant.',
+      path: [],
+    });
+  });
+});
 
 // describe('custom validators', () => {
 //   test('can specify a custom validator for a string', () => {
