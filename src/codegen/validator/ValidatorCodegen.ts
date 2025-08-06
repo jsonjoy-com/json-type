@@ -299,7 +299,22 @@ export class ValidatorCodegen extends AbstractCodegen {
   }
 
   protected onArr(path: SchemaPath, r: JsExpression, type: ArrType): void {
-    throw new Error('not implemented');
+    const codegen = this.codegen;
+    const rl = codegen.getRegister();
+    const ri = codegen.getRegister();
+    const rv = codegen.getRegister();
+    const err = this.err(ValidationError.ARR, path);
+    const errLen = this.err(ValidationError.ARR_LEN, path);
+    const {min, max} = type.getSchema();
+    codegen.js(/* js */ `if (!Array.isArray(${r.use()})) return ${err};`);
+    codegen.js(/* js */ `var ${rl} = ${r.use()}.length;`);
+    if (min !== undefined) codegen.js(/* js */ `if (${rl} < ${min}) return ${errLen};`);
+    if (max !== undefined) codegen.js(/* js */ `if (${rl} > ${max}) return ${errLen};`);
+    codegen.js(/* js */ `for (var ${rv}, ${ri} = ${r.use()}.length; ${ri}-- !== 0;) {`);
+    codegen.js(/* js */ `${rv} = ${r.use()}[${ri}];`);
+    this.onNode([...path, {r: ri}], new JsExpression(() => rv), type._type || type);
+    codegen.js(/* js */ `}`);
+    this.emitCustomValidators(path, r, type);
   }
 
   protected onObj(path: SchemaPath, r: JsExpression, type: ObjType): void {
@@ -317,25 +332,6 @@ export class ValidatorCodegen extends AbstractCodegen {
   protected onOr(path: SchemaPath, r: JsExpression, type: OrType): void {
     throw new Error('not implemented');
   }
-
-// export const arr = (ctx: ValidatorCodegenContext, path: ValidationPath, r: string, type: Type): void => {
-//   const arrType = type as any; // ArrType
-//   const rl = ctx.codegen.getRegister();
-//   const ri = ctx.codegen.getRegister();
-//   const rv = ctx.codegen.getRegister();
-//   const err = ctx.err(ValidationError.ARR, path);
-//   const errLen = ctx.err(ValidationError.ARR_LEN, path);
-//   const {min, max} = arrType.schema;
-//   ctx.js(/* js */ `if (!Array.isArray(${r})) return ${err};`);
-//   ctx.js(`var ${rl} = ${r}.length;`);
-//   if (min !== undefined) ctx.js(`if (${rl} < ${min}) return ${errLen};`);
-//   if (max !== undefined) ctx.js(`if (${rl} > ${max}) return ${errLen};`);
-//   ctx.js(`for (var ${rv}, ${ri} = ${r}.length; ${ri}-- !== 0;) {`);
-//   ctx.js(`${rv} = ${r}[${ri}];`);
-//   generate(ctx, [...path, {r: ri}], rv, arrType.type);
-//   ctx.js(`}`);
-//   ctx.emitCustomValidators(type, path, r);
-// };
 
 // export const tup = (ctx: ValidatorCodegenContext, path: ValidationPath, r: string, type: Type): void => {
 //   const tupType = type as any; // TupType

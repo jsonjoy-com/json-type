@@ -73,43 +73,6 @@ const exec = (schema: Schema, json: unknown, error: any, options: Partial<Valida
 //   exec(type, json, null);
 // });
 
-// test('can have array of unknown elements', () => {
-//   const type = s.Array(s.any);
-//   exec(type, [], null);
-//   exec(type, [1], null);
-//   exec(type, [1, 2, 3], null);
-//   exec(type, [1, 'adsf'], null);
-//   exec(type, [1, {}], null);
-//   exec(
-//     type,
-//     {},
-//     {
-//       code: 'ARR',
-//       errno: ValidationError.ARR,
-//       message: 'Not an array.',
-//       path: [],
-//     },
-//   );
-//   exec(type, null, {
-//     code: 'ARR',
-//     errno: ValidationError.ARR,
-//     message: 'Not an array.',
-//     path: [],
-//   });
-//   exec(type, 123, {
-//     code: 'ARR',
-//     errno: ValidationError.ARR,
-//     message: 'Not an array.',
-//     path: [],
-//   });
-//   exec(type, 'asdf', {
-//     code: 'ARR',
-//     errno: ValidationError.ARR,
-//     message: 'Not an array.',
-//     path: [],
-//   });
-// });
-
 // test('object can have a field of any type', () => {
 //   const type = s.Object({
 //     fields: [s.Field('foo', s.any)],
@@ -198,6 +161,63 @@ describe('"con" type', () => {
       code: 'CONST',
       errno: ValidationError.CONST,
       message: 'Invalid constant.',
+      path: [],
+    });
+  });
+
+  test('const boolean', () => {
+    const type1 = s.Const<true>(true);
+    const type2 = s.Const<false>(false);
+    exec(type1, true, null);
+    exec(type1, false, {
+      code: 'CONST',
+      errno: ValidationError.CONST,
+      message: 'Invalid constant.',
+      path: [],
+    });
+    exec(type1, '123', {
+      code: 'CONST',
+      errno: ValidationError.CONST,
+      message: 'Invalid constant.',
+      path: [],
+    });
+    exec(type1, 123, {
+      code: 'CONST',
+      errno: ValidationError.CONST,
+      message: 'Invalid constant.',
+      path: [],
+    });
+    exec(type2, false, null);
+    exec(type2, true, {
+      code: 'CONST',
+      errno: ValidationError.CONST,
+      message: 'Invalid constant.',
+      path: [],
+    });
+    exec(type2, '123', {
+      code: 'CONST',
+      errno: ValidationError.CONST,
+      message: 'Invalid constant.',
+      path: [],
+    });
+    exec(type2, 123, {
+      code: 'CONST',
+      errno: ValidationError.CONST,
+      message: 'Invalid constant.',
+      path: [],
+    });
+  });
+});
+
+describe('"bool" type', () => {
+    test('boolean', () => {
+    const type = s.bool;
+    exec(type, true, null);
+    exec(type, false, null);
+    exec(type, 123, {
+      code: 'BOOL',
+      errno: ValidationError.BOOL,
+      message: 'Not a boolean.',
       path: [],
     });
   });
@@ -811,6 +831,59 @@ describe('"num" type', () => {
   });
 });
 
+describe('"arr" type', () => {
+  test('can have array of unknown elements', () => {
+    const type = s.Array(s.any);
+    exec(type, [], null);
+    exec(type, [1], null);
+    exec(type, [1, 2, 3], null);
+    exec(type, [1, 'adsf'], null);
+    exec(type, [1, {}], null);
+    exec(
+      type,
+      {},
+      {
+        code: 'ARR',
+        errno: ValidationError.ARR,
+        message: 'Not an array.',
+        path: [],
+      },
+    );
+    exec(type, null, {
+      code: 'ARR',
+      errno: ValidationError.ARR,
+      message: 'Not an array.',
+      path: [],
+    });
+    exec(type, 123, {
+      code: 'ARR',
+      errno: ValidationError.ARR,
+      message: 'Not an array.',
+      path: [],
+    });
+    exec(type, 'asdf', {
+      code: 'ARR',
+      errno: ValidationError.ARR,
+      message: 'Not an array.',
+      path: [],
+    });
+  });
+
+  test('array of numbers', () => {
+    const type = s.Array(s.num);
+    exec(type, [], null);
+    exec(type, [1], null);
+    exec(type, [1, 2, 3], null);
+    exec(type, [1, 2.5, -3], null);
+    exec(type, [1, 'adsf'], {
+      code: 'NUM',
+      errno: ValidationError.NUM,
+      message: 'Not a number.',
+      path: [1],
+    });
+  });
+});
+
 // describe('"or" type', () => {
 //   test('object key can be of multiple types', () => {
 //     const type = s.Object({
@@ -1015,60 +1088,7 @@ describe('"num" type', () => {
 //     });
 //   });
 
-  test('boolean', () => {
-    const type = s.bool;
-    exec(type, true, null);
-    exec(type, false, null);
-    exec(type, 123, {
-      code: 'BOOL',
-      errno: ValidationError.BOOL,
-      message: 'Not a boolean.',
-      path: [],
-    });
-  });
 
-//   test('const boolean', () => {
-//     const type1 = s.Const<true>(true);
-//     const type2 = s.Const<false>(false);
-//     exec(type1, true, null);
-//     exec(type1, false, {
-//       code: 'CONST',
-//       errno: ValidationError.CONST,
-//       message: 'Invalid constant.',
-//       path: [],
-//     });
-//     exec(type1, '123', {
-//       code: 'CONST',
-//       errno: ValidationError.CONST,
-//       message: 'Invalid constant.',
-//       path: [],
-//     });
-//     exec(type1, 123, {
-//       code: 'CONST',
-//       errno: ValidationError.CONST,
-//       message: 'Invalid constant.',
-//       path: [],
-//     });
-//     exec(type2, false, null);
-//     exec(type2, true, {
-//       code: 'CONST',
-//       errno: ValidationError.CONST,
-//       message: 'Invalid constant.',
-//       path: [],
-//     });
-//     exec(type2, '123', {
-//       code: 'CONST',
-//       errno: ValidationError.CONST,
-//       message: 'Invalid constant.',
-//       path: [],
-//     });
-//     exec(type2, 123, {
-//       code: 'CONST',
-//       errno: ValidationError.CONST,
-//       message: 'Invalid constant.',
-//       path: [],
-//     });
-//   });
 // });
 
 // describe('custom validators', () => {
