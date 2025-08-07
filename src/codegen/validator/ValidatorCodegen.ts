@@ -374,7 +374,32 @@ export class ValidatorCodegen extends AbstractCodegen {
   }
 
   protected onRef(path: SchemaPath, r: JsExpression, type: RefType): void {
-    throw new Error('not implemented');
+    const {options, codegen} = this;
+    const ref = type.ref();
+    const refErr = (errorRegister: string): string => {
+      switch (options.errors) {
+        case 'boolean':
+          return errorRegister;
+        case 'string': {
+          return this.err(ValidationError.REF, [...path, {r: errorRegister}]);
+        }
+        // case 'object':
+        default: {
+          return this.err(ValidationError.REF, [...path], {
+            refId: ref,
+            refError: errorRegister,
+          });
+        }
+      }
+    };
+    const system = type.system;
+    if (!system) throw new Error('NO_SYSTEM');
+    const alias = system.resolve(ref);
+    const validator = ValidatorCodegen.get({...options, type: alias.type});
+    const d = codegen.linkDependency(validator);
+    const rerr = codegen.getRegister();
+    codegen.js(/* js */ `var ${rerr} = ${d}(${r.use()});`);
+    codegen.js(/* js */ `if (${rerr}) return ${refErr(rerr)};`);
   }
 
   protected onOr(path: SchemaPath, r: JsExpression, type: OrType): void {
@@ -401,45 +426,4 @@ export class ValidatorCodegen extends AbstractCodegen {
       },
     );
   }
-
-// export const ref = (ctx: ValidatorCodegenContext, path: ValidationPath, r: string, type: Type): void => {
-//   const refType = type as any; // RefType
-//   const system = ctx.options.system || refType.system;
-//   if (!system) throw new Error('NO_SYSTEM');
-//   const validator = system.resolve(refType.schema.ref).type.validator(ctx.options.errors);
-//   const d = ctx.codegen.linkDependency(validator);
-//   const rv = ctx.codegen.getRegister();
-//   ctx.js(`var ${rv} = ${d}(${r});`);
-//   ctx.js(`if (${rv}) return ${rv};`);
-//   ctx.emitCustomValidators(type, path, r);
-// };
-
-// export const or = (
-//   ctx: ValidatorCodegenContext,
-//   path: ValidationPath,
-//   r: string,
-//   type: Type,
-//   validateFn: ValidatorFunction,
-// ): void => {
-//   const orType = type as any; // OrType
-//   const discriminator = orType.discriminator();
-//   const d = ctx.codegen.linkDependency(discriminator);
-//   const ri = ctx.codegen.getRegister();
-//   const types = orType.types;
-//   ctx.js(`var ${ri} = ${d}(${r});`);
-//   ctx.codegen.switch(
-//     ri,
-//     types.map((childType: Type, index: number) => [
-//       index,
-//       () => {
-//         validateFn(ctx, path, r, childType);
-//       },
-//     ]),
-//     () => {
-//       const err = ctx.err(ValidationError.OR, path);
-//       ctx.js(`return ${err};`);
-//     },
-//   );
-//   ctx.emitCustomValidators(type, path, r);
-// };
 }

@@ -29,48 +29,46 @@ const exec = (schema: Schema, json: unknown, error: any, options: Partial<Valida
   expect(result1).toBe(!!error);
 };
 
-// test('validates according to schema a POJO object', () => {
-//   const type = s.Object({
-//     unknownFields: false,
-//     fields: [
-//       s.prop(
-//         'collection',
-//         s.Object({
-//           unknownFields: false,
-//           fields: [
-//             s.prop('id', s.str),
-//             s.prop('ts', s.num),
-//             s.prop('cid', s.str),
-//             s.prop('prid', s.str),
-//             s.propOpt('slug', s.str),
-//             s.propOpt('name', s.str),
-//             s.propOpt('src', s.str),
-//             s.propOpt('authz', s.str),
-//             s.prop('tags', s.Array(s.str)),
-//           ],
-//         }),
-//       ),
-//       s.prop('bin.', s.bin),
-//     ],
-//   });
-//   const json = {
-//     collection: {
-//       id: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
-//       ts: Date.now(),
-//       cid: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
-//       prid: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
-//       slug: 'slug-name',
-//       name: 'Super collection',
-//       src: '{"foo": "bar"}',
-//       authz: 'export const (ctx) => ctx.userId === "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx";',
-//       tags: ['foo', 'bar'],
-//     },
-//     'bin.': new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
-//   };
-//   exec(type, json, null);
-// });
-
-
+test('validates according to schema a POJO object', () => {
+  const type = s.Object({
+    unknownFields: false,
+    fields: [
+      s.prop(
+        'collection',
+        s.Object({
+          unknownFields: false,
+          fields: [
+            s.prop('id', s.str),
+            s.prop('ts', s.num),
+            s.prop('cid', s.str),
+            s.prop('prid', s.str),
+            s.propOpt('slug', s.str),
+            s.propOpt('name', s.str),
+            s.propOpt('src', s.str),
+            s.propOpt('authz', s.str),
+            s.prop('tags', s.Array(s.str)),
+          ],
+        }),
+      ),
+      s.prop('bin.', s.bin),
+    ],
+  });
+  const json = {
+    collection: {
+      id: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
+      ts: Date.now(),
+      cid: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
+      prid: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
+      slug: 'slug-name',
+      name: 'Super collection',
+      src: '{"foo": "bar"}',
+      authz: 'export const (ctx) => ctx.userId === "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx";',
+      tags: ['foo', 'bar'],
+    },
+    'bin.': new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  };
+  exec(type, json, null);
+});
 
 describe('"any" type', () => {
   test('accepts any value', () => {
@@ -1054,6 +1052,28 @@ describe('"or" type', () => {
       errno: ValidationError.OR,
       message: 'None of types matched.',
       path: [],
+    });
+  });
+});
+
+describe('"ref" type', () => {
+  test('a single type', () => {
+    const system = new TypeSystem();
+    system.alias('TheObject', system.t.object({
+      foo: system.t.string(),
+    }));
+    const type = system.t.object({
+      x: system.t.Ref('TheObject'),
+    });
+    const validator = ValidatorCodegen.get({type, errors: 'object'});
+    expect(validator({x: {foo: 'bar'}})).toBe(null);
+    expect(validator({x: {foo: 123}})).toMatchObject({
+      code: 'REF',
+      path: ['x'],
+      ref: {
+        code: 'STR',
+        path: ['foo'],
+      },
     });
   });
 });
