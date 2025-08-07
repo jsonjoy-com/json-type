@@ -221,7 +221,4 @@ export class JsonCodegen extends AbstractBinaryCodegen<JsonEncoder> {
   protected onRef(path: SchemaPath, r: JsExpression, type: RefType): void {
     throw new Error('not implemented');
   }
-  protected onOr(path: SchemaPath, r: JsExpression, type: OrType): void {
-    throw new Error('not implemented');
-  }
 }

@@ -5,10 +5,11 @@ import {Value} from '../../value/Value';
 import {CapacityEstimatorCodegen} from '../capacity';
 import {AbstractCodegen} from '../AbstractCodege';
 import {floats, ints, uints} from '../../util';
+import {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
+import {DiscriminatorCodegen} from '../discriminator';
 import type {BinaryJsonEncoder} from '@jsonjoy.com/json-pack/lib/types';
-import type {AnyType, BinType, BoolType, ConType, NumType, StrType, Type} from '../../type';
+import type {AnyType, BinType, BoolType, ConType, NumType, OrType, StrType, Type} from '../../type';
 import type {CompiledBinaryEncoder, SchemaPath} from '../types';
-import type {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
 
 type Step = WriteBlobStep | CodegenStepExecJs;
 
@@ -153,5 +154,21 @@ var uint8 = writer.uint8, view = writer.view;`,
 
   protected onBin(path: SchemaPath, r: JsExpression, type: BinType): void {
     this.codegen.js(/* js */ `encoder.writeBin(${r.use()});`);
+  }
+
+  protected onOr(path: SchemaPath, r: JsExpression, type: OrType<Type[]>): void {
+    const codegen = this.codegen;
+    const discriminator = DiscriminatorCodegen.get(type);
+    const d = codegen.linkDependency(discriminator);
+    const types = type.types;
+    codegen.switch(
+      `${d}(${r.use()})`,
+      types.map((type, index) => [
+        index,
+        () => {
+          this.onNode([...path], r, type);
+        },
+      ]),
+    );
   }
 }
