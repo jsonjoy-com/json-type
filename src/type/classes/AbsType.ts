@@ -11,7 +11,7 @@ export abstract class AbsType<S extends schema.Schema> implements BaseType<S>, P
 
   public readonly validators: schema.TypeOf<S>[] = [];
 
-  constructor(protected schema: S) {}
+  constructor(public readonly schema: S) {}
 
   public sys(system: TypeSystem | undefined): this {
     this.system = system;

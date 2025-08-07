@@ -1,8 +1,5 @@
 import * as schema from '../../schema';
 import {printTree} from 'tree-dump/lib/printTree';
-import {JsonExpressionCodegen} from '@jsonjoy.com/json-expression';
-import {operatorsMap} from '@jsonjoy.com/json-expression/lib/operators';
-import {Vars} from '@jsonjoy.com/json-expression/lib/Vars';
 import {Discriminator} from '../discriminator';
 import {AbsType} from './AbsType';
 import type {SchemaOf, Type} from '../types';
@@ -40,19 +37,6 @@ export class OrType<T extends Type[] = any> extends AbsType<schema.OrSchema<{[K 
       }
     }
     return this;
-  }
-
-  private __discriminator: undefined | ((val: unknown) => number) = undefined;
-  public discriminator(): (val: unknown) => number {
-    if (this.__discriminator) return this.__discriminator;
-    const expr = this.schema.discriminator;
-    if (!expr || (expr[0] === 'num' && expr[1] === 0)) throw new Error('NO_DISCRIMINATOR');
-    const codegen = new JsonExpressionCodegen({
-      expression: expr,
-      operators: operatorsMap,
-    });
-    const fn = codegen.run().compile();
-    return (this.__discriminator = (data: unknown) => +(fn(new Vars(data)) as any));
   }
 
   // public codegenValidator(ctx: ValidatorCodegenContext, path: ValidationPath, r: string): void {

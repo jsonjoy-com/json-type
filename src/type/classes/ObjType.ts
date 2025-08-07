@@ -43,7 +43,7 @@ export class ObjKeyOptType<K extends string, V extends Type> extends ObjKeyType<
     public readonly val: V,
   ) {
     super(key, val);
-    this.schema = schema.s.propOpt(key, schema.s.any) as any;
+    (this as any).schema = schema.s.propOpt(key, schema.s.any) as any;
   }
 
   protected toStringTitle(): string {

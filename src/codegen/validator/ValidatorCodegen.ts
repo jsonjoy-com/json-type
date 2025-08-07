@@ -11,6 +11,7 @@ import {normalizeAccessor} from '@jsonjoy.com/codegen/lib/util/normalizeAccessor
 import {canSkipObjectKeyUndefinedCheck} from './util';
 import type {JsonTypeValidator} from './types';
 import type {SchemaPath} from '../types';
+import {DiscriminatorCodegen} from '../discriminator';
 
 const CACHE = new WeakMap<Type, (value: unknown) => void>;
 
@@ -384,7 +385,7 @@ export class ValidatorCodegen extends AbstractCodegen {
       this.onNode(path, r, types[0]);
       return;
     }
-    const discriminator = type.discriminator();
+    const discriminator = DiscriminatorCodegen.get(type);
     const d = codegen.linkDependency(discriminator);
     codegen.switch(
       /* js */ `${d}(${r.use()})`,
