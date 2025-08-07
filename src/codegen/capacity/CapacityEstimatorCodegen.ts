@@ -1,5 +1,5 @@
-import {Codegen, CodegenStepExecJs} from '@jsonjoy.com/util/lib/codegen';
-import {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
+import {Codegen, CodegenStepExecJs} from '@jsonjoy.com/codegen';
+import {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
 import {normalizeAccessor} from '@jsonjoy.com/codegen/lib/util/normalizeAccessor';
 import {MaxEncodingOverhead, maxEncodingCapacity} from '@jsonjoy.com/util/lib/json-size';
 import {BoolType, ConType, NumType, ObjKeyOptType} from '../../type';

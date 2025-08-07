@@ -1,10 +1,10 @@
-import {Codegen, CodegenStepExecJs} from '@jsonjoy.com/util/lib/codegen';
+import {Codegen, CodegenStepExecJs} from '@jsonjoy.com/codegen';
 import {lazy} from '@jsonjoy.com/util/lib/lazyFunction';
 import {asString} from '@jsonjoy.com/util/lib/strings/asString';
 import {toBase64} from '@jsonjoy.com/base64/lib/toBase64';
-import {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
+import {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
 import {stringify} from '@jsonjoy.com/json-pack/lib/json-binary/codec';
-import {normalizeAccessor} from '@jsonjoy.com/util/lib/codegen/util/normalizeAccessor';
+import {normalizeAccessor} from '@jsonjoy.com/codegen/lib/util/normalizeAccessor';
 import {ObjKeyOptType} from '../../type';
 import type {ArrType, MapType, OrType, RefType, ConType, ObjType, StrType, Type} from '../../type';
 import type {json_string} from '@jsonjoy.com/util/lib/json-brand';

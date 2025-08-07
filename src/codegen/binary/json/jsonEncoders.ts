@@ -1,9 +1,9 @@
 import type {JsonEncoderCodegenContext} from './JsonEncoderCodegenContext';
-import {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
+import {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
 import type {Type} from '../../type';
 import type {BinaryJsonEncoder} from '@jsonjoy.com/json-pack/lib/types';
 import type {BinaryEncoderCodegenContext} from './BinaryEncoderCodegenContext';
-import {normalizeAccessor} from '@jsonjoy.com/util/lib/codegen/util/normalizeAccessor';
+import {normalizeAccessor} from '@jsonjoy.com/codegen/lib/util/normalizeAccessor';
 import {EncodingFormat} from '@jsonjoy.com/json-pack/lib/constants';
 
 type JsonEncoderFunction = (ctx: JsonEncoderCodegenContext, value: JsExpression, type: Type) => void;

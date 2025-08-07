@@ -2,7 +2,7 @@ import {MsgPackEncoder} from '@jsonjoy.com/json-pack/lib/msgpack/MsgPackEncoder'
 import {MsgPackDecoder} from '@jsonjoy.com/json-pack/lib/msgpack/MsgPackDecoder';
 import {testBinaryCodegen} from './testBinaryCodegen';
 import {EncodingFormat} from '@jsonjoy.com/json-pack/lib/constants';
-import {Writer} from '@jsonjoy.com/util/lib/buffers/Writer';
+import {Writer} from '@jsonjoy.com/buffers/lib/Writer';
 import type {Type} from '../../../type';
 import type {TypeSystem} from '../../../system';
 

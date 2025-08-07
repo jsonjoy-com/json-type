@@ -6,7 +6,7 @@
 // import type {JsonTextEncoderCodegenContext} from '../../codegen/json/JsonTextEncoderCodegenContext';
 // import {CborEncoderCodegenContext} from '../../codegen/binary/CborEncoderCodegenContext';
 // import type {JsonEncoderCodegenContext} from '../../codegen/binary/JsonEncoderCodegenContext';
-// import {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
+// import {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
 // import type {MessagePackEncoderCodegenContext} from '../../codegen/binary/MessagePackEncoderCodegenContext';
 // import type {CapacityEstimatorCodegenContext} from '../../codegen/capacity/CapacityEstimatorCodegenContext';
 // import {MaxEncodingOverhead} from '@jsonjoy.com/util/lib/json-size';

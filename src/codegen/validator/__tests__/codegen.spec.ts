@@ -1,4 +1,4 @@
-import {b} from '@jsonjoy.com/util/lib/buffers/b';
+import {b} from '@jsonjoy.com/buffers/lib/b';
 import {ValidationError} from '../../../constants';
 import {type OrSchema, s, type Schema} from '../../../schema';
 import {ValidatorCodegen, ValidatorCodegenOptions} from '../ValidatorCodegen';

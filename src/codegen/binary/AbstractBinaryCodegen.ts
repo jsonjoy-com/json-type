@@ -1,5 +1,5 @@
 import {Codegen, CodegenStepExecJs} from '@jsonjoy.com/codegen';
-import {concat} from '@jsonjoy.com/util/lib/buffers/concat';
+import {concat} from '@jsonjoy.com/buffers/lib/concat';
 import {WriteBlobStep} from './WriteBlobStep';
 import {Value} from '../../value/Value';
 import {CapacityEstimatorCodegen} from '../capacity';

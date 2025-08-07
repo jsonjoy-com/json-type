@@ -1,6 +1,6 @@
 import {testBinaryCodegen} from '../../__tests__/testBinaryCodegen';
 import {JsonEncoder} from '@jsonjoy.com/json-pack/lib/json/JsonEncoder';
-import {Writer} from '@jsonjoy.com/util/lib/buffers/Writer';
+import {Writer} from '@jsonjoy.com/buffers/lib/Writer';
 import {parse} from '@jsonjoy.com/json-pack/lib/json-binary';
 import {JsonCodegen} from '../JsonCodegen';
 import type {TypeSystem} from '../../../../system';
