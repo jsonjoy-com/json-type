@@ -124,7 +124,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
     });
   });
 
-  describe.only('"bin" type', () => {
+  describe('"bin" type', () => {
     test('can encode binary data', () => {
       const system = new TypeSystem();
       const type = system.t.bin;
@@ -135,7 +135,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
     });
   });
 
-  describe('"arr" type', () => {
+  describe.only('"arr" type', () => {
     test('can encode simple arrays', () => {
       const system = new TypeSystem();
       const type = system.t.arr;

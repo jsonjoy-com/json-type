@@ -3,7 +3,7 @@ import {AbstractBinaryCodegen} from '../AbstractBinaryCodegen';
 import {writer} from '../writer';
 import {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
 import {JsonEncoder} from '@jsonjoy.com/json-pack/lib/json/JsonEncoder';
-import type {AnyType, ArrType, BinType, BoolType, ConType, MapType, NumType, ObjType, OrType, RefType, StrType, Type} from '../../../type';
+import type {ArrType, MapType, ObjType, OrType, RefType, Type} from '../../../type';
 import type {CompiledBinaryEncoder, SchemaPath} from '../../types';
 
 const CACHE = new WeakMap<Type, CompiledBinaryEncoder>;
@@ -26,8 +26,33 @@ export class JsonCodegen extends AbstractBinaryCodegen<JsonEncoder> {
   protected encoder = new JsonEncoder(writer);
 
   protected onArr(path: SchemaPath, r: JsExpression, type: ArrType): void {
-    throw new Error('not implemented');
+    const codegen = this.codegen;
+    const rLen = codegen.var(/* js */ `${r.use()}.length`);
+    const rLast = codegen.var(/* js */ `${rLen} - 1`);
+    const ri = codegen.var('0');
+    this.blob(
+      this.gen((encoder) => {
+        encoder.writeStartArr();
+      }),
+    );
+    codegen.js(/* js */ `for(; ${ri} < ${rLast}; ${ri}++) {`);
+    this.onNode([...path, {r: ri}], new JsExpression(() => /* js */ `${r.use()}[${ri}]`), type._type);
+    this.blob(
+      this.gen((encoder) => {
+        encoder.writeArrSeparator();
+      }),
+    );
+    codegen.js(/* js */ `}`);
+    codegen.js(/* js */ `if (${rLen}) {`);
+    this.onNode([...path, {r: rLast}], new JsExpression(() => /* js */ `${r.use()}[${rLast}]`), type._type);
+    codegen.js(/* js */ `}`);
+    this.blob(
+      this.gen((encoder) => {
+        encoder.writeEndArr();
+      }),
+    );
   }
+
   protected onObj(path: SchemaPath, r: JsExpression, type: ObjType): void {
     throw new Error('not implemented');
   }
