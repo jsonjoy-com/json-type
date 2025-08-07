@@ -187,7 +187,7 @@ export class ValidatorCodegen extends AbstractCodegen {
 
   protected onNum(path: SchemaPath, r: JsExpression, type: NumType): void {
     const codegen = this.codegen;
-    const {format, gt, gte, lt, lte} = type.getSchema();
+    const {format, gt, gte, lt, lte} = type.schema;
     if (format && ints.has(format)) {
       const errInt = this.err(ValidationError.INT, path);
       codegen.js(/* js */ `if(!Number.isInteger(${r.use()})) return ${errInt};`);
@@ -253,7 +253,7 @@ export class ValidatorCodegen extends AbstractCodegen {
     const codegen = this.codegen;
     const error = this.err(ValidationError.STR, path);
     codegen.js(/* js */ `if(typeof ${r.use()} !== "string") return ${error};`);
-    const {min, max, format, ascii} = type.getSchema();
+    const {min, max, format, ascii} = type.schema;
     if (typeof min === 'number' && min === max) {
       const err = this.err(ValidationError.STR_LEN, path);
       codegen.js(/* js */ `if(${r.use()}.length !== ${min}) return ${err};`);
@@ -284,7 +284,7 @@ export class ValidatorCodegen extends AbstractCodegen {
   }
 
   protected onBin(path: SchemaPath, r: JsExpression, type: BinType): void {
-    const {min, max} = type.getSchema();
+    const {min, max} = type.schema;
     const error = this.err(ValidationError.BIN, path);
     const codegen = this.codegen;
     this.codegen.js(/* js */ `if(!(${r.use()} instanceof Uint8Array)) return ${error};`);
@@ -305,20 +305,39 @@ export class ValidatorCodegen extends AbstractCodegen {
 
   protected onArr(path: SchemaPath, r: JsExpression, type: ArrType): void {
     const codegen = this.codegen;
-    const rl = codegen.getRegister();
-    const ri = codegen.getRegister();
-    const rv = codegen.getRegister();
     const err = this.err(ValidationError.ARR, path);
-    const errLen = this.err(ValidationError.ARR_LEN, path);
-    const {min, max} = type.getSchema();
     codegen.js(/* js */ `if (!Array.isArray(${r.use()})) return ${err};`);
-    codegen.js(/* js */ `var ${rl} = ${r.use()}.length;`);
-    if (min !== undefined) codegen.js(/* js */ `if (${rl} < ${min}) return ${errLen};`);
-    if (max !== undefined) codegen.js(/* js */ `if (${rl} > ${max}) return ${errLen};`);
-    codegen.js(/* js */ `for (var ${rv}, ${ri} = ${r.use()}.length; ${ri}-- !== 0;) {`);
-    codegen.js(/* js */ `${rv} = ${r.use()}[${ri}];`);
-    this.onNode([...path, {r: ri}], new JsExpression(() => rv), type._type || type);
-    codegen.js(/* js */ `}`);
+    const {schema, _type, _head = [], _tail = []} = type;
+    if (!_head.length && !_type && !_tail.length) return;
+    const rl = codegen.var(/* js */ `${r.use()}.length`);
+    const ri = codegen.getRegister();
+    const rv = codegen.var();
+    const {min, max} = schema;
+    const tupErr = this.err(ValidationError.TUP, path);
+    if (_head.length || _tail.length) {
+      codegen.js(/* js */ `if(${rl}<${_head.length + _tail.length})return ${tupErr};`);
+    }
+    if (_head.length) {
+      for (let i = 0; i < _head.length; i++)
+        this.onNode([...path, {r: i + ''}], new JsExpression(() => /* js */ `${r.use()}[${i}]`), _head[i]);
+    }
+    if (_type) {
+      CHECK_MIN_MAX: {
+        const tupleLength = _head.length + _tail.length;
+        const errLen = this.err(ValidationError.ARR_LEN, path);
+        if (min !== undefined) codegen.js(/* js */ `if (${rl} < ${min} + ${tupleLength}) return ${errLen};`);
+        if (max !== undefined) codegen.js(/* js */ `if (${rl} > ${max} + ${tupleLength}) return ${errLen};`);
+      }
+      codegen.js(/* js */ `for(var ${ri}=${_head.length};${ri}<${rl}-${_tail.length};${ri}++) {`);
+      codegen.js(/* js */ `${rv} = ${r.use()}[${ri}];`);
+      this.onNode([...path, {r: ri}], new JsExpression(() => rv), type._type || type);
+      codegen.js(/* js */ `}`);
+    }
+    if (_tail.length) {
+      for (let i = 0; i < _tail.length; i++) {
+        this.onNode([...path, {r: `(${ri}+${i})`}], new JsExpression(() => /* js */ `${r.use()}[${ri}+${i}]`), _tail[i]);
+      }
+    }
   }
 
   protected onObj(path: SchemaPath, r: JsExpression, type: ObjType): void {

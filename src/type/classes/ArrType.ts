@@ -177,8 +177,11 @@ export class ArrType<T extends Type | void = any, const Head extends Type[] = an
   // }
 
   public toString(tab: string = ''): string {
+    const {_head, _type, _tail} = this;
     return super.toString(tab) + printTree(tab, [
-      (tab) => this._type ? this._type.toString(tab) : '...',
+      _head && _head.length ? (tab) => ('[ head, ... ]' + printTree(tab, _head!.map((t) => (tab) => t.toString(tab)))) : null,
+      _type ? ((tab) => _type ? _type.toString(tab) : '...') : null,
+      _tail && _tail.length ? (tab) => ('[ ..., tail ]' + printTree(tab, _tail!.map((t) => (tab) => t.toString(tab)))) : null,
     ]);
   }
 }

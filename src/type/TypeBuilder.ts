@@ -246,7 +246,13 @@ export class TypeBuilder {
       case 'bin':
         return this.Binary(this.import(node.type), node);
       case 'arr':
-        return this.Array(this.import(node.type), node);
+        const {head, type, tail, ...rest} = node as schema.ArrSchema;
+        return this.Tuple(
+          head ? head.map((h: any) => this.import(h)) : void 0,
+          type ? this.import(type) : void 0,
+          tail ? tail.map((t: any) => this.import(t)) : void 0,
+          rest,
+      );
       case 'obj': {
         return this.Object(
           ...node.fields.map((f: any) =>

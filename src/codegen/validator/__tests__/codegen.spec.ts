@@ -823,6 +823,85 @@ describe('"arr" type', () => {
       path: [1],
     });
   });
+
+  test('head 2-tuple', () => {
+    const type = s.Tuple([s.num, s.str]);
+    exec(type, [0, ''], null);
+    exec(type, [1, 'x'], null);
+    exec(type, ['', 'x'], {
+      code: 'NUM',
+      errno: ValidationError.NUM,
+      message: 'Not a number.',
+      path: [0],
+    });
+    exec(type, [-1, true], {
+      code: 'STR',
+      errno: ValidationError.STR,
+      message: 'Not a string.',
+      path: [1],
+    });
+  });
+
+  test('head + elements', () => {
+    const type = s.Tuple([s.Const<true>(true)], s.num);
+    exec(type, [true, 123], null);
+    exec(type, [true, 123, 456], null);
+    exec(type, [true, 123, '123'], {
+      code: 'NUM',
+      errno: ValidationError.NUM,
+      message: 'Not a number.',
+      path: [2],
+    });
+  });
+
+  test('elements + tail', () => {
+    const type = s.Tuple([], s.num, [s.Const<true>(true)]);
+    exec(type, [123, true], null);
+    exec(type, [123, 456, true], null);
+    exec(type, [123, '123', true], {
+      code: 'NUM',
+      errno: ValidationError.NUM,
+      message: 'Not a number.',
+      path: [1],
+    });
+    exec(type, [123, 456, 'true'], {
+      code: 'CONST',
+      errno: ValidationError.CONST,
+      message: 'Invalid constant.',
+      path: [2],
+    });
+  });
+
+  test('head + elements + tail', () => {
+    const type = s.Tuple([s.num, s.bool], s.str, [s.bool]);
+    exec(type, [123, true, false], null);
+    exec(type, [123, true, 'hello', false], null);
+    exec(type, [123, true, 'hello', 'world', false], null);
+    exec(type, [123, true, 456, false], {
+      code: 'STR',
+      errno: ValidationError.STR,
+      message: 'Not a string.',
+      path: [2],
+    });
+    exec(type, [123, true, 'hello', 456, false], {
+      code: 'STR',
+      errno: ValidationError.STR,
+      message: 'Not a string.',
+      path: [3],
+    });
+    exec(type, [123, true, 'hello', null], {
+      code: 'BOOL',
+      errno: ValidationError.BOOL,
+      message: 'Not a boolean.',
+      path: [3],
+    });
+    exec(type, ['', true, 'hello', null], {
+      code: 'NUM',
+      errno: ValidationError.NUM,
+      message: 'Not a number.',
+      path: [0],
+    });
+  });
 });
 
 describe('"obj" type', () => {
