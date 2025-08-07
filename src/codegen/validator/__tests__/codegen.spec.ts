@@ -1,15 +1,12 @@
-import {t} from '../../../type';
 import {b} from '@jsonjoy.com/util/lib/buffers/b';
 import {ValidationError} from '../../../constants';
 import {type OrSchema, s, type Schema} from '../../../schema';
-// import {TypeSystem} from '../../../system';
 import {ValidatorCodegen, ValidatorCodegenOptions} from '../ValidatorCodegen';
 import {TypeSystem} from '../../../system';
 
 const exec = (schema: Schema, json: unknown, error: any, options: Partial<ValidatorCodegenOptions> = {}) => {
   const system = new TypeSystem();
   const type = system.t.import(schema);
-  // const type = t.import(schema);
 
   const fn1 = ValidatorCodegen.get({type, errors: 'boolean', ...options});
   const fn2 = ValidatorCodegen.get({type, errors: 'string', ...options});
@@ -944,96 +941,122 @@ describe('"map" type', () => {
   });
 });
 
-// describe('"or" type', () => {
-//   test('object key can be of multiple types', () => {
-//     const type = s.Object({
-//       fields: [
-//         s.Field('foo', {
-//           ...s.Or(s.num, s.str),
-//           discriminator: [
-//             'if',
-//             ['==', 'number', ['type', ['get', '']]],
-//             0,
-//             ['if', ['==', 'string', ['type', ['get', '']]], 1, -1],
-//           ],
-//         }),
-//       ],
-//     });
-//     exec(type, {foo: 123}, null);
-//     exec(type, {foo: '123'}, null);
-//     exec(
-//       type,
-//       {foo: false},
-//       {
-//         code: 'OR',
-//         errno: ValidationError.OR,
-//         message: 'None of types matched.',
-//         path: ['foo'],
-//       },
-//     );
-//   });
+describe('"or" type', () => {
+  test('a single type', () => {
+    const type = s.Or(s.num);
+    exec(type, 123, null);
+    exec(type, 0, null);
+    exec(type, '', {
+      code: 'NUM',
+      errno: ValidationError.NUM,
+      message: 'Not a number.',
+      path: [],
+    });
+  });
 
-//   test('array can be of multiple types', () => {
-//     const type = s.Object({
-//       fields: [
-//         s.Field(
-//           'gg',
-//           s.Array({
-//             ...s.Or(s.num, s.str),
-//             discriminator: [
-//               'if',
-//               ['==', 'number', ['type', ['get', '']]],
-//               0,
-//               ['if', ['==', 'string', ['type', ['get', '']]], 1, -1],
-//             ],
-//           }),
-//         ),
-//       ],
-//     });
-//     exec(type, {gg: []}, null);
-//     exec(type, {gg: [1]}, null);
-//     exec(type, {gg: [1, 2]}, null);
-//     exec(type, {gg: [1, '3', '']}, null);
-//     exec(
-//       type,
-//       {gg: [1, '3', false]},
-//       {
-//         code: 'OR',
-//         errno: ValidationError.OR,
-//         message: 'None of types matched.',
-//         path: ['gg', 2],
-//       },
-//     );
-//   });
+  test('checks inner type', () => {
+    const type = s.Or(s.Object(
+      s.prop('type', s.Const<'num'>('num')),
+      s.prop('foo', s.num),
+    ), s.num);
+    exec(type, {type: 'num', foo: 123}, null);
+    exec(type, {type: 'num', foo: '123'}, {
+      code: 'NUM',
+      errno: ValidationError.NUM,
+      message: 'Not a number.',
+      path: ['foo'],
+    });
+  });
 
-//   test('root value can be of multiple types', () => {
-//     const type = {
-//       ...s.Or(s.num, s.str, s.obj),
-//       discriminator: [
-//         'if',
-//         ['==', 'number', ['type', ['get', '']]],
-//         0,
-//         ['if', ['==', 'string', ['type', ['get', '']]], 1, ['if', ['==', 'object', ['type', ['get', '']]], 2, -1]],
-//       ],
-//     } as OrSchema;
-//     exec(type, 123, null);
-//     exec(type, 'asdf', null);
-//     exec(type, {}, null);
-//     exec(type, {foo: 'bar'}, null);
-//     exec(type, [], {
-//       code: 'OR',
-//       errno: ValidationError.OR,
-//       message: 'None of types matched.',
-//       path: [],
-//     });
-//     exec(type, null, {
-//       code: 'OR',
-//       errno: ValidationError.OR,
-//       message: 'None of types matched.',
-//       path: [],
-//     });
-//   });
-// });
+  test('object key can be of multiple types', () => {
+    const type = s.Object({
+      fields: [
+        s.Field('foo', {
+          ...s.Or(s.num, s.str),
+          discriminator: [
+            'if',
+            ['==', 'number', ['type', ['get', '']]],
+            0,
+            ['if', ['==', 'string', ['type', ['get', '']]], 1, -1],
+          ],
+        }),
+      ],
+    });
+    exec(type, {foo: 123}, null);
+    exec(type, {foo: '123'}, null);
+    exec(
+      type,
+      {foo: false},
+      {
+        code: 'OR',
+        errno: ValidationError.OR,
+        message: 'None of types matched.',
+        path: ['foo'],
+      },
+    );
+  });
+
+  test('array can be of multiple types', () => {
+    const type = s.Object({
+      fields: [
+        s.Field(
+          'gg',
+          s.Array({
+            ...s.Or(s.num, s.str),
+            discriminator: [
+              'if',
+              ['==', 'number', ['type', ['get', '']]],
+              0,
+              ['if', ['==', 'string', ['type', ['get', '']]], 1, -1],
+            ],
+          }),
+        ),
+      ],
+    });
+    exec(type, {gg: []}, null);
+    exec(type, {gg: [1]}, null);
+    exec(type, {gg: [1, 2]}, null);
+    exec(type, {gg: [1, '3', '']}, null);
+    exec(
+      type,
+      {gg: [1, '3', false]},
+      {
+        code: 'OR',
+        errno: ValidationError.OR,
+        message: 'None of types matched.',
+        path: ['gg', 2],
+      },
+    );
+  });
+
+  test('root value can be of multiple types', () => {
+    const type = {
+      ...s.Or(s.num, s.str, s.obj),
+      discriminator: [
+        'if',
+        ['==', 'number', ['type', ['get', '']]],
+        0,
+        ['if', ['==', 'string', ['type', ['get', '']]], 1, ['if', ['==', 'object', ['type', ['get', '']]], 2, -1]],
+      ],
+    } as OrSchema;
+    exec(type, 123, null);
+    exec(type, 'asdf', null);
+    exec(type, {}, null);
+    exec(type, {foo: 'bar'}, null);
+    exec(type, [], {
+      code: 'OR',
+      errno: ValidationError.OR,
+      message: 'None of types matched.',
+      path: [],
+    });
+    exec(type, null, {
+      code: 'OR',
+      errno: ValidationError.OR,
+      message: 'None of types matched.',
+      path: [],
+    });
+  });
+});
 
 describe('single root element', () => {
   test('null', () => {

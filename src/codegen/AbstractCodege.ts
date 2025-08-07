@@ -19,8 +19,7 @@ export abstract class AbstractCodegen {
   protected abstract onOr(path: SchemaPath, r: JsExpression, type: OrType): void;
 
   public compile() {
-    // const res = this.codegen.generate();
-    // console.log(res.js);
+    const res = this.codegen.generate();
     return this.codegen.compile();
   }
 

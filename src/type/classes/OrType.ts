@@ -33,6 +33,12 @@ export class OrType<T extends Type[] = any> extends AbsType<schema.OrSchema<{[K 
 
   public options(options: schema.Optional<schema.OrSchema> & Partial<Pick<schema.OrSchema, 'discriminator'>>): this {
     Object.assign(this.schema, options);
+    const discriminator = options.discriminator;
+    if (discriminator) {
+      if(discriminator.length === 2 && discriminator[0] === 'num' && discriminator[1] === -1) {
+        this.schema.discriminator = Discriminator.createExpression(this.types);
+      }
+    }
     return this;
   }
 

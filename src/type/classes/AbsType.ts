@@ -50,8 +50,9 @@ export abstract class AbsType<S extends schema.Schema> implements BaseType<S>, P
     return this;
   }
 
-  public options(options: schema.Optional<S>): this {
-    Object.assign(this.schema, options);
+  public options(options: schema.Optional<Omit<S, 'kind'>>): this {
+    const {kind, ...sanitizedOptions} = options as any;
+    Object.assign(this.schema, sanitizedOptions);
     return this;
   }
 

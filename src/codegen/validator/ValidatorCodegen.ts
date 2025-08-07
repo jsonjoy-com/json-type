@@ -2,7 +2,7 @@ import {Codegen} from '@jsonjoy.com/codegen';
 import {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
 import {lazy} from '@jsonjoy.com/util/lib/lazyFunction';
 import {ValidationError, ValidationErrorMessage} from '../../constants';
-import {deepEqual} from '@jsonjoy.com/util/lib/json-equal/deepEqual';
+import {deepEqualCodegen} from '@jsonjoy.com/util/lib/json-equal/deepEqualCodegen';
 import {AbstractCodegen} from '../AbstractCodege';
 import {floats, ints, uints} from '../../util';
 import {isAscii, isUtf8} from '../../util/stringFormats';
@@ -85,9 +85,6 @@ export class ValidatorCodegen extends AbstractCodegen {
       this.options.errors === 'boolean' ? 'false' : this.options.errors === 'string' ? "''" : 'null';
     this.codegen = new Codegen<JsonTypeValidator>({
       epilogue: `return ${successResult};`,
-      linkable: {
-        deepEqual,
-      }
     });
   }
 
@@ -165,10 +162,9 @@ export class ValidatorCodegen extends AbstractCodegen {
 
   protected onCon(path: SchemaPath, r: JsExpression, type: ConType): void {
     const value = type.literal();
-    const valueJs = JSON.stringify(value);
-    this.codegen.link('deepEqual');
-    const error = this.err(ValidationError.CONST, path);
-    this.codegen.js(/* js */ `if(!deepEqual(${r.use()}, ${valueJs})) return ${error};`);
+    const equals = deepEqualCodegen(value);
+    const fn = this.codegen.addConstant(equals);
+    this.codegen.js(`if (!${fn}(${r.use()})) return ${this.err(ValidationError.CONST, path)}`);
     this.emitCustomValidators(path, r, type);
   }
 
@@ -381,7 +377,28 @@ export class ValidatorCodegen extends AbstractCodegen {
   }
 
   protected onOr(path: SchemaPath, r: JsExpression, type: OrType): void {
-    throw new Error('not implemented');
+    const types = type.types as Type[];
+    const codegen = this.codegen;
+    const length = types.length;
+    if (length === 1) {
+      this.onNode(path, r, types[0]);
+      return;
+    }
+    const discriminator = type.discriminator();
+    const d = codegen.linkDependency(discriminator);
+    codegen.switch(
+      /* js */ `${d}(${r.use()})`,
+      types.map((caseType, index) => [
+        index,
+        () => {
+          this.onNode(path, r, caseType);
+        },
+      ]),
+      () => {
+        const err = this.err(ValidationError.OR, path);
+        codegen.js(`return ${err}`);
+      },
+    );
   }
 
 // export const ref = (ctx: ValidatorCodegenContext, path: ValidationPath, r: string, type: Type): void => {
