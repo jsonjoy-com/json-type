@@ -8,6 +8,7 @@ import {normalizeAccessor} from '@jsonjoy.com/util/lib/codegen/util/normalizeAcc
 import {ObjKeyOptType} from '../../type';
 import type {ArrType, MapType, OrType, RefType, ConType, ObjType, StrType, Type} from '../../type';
 import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
+import {DiscriminatorCodegen} from '../discriminator';
 
 export type JsonEncoderFn = <T>(value: T) => json_string<T>;
 
@@ -205,12 +206,11 @@ if (${rLength}) {
     this.js(/* js */ `s += ${d}(${value.use()});`);
   }
 
-  protected onOr(value: JsExpression, type: Type): void {
-    const orType = type as any; // OrType
+  protected onOr(value: JsExpression, type: OrType): void {
     const codegen = this.codegen;
-    const discriminator = orType.discriminator();
+    const discriminator = DiscriminatorCodegen.get(type);
     const d = codegen.linkDependency(discriminator);
-    const types = orType.types;
+    const types = type.types;
     codegen.switch(
       `${d}(${value.use()})`,
       types.map((childType: Type, index: number) => [
