@@ -4,9 +4,11 @@ import {WriteBlobStep} from './WriteBlobStep';
 import {Value} from '../../value/Value';
 import {CapacityEstimatorCodegen} from '../capacity';
 import {AbstractCodegen} from '../AbstractCodege';
+import {floats, ints, uints} from '../../util';
 import type {BinaryJsonEncoder} from '@jsonjoy.com/json-pack/lib/types';
-import type {Type} from '../../type';
-import type {CompiledBinaryEncoder} from '../types';
+import type {AnyType, BinType, BoolType, ConType, NumType, StrType, Type} from '../../type';
+import type {CompiledBinaryEncoder, SchemaPath} from '../types';
+import type {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
 
 type Step = WriteBlobStep | CodegenStepExecJs;
 
@@ -111,5 +113,45 @@ var uint8 = writer.uint8, view = writer.view;`,
 
   public compile() {
     return this.codegen.compile();
+  }
+
+  protected onAny(path: SchemaPath, r: JsExpression, type: AnyType): void {
+    this.codegen.js(`encoder.writeAny(${r.use()});`);
+  }
+
+  protected onCon(path: SchemaPath, r: JsExpression, type: ConType): void {
+    this.blob(
+      this.gen((encoder) => {
+        encoder.writeAny(type.literal());
+      }),
+    );
+  }
+
+  protected onBool(path: SchemaPath, r: JsExpression, type: BoolType): void {
+    this.codegen.js(/* js */ `encoder.writeBoolean(${r.use()});`);
+  }
+
+  protected onNum(path: SchemaPath, r: JsExpression, type: NumType): void {
+    const {format} = type.schema;
+    const v = r.use();
+    const codegen = this.codegen;
+    if (uints.has(format)) codegen.js(/* js */ `encoder.writeUInteger(${v});`);
+    else if (ints.has(format)) codegen.js(/* js */ `encoder.writeInteger(${v});`);
+    else if (floats.has(format)) codegen.js(/* js */ `encoder.writeFloat(${v});`);
+    else codegen.js(/* js */ `encoder.writeNumber(${v});`);
+  }
+
+  protected onStr(path: SchemaPath, r: JsExpression, type: StrType): void {
+    const {ascii, format} = type.schema;
+    const codegen = this.codegen;
+    // Use ASCII encoding if format is 'ascii' or ascii=true (backward compatibility)
+    const v = r.use();
+    const useAscii = format === 'ascii' || ascii;
+    if (useAscii) codegen.js(/* js */ `encoder.writeAsciiStr(${v});`);
+    else codegen.js(/* js */ `encoder.writeStr(${v});`);
+  }
+
+  protected onBin(path: SchemaPath, r: JsExpression, type: BinType): void {
+    this.codegen.js(/* js */ `encoder.writeBin(${r.use()});`);
   }
 }

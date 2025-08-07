@@ -2,7 +2,7 @@ import {TypeSystem} from '../../../system';
 import type {Type} from '../../../type';
 
 export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, value: unknown) => void) => {
-  describe.only('"any" type', () => {
+  describe('"any" type', () => {
     test('can encode any value - 1', () => {
       const system = new TypeSystem();
       const any = system.t.any;
@@ -20,7 +20,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
     });
   });
 
-  describe('"const" type', () => {
+  describe('"con" type', () => {
     test('can encode number const', () => {
       const system = new TypeSystem();
       const any = system.t.Const<123>(123);
@@ -124,7 +124,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
     });
   });
 
-  describe('"bin" type', () => {
+  describe.only('"bin" type', () => {
     test('can encode binary data', () => {
       const system = new TypeSystem();
       const type = system.t.bin;

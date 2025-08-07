@@ -25,24 +25,6 @@ export class JsonCodegen extends AbstractBinaryCodegen<JsonEncoder> {
 
   protected encoder = new JsonEncoder(writer);
 
-  protected onAny(path: SchemaPath, r: JsExpression, type: AnyType): void {
-    this.codegen.js(`encoder.writeAny(${r.use()});`);
-  }
-  protected onCon(path: SchemaPath, r: JsExpression, type: ConType): void {
-    throw new Error('not implemented');
-  }
-  protected onBool(path: SchemaPath, r: JsExpression, type: BoolType): void {
-    throw new Error('not implemented');
-  }
-  protected onNum(path: SchemaPath, r: JsExpression, type: NumType): void {
-    throw new Error('not implemented');
-  }
-  protected onStr(path: SchemaPath, r: JsExpression, type: StrType): void {
-    throw new Error('not implemented');
-  }
-  protected onBin(path: SchemaPath, r: JsExpression, type: BinType): void {
-    throw new Error('not implemented');
-  }
   protected onArr(path: SchemaPath, r: JsExpression, type: ArrType): void {
     throw new Error('not implemented');
   }
