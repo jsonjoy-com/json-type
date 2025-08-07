@@ -8,6 +8,7 @@ export interface BaseType<S extends schema.TType> {
 }
 
 export type Type =
+  | classes.AbsType<any>
   | classes.AnyType
   | classes.ConType<any>
   | classes.BoolType

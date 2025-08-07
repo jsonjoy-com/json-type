@@ -1138,9 +1138,9 @@ describe('"or" type', () => {
 describe('"ref" type', () => {
   test('a single type', () => {
     const system = new TypeSystem();
-    system.alias('TheObject', system.t.object({
+    system.t.object({
       foo: system.t.string(),
-    }));
+    }).alias('TheObject');
     const type = system.t.object({
       x: system.t.Ref('TheObject'),
     });
@@ -1323,11 +1323,16 @@ describe('custom validators', () => {
 
   test('returns the error, which validator throws, even inside a "ref" type', () => {
     const system = new TypeSystem();
-    system.alias('ID', system.t.str.validator((id: string) => {
-        if (id === 'xxxxxxx') return;
-        if (id === 'y') return;
-        throw new Error('Asset ID must be a string.');
-      }, 'assetId'));
+    system.t.str
+      .validator(
+        (id: string) => {
+          if (id === 'xxxxxxx') return;
+          if (id === 'y') return;
+          throw new Error('Asset ID must be a string.');
+        },
+        'assetId'
+      )
+      .alias('ID');
     const type = system.t.Object(system.t.prop('id', system.t.Ref('ID')));
     const validator = ValidatorCodegen.get({type, errors: 'object'});
     expect(validator({id: 'xxxxxxx'})).toBe(null);

@@ -1,7 +1,7 @@
 import {JsonExpressionCodegen} from '@jsonjoy.com/json-expression';
 import {operatorsMap} from '@jsonjoy.com/json-expression/lib/operators';
 import {Vars} from '@jsonjoy.com/json-expression/lib/Vars';
-import {OrType} from '../../type';
+import type {OrType} from '../../type';
 
 export type DiscriminatorFn = (val: unknown) => number;
 
