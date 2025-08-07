@@ -8,7 +8,7 @@ import {floats, ints, uints} from '../../util';
 import {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
 import {DiscriminatorCodegen} from '../discriminator';
 import type {BinaryJsonEncoder} from '@jsonjoy.com/json-pack/lib/types';
-import type {AnyType, BinType, BoolType, ConType, NumType, OrType, StrType, Type} from '../../type';
+import type {AnyType, BinType, BoolType, ConType, NumType, OrType, RefType, StrType, Type} from '../../type';
 import type {CompiledBinaryEncoder, SchemaPath} from '../types';
 
 type Step = WriteBlobStep | CodegenStepExecJs;
@@ -166,9 +166,32 @@ var uint8 = writer.uint8, view = writer.view;`,
       types.map((type, index) => [
         index,
         () => {
-          this.onNode([...path], r, type);
+          this.onNode(path, r, type);
         },
       ]),
     );
+  }
+
+  protected abstract genEncoder(type: Type): CompiledBinaryEncoder;
+
+  protected onRef(path: SchemaPath, r: JsExpression, type: RefType): void {
+    const system = type.getSystem();
+    const alias = system.resolve(type.ref());
+    switch (alias.type.kind()) {
+      case 'str':
+      case 'bool':
+      case 'num':
+      case 'any':
+      case 'tup': {
+        this.onNode(path, r, alias.type);
+        break;
+      }
+      default: {
+        const encoder = this.genEncoder(alias.type);
+        const codegen = this.codegen;
+        const d = codegen.linkDependency(encoder);
+        codegen.js(/* js */ `${d}(${r.use()}, encoder);`);
+      }
+    }
   }
 }

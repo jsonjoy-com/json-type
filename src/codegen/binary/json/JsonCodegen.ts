@@ -218,7 +218,7 @@ export class JsonCodegen extends AbstractBinaryCodegen<JsonEncoder> {
     this.blob(objEndBlob);
   }
 
-  protected onRef(path: SchemaPath, r: JsExpression, type: RefType): void {
-    throw new Error('not implemented');
+  protected genEncoder(type: Type): CompiledBinaryEncoder {
+    return JsonCodegen.get(type);
   }
 }
