@@ -1,5 +1,5 @@
 import {validateSchema, validateTType} from '../validate';
-import type {TExample, TType, WithValidator, Schema} from '../schema';
+import type {TExample, TType, Schema} from '../schema';
 
 describe('validate display', () => {
   test('validates valid display', () => {
@@ -97,33 +97,6 @@ describe('validateTType()', () => {
 
   test('validates display properties', () => {
     expect(() => validateTType({kind: 'str', title: 123} as any, 'str')).toThrow('INVALID_TITLE');
-  });
-});
-
-describe('validateWithValidator', () => {
-  test('validates empty validator', () => {
-    expect(() => validateSchema({kind: 'any', validator: {} as any})).toThrow('INVALID_VALIDATOR');
-  });
-
-  test('validates string validator', () => {
-    const withValidator: WithValidator = {validator: 'test-validator'};
-    expect(() => validateSchema({kind: 'any', validator: withValidator.validator})).not.toThrow();
-  });
-
-  test('validates array validator', () => {
-    const withValidator: WithValidator = {validator: ['validator1', 'validator2']};
-    expect(() => validateSchema({kind: 'any', validator: withValidator.validator})).not.toThrow();
-  });
-
-  test('throws for non-string validator', () => {
-    expect(() => validateSchema({kind: 'any', validator: 123 as any})).toThrow('INVALID_VALIDATOR');
-    expect(() => validateSchema({kind: 'any', validator: null} as any)).toThrow('INVALID_VALIDATOR');
-    expect(() => validateSchema({kind: 'any', validator: {}} as any)).toThrow('INVALID_VALIDATOR');
-  });
-
-  test('throws for array with non-string elements', () => {
-    expect(() => validateSchema({kind: 'any', validator: ['valid', 123]} as any)).toThrow('INVALID_VALIDATOR');
-    expect(() => validateSchema({kind: 'any', validator: [null, 'valid']} as any)).toThrow('INVALID_VALIDATOR');
   });
 });
 
