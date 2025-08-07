@@ -3,8 +3,8 @@ import type {Codegen} from '@jsonjoy.com/codegen';
 import type {AnyType, ArrType, BinType, BoolType, ConType, MapType, NumType, ObjType, OrType, RefType, StrType, Type} from '../type';
 import type {SchemaPath} from './types';
 
-export abstract class AbstractCodegen {
-  public abstract readonly codegen: Codegen;
+export abstract class AbstractCodegen<Fn extends (...deps: any[]) => any = (...deps: unknown[]) => unknown> {
+  public abstract readonly codegen: Codegen<Fn>;
 
   protected abstract onAny(path: SchemaPath, r: JsExpression, type: AnyType): void;
   protected abstract onCon(path: SchemaPath, r: JsExpression, type: ConType): void;
@@ -19,7 +19,6 @@ export abstract class AbstractCodegen {
   protected abstract onOr(path: SchemaPath, r: JsExpression, type: OrType): void;
 
   public compile() {
-    const res = this.codegen.generate();
     return this.codegen.compile();
   }
 

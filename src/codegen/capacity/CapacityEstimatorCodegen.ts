@@ -5,6 +5,7 @@ import {MaxEncodingOverhead, maxEncodingCapacity} from '@jsonjoy.com/util/lib/js
 import {BoolType, ConType, NumType, ObjKeyOptType} from '../../type';
 import {lazy} from '@jsonjoy.com/util/lib/lazyFunction';
 import type {ObjKeyType, ArrType, MapType, RefType, Type, OrType} from '../../type';
+import {DiscriminatorCodegen} from '../discriminator';
 
 export type CompiledCapacityEstimator = (value: unknown) => number;
 
@@ -164,7 +165,7 @@ export class CapacityEstimatorCodegen {
 
   protected genOr(value: JsExpression, type: OrType<any>): void {
     const codegen = this.codegen;
-    const discriminator = type.discriminator();
+    const discriminator = DiscriminatorCodegen.get(type);
     const d = codegen.linkDependency(discriminator);
     const types = type.types;
     codegen.switch(

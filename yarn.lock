@@ -870,6 +870,7 @@ __metadata:
   resolution: "@jsonjoy.com/json-type@workspace:."
   dependencies:
     "@biomejs/biome": "npm:^1.9.3"
+    "@jsonjoy.com/buffers": "npm:^1.0.0"
     "@jsonjoy.com/codegen": "npm:^1.0.0"
     "@jsonjoy.com/json-expression": "npm:^1.1.0"
     "@jsonjoy.com/json-pack": "npm:^1.2.0"

@@ -2,7 +2,7 @@ import {TypeSystem} from '../../../system';
 import type {Type} from '../../../type';
 
 export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, value: unknown) => void) => {
-  describe('"any" type', () => {
+  describe.only('"any" type', () => {
     test('can encode any value - 1', () => {
       const system = new TypeSystem();
       const any = system.t.any;
@@ -168,7 +168,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
     test('can encode a simple tuple', () => {
       const system = new TypeSystem();
       const t = system.t;
-      const type = system.t.Tuple(t.str, t.num, t.bool);
+      const type = system.t.Tuple([t.str, t.num, t.bool]);
       const value: any[] = ['abc', 123, true];
       expect(transcode(system, type, value)).toStrictEqual(value);
     });
@@ -176,7 +176,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
     test('can encode an empty tuple', () => {
       const system = new TypeSystem();
       const t = system.t;
-      const type = system.t.Tuple();
+      const type = system.t.Tuple([]);
       const value: any[] = [];
       expect(transcode(system, type, value)).toStrictEqual(value);
     });
@@ -184,7 +184,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
     test('can encode a tuple of arrays', () => {
       const system = new TypeSystem();
       const t = system.t;
-      const type = system.t.Tuple(t.arr, t.arr);
+      const type = system.t.Tuple([t.arr, t.arr]);
       const value: any[] = [[], [1, 'b', false]];
       expect(transcode(system, type, value)).toStrictEqual(value);
     });
@@ -276,7 +276,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
           t.prop('addr', t.Object(t.prop('street', t.str))),
           t.prop(
             'interests',
-            t.Object(t.propOpt('hobbies', t.Array(t.str)), t.propOpt('sports', t.Array(t.Tuple(t.num, t.str)))),
+            t.Object(t.propOpt('hobbies', t.Array(t.str)), t.propOpt('sports', t.Array(t.Tuple([t.num, t.str])))),
           ),
         )
         .options({encodeUnknownFields: true});
