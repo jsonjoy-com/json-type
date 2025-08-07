@@ -135,7 +135,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
     });
   });
 
-  describe.only('"arr" type', () => {
+  describe('"arr" type', () => {
     test('can encode simple arrays', () => {
       const system = new TypeSystem();
       const type = system.t.arr;
@@ -162,9 +162,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
       const value: any[] = ['1', '2', '3'];
       expect(transcode(system, type, value)).toStrictEqual(value);
     });
-  });
 
-  describe('"tup" type', () => {
     test('can encode a simple tuple', () => {
       const system = new TypeSystem();
       const t = system.t;
@@ -187,6 +185,26 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
       const type = system.t.Tuple([t.arr, t.arr]);
       const value: any[] = [[], [1, 'b', false]];
       expect(transcode(system, type, value)).toStrictEqual(value);
+    });
+
+    test('can encode a tuple tail', () => {
+      const system = new TypeSystem();
+      const t = system.t;
+      const type = system.t.Tuple([t.arr, t.arr], t.bool, [t.str, t.num]);
+      const value: any[] = [[], [1, 'b', false], true, false, 'abc', 123];
+      expect(transcode(system, type, value)).toStrictEqual(value);
+    });
+
+    test('elements and tail', () => {
+      const system = new TypeSystem();
+      const t = system.t;
+      const type = system.t.Tuple([], t.bool, [t.str, t.num]);
+      const value1: any[] = [true, false, 'abc', 123];
+      expect(transcode(system, type, value1)).toStrictEqual(value1);
+      const value2: any[] = [true, 'abc', 123];
+      expect(transcode(system, type, value2)).toStrictEqual(value2);
+      const value3: any[] = ['abc', 123];
+      expect(transcode(system, type, value3)).toStrictEqual(value3);
     });
   });
 
