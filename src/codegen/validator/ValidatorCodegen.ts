@@ -96,7 +96,7 @@ export class ValidatorCodegen extends AbstractCodegen {
   public err(
     code: ValidationError,
     path: SchemaPath,
-    opts: {refId?: string; refError?: string; validator?: string} = {},
+    opts: {refId?: string; validatorErrRetRegister?: string; validator?: string} = {},
   ): string {
     switch (this.options.errors) {
       case 'boolean':
@@ -136,8 +136,8 @@ export class ValidatorCodegen extends AbstractCodegen {
         if (opts.refId) {
           out += ', refId: ' + JSON.stringify(opts.refId);
         }
-        if (opts.refError) {
-          out += ', ref: ' + opts.refError;
+        if (opts.validatorErrRetRegister) {
+          out += ', ref: ' + opts.validatorErrRetRegister;
         }
         if (opts.validator) {
           out += ', validator: ' + JSON.stringify(opts.validator);
@@ -148,32 +148,41 @@ export class ValidatorCodegen extends AbstractCodegen {
   }
 
   public emitCustomValidators(path: SchemaPath, r: JsExpression, node: Type): void {
-    const validators = node.validators;
+    const validators = node._validators;
     const codegen = this.codegen;
-    for (const validator of validators) {
-      const v = this.codegen.linkDependency(validator);
-      const error = this.err(ValidationError.VALIDATION, path);
-      codegen.js(/* js */ `try{${v}(${r.use()})}catch(e){return ${error}}`);
+    for (const [validator, name = ''] of validators) {
+      const v = codegen.linkDependency(validator);
+      const rerr = codegen.getRegister();
+      const rc = codegen.getRegister();
+      const err = this.err(ValidationError.VALIDATION, path, {
+        validator: name,
+        validatorErrRetRegister: rerr,
+      });
+      const errInCatch = this.err(ValidationError.VALIDATION, path, {
+        validator: name,
+        validatorErrRetRegister: rc,
+      });
+      const emitRc = this.options.errors === 'object';
+      codegen.js(
+        /* js */ `try { var ${rerr} = ${v}(${r.use()}); if (${rerr}) return ${err}; } catch (e) {` +
+        `${emitRc ? /* js */ `var ${rc} = e ? e : new Error('Validator ${JSON.stringify(name)} failed.');` : ''} return ${errInCatch}}`
+      );
     }
   }
 
-  protected onAny(path: SchemaPath, r: JsExpression, type: AnyType): void {
-    this.emitCustomValidators(path, r, type);
-  }
+  protected onAny(path: SchemaPath, r: JsExpression, type: AnyType): void {}
 
   protected onCon(path: SchemaPath, r: JsExpression, type: ConType): void {
     const value = type.literal();
     const equals = deepEqualCodegen(value);
     const fn = this.codegen.addConstant(equals);
     this.codegen.js(`if (!${fn}(${r.use()})) return ${this.err(ValidationError.CONST, path)}`);
-    this.emitCustomValidators(path, r, type);
   }
 
   protected onBool(path: SchemaPath, r: JsExpression, type: BoolType): void {
     const error = this.err(ValidationError.BOOL, path);
     const codegen = this.codegen;
     codegen.js(/* js */ `if(typeof ${r.use()} !== "boolean") return ${error};`);
-    this.emitCustomValidators(path, r, type);
   }
 
   protected onNum(path: SchemaPath, r: JsExpression, type: NumType): void {
@@ -238,7 +247,6 @@ export class ValidatorCodegen extends AbstractCodegen {
       const err = this.err(ValidationError.LTE, path);
       codegen.js(/* js */ `if(${r.use()} > ${lte}) return ${err};`);
     }
-    this.emitCustomValidators(path, r, type);
   }
 
   protected onStr(path: SchemaPath, r: JsExpression, type: StrType): void {
@@ -273,7 +281,6 @@ export class ValidatorCodegen extends AbstractCodegen {
       const validateFn = codegen.linkDependency(isAscii);
       codegen.js(/* js */ `if(!${validateFn}(${r.use()})) return ${asciiErr};`);
     }
-    this.emitCustomValidators(path, r, type);
   }
 
   protected onBin(path: SchemaPath, r: JsExpression, type: BinType): void {
@@ -294,7 +301,6 @@ export class ValidatorCodegen extends AbstractCodegen {
         codegen.js(/* js */ `if(${r.use()}.length > ${max}) return ${err};`);
       }
     }
-    this.emitCustomValidators(path, r, type);
   }
 
   protected onArr(path: SchemaPath, r: JsExpression, type: ArrType): void {
@@ -313,7 +319,6 @@ export class ValidatorCodegen extends AbstractCodegen {
     codegen.js(/* js */ `${rv} = ${r.use()}[${ri}];`);
     this.onNode([...path, {r: ri}], new JsExpression(() => rv), type._type || type);
     codegen.js(/* js */ `}`);
-    this.emitCustomValidators(path, r, type);
   }
 
   protected onObj(path: SchemaPath, r: JsExpression, type: ObjType): void {
@@ -355,7 +360,6 @@ export class ValidatorCodegen extends AbstractCodegen {
         this.onNode(keyPath, new JsExpression(() => rv), field.val);
       }
     }
-    this.emitCustomValidators(path, r, type);
   }
 
   protected onMap(path: SchemaPath, r: JsExpression, type: MapType): void {
@@ -370,7 +374,6 @@ export class ValidatorCodegen extends AbstractCodegen {
     codegen.js(/* js */ `${rKey} = ${rKeys}[i];`);
     this.onNode([...path, {r: rKey}], new JsExpression(() => /* js */ `${rMap}[${rKey}]`), type._value);
     codegen.js(/* js */ `}`);
-    this.emitCustomValidators(path, r, type);
   }
 
   protected onRef(path: SchemaPath, r: JsExpression, type: RefType): void {
@@ -387,7 +390,7 @@ export class ValidatorCodegen extends AbstractCodegen {
         default: {
           return this.err(ValidationError.REF, [...path], {
             refId: ref,
-            refError: errorRegister,
+            validatorErrRetRegister: errorRegister,
           });
         }
       }
@@ -425,5 +428,10 @@ export class ValidatorCodegen extends AbstractCodegen {
         codegen.js(`return ${err}`);
       },
     );
+  }
+
+  protected onNode(path: SchemaPath, r: JsExpression, type: Type): void {
+    super.onNode(path, r, type);
+    this.emitCustomValidators(path, r, type);
   }
 }

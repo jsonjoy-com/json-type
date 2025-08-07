@@ -156,7 +156,7 @@ export class TypeBuilder {
     return new classes.AnyType(s.Any(options)).sys(this.system);
   }
 
-  public Const<V>(value: schema.Narrow<V>, options?: schema.Optional<schema.ConSchema>) {
+  public Const<const V>(value: schema.Narrow<V>, options?: schema.Optional<schema.ConSchema>) {
     type V2 = string extends V
       ? never
       : number extends V

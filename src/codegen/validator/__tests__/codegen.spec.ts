@@ -1174,138 +1174,100 @@ describe('single root element', () => {
   });
 });
 
-// describe('custom validators', () => {
-//   test('can specify a custom validator for a string', () => {
-//     const system = new TypeSystem();
-//     const type = system.t.String({
-//       validator: 'is-a',
-//     });
-//     system.addCustomValidator({
-//       name: 'is-a',
-//       fn: (value) => value !== 'a',
-//     });
-//     const validator = type.validator('object');
-//     const res1 = validator('a');
-//     expect(res1).toStrictEqual(null);
-//     const res2 = validator('b');
-//     expect(res2).toStrictEqual({
-//       code: 'VALIDATION',
-//       errno: ValidationError.VALIDATION,
-//       message: 'Custom validator failed.',
-//       path: [],
-//       validator: 'is-a',
-//       ref: true,
-//     });
-//   });
+describe('custom validators', () => {
+  test('can specify a custom validator for a string', () => {
+    const system = new TypeSystem();
+    const type = system.t.String().validator((value) => value !== 'a', 'is-a');
+    const validator = ValidatorCodegen.get({type, errors: 'object'});
+    const res1 = validator('a');
+    expect(res1).toStrictEqual(null);
+    const res2 = validator('b');
+    expect(res2).toStrictEqual({
+      code: 'VALIDATION',
+      errno: ValidationError.VALIDATION,
+      message: 'Custom validator failed.',
+      path: [],
+      validator: 'is-a',
+      ref: true,
+    });
+  });
 
-//   test('can specify multiple validators', () => {
-//     const system = new TypeSystem();
-//     const type = system.t.String({
-//       validator: ['is-ab', 'is-a'],
-//     });
-//     system.addCustomValidator({
-//       name: 'is-ab',
-//       // biome-ignore lint: this way is better
-//       fn: (value) => (value === 'a' || value === 'b' ? false : true),
-//     });
-//     system.addCustomValidator({
-//       name: 'is-a',
-//       fn: (value) => value !== 'a',
-//     });
-//     const validator = type.validator('object');
-//     const res1 = validator('a');
-//     const res2 = validator('b');
-//     const res3 = validator('c');
-//     expect(res1).toStrictEqual(null);
-//     expect(res2).toStrictEqual({
-//       code: 'VALIDATION',
-//       errno: ValidationError.VALIDATION,
-//       message: 'Custom validator failed.',
-//       path: [],
-//       validator: 'is-a',
-//       ref: true,
-//     });
-//     expect(res3).toStrictEqual({
-//       code: 'VALIDATION',
-//       errno: ValidationError.VALIDATION,
-//       message: 'Custom validator failed.',
-//       path: [],
-//       validator: 'is-ab',
-//       ref: true,
-//     });
-//   });
+  test('can specify multiple validators', () => {
+    const system = new TypeSystem();
+    const type = system.t.str
+      .validator((value) => (value === 'a' || value === 'b' ? false : true), 'is-ab')
+      .validator((value) => value !== 'a', 'is-a');
+    const validator = ValidatorCodegen.get({type, errors: 'object'});
+    const res1 = validator('a');
+    const res2 = validator('b');
+    const res3 = validator('c');
+    expect(res1).toStrictEqual(null);
+    expect(res2).toStrictEqual({
+      code: 'VALIDATION',
+      errno: ValidationError.VALIDATION,
+      message: 'Custom validator failed.',
+      path: [],
+      validator: 'is-a',
+      ref: true,
+    });
+    expect(res3).toStrictEqual({
+      code: 'VALIDATION',
+      errno: ValidationError.VALIDATION,
+      message: 'Custom validator failed.',
+      path: [],
+      validator: 'is-ab',
+      ref: true,
+    });
+  });
 
-//   test('throws if custom validator is not provided', () => {
-//     const system = new TypeSystem();
-//     const type = system.t.Object(
-//       system.t.prop(
-//         'id',
-//         system.t.String({
-//           validator: ['assetId'],
-//         }),
-//       ),
-//     );
-//     expect(() => type.compileValidator({errors: 'object'})).toThrow(new Error('Validator [name = assetId] not found.'));
-//   });
+  test('returns the error, which validator throws', () => {
+    const system = new TypeSystem();
+    const type = system.t.Object(
+      system.t.prop(
+        'id',
+        system.t.str.validator((id: string): void => {
+        if (!/^[a-z]+$/.test(id)) throw new Error('Asset ID must be a string.');
+      }, 'assetId'),
+      ),
+    );
+    const validator = ValidatorCodegen.get({type, errors: 'object'});
+    expect(validator({id: 'xxxxxxx'})).toBe(null);
+    expect(validator({id: '123'})).toStrictEqual({
+      code: 'VALIDATION',
+      errno: ValidationError.VALIDATION,
+      message: 'Custom validator failed.',
+      path: ['id'],
+      ref: new Error('Asset ID must be a string.'),
+      validator: 'assetId',
+    });
+  });
 
-//   test('returns the error, which validator throws', () => {
-//     const system = new TypeSystem();
-//     const type = system.t.Object(
-//       system.t.prop(
-//         'id',
-//         system.t.String({
-//           validator: ['assetId'],
-//         }),
-//       ),
-//     );
-//     system.addCustomValidator({
-//       name: 'assetId',
-//       fn: (id: string): void => {
-//         if (!/^[a-z]+$/.test(id)) throw new Error('Asset ID must be a string.');
-//       },
-//     });
-//     const validator = type.validator('object');
-//     expect(validator({id: 'xxxxxxx'})).toBe(null);
-//     expect(validator({id: '123'})).toStrictEqual({
-//       code: 'VALIDATION',
-//       errno: ValidationError.VALIDATION,
-//       message: 'Custom validator failed.',
-//       path: ['id'],
-//       ref: new Error('Asset ID must be a string.'),
-//       validator: 'assetId',
-//     });
-//   });
-
-//   test('returns the error, which validator throws, even inside a "ref" type', () => {
-//     const system = new TypeSystem();
-//     system.alias('ID', system.t.String({validator: 'assetId'}));
-//     const type = system.t.Object(system.t.prop('id', system.t.Ref('ID')));
-//     system.addCustomValidator({
-//       name: 'assetId',
-//       fn: (id: string) => {
-//         if (id === 'xxxxxxx') return;
-//         if (id === 'y') return;
-//         throw new Error('Asset ID must be a string.');
-//       },
-//     });
-//     const validator = type.validator('object');
-//     expect(validator({id: 'xxxxxxx'})).toBe(null);
-//     expect(validator({id: 'y'})).toBe(null);
-//     expect(validator({id: '123'})).toStrictEqual({
-//       code: 'REF',
-//       errno: ValidationError.REF,
-//       message: 'Validation error in referenced type.',
-//       path: ['id'],
-//       refId: 'ID',
-//       ref: {
-//         code: 'VALIDATION',
-//         errno: ValidationError.VALIDATION,
-//         message: 'Custom validator failed.',
-//         path: [],
-//         validator: 'assetId',
-//         ref: new Error('Asset ID must be a string.'),
-//       },
-//     });
-//   });
-// });
+  test('returns the error, which validator throws, even inside a "ref" type', () => {
+    const system = new TypeSystem();
+    system.alias('ID', system.t.str.validator((id: string) => {
+        if (id === 'xxxxxxx') return;
+        if (id === 'y') return;
+        throw new Error('Asset ID must be a string.');
+      }, 'assetId'));
+    const type = system.t.Object(system.t.prop('id', system.t.Ref('ID')));
+    const validator = ValidatorCodegen.get({type, errors: 'object'});
+    expect(validator({id: 'xxxxxxx'})).toBe(null);
+    expect(validator({id: 'y'})).toBe(null);
+    expect(validator({id: '123'})).toStrictEqual({
+      code: 'REF',
+      errno: ValidationError.REF,
+      message: 'Validation error in referenced type.',
+      path: ['id'],
+      refId: 'ID',
+      ref: {
+        code: 'VALIDATION',
+        errno: ValidationError.VALIDATION,
+        message: 'Custom validator failed.',
+        path: [],
+        validator: 'assetId',
+        ref: new Error('Asset ID must be a string.'),
+      },
+    });
+  });
+});
 

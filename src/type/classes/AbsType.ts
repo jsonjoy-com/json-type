@@ -9,7 +9,7 @@ export abstract class AbsType<S extends schema.Schema> implements BaseType<S>, P
   /** Default type system to use, if any. */
   public system?: TypeSystem;
 
-  public readonly validators: schema.TypeOf<S>[] = [];
+  public readonly _validators: [validator: ((value: unknown) => void), name?: string][] = [];
 
   constructor(public readonly schema: S) {}
 
@@ -45,8 +45,8 @@ export abstract class AbsType<S extends schema.Schema> implements BaseType<S>, P
    * @param validator Function that validates the value of this type.
    * @returns `this` for chaining.
    */
-  public validator(validator: schema.TypeOf<S>): this {
-    this.validators.push(validator);
+  public validator(validator: (value: schema.TypeOf<S>) => void, name?: string): this {
+    this._validators.push([validator as any, name]);
     return this;
   }
 
