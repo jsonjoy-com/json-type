@@ -191,9 +191,33 @@ export class JsonCodegen extends AbstractBinaryCodegen<JsonEncoder> {
     }
   }
 
-  protected onMap(path: SchemaPath, r: JsExpression, type: MapType): void {
-    throw new Error('not implemented');
+  protected onMap(path: SchemaPath, val: JsExpression, type: MapType): void {
+    const objStartBlob = this.gen((encoder) => encoder.writeStartObj());
+    const objEndBlob = this.gen((encoder) => encoder.writeEndObj());
+    const separatorBlob = this.gen((encoder) => encoder.writeObjSeparator());
+    const keySeparatorBlob = this.gen((encoder) => encoder.writeObjKeySeparator());
+    const codegen = this.codegen;
+    const r = codegen.var(val.use());
+    const rKeys = codegen.var(`Object.keys(${r})`);
+    const rKey = codegen.var();
+    const rLength = codegen.var(`${rKeys}.length`);
+    this.blob(objStartBlob);
+    codegen.if(`${rLength}`, () => {
+      codegen.js(`${rKey} = ${rKeys}[0];`);
+      codegen.js(`encoder.writeStr(${rKey});`);
+      this.blob(keySeparatorBlob);
+      this.onNode([...path, {r: rKey}], new JsExpression(() => `${r}[${rKey}]`), type._value);
+    });
+    codegen.js(`for (var i = 1; i < ${rLength}; i++) {`);
+    codegen.js(`${rKey} = ${rKeys}[i];`);
+    this.blob(separatorBlob);
+    codegen.js(`encoder.writeStr(${rKey});`);
+    this.blob(keySeparatorBlob);
+    this.onNode([...path, {r: rKey}], new JsExpression(() => `${r}[${rKey}]`), type._value);
+    codegen.js(`}`);
+    this.blob(objEndBlob);
   }
+
   protected onRef(path: SchemaPath, r: JsExpression, type: RefType): void {
     throw new Error('not implemented');
   }
