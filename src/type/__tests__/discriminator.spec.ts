@@ -1,5 +1,6 @@
 import {t} from '..';
 import {Discriminator} from '../discriminator';
+import {ValidatorCodegen} from '../../codegen/validator/ValidatorCodegen';
 
 describe('Discriminator', () => {
   test('can find const discriminator at root node', () => {
@@ -15,9 +16,9 @@ describe('Discriminator', () => {
   });
 
   test('can find const discriminator in a tuple', () => {
-    const t1 = t.Tuple(t.Const('foo'));
-    const t2 = t.Tuple(t.Const('add'), t.str, t.any);
-    const t3 = t.Tuple(t.map, t.obj, t.Const(null), t.num);
+    const t1 = t.tuple(t.Const('foo'));
+    const t2 = t.tuple(t.Const('add'), t.str, t.any);
+    const t3 = t.tuple(t.map, t.obj, t.Const(null), t.num);
     const d1 = Discriminator.find(t1);
     const d2 = Discriminator.find(t2);
     const d3 = Discriminator.find(t3);
@@ -45,8 +46,8 @@ describe('Discriminator', () => {
   });
 
   test('can find const node in nested fields', () => {
-    const t1 = t.Tuple(t.str, t.Tuple(t.num, t.Const('foo')));
-    const t2 = t.Object(t.prop('type', t.Tuple(t.Const(25), t.str, t.any)), t.prop('value', t.num));
+    const t1 = t.tuple(t.str, t.tuple(t.num, t.Const('foo')));
+    const t2 = t.Object(t.prop('type', t.tuple(t.Const(25), t.str, t.any)), t.prop('value', t.num));
     const d1 = Discriminator.find(t1);
     const d2 = Discriminator.find(t2);
     // const d3 = Discriminator.find(t3);
@@ -58,13 +59,14 @@ describe('Discriminator', () => {
 describe('OrType', () => {
   test('can automatically infer discriminator', () => {
     const or = t.Or(t.str, t.num);
-    or.validate('str');
-    or.validate(123);
-    expect(() => or.validate(true)).toThrow();
-    expect(() => or.validate(false)).toThrow();
-    expect(() => or.validate(null)).toThrow();
-    expect(() => or.validate({})).toThrow();
-    expect(() => or.validate([])).toThrow();
+    const validator = ValidatorCodegen.get({type: or, errors: 'boolean'});
+    expect(validator('str')).toBe(false);
+    expect(validator(123)).toBe(false);
+    expect(validator(true)).toBe(true);
+    expect(validator(false)).toBe(true);
+    expect(validator(null)).toBe(true);
+    expect(validator({})).toBe(true);
+    expect(validator([])).toBe(true);
   });
 
   test('can automatically infer discriminator in objects', () => {
@@ -76,21 +78,21 @@ describe('OrType', () => {
       t.Object(t.prop('op', t.Const('copy')), t.prop('path', t.str), t.prop('from', t.str)),
       t.Object(t.prop('op', t.Const('remove')), t.prop('path', t.str)),
     );
-    // console.log(JSON.stringify(or.getSchema(), null, 2));
-    or.validate({op: 'replace', path: '/foo', value: 123});
-    or.validate({op: 'add', path: '/f/o/o', value: {foo: 'bar'}});
-    or.validate({op: 'test', path: '/abc', value: []});
-    or.validate({op: 'move', path: '/abc', from: '/xyz'});
-    or.validate({op: 'copy', path: '/abc', from: '/xyz'});
-    or.validate({op: 'remove', path: '/abc'});
-    expect(() => or.validate({op: 'replace2', path: '/foo', value: 123})).toThrow();
-    expect(() => or.validate({op: 'add', path: 123, value: {foo: 'bar'}})).toThrow();
-    expect(() => or.validate({op: 'test', path: '/abc'})).toThrow();
-    expect(() => or.validate({op: 'move', path: ['/abc'], from: '/xyz'})).toThrow();
-    expect(() => or.validate({op: 'copy', path: '/abc', fromd: '/xyz'})).toThrow();
-    expect(() => or.validate({op: 'remove', path: '/abc', from: '/sdf'})).toThrow();
-    expect(() => or.validate([])).toThrow();
-    expect(() => or.validate({})).toThrow();
-    expect(() => or.validate(123)).toThrow();
+    const validator = ValidatorCodegen.get({type: or, errors: 'boolean'});
+    expect(validator({op: 'replace', path: '/foo', value: 123})).toBe(false);
+    expect(validator({op: 'add', path: '/f/o/o', value: {foo: 'bar'}})).toBe(false);
+    expect(validator({op: 'test', path: '/abc', value: []})).toBe(false);
+    expect(validator({op: 'move', path: '/abc', from: '/xyz'})).toBe(false);
+    expect(validator({op: 'copy', path: '/abc', from: '/xyz'})).toBe(false);
+    expect(validator({op: 'remove', path: '/abc'})).toBe(false);
+    expect(validator({op: 'replace2', path: '/foo', value: 123})).toBe(true);
+    expect(validator({op: 'add', path: 123, value: {foo: 'bar'}})).toBe(true);
+    expect(validator({op: 'test', path: '/abc'})).toBe(true);
+    expect(validator({op: 'move', path: ['/abc'], from: '/xyz'})).toBe(true);
+    expect(validator({op: 'copy', path: '/abc', fromd: '/xyz'})).toBe(true);
+    expect(validator({op: 'remove', path: '/abc', from: '/sdf'})).toBe(true);
+    expect(validator([])).toBe(true);
+    expect(validator({})).toBe(true);
+    expect(validator(123)).toBe(true);
   });
 });

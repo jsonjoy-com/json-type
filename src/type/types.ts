@@ -8,14 +8,14 @@ export interface BaseType<S extends schema.TType> {
 }
 
 export type Type =
+  | classes.AbsType<any>
   | classes.AnyType
   | classes.ConType<any>
   | classes.BoolType
   | classes.NumType
   | classes.StrType
   | classes.BinType<any>
-  | classes.ArrType<any>
-  | classes.TupType<any>
+  | classes.ArrType<any, any, any>
   | classes.ObjType<any>
   | classes.MapType<any>
   | classes.RefType<any>
@@ -28,10 +28,10 @@ export type SchemaOfMap<M extends Record<string, Type>> = {
   [K in keyof M]: SchemaOf<M[K]>;
 };
 
-export type SchemaOfObjectFieldType<F> = F extends classes.ObjectOptionalFieldType<infer K, infer V>
-  ? schema.ObjectOptionalFieldSchema<K, SchemaOf<V>>
-  : F extends classes.ObjectFieldType<infer K, infer V>
-    ? schema.ObjectFieldSchema<K, SchemaOf<V>>
+export type SchemaOfObjectFieldType<F> = F extends classes.ObjKeyOptType<infer K, infer V>
+  ? schema.ObjOptionalFieldSchema<K, SchemaOf<V>>
+  : F extends classes.ObjKeyType<infer K, infer V>
+    ? schema.ObjFieldSchema<K, SchemaOf<V>>
     : never;
 
 export type SchemaOfObjectFields<F> = {

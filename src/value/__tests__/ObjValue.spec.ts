@@ -6,7 +6,7 @@ test('can retrieve field as Value', () => {
   const {t} = system;
   const obj = new ObjValue(t.Object(t.prop('foo', t.str)), {foo: 'bar'});
   const foo = obj.get('foo');
-  expect(foo.type.getTypeName()).toBe('str');
+  expect(foo.type.kind()).toBe('str');
   expect(foo.data).toBe('bar');
 });
 

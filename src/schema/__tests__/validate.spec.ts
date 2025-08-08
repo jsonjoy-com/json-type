@@ -1,22 +1,15 @@
-import {
-  validateDisplay,
-  validateTExample,
-  validateTType,
-  validateWithValidator,
-  validateMinMax,
-  validateSchema,
-} from '../validate';
-import type {TExample, TType, WithValidator, Schema} from '../schema';
-import type {Display} from '../common';
+import {validateSchema, validateTType} from '../validate';
+import type {TExample, TType, Schema} from '../schema';
 
-describe('validateDisplay', () => {
+describe('validate display', () => {
   test('validates valid display', () => {
-    expect(() => validateDisplay({})).not.toThrow();
-    expect(() => validateDisplay({title: 'Test'})).not.toThrow();
-    expect(() => validateDisplay({description: 'Test description'})).not.toThrow();
-    expect(() => validateDisplay({intro: 'Test intro'})).not.toThrow();
+    expect(() => validateSchema({kind: 'any'})).not.toThrow();
+    expect(() => validateSchema({kind: 'any', title: 'Test'})).not.toThrow();
+    expect(() => validateSchema({kind: 'any', description: 'Test description'})).not.toThrow();
+    expect(() => validateSchema({kind: 'any', intro: 'Test intro'})).not.toThrow();
     expect(() =>
-      validateDisplay({
+      validateSchema({
+        kind: 'any',
         title: 'Test',
         description: 'Test description',
         intro: 'Test intro',
@@ -25,28 +18,28 @@ describe('validateDisplay', () => {
   });
 
   test('throws for invalid title', () => {
-    expect(() => validateDisplay({title: 123} as any)).toThrow('INVALID_TITLE');
-    expect(() => validateDisplay({title: null} as any)).toThrow('INVALID_TITLE');
-    expect(() => validateDisplay({title: {}} as any)).toThrow('INVALID_TITLE');
+    expect(() => validateSchema({kind: 'any', title: 123} as any)).toThrow('INVALID_TITLE');
+    expect(() => validateSchema({kind: 'any', title: null} as any)).toThrow('INVALID_TITLE');
+    expect(() => validateSchema({kind: 'any', title: {}} as any)).toThrow('INVALID_TITLE');
   });
 
   test('throws for invalid description', () => {
-    expect(() => validateDisplay({description: 123} as any)).toThrow('INVALID_DESCRIPTION');
-    expect(() => validateDisplay({description: null} as any)).toThrow('INVALID_DESCRIPTION');
-    expect(() => validateDisplay({description: []} as any)).toThrow('INVALID_DESCRIPTION');
+    expect(() => validateSchema({kind: 'any', description: 123} as any)).toThrow('INVALID_DESCRIPTION');
+    expect(() => validateSchema({kind: 'any', description: null} as any)).toThrow('INVALID_DESCRIPTION');
+    expect(() => validateSchema({kind: 'any', description: []} as any)).toThrow('INVALID_DESCRIPTION');
   });
 
   test('throws for invalid intro', () => {
-    expect(() => validateDisplay({intro: 123} as any)).toThrow('INVALID_INTRO');
-    expect(() => validateDisplay({intro: null} as any)).toThrow('INVALID_INTRO');
-    expect(() => validateDisplay({intro: false} as any)).toThrow('INVALID_INTRO');
+    expect(() => validateSchema({kind: 'any', intro: 123} as any)).toThrow('INVALID_INTRO');
+    expect(() => validateSchema({kind: 'any', intro: null} as any)).toThrow('INVALID_INTRO');
+    expect(() => validateSchema({kind: 'any', intro: false} as any)).toThrow('INVALID_INTRO');
   });
 });
 
-describe('validateTExample', () => {
+describe('validate examples', () => {
   test('validates valid example', () => {
     const example: TExample = {value: 'test'};
-    expect(() => validateTExample(example)).not.toThrow();
+    expect(() => validateSchema({kind: 'any', examples: [example]})).not.toThrow();
   });
 
   test('validates example with display properties', () => {
@@ -55,15 +48,15 @@ describe('validateTExample', () => {
       title: 'Example',
       description: 'Test example',
     };
-    expect(() => validateTExample(example)).not.toThrow();
+    expect(() => validateSchema({kind: 'any', examples: [example]})).not.toThrow();
   });
 
   test('throws for invalid display properties', () => {
-    expect(() => validateTExample({title: 123} as any)).toThrow('INVALID_TITLE');
+    expect(() => validateSchema({kind: 'any', examples: [{title: 123}]} as any)).toThrow('INVALID_TITLE');
   });
 });
 
-describe('validateTType', () => {
+describe('validateTType()', () => {
   test('validates valid TType', () => {
     const ttype: TType = {kind: 'str'};
     expect(() => validateTType(ttype, 'str')).not.toThrow();
@@ -104,85 +97,6 @@ describe('validateTType', () => {
 
   test('validates display properties', () => {
     expect(() => validateTType({kind: 'str', title: 123} as any, 'str')).toThrow('INVALID_TITLE');
-  });
-});
-
-describe('validateWithValidator', () => {
-  test('validates empty validator', () => {
-    expect(() => validateWithValidator({})).not.toThrow();
-  });
-
-  test('validates string validator', () => {
-    const withValidator: WithValidator = {validator: 'test-validator'};
-    expect(() => validateWithValidator(withValidator)).not.toThrow();
-  });
-
-  test('validates array validator', () => {
-    const withValidator: WithValidator = {validator: ['validator1', 'validator2']};
-    expect(() => validateWithValidator(withValidator)).not.toThrow();
-  });
-
-  test('throws for non-string validator', () => {
-    expect(() => validateWithValidator({validator: 123} as any)).toThrow('INVALID_VALIDATOR');
-    expect(() => validateWithValidator({validator: null} as any)).toThrow('INVALID_VALIDATOR');
-    expect(() => validateWithValidator({validator: {}} as any)).toThrow('INVALID_VALIDATOR');
-  });
-
-  test('throws for array with non-string elements', () => {
-    expect(() => validateWithValidator({validator: ['valid', 123]} as any)).toThrow('INVALID_VALIDATOR');
-    expect(() => validateWithValidator({validator: [null, 'valid']} as any)).toThrow('INVALID_VALIDATOR');
-  });
-});
-
-describe('validateMinMax', () => {
-  test('validates empty min/max', () => {
-    expect(() => validateMinMax(undefined, undefined)).not.toThrow();
-  });
-
-  test('validates valid min/max', () => {
-    expect(() => validateMinMax(0, 10)).not.toThrow();
-    expect(() => validateMinMax(5, undefined)).not.toThrow();
-    expect(() => validateMinMax(undefined, 15)).not.toThrow();
-  });
-
-  test('throws for invalid min type', () => {
-    expect(() => validateMinMax('5' as any, undefined)).toThrow('MIN_TYPE');
-    expect(() => validateMinMax(null as any, undefined)).toThrow('MIN_TYPE');
-  });
-
-  test('throws for invalid max type', () => {
-    expect(() => validateMinMax(undefined, '10' as any)).toThrow('MAX_TYPE');
-    expect(() => validateMinMax(undefined, {} as any)).toThrow('MAX_TYPE');
-  });
-
-  test('throws for negative min', () => {
-    expect(() => validateMinMax(-1, undefined)).toThrow('MIN_NEGATIVE');
-    expect(() => validateMinMax(-10, undefined)).toThrow('MIN_NEGATIVE');
-  });
-
-  test('throws for negative max', () => {
-    expect(() => validateMinMax(undefined, -1)).toThrow('MAX_NEGATIVE');
-    expect(() => validateMinMax(undefined, -5)).toThrow('MAX_NEGATIVE');
-  });
-
-  test('throws for decimal min', () => {
-    expect(() => validateMinMax(1.5, undefined)).toThrow('MIN_DECIMAL');
-    expect(() => validateMinMax(0.1, undefined)).toThrow('MIN_DECIMAL');
-  });
-
-  test('throws for decimal max', () => {
-    expect(() => validateMinMax(undefined, 1.5)).toThrow('MAX_DECIMAL');
-    expect(() => validateMinMax(undefined, 10.9)).toThrow('MAX_DECIMAL');
-  });
-
-  test('throws when min > max', () => {
-    expect(() => validateMinMax(10, 5)).toThrow('MIN_MAX');
-    expect(() => validateMinMax(1, 0)).toThrow('MIN_MAX');
-  });
-
-  test('allows min = max', () => {
-    expect(() => validateMinMax(5, 5)).not.toThrow();
-    expect(() => validateMinMax(0, 0)).not.toThrow();
   });
 });
 
@@ -347,13 +261,85 @@ describe('validateSchema', () => {
     });
   });
 
-  describe('array schema', () => {
+  describe('"arr" schema', () => {
     test('validates valid array schema', () => {
       const schema: Schema = {
         kind: 'arr',
         type: {kind: 'str'},
       };
       expect(() => validateSchema(schema)).not.toThrow();
+    });
+
+    test('validates valid array with head only', () => {
+      const schema: Schema = {
+        kind: 'arr',
+        head: [{kind: 'str'}, {kind: 'num'}],
+      };
+      expect(() => validateSchema(schema)).not.toThrow();
+    });
+
+    test('throws on invalid head type', () => {
+      const schema: Schema = {
+        kind: 'arr',
+        head: [{kind: 'str'}, {kind2: 'num'} as any],
+      };
+      expect(() => validateSchema(schema)).toThrow();
+    });
+
+    test('validates valid array with tail only', () => {
+      const schema: Schema = {
+        kind: 'arr',
+        head: [{kind: 'str'}, {kind: 'num'}],
+      };
+      expect(() => validateSchema(schema)).not.toThrow();
+    });
+
+    test('throws on invalid tail type', () => {
+      const schema: Schema = {
+        kind: 'arr',
+        tail: [{kind: 'str'}, {kind2: 'num'} as any],
+      };
+      expect(() => validateSchema(schema)).toThrow();
+    });
+
+    test('validates valid array with head, tail, and spread type', () => {
+      const schema: Schema = {
+        kind: 'arr',
+        head: [{kind: 'str'}, {kind: 'num'}],
+        type: {kind: 'bool'},
+        tail: [{kind: 'str'}, {kind: 'num'}],
+      };
+      expect(() => validateSchema(schema)).not.toThrow();
+    });
+
+    test('full schema, throws on invalid type', () => {
+      const schema: Schema = {
+        kind: 'arr',
+        head: [{kind: 'str'}, {kind: 'num'}],
+        type: {kind: 'bool2' as any},
+        tail: [{kind: 'str'}, {kind: 'num'}],
+      };
+      expect(() => validateSchema(schema)).toThrow();
+    });
+
+    test('full schema, throws on invalid head', () => {
+      const schema: Schema = {
+        kind: 'arr',
+        head: [{kind: 'str_' as any}, {kind: 'num'}],
+        type: {kind: 'bool'},
+        tail: [{kind: 'str'}, {kind: 'num'}],
+      };
+      expect(() => validateSchema(schema)).toThrow();
+    });
+
+    test('full schema, throws on invalid tail', () => {
+      const schema: Schema = {
+        kind: 'arr',
+        head: [{kind: 'str'}, {kind: 'num'}],
+        type: {kind: 'bool'},
+        tail: [{kind: 'str_' as any}, {kind: 'num'}],
+      };
+      expect(() => validateSchema(schema)).toThrow();
     });
 
     test('validates array schema with constraints', () => {
@@ -365,30 +351,37 @@ describe('validateSchema', () => {
       };
       expect(() => validateSchema(schema)).not.toThrow();
     });
+
+    test('throws if neither head, type, nor tail set', () => {
+      const schema: Schema = {
+        kind: 'arr',
+        min: 1,
+        max: 10,
+      };
+      expect(() => validateSchema(schema)).toThrow();
+    });
+
+    test('validates valid tuple schema', () => {
+      const schema: Schema = {
+        kind: 'arr',
+        head: [{kind: 'str'}, {kind: 'num'}],
+      };
+      expect(() => validateSchema(schema)).not.toThrow();
+    });
+
+    test('throws for invalid type property', () => {
+      expect(() => validateSchema({kind: 'arr', type: 'not-array'} as any)).toThrow('INVALID_SCHEMA');
+    });
   });
 
-  describe('const schema', () => {
+  describe('"con" schema', () => {
     test('validates valid const schema', () => {
       const schema: Schema = {kind: 'con', value: 'test'};
       expect(() => validateSchema(schema)).not.toThrow();
     });
   });
 
-  describe('tuple schema', () => {
-    test('validates valid tuple schema', () => {
-      const schema: Schema = {
-        kind: 'tup',
-        types: [{kind: 'str'}, {kind: 'num'}],
-      };
-      expect(() => validateSchema(schema)).not.toThrow();
-    });
-
-    test('throws for invalid types property', () => {
-      expect(() => validateSchema({kind: 'tup', types: 'not-array'} as any)).toThrow('TYPES_TYPE');
-    });
-  });
-
-  describe('object schema', () => {
+  describe('"obj" schema', () => {
     test('validates valid object schema', () => {
       const schema: Schema = {
         kind: 'obj',

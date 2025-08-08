@@ -1,7 +1,7 @@
-import {type ObjectSchema, s} from '..';
+import {type ObjSchema, s} from '..';
 
 test('can generate any type', () => {
-  const address: ObjectSchema = {
+  const address: ObjSchema = {
     kind: 'obj',
     title: 'User address',
     description: 'Various address fields for user',

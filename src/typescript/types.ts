@@ -49,9 +49,14 @@ export interface TsArrType {
   elementType: TsType;
 }
 
-export interface TsTupType {
-  node: 'TupType';
+export interface TsTupleType {
+  node: 'TupleType';
   elements: TsType[];
+}
+
+export interface RestType {
+  node: 'RestType';
+  type: TsType;
 }
 
 /** "string" */
@@ -165,7 +170,8 @@ export type TsType =
   | TsStringKeyword
   | TsStringLiteral
   | TsArrType
-  | TsTupType
+  | TsTupleType
+  | RestType
   | TsObjectKeyword
   | TsTypeLiteral
   | TsNumericLiteral

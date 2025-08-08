@@ -50,11 +50,14 @@ export const toText = (node: TsNode | TsNode[] | TsIdentifier | TsParameter, __:
       const inner = toText(node.elementType, __);
       return simple ? `${inner}[]` : `Array<${inner}>`;
     }
-    case 'TupType': {
+    case 'TupleType': {
       const hasObject = node.elements.some((e) => e.node === 'TypeLiteral');
       if (hasObject) {
         return `[\n${____}${node.elements.map((e) => toText(e, ____)).join(',\n' + ____)}\n${__}]`;
       } else return `[${node.elements.map((e) => toText(e, __)).join(', ')}]`;
+    }
+    case 'RestType': {
+      return '...' + toText(node.type, __);
     }
     case 'GenericTypeAnnotation': {
       return node.id.name;

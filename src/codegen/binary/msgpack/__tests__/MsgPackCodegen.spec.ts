@@ -1,18 +1,16 @@
+import {testBinaryCodegen} from '../../__tests__/testBinaryCodegen';
+import {Writer} from '@jsonjoy.com/buffers/lib/Writer';
 import {MsgPackEncoder} from '@jsonjoy.com/json-pack/lib/msgpack/MsgPackEncoder';
 import {MsgPackDecoder} from '@jsonjoy.com/json-pack/lib/msgpack/MsgPackDecoder';
-import {testBinaryCodegen} from './testBinaryCodegen';
-import {EncodingFormat} from '@jsonjoy.com/json-pack/lib/constants';
-import {Writer} from '@jsonjoy.com/util/lib/buffers/Writer';
-import type {Type} from '../../../type';
-import type {TypeSystem} from '../../../system';
+import {MsgPackCodegen} from '../MsgPackCodegen';
+import type {TypeSystem} from '../../../../system';
+import type {Type} from '../../../../type';
 
-const writer = new Writer(64);
-const encoder = new MsgPackEncoder(writer);
+const encoder = new MsgPackEncoder(new Writer(16));
 const decoder = new MsgPackDecoder();
 
 const transcode = (system: TypeSystem, type: Type, value: unknown) => {
-  const fn = type.encoder(EncodingFormat.MsgPack);
-  // console.log(fn.toString());
+  const fn = MsgPackCodegen.get(type);
   encoder.writer.reset();
   fn(value, encoder);
   const encoded = encoder.writer.flush();

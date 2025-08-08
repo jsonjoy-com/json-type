@@ -1,5 +1,5 @@
+import {ObjKeyOptType, type ArrType, type ObjType, type RefType, type Type} from '../type';
 import type * as jtd from './types';
-import type * as schema from '../schema';
 
 const NUMS_TYPE_MAPPING = new Map<string, jtd.JtdType>([
   ['u8', 'uint8'],
@@ -15,8 +15,8 @@ const NUMS_TYPE_MAPPING = new Map<string, jtd.JtdType>([
  * Main router function that converts any Schema to JTD form.
  * Uses a switch statement to route to the appropriate converter logic.
  */
-export function toJtdForm(schema: schema.Schema): jtd.JtdForm {
-  const typeName = schema.kind;
+export function toJtdForm(type: Type): jtd.JtdForm {
+  const typeName = type.kind();
 
   switch (typeName) {
     case 'any': {
@@ -28,7 +28,7 @@ export function toJtdForm(schema: schema.Schema): jtd.JtdForm {
       return form;
     }
     case 'con': {
-      const constSchema = schema as schema.ConstSchema;
+      const constSchema = type.getSchema();
       const value = constSchema.value;
       const valueType = typeof value;
       switch (valueType) {
@@ -53,7 +53,7 @@ export function toJtdForm(schema: schema.Schema): jtd.JtdForm {
       return form;
     }
     case 'num': {
-      const numSchema = schema as schema.NumberSchema;
+      const numSchema = type.getSchema();
       return {
         type: (NUMS_TYPE_MAPPING.get(numSchema.format || '') ?? 'float64') as jtd.JtdType,
       };
@@ -62,27 +62,31 @@ export function toJtdForm(schema: schema.Schema): jtd.JtdForm {
       return {type: 'string'};
     }
     case 'arr': {
-      const arraySchema = schema as schema.ArraySchema;
-      return {
-        elements: [toJtdForm(arraySchema.type)],
-      };
+      const arr = type as ArrType;
+      if (arr._type) {
+        return {
+          elements: toJtdForm(arr._type),
+        };
+      } else {
+        return {nullable: true};
+      }
     }
     case 'obj': {
-      const objSchema = schema as schema.ObjectSchema;
+      const obj = type as ObjType;
       const form: jtd.JtdPropertiesForm = {};
 
-      if (objSchema.fields && objSchema.fields.length > 0) {
+      if (obj.fields && obj.fields.length > 0) {
         form.properties = {};
         form.optionalProperties = {};
 
-        for (const field of objSchema.fields) {
+        for (const field of obj.fields) {
           const fieldName = field.key;
-          const fieldType = field.value;
+          const fieldType = field.val;
 
           if (fieldType) {
             const fieldJtd = toJtdForm(fieldType);
             // Check if field is optional
-            if (field.optional === true) {
+            if (field instanceof ObjKeyOptType) {
               form.optionalProperties[fieldName] = fieldJtd;
             } else {
               form.properties[fieldName] = fieldJtd;
@@ -92,28 +96,22 @@ export function toJtdForm(schema: schema.Schema): jtd.JtdForm {
       }
 
       // Handle additional properties - check the schema for unknownFields
-      if (objSchema.unknownFields === false) {
+      if (obj.schema.unknownFields === false) {
         form.additionalProperties = false;
       }
 
       return form;
     }
-    case 'tup': {
-      const tupleSchema = schema as schema.TupleSchema;
-      return {
-        elements: tupleSchema.types.map((element: any) => toJtdForm(element)),
-      };
-    }
     case 'map': {
-      const mapSchema = schema as schema.MapSchema;
+      const mapSchema = type.getSchema();
       return {
         values: toJtdForm(mapSchema.value),
       };
     }
     case 'ref': {
-      const refSchema = schema as schema.RefSchema;
+      const ref = type as RefType;
       return {
-        ref: refSchema.ref,
+        ref: ref.ref(),
       };
     }
     // case 'or':

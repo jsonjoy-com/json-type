@@ -1,16 +1,16 @@
-import {b} from '@jsonjoy.com/util/lib/buffers/b';
+import {b} from '@jsonjoy.com/buffers/lib/b';
 import {ValidationError} from '../../../constants';
 import {type OrSchema, s, type Schema} from '../../../schema';
+import {ValidatorCodegen, type ValidatorCodegenOptions} from '../ValidatorCodegen';
 import {TypeSystem} from '../../../system';
-import type {ValidatorCodegenContextOptions} from '../ValidatorCodegenContext';
 
-const exec = (schema: Schema, json: unknown, error: any, options: Partial<ValidatorCodegenContextOptions> = {}) => {
+const exec = (schema: Schema, json: unknown, error: any, options: Partial<ValidatorCodegenOptions> = {}) => {
   const system = new TypeSystem();
   const type = system.t.import(schema);
 
-  const fn1 = type.compileValidator({errors: 'boolean', ...options});
-  const fn2 = type.compileValidator({errors: 'string', ...options});
-  const fn3 = type.compileValidator({errors: 'object', ...options});
+  const fn1 = ValidatorCodegen.get({type, errors: 'boolean', ...options});
+  const fn2 = ValidatorCodegen.get({type, errors: 'string', ...options});
+  const fn3 = ValidatorCodegen.get({type, errors: 'object', ...options});
 
   // console.log(fn1.toString());
   // console.log(fn2.toString());
@@ -70,94 +70,97 @@ test('validates according to schema a POJO object', () => {
   exec(type, json, null);
 });
 
-test('can have array of unknown elements', () => {
-  const type = s.Array(s.any);
-  exec(type, [], null);
-  exec(type, [1], null);
-  exec(type, [1, 2, 3], null);
-  exec(type, [1, 'adsf'], null);
-  exec(type, [1, {}], null);
-  exec(
-    type,
-    {},
-    {
-      code: 'ARR',
-      errno: ValidationError.ARR,
-      message: 'Not an array.',
+describe('"any" type', () => {
+  test('accepts any value', () => {
+    const type = s.any;
+    exec(type, 123, null);
+    exec(type, 'abc', null);
+    exec(type, {}, null);
+    exec(type, [], null);
+    exec(type, null, null);
+    exec(type, undefined, null);
+  });
+});
+
+describe('"con" type', () => {
+  test('validates constant value', () => {
+    const type = s.Const<'foo'>('foo');
+    exec(type, 'foo', null);
+    exec(type, 'bar', {
+      code: 'CONST',
+      errno: ValidationError.CONST,
+      message: 'Invalid constant.',
       path: [],
-    },
-  );
-  exec(type, null, {
-    code: 'ARR',
-    errno: ValidationError.ARR,
-    message: 'Not an array.',
-    path: [],
+    });
+    exec(type, 123, {
+      code: 'CONST',
+      errno: ValidationError.CONST,
+      message: 'Invalid constant.',
+      path: [],
+    });
+    exec(type, null, {
+      code: 'CONST',
+      errno: ValidationError.CONST,
+      message: 'Invalid constant.',
+      path: [],
+    });
   });
-  exec(type, 123, {
-    code: 'ARR',
-    errno: ValidationError.ARR,
-    message: 'Not an array.',
-    path: [],
-  });
-  exec(type, 'asdf', {
-    code: 'ARR',
-    errno: ValidationError.ARR,
-    message: 'Not an array.',
-    path: [],
+
+  test('const boolean', () => {
+    const type1 = s.Const<true>(true);
+    const type2 = s.Const<false>(false);
+    exec(type1, true, null);
+    exec(type1, false, {
+      code: 'CONST',
+      errno: ValidationError.CONST,
+      message: 'Invalid constant.',
+      path: [],
+    });
+    exec(type1, '123', {
+      code: 'CONST',
+      errno: ValidationError.CONST,
+      message: 'Invalid constant.',
+      path: [],
+    });
+    exec(type1, 123, {
+      code: 'CONST',
+      errno: ValidationError.CONST,
+      message: 'Invalid constant.',
+      path: [],
+    });
+    exec(type2, false, null);
+    exec(type2, true, {
+      code: 'CONST',
+      errno: ValidationError.CONST,
+      message: 'Invalid constant.',
+      path: [],
+    });
+    exec(type2, '123', {
+      code: 'CONST',
+      errno: ValidationError.CONST,
+      message: 'Invalid constant.',
+      path: [],
+    });
+    exec(type2, 123, {
+      code: 'CONST',
+      errno: ValidationError.CONST,
+      message: 'Invalid constant.',
+      path: [],
+    });
   });
 });
 
-test('object can have a field of any type', () => {
-  const type = s.Object({
-    fields: [s.Field('foo', s.any)],
-  });
-  exec(type, {foo: 123}, null);
-  exec(type, {foo: null}, null);
-  exec(type, {foo: 'asdf'}, null);
-  exec(
-    type,
-    {},
-    {
-      code: 'KEY',
-      errno: ValidationError.KEY,
-      message: 'Missing key.',
-      path: ['foo'],
-    },
-  );
-});
-
-test('can detect extra properties in object', () => {
-  const type = s.Object({
-    fields: [s.prop('foo', s.any), s.propOpt('zup', s.any)],
-  });
-  exec(type, {foo: 123}, null);
-  exec(type, {foo: 123, zup: 'asdf'}, null);
-  exec(
-    type,
-    {foo: 123, bar: 'asdf'},
-    {
-      code: 'KEYS',
-      errno: ValidationError.KEYS,
-      message: 'Too many or missing object keys.',
-      path: ['bar'],
-    },
-    undefined,
-  );
-});
-
-test('can disable extra property check', () => {
-  const type = s.Object({
-    fields: [s.Field('foo', s.any), s.FieldOpt('zup', s.any)],
-  });
-  exec(type, {foo: 123}, null, {skipObjectExtraFieldsCheck: true});
-  exec(type, {foo: 123, zup: 'asdf'}, null, {
-    skipObjectExtraFieldsCheck: true,
-  });
-  exec(type, {foo: 123, bar: 'asdf'}, null, {
-    skipObjectExtraFieldsCheck: true,
-  });
-  exec(type, {foo: 123, zup: '1', bar: 'asdf'}, null, {
-    skipObjectExtraFieldsCheck: true,
+describe('"bool" type', () => {
+  test('boolean', () => {
+    const type = s.bool;
+    exec(type, true, null);
+    exec(type, false, null);
+    exec(type, 123, {
+      code: 'BOOL',
+      errno: ValidationError.BOOL,
+      message: 'Not a boolean.',
+      path: [],
+    });
   });
 });
 
@@ -275,6 +278,40 @@ describe('"str" type', () => {
       path: [],
     });
   });
+  test('validates minLength and maxLength of equal size', () => {
+    const type = s.String({min: 4, max: 4});
+    exec(type, 'aaa', {
+      code: 'STR_LEN',
+      errno: ValidationError.STR_LEN,
+      message: 'Invalid string length.',
+      path: [],
+    });
+    exec(type, 'bbbb', null);
+    exec(type, 'vvvvv', {
+      code: 'STR_LEN',
+      errno: ValidationError.STR_LEN,
+      message: 'Invalid string length.',
+      path: [],
+    });
+    exec(type, '', {
+      code: 'STR_LEN',
+      errno: ValidationError.STR_LEN,
+      message: 'Invalid string length.',
+      path: [],
+    });
+    exec(type, 'asdfdf', {
+      code: 'STR_LEN',
+      errno: ValidationError.STR_LEN,
+      message: 'Invalid string length.',
+      path: [],
+    });
+    exec(type, 'aasdf sdfdf', {
+      code: 'STR_LEN',
+      errno: ValidationError.STR_LEN,
+      message: 'Invalid string length.',
+      path: [],
+    });
+  });
 });
 
 describe('"bin" type', () => {
@@ -353,41 +390,6 @@ describe('"bin" type', () => {
       code: 'BIN_LEN',
       errno: ValidationError.BIN_LEN,
       message: 'Invalid binary length.',
-      path: [],
-    });
-  });
-
-  test('validates minLength and maxLength of equal size', () => {
-    const type = s.String({min: 4, max: 4});
-    exec(type, 'aaa', {
-      code: 'STR_LEN',
-      errno: ValidationError.STR_LEN,
-      message: 'Invalid string length.',
-      path: [],
-    });
-    exec(type, 'bbbb', null);
-    exec(type, 'vvvvv', {
-      code: 'STR_LEN',
-      errno: ValidationError.STR_LEN,
-      message: 'Invalid string length.',
-      path: [],
-    });
-    exec(type, '', {
-      code: 'STR_LEN',
-      errno: ValidationError.STR_LEN,
-      message: 'Invalid string length.',
-      path: [],
-    });
-    exec(type, 'asdfdf', {
-      code: 'STR_LEN',
-      errno: ValidationError.STR_LEN,
-      message: 'Invalid string length.',
-      path: [],
-    });
-    exec(type, 'aasdf sdfdf', {
-      code: 'STR_LEN',
-      errno: ValidationError.STR_LEN,
-      message: 'Invalid string length.',
       path: [],
     });
   });
@@ -769,7 +771,284 @@ describe('"num" type', () => {
   });
 });
 
+describe('"arr" type', () => {
+  test('can have array of unknown elements', () => {
+    const type = s.Array(s.any);
+    exec(type, [], null);
+    exec(type, [1], null);
+    exec(type, [1, 2, 3], null);
+    exec(type, [1, 'adsf'], null);
+    exec(type, [1, {}], null);
+    exec(
+      type,
+      {},
+      {
+        code: 'ARR',
+        errno: ValidationError.ARR,
+        message: 'Not an array.',
+        path: [],
+      },
+    );
+    exec(type, null, {
+      code: 'ARR',
+      errno: ValidationError.ARR,
+      message: 'Not an array.',
+      path: [],
+    });
+    exec(type, 123, {
+      code: 'ARR',
+      errno: ValidationError.ARR,
+      message: 'Not an array.',
+      path: [],
+    });
+    exec(type, 'asdf', {
+      code: 'ARR',
+      errno: ValidationError.ARR,
+      message: 'Not an array.',
+      path: [],
+    });
+  });
+
+  test('array of numbers', () => {
+    const type = s.Array(s.num);
+    exec(type, [], null);
+    exec(type, [1], null);
+    exec(type, [1, 2, 3], null);
+    exec(type, [1, 2.5, -3], null);
+    exec(type, [1, 'adsf'], {
+      code: 'NUM',
+      errno: ValidationError.NUM,
+      message: 'Not a number.',
+      path: [1],
+    });
+  });
+
+  test('head 2-tuple', () => {
+    const type = s.Tuple([s.num, s.str]);
+    exec(type, [0, ''], null);
+    exec(type, [1, 'x'], null);
+    exec(type, ['', 'x'], {
+      code: 'NUM',
+      errno: ValidationError.NUM,
+      message: 'Not a number.',
+      path: [0],
+    });
+    exec(type, [-1, true], {
+      code: 'STR',
+      errno: ValidationError.STR,
+      message: 'Not a string.',
+      path: [1],
+    });
+  });
+
+  test('head + elements', () => {
+    const type = s.Tuple([s.Const<true>(true)], s.num);
+    exec(type, [true, 123], null);
+    exec(type, [true, 123, 456], null);
+    exec(type, [true, 123, '123'], {
+      code: 'NUM',
+      errno: ValidationError.NUM,
+      message: 'Not a number.',
+      path: [2],
+    });
+  });
+
+  test('elements + tail', () => {
+    const type = s.Tuple([], s.num, [s.Const<true>(true)]);
+    exec(type, [123, true], null);
+    exec(type, [123, 456, true], null);
+    exec(type, [123, '123', true], {
+      code: 'NUM',
+      errno: ValidationError.NUM,
+      message: 'Not a number.',
+      path: [1],
+    });
+    exec(type, [123, 456, 'true'], {
+      code: 'CONST',
+      errno: ValidationError.CONST,
+      message: 'Invalid constant.',
+      path: [2],
+    });
+  });
+
+  test('head + elements + tail', () => {
+    const type = s.Tuple([s.num, s.bool], s.str, [s.bool]);
+    exec(type, [123, true, false], null);
+    exec(type, [123, true, 'hello', false], null);
+    exec(type, [123, true, 'hello', 'world', false], null);
+    exec(type, [123, true, 456, false], {
+      code: 'STR',
+      errno: ValidationError.STR,
+      message: 'Not a string.',
+      path: [2],
+    });
+    exec(type, [123, true, 'hello', 456, false], {
+      code: 'STR',
+      errno: ValidationError.STR,
+      message: 'Not a string.',
+      path: [3],
+    });
+    exec(type, [123, true, 'hello', null], {
+      code: 'BOOL',
+      errno: ValidationError.BOOL,
+      message: 'Not a boolean.',
+      path: [3],
+    });
+    exec(type, ['', true, 'hello', null], {
+      code: 'NUM',
+      errno: ValidationError.NUM,
+      message: 'Not a number.',
+      path: [0],
+    });
+  });
+});
+
+describe('"obj" type', () => {
+  test('object can have unknown fields', () => {
+    const type = s.obj;
+    exec(type, {}, null);
+    exec(type, {a: 'b'}, null);
+  });
+
+  test('"null" is not of type "obj"', () => {
+    const type = s.obj;
+    exec(type, null, {
+      code: 'OBJ',
+      errno: ValidationError.OBJ,
+      message: 'Not an object.',
+      path: [],
+    });
+  });
+
+  test('object can have a field of any type', () => {
+    const type = s.Object({
+      fields: [s.Field('foo', s.any)],
+    });
+    exec(type, {foo: 123}, null);
+    exec(type, {foo: null}, null);
+    exec(type, {foo: 'asdf'}, null);
+    exec(
+      type,
+      {},
+      {
+        code: 'KEY',
+        errno: ValidationError.KEY,
+        message: 'Missing key.',
+        path: ['foo'],
+      },
+    );
+  });
+
+  test('can detect extra properties in object', () => {
+    const type = s.Object({
+      fields: [s.prop('foo', s.any), s.propOpt('zup', s.any)],
+    });
+    exec(type, {foo: 123}, null);
+    exec(type, {foo: 123, zup: 'asdf'}, null);
+    exec(
+      type,
+      {foo: 123, bar: 'asdf'},
+      {
+        code: 'KEYS',
+        errno: ValidationError.KEYS,
+        message: 'Too many or missing object keys.',
+        path: ['bar'],
+      },
+      undefined,
+    );
+  });
+
+  test('can disable extra property check', () => {
+    const type = s.Object({
+      fields: [s.Field('foo', s.any), s.FieldOpt('zup', s.any)],
+    });
+    exec(type, {foo: 123}, null, {skipObjectExtraFieldsCheck: true});
+    exec(type, {foo: 123, zup: 'asdf'}, null, {
+      skipObjectExtraFieldsCheck: true,
+    });
+    exec(type, {foo: 123, bar: 'asdf'}, null, {
+      skipObjectExtraFieldsCheck: true,
+    });
+    exec(type, {foo: 123, zup: '1', bar: 'asdf'}, null, {
+      skipObjectExtraFieldsCheck: true,
+    });
+  });
+});
+
+describe('"map" type', () => {
+  test('can have a map of unknown values', () => {
+    const type = s.Map(s.any);
+    exec(type, {}, null);
+    exec(type, {a: 'b'}, null);
+    exec(type, {a: 123}, null);
+    exec(type, {a: null}, null);
+    exec(type, {a: {}}, null);
+    exec(type, {a: []}, null);
+    exec(type, [], {
+      code: 'MAP',
+      errno: ValidationError.MAP,
+      message: 'Not a map.',
+      path: [],
+    });
+  });
+
+  test('can have a map of numbers', () => {
+    const type = s.Map(s.num);
+    exec(type, {}, null);
+    exec(type, {a: 123}, null);
+    exec(type, {a: -123}, null);
+    exec(type, {a: 0}, null);
+    exec(
+      type,
+      {a: '123'},
+      {
+        code: 'NUM',
+        errno: ValidationError.NUM,
+        message: 'Not a number.',
+        path: ['a'],
+      },
+    );
+    exec(
+      type,
+      {_: 123, a: '123'},
+      {
+        code: 'NUM',
+        errno: ValidationError.NUM,
+        message: 'Not a number.',
+        path: ['a'],
+      },
+    );
+  });
+});
+
 describe('"or" type', () => {
+  test('a single type', () => {
+    const type = s.Or(s.num);
+    exec(type, 123, null);
+    exec(type, 0, null);
+    exec(type, '', {
+      code: 'NUM',
+      errno: ValidationError.NUM,
+      message: 'Not a number.',
+      path: [],
+    });
+  });
+
+  test('checks inner type', () => {
+    const type = s.Or(s.Object(s.prop('type', s.Const<'num'>('num')), s.prop('foo', s.num)), s.num);
+    exec(type, {type: 'num', foo: 123}, null);
+    exec(
+      type,
+      {type: 'num', foo: '123'},
+      {
+        code: 'NUM',
+        errno: ValidationError.NUM,
+        message: 'Not a number.',
+        path: ['foo'],
+      },
+    );
+  });
+
   test('object key can be of multiple types', () => {
     const type = s.Object({
       fields: [
@@ -860,20 +1139,26 @@ describe('"or" type', () => {
   });
 });
 
-describe('"obj" type', () => {
-  test('object can have unknown fields', () => {
-    const type = s.obj;
-    exec(type, {}, null);
-    exec(type, {a: 'b'}, null);
-  });
-
-  test('"null" is not of type "obj"', () => {
-    const type = s.obj;
-    exec(type, null, {
-      code: 'OBJ',
-      errno: ValidationError.OBJ,
-      message: 'Not an object.',
-      path: [],
+describe('"ref" type', () => {
+  test('a single type', () => {
+    const system = new TypeSystem();
+    system.t
+      .object({
+        foo: system.t.string(),
+      })
+      .alias('TheObject');
+    const type = system.t.object({
+      x: system.t.Ref('TheObject'),
+    });
+    const validator = ValidatorCodegen.get({type, errors: 'object'});
+    expect(validator({x: {foo: 'bar'}})).toBe(null);
+    expect(validator({x: {foo: 123}})).toMatchObject({
+      code: 'REF',
+      path: ['x'],
+      ref: {
+        code: 'STR',
+        path: ['foo'],
+      },
     });
   });
 });
@@ -972,74 +1257,13 @@ describe('single root element', () => {
       path: [],
     });
   });
-
-  test('boolean', () => {
-    const type = s.bool;
-    exec(type, true, null);
-    exec(type, false, null);
-    exec(type, 123, {
-      code: 'BOOL',
-      errno: ValidationError.BOOL,
-      message: 'Not a boolean.',
-      path: [],
-    });
-  });
-
-  test('const boolean', () => {
-    const type1 = s.Const<true>(true);
-    const type2 = s.Const<false>(false);
-    exec(type1, true, null);
-    exec(type1, false, {
-      code: 'CONST',
-      errno: ValidationError.CONST,
-      message: 'Invalid constant.',
-      path: [],
-    });
-    exec(type1, '123', {
-      code: 'CONST',
-      errno: ValidationError.CONST,
-      message: 'Invalid constant.',
-      path: [],
-    });
-    exec(type1, 123, {
-      code: 'CONST',
-      errno: ValidationError.CONST,
-      message: 'Invalid constant.',
-      path: [],
-    });
-    exec(type2, false, null);
-    exec(type2, true, {
-      code: 'CONST',
-      errno: ValidationError.CONST,
-      message: 'Invalid constant.',
-      path: [],
-    });
-    exec(type2, '123', {
-      code: 'CONST',
-      errno: ValidationError.CONST,
-      message: 'Invalid constant.',
-      path: [],
-    });
-    exec(type2, 123, {
-      code: 'CONST',
-      errno: ValidationError.CONST,
-      message: 'Invalid constant.',
-      path: [],
-    });
-  });
 });
 
 describe('custom validators', () => {
   test('can specify a custom validator for a string', () => {
     const system = new TypeSystem();
-    const type = system.t.String({
-      validator: 'is-a',
-    });
-    system.addCustomValidator({
-      name: 'is-a',
-      fn: (value) => value !== 'a',
-    });
-    const validator = type.validator('object');
+    const type = system.t.String().validator((value) => value !== 'a', 'is-a');
+    const validator = ValidatorCodegen.get({type, errors: 'object'});
     const res1 = validator('a');
     expect(res1).toStrictEqual(null);
     const res2 = validator('b');
@@ -1055,19 +1279,10 @@ describe('custom validators', () => {
 
   test('can specify multiple validators', () => {
     const system = new TypeSystem();
-    const type = system.t.String({
-      validator: ['is-ab', 'is-a'],
-    });
-    system.addCustomValidator({
-      name: 'is-ab',
-      // biome-ignore lint: this way is better
-      fn: (value) => (value === 'a' || value === 'b' ? false : true),
-    });
-    system.addCustomValidator({
-      name: 'is-a',
-      fn: (value) => value !== 'a',
-    });
-    const validator = type.validator('object');
+    const type = system.t.str
+      .validator((value) => value !== 'a' && value !== 'b', 'is-ab')
+      .validator((value) => value !== 'a', 'is-a');
+    const validator = ValidatorCodegen.get({type, errors: 'object'});
     const res1 = validator('a');
     const res2 = validator('b');
     const res3 = validator('c');
@@ -1090,36 +1305,17 @@ describe('custom validators', () => {
     });
   });
 
-  test('throws if custom validator is not provided', () => {
-    const system = new TypeSystem();
-    const type = system.t.Object(
-      system.t.prop(
-        'id',
-        system.t.String({
-          validator: ['assetId'],
-        }),
-      ),
-    );
-    expect(() => type.compileValidator({errors: 'object'})).toThrow(new Error('Validator [name = assetId] not found.'));
-  });
-
   test('returns the error, which validator throws', () => {
     const system = new TypeSystem();
     const type = system.t.Object(
       system.t.prop(
         'id',
-        system.t.String({
-          validator: ['assetId'],
-        }),
+        system.t.str.validator((id: string): void => {
+          if (!/^[a-z]+$/.test(id)) throw new Error('Asset ID must be a string.');
+        }, 'assetId'),
       ),
     );
-    system.addCustomValidator({
-      name: 'assetId',
-      fn: (id: string): void => {
-        if (!/^[a-z]+$/.test(id)) throw new Error('Asset ID must be a string.');
-      },
-    });
-    const validator = type.validator('object');
+    const validator = ValidatorCodegen.get({type, errors: 'object'});
     expect(validator({id: 'xxxxxxx'})).toBe(null);
     expect(validator({id: '123'})).toStrictEqual({
       code: 'VALIDATION',
@@ -1133,17 +1329,15 @@ describe('custom validators', () => {
 
   test('returns the error, which validator throws, even inside a "ref" type', () => {
     const system = new TypeSystem();
-    system.alias('ID', system.t.String({validator: 'assetId'}));
-    const type = system.t.Object(system.t.prop('id', system.t.Ref('ID')));
-    system.addCustomValidator({
-      name: 'assetId',
-      fn: (id: string) => {
+    system.t.str
+      .validator((id: string) => {
         if (id === 'xxxxxxx') return;
         if (id === 'y') return;
         throw new Error('Asset ID must be a string.');
-      },
-    });
-    const validator = type.validator('object');
+      }, 'assetId')
+      .alias('ID');
+    const type = system.t.Object(system.t.prop('id', system.t.Ref('ID')));
+    const validator = ValidatorCodegen.get({type, errors: 'object'});
     expect(validator({id: 'xxxxxxx'})).toBe(null);
     expect(validator({id: 'y'})).toBe(null);
     expect(validator({id: '123'})).toStrictEqual({

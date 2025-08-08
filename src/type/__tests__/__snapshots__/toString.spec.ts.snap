@@ -47,10 +47,11 @@ exports[`can print a type 1`] = `
 │          └─ any
 ├─ "binaryOperation":
 │   └─ bin
-│      └─ tup "Should always have 3 elements"
-│         ├─ con "7 is the magic number" → 7
-│         ├─ str
-│         └─ any
+│      └─ arr "Should always have 3 elements"
+│         └─ [ head, ... ]
+│            ├─ con "7 is the magic number" → 7
+│            ├─ str
+│            └─ any
 ├─ "map":
 │   └─ map
 │      └─ num

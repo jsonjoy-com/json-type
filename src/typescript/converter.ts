@@ -1,13 +1,28 @@
+import {type ArrType, type FnRxType, type FnType, type MapType, ObjType, type OrType} from '../type/classes';
+import type {Type} from '../type/types';
+import type {TypeAlias} from '../system';
 import type * as ts from './types';
 import type * as schema from '../schema';
-import type {ObjType} from '../type/classes';
+
+const augmentWithComment = (
+  type: schema.Schema | schema.ObjFieldSchema,
+  node: ts.TsDeclaration | ts.TsPropertySignature | ts.TsTypeLiteral,
+) => {
+  if (type.title || type.description) {
+    let comment = '';
+    if (type.title) comment += '# ' + type.title;
+    if (type.title && type.description) comment += '\n\n';
+    if (type.description) comment += type.description;
+    node.comment = comment;
+  }
+};
 
 /**
  * Main router function that converts any Schema to TypeScript AST.
  * Uses a switch statement to route to the appropriate converter logic.
  */
-export function toTypeScriptAst(schema: schema.Schema): ts.TsType {
-  const typeName = schema.kind;
+export function toTypeScriptAst(type: Type): ts.TsType {
+  const typeName = type.kind();
 
   switch (typeName) {
     case 'any': {
@@ -19,7 +34,7 @@ export function toTypeScriptAst(schema: schema.Schema): ts.TsType {
       return node;
     }
     case 'con': {
-      const constSchema = schema as schema.ConstSchema;
+      const constSchema = type.getSchema() as schema.ConSchema;
       const value = constSchema.value;
       const valueType = typeof value;
       switch (valueType) {
@@ -79,45 +94,63 @@ export function toTypeScriptAst(schema: schema.Schema): ts.TsType {
       return node;
     }
     case 'arr': {
-      const arraySchema = schema as schema.ArraySchema;
+      const arr = type as ArrType;
+      const {_head = [], _type, _tail = []} = arr;
+      if (_head.length || _tail.length) {
+        const node: ts.TsTupleType = {
+          node: 'TupleType',
+          elements: [],
+        };
+        for (const headType of _head) {
+          node.elements.push(toTypeScriptAst(headType) as ts.TsType);
+        }
+        if (_type) {
+          const rest: ts.RestType = {
+            node: 'RestType',
+            type: {
+              node: 'ArrType',
+              elementType: toTypeScriptAst(_type) as ts.TsType,
+            } as ts.TsArrType,
+          };
+          node.elements.push(rest);
+        }
+        for (const tailType of _tail) {
+          node.elements.push(toTypeScriptAst(tailType) as ts.TsType);
+        }
+        return node;
+      }
       const node: ts.TsArrType = {
         node: 'ArrType',
-        elementType: toTypeScriptAst(arraySchema.type) as ts.TsType,
-      };
-      return node;
-    }
-    case 'tup': {
-      const tupleSchema = schema as schema.TupleSchema;
-      const node: ts.TsTupType = {
-        node: 'TupType',
-        elements: tupleSchema.types.map((type: any) => toTypeScriptAst(type) as ts.TsType),
+        elementType: toTypeScriptAst(arr._type) as ts.TsType,
       };
       return node;
     }
     case 'obj': {
-      const objSchema = schema as schema.ObjectSchema;
+      const obj = type as ObjType<any>;
+      const objSchema = type.getSchema();
       const node: ts.TsTypeLiteral = {
         node: 'TypeLiteral',
         members: [],
       };
 
       // Handle fields
-      if (objSchema.fields && objSchema.fields.length > 0) {
-        for (const field of objSchema.fields) {
+      if (obj.fields && obj.fields.length > 0) {
+        for (const field of obj.fields) {
           const member: ts.TsPropertySignature = {
             node: 'PropertySignature',
             name: field.key,
-            type: toTypeScriptAst(field.value) as ts.TsType,
+            type: toTypeScriptAst(field.val) as ts.TsType,
           };
           if (field.optional === true) {
             member.optional = true;
           }
           // Add comment using the same logic as the original augmentWithComment
-          if (field.title || field.description) {
+          const fieldSchema = field.schema;
+          if (fieldSchema.title || fieldSchema.description) {
             let comment = '';
-            if (field.title) comment += '# ' + field.title;
-            if (field.title && field.description) comment += '\n\n';
-            if (field.description) comment += field.description;
+            if (fieldSchema.title) comment += '# ' + fieldSchema.title;
+            if (fieldSchema.title && fieldSchema.description) comment += '\n\n';
+            if (fieldSchema.description) comment += fieldSchema.description;
             member.comment = comment;
           }
           node.members.push(member);
@@ -133,35 +166,29 @@ export function toTypeScriptAst(schema: schema.Schema): ts.TsType {
       }
 
       // Add comment to the type literal itself using the same logic as augmentWithComment
-      if (objSchema.title || objSchema.description) {
-        let comment = '';
-        if (objSchema.title) comment += '# ' + objSchema.title;
-        if (objSchema.title && objSchema.description) comment += '\n\n';
-        if (objSchema.description) comment += objSchema.description;
-        node.comment = comment;
-      }
+      augmentWithComment(objSchema, node);
 
       return node;
     }
     case 'map': {
-      const mapSchema = schema as schema.MapSchema;
+      const map = type as MapType;
       const node: ts.TsTypeReference = {
         node: 'TypeReference',
         typeName: 'Record',
-        typeArguments: [{node: 'StringKeyword'}, toTypeScriptAst(mapSchema.value)],
+        typeArguments: [{node: 'StringKeyword'}, toTypeScriptAst(map._value)],
       };
       return node;
     }
     case 'or': {
-      const orSchema = schema as schema.OrSchema;
+      const or = type as OrType;
       const node: ts.TsUnionType = {
         node: 'UnionType',
-        types: orSchema.types.map((type: any) => toTypeScriptAst(type)),
+        types: or.types.map((type: any) => toTypeScriptAst(type)),
       };
       return node;
     }
     case 'ref': {
-      const refSchema = schema as schema.RefSchema;
+      const refSchema = type.getSchema();
       const node: ts.TsGenericTypeAnnotation = {
         node: 'GenericTypeAnnotation',
         id: {
@@ -172,11 +199,7 @@ export function toTypeScriptAst(schema: schema.Schema): ts.TsType {
       return node;
     }
     case 'fn': {
-      const fnSchema = schema as schema.FunctionSchema;
-      // Extract schemas from the type instances
-      const reqSchema = (fnSchema.req as any).getSchema ? (fnSchema.req as any).getSchema() : fnSchema.req;
-      const resSchema = (fnSchema.res as any).getSchema ? (fnSchema.res as any).getSchema() : fnSchema.res;
-
+      const fn = type as FnType<any, any>;
       const node: ts.TsFnType = {
         node: 'FnType',
         parameters: [
@@ -186,7 +209,7 @@ export function toTypeScriptAst(schema: schema.Schema): ts.TsType {
               node: 'Identifier',
               name: 'request',
             },
-            type: toTypeScriptAst(reqSchema),
+            type: toTypeScriptAst(fn.req),
           },
         ],
         type: {
@@ -195,17 +218,13 @@ export function toTypeScriptAst(schema: schema.Schema): ts.TsType {
             node: 'Identifier',
             name: 'Promise',
           },
-          typeArguments: [toTypeScriptAst(resSchema)],
+          typeArguments: [toTypeScriptAst(fn.res)],
         },
       };
       return node;
     }
     case 'fn$': {
-      const fnSchema = schema as schema.FunctionStreamingSchema;
-      // Extract schemas from the type instances
-      const reqSchema = (fnSchema.req as any).getSchema ? (fnSchema.req as any).getSchema() : fnSchema.req;
-      const resSchema = (fnSchema.res as any).getSchema ? (fnSchema.res as any).getSchema() : fnSchema.res;
-
+      const fn = type as FnRxType<any, any>;
       const node: ts.TsFnType = {
         node: 'FnType',
         parameters: [
@@ -221,7 +240,7 @@ export function toTypeScriptAst(schema: schema.Schema): ts.TsType {
                 node: 'Identifier',
                 name: 'Observable',
               },
-              typeArguments: [toTypeScriptAst(reqSchema)],
+              typeArguments: [toTypeScriptAst(fn.req)],
             },
           },
         ],
@@ -231,7 +250,7 @@ export function toTypeScriptAst(schema: schema.Schema): ts.TsType {
             node: 'Identifier',
             name: 'Observable',
           },
-          typeArguments: [toTypeScriptAst(resSchema)],
+          typeArguments: [toTypeScriptAst(fn.res)],
         },
       };
       return node;
@@ -244,6 +263,28 @@ export function toTypeScriptAst(schema: schema.Schema): ts.TsType {
   }
 }
 
+export const aliasToTs = (alias: TypeAlias<any, any>): ts.TsInterfaceDeclaration | ts.TsTypeAliasDeclaration => {
+  const type = alias.type;
+  if (type instanceof ObjType) {
+    const ast = toTypeScriptAst(type) as ts.TsTypeLiteral;
+    const node: ts.TsInterfaceDeclaration = {
+      node: 'InterfaceDeclaration',
+      name: alias.id,
+      members: ast.members,
+    };
+    return node;
+  } else {
+    const node: ts.TsTypeAliasDeclaration = {
+      node: 'TypeAliasDeclaration',
+      name: alias.id,
+      type: toTypeScriptAst(type),
+    };
+    // TODO: Figure out if this is still needed, and possibly bring it back.
+    // augmentWithComment(type, node);
+    return node;
+  }
+};
+
 export const objToModule = (obj: ObjType<any>): ts.TsModuleDeclaration => {
   const node: ts.TsModuleDeclaration = {
     node: 'ModuleDeclaration',
@@ -253,13 +294,13 @@ export const objToModule = (obj: ObjType<any>): ts.TsModuleDeclaration => {
       {
         node: 'TypeAliasDeclaration',
         name: 'Routes',
-        type: toTypeScriptAst(obj.getSchema()),
+        type: toTypeScriptAst(obj),
         export: true,
       },
     ],
   };
   const system = obj.system;
   if (!system) throw new Error('system is undefined');
-  for (const alias of system.aliases.values()) node.statements.push({...alias.toTypeScriptAst(), export: true});
+  for (const alias of system.aliases.values()) node.statements.push({...aliasToTs(alias.type), export: true});
   return node;
 };

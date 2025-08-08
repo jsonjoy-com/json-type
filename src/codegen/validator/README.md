@@ -16,7 +16,7 @@ const json = {
   name: 'John',
 };
 
-const validator = type.compileValidator('boolean');
+const validator = ValidatorCodegen.get({type, errors: 'boolean'});
 
 const err1 = validator(json); // false
 const err2 = validator({}); // true

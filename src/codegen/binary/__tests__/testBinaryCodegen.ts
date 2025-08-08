@@ -20,7 +20,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
     });
   });
 
-  describe('"const" type', () => {
+  describe('"con" type', () => {
     test('can encode number const', () => {
       const system = new TypeSystem();
       const any = system.t.Const<123>(123);
@@ -162,13 +162,11 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
       const value: any[] = ['1', '2', '3'];
       expect(transcode(system, type, value)).toStrictEqual(value);
     });
-  });
 
-  describe('"tup" type', () => {
     test('can encode a simple tuple', () => {
       const system = new TypeSystem();
       const t = system.t;
-      const type = system.t.Tuple(t.str, t.num, t.bool);
+      const type = system.t.Tuple([t.str, t.num, t.bool]);
       const value: any[] = ['abc', 123, true];
       expect(transcode(system, type, value)).toStrictEqual(value);
     });
@@ -176,7 +174,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
     test('can encode an empty tuple', () => {
       const system = new TypeSystem();
       const t = system.t;
-      const type = system.t.Tuple();
+      const type = system.t.Tuple([]);
       const value: any[] = [];
       expect(transcode(system, type, value)).toStrictEqual(value);
     });
@@ -184,9 +182,45 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
     test('can encode a tuple of arrays', () => {
       const system = new TypeSystem();
       const t = system.t;
-      const type = system.t.Tuple(t.arr, t.arr);
+      const type = system.t.Tuple([t.arr, t.arr]);
       const value: any[] = [[], [1, 'b', false]];
       expect(transcode(system, type, value)).toStrictEqual(value);
+    });
+
+    test('can encode a tuple tail', () => {
+      const system = new TypeSystem();
+      const t = system.t;
+      const type = system.t.Tuple([t.arr, t.arr], t.bool, [t.str, t.num]);
+      const value: any[] = [[], [1, 'b', false], true, false, 'abc', 123];
+      expect(transcode(system, type, value)).toStrictEqual(value);
+    });
+
+    test('elements and 2-tail', () => {
+      const system = new TypeSystem();
+      const t = system.t;
+      const type = system.t.Tuple([], t.bool, [t.str, t.num]);
+      const value1: any[] = [true, false, 'abc', 123];
+      expect(transcode(system, type, value1)).toStrictEqual(value1);
+      const value2: any[] = [true, 'abc', 123];
+      expect(transcode(system, type, value2)).toStrictEqual(value2);
+      const value3: any[] = ['abc', 123];
+      expect(transcode(system, type, value3)).toStrictEqual(value3);
+      const value4: any[] = [123];
+      expect(() => transcode(system, type, value4)).toThrow();
+    });
+
+    test('elements and 1-tail', () => {
+      const system = new TypeSystem();
+      const t = system.t;
+      const type = system.t.Tuple([], t.bool, [t.num]);
+      const value1: any[] = [true, false, 123];
+      expect(transcode(system, type, value1)).toStrictEqual(value1);
+      const value2: any[] = [true, 123];
+      expect(transcode(system, type, value2)).toStrictEqual(value2);
+      const value3: any[] = [123];
+      expect(transcode(system, type, value3)).toStrictEqual(value3);
+      const value4: any[] = [];
+      expect(() => transcode(system, type, value4)).toThrow();
     });
   });
 
@@ -276,7 +310,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
           t.prop('addr', t.Object(t.prop('street', t.str))),
           t.prop(
             'interests',
-            t.Object(t.propOpt('hobbies', t.Array(t.str)), t.propOpt('sports', t.Array(t.Tuple(t.num, t.str)))),
+            t.Object(t.propOpt('hobbies', t.Array(t.str)), t.propOpt('sports', t.Array(t.Tuple([t.num, t.str])))),
           ),
         )
         .options({encodeUnknownFields: true});

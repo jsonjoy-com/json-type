@@ -1,3 +1,2 @@
-export * from './generator';
-export * from './generators';
+export * from './Random';
 export * from './types';

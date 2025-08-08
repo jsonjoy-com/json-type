@@ -1,4 +1,7 @@
 import {t} from '../../..';
+import {ValidatorCodegen} from '../../../codegen/validator/ValidatorCodegen';
+import {validateSchema} from '../../../schema/validate';
+import {typeToJsonSchema} from '../../../json-schema/converter';
 
 test('can use helper functions to define type schema fields', () => {
   const string = t.String();
@@ -52,7 +55,7 @@ describe('StrType format validation', () => {
     const asciiType = t.String({format: 'ascii'});
 
     test('accepts valid ASCII strings', () => {
-      const validator = asciiType.validator('boolean');
+      const validator = ValidatorCodegen.get({type: asciiType, errors: 'boolean'});
       expect(validator('hello world')).toBe(false);
       expect(validator('123')).toBe(false);
       expect(validator('!@#$%^&*()')).toBe(false);
@@ -62,7 +65,7 @@ describe('StrType format validation', () => {
     });
 
     test('rejects non-ASCII strings', () => {
-      const validator = asciiType.validator('boolean');
+      const validator = ValidatorCodegen.get({type: asciiType, errors: 'boolean'});
       expect(validator('héllo')).toBe(true); // é is not ASCII
       expect(validator('🚀')).toBe(true); // Emoji
       expect(validator('中文')).toBe(true); // Chinese characters
@@ -71,7 +74,7 @@ describe('StrType format validation', () => {
 
     test('works with min/max length', () => {
       const type = t.String({format: 'ascii', min: 2, max: 5});
-      const validator = type.validator('boolean');
+      const validator = ValidatorCodegen.get({type, errors: 'boolean'});
 
       expect(validator('ab')).toBe(false); // Valid ASCII, correct length
       expect(validator('abcde')).toBe(false); // Valid ASCII, correct length
@@ -86,7 +89,7 @@ describe('StrType format validation', () => {
     const utf8Type = t.String({format: 'utf8'});
 
     test('accepts valid UTF-8 strings', () => {
-      const validator = utf8Type.validator('boolean');
+      const validator = ValidatorCodegen.get({type: utf8Type, errors: 'boolean'});
       expect(validator('hello world')).toBe(false);
       expect(validator('héllo')).toBe(false);
       expect(validator('🚀')).toBe(false);
@@ -96,7 +99,7 @@ describe('StrType format validation', () => {
     });
 
     test('rejects strings with unpaired surrogates', () => {
-      const validator = utf8Type.validator('boolean');
+      const validator = ValidatorCodegen.get({type: utf8Type, errors: 'boolean'});
       // Create strings with unpaired surrogates
       const highSurrogate = String.fromCharCode(0xd800); // High surrogate without low
       const lowSurrogate = String.fromCharCode(0xdc00); // Low surrogate without high
@@ -108,7 +111,7 @@ describe('StrType format validation', () => {
     });
 
     test('accepts valid surrogate pairs', () => {
-      const validator = utf8Type.validator('boolean');
+      const validator = ValidatorCodegen.get({type: utf8Type, errors: 'boolean'});
       // Valid emoji with surrogate pairs
       expect(validator('👍')).toBe(false); // Valid surrogate pair
       expect(validator('💖')).toBe(false); // Valid surrogate pair
@@ -118,7 +121,7 @@ describe('StrType format validation', () => {
   describe('Backward compatibility with ascii boolean', () => {
     test('ascii: true behaves like format: "ascii"', () => {
       const asciiType = t.String({ascii: true});
-      const validator = asciiType.validator('boolean');
+      const validator = ValidatorCodegen.get({type: asciiType, errors: 'boolean'});
 
       expect(validator('hello')).toBe(false); // Valid ASCII
       expect(validator('héllo')).toBe(true); // Non-ASCII
@@ -126,7 +129,7 @@ describe('StrType format validation', () => {
 
     test('format takes precedence over ascii boolean', () => {
       const type = t.String({format: 'utf8', ascii: true});
-      const validator = type.validator('boolean');
+      const validator = ValidatorCodegen.get({type, errors: 'boolean'});
 
       // Should behave as UTF-8 validation, allowing non-ASCII
       expect(validator('héllo')).toBe(false); // Should pass UTF-8 validation
@@ -135,34 +138,36 @@ describe('StrType format validation', () => {
 
   describe('Schema validation', () => {
     test('validates format values', () => {
-      expect(() => t.String({format: 'ascii'}).validateSchema()).not.toThrow();
-      expect(() => t.String({format: 'utf8'}).validateSchema()).not.toThrow();
-      expect(() => t.String({format: 'invalid' as any}).validateSchema()).toThrow('INVALID_STRING_FORMAT');
+      expect(() => validateSchema(t.String({format: 'ascii'}).getSchema())).not.toThrow();
+      expect(() => validateSchema(t.String({format: 'utf8'}).getSchema())).not.toThrow();
+      expect(() => validateSchema(t.String({format: 'invalid' as any}).getSchema())).toThrow('INVALID_STRING_FORMAT');
     });
 
     test('validates format and ascii consistency', () => {
-      expect(() => t.String({format: 'ascii', ascii: false}).validateSchema()).toThrow('FORMAT_ASCII_MISMATCH');
-      expect(() => t.String({format: 'ascii', ascii: true}).validateSchema()).not.toThrow();
-      expect(() => t.String({format: 'utf8', ascii: true}).validateSchema()).not.toThrow(); // UTF-8 can have ascii=true
+      expect(() => validateSchema(t.String({format: 'ascii', ascii: false}).getSchema())).toThrow(
+        'FORMAT_ASCII_MISMATCH',
+      );
+      expect(() => validateSchema(t.String({format: 'ascii', ascii: true}).getSchema())).not.toThrow();
+      expect(() => validateSchema(t.String({format: 'utf8', ascii: true}).getSchema())).not.toThrow(); // UTF-8 can have ascii=true
     });
   });
 
   describe('JSON Schema export', () => {
     test('ASCII format adds pattern', () => {
       const type = t.String({format: 'ascii'});
-      const jsonSchema_result = type.toJsonSchema();
+      const jsonSchema_result = typeToJsonSchema(type);
       expect((jsonSchema_result as any).pattern).toBe('^[\\x00-\\x7F]*$');
     });
 
     test('UTF-8 format does not add pattern', () => {
       const type = t.String({format: 'utf8'});
-      const jsonSchema_result = type.toJsonSchema();
+      const jsonSchema_result = typeToJsonSchema(type);
       expect((jsonSchema_result as any).pattern).toBeUndefined();
     });
 
     test('backward compatibility with ascii boolean', () => {
       const type = t.String({ascii: true});
-      const jsonSchema_result = type.toJsonSchema();
+      const jsonSchema_result = typeToJsonSchema(type);
       expect((jsonSchema_result as any).pattern).toBe('^[\\x00-\\x7F]*$');
     });
   });

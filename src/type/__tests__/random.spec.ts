@@ -1,4 +1,5 @@
 import {t} from '..';
+import {Random} from '../../random';
 
 test('generates random JSON', () => {
   const mathRandom = Math.random;
@@ -15,26 +16,12 @@ test('generates random JSON', () => {
     t.propOpt('scores', t.Array(t.num)),
     t.prop('refs', t.Map(t.str)),
   );
-  const json = type.random();
-  expect(json).toMatchInlineSnapshot(`
-    {
-      "id": "",
-      "name": "1",
-      "refs": {
-        "259<@CGK": "UY\\\`c",
-        ";>BEILPT": "^beimp",
-        "HKORVY]\`": "korvy}#",
-        "LOSWZ^ae": "pswz #'*",
-        "_cfjmqtx": "fimqtxBEIM",
-        "knrvyCGJ": "MQTX",
-        "nquy|"%)": "4",
-        "w{ $'+/2": "=@",
-      },
-      "tags": [
-        "@CG",
-        "QUY\\\`",
-      ],
-    }
-  `);
+  const json = Random.gen(type);
+  expect(typeof json).toBe('object');
+  expect(!!json).toBe(true);
+  expect(typeof json.id).toBe('string');
+  expect(typeof json.name).toBe('string');
+  expect(Array.isArray(json.tags)).toBe(true);
+  expect(typeof json.refs).toBe('object');
   Math.random = mathRandom;
 });

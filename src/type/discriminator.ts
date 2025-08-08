@@ -1,22 +1,68 @@
-import {BoolType, ConType, NumType, type ObjectFieldType, ObjType, StrType, TupType} from './classes';
+import {ArrType, BoolType, ConType, NumType, type ObjKeyType, ObjType, StrType} from './classes';
 import type {Expr} from '@jsonjoy.com/json-expression';
 import type {Type} from './types';
 
+/**
+ * Discriminator class for automatically identifying distinguishing patterns in
+ * union types.
+ *
+ * This class analyzes types to find discriminatory characteristics that can be
+ * used to differentiate between variants in a union type at runtime. It can
+ * autodiscriminate:
+ *
+ * - **Constant values** (`ConType`): Exact literal values (strings, numbers, booleans, null)
+ * - **Primitive types**: `boolean`, `number`, `string` based on JavaScript `typeof`
+ * - **Structural types**: `object` vs `array` differentiation
+ * - **Nested discriminators**: Constant values or types found in object properties or array elements
+ *
+ * ## Discriminator Specifiers
+ *
+ * Specifiers are JSON-encoded arrays `[path, typeSpecifier, value]` that
+ * uniquely identify discriminators:
+ *
+ * **Constant value discriminators** (exact matches):
+ *
+ * - `["", "con", "success"]` - Root value must be string "success"
+ * - `["/type", "con", "user"]` - Property `type` must be string "user"
+ * - `["/0", "con", 42]` - First array element must be number 42
+ * - `["", "con", null]` - Root value must be null
+ *
+ * **Type-based discriminators** (typeof checks):
+ *
+ * - `["", "bool", 0]` - Root value must be boolean (any boolean)
+ * - `["/age", "num", 0]` - Property `age` must be number (any number)
+ * - `["/name", "str", 0]` - Property `name` must be string (any string)
+ * - `["", "obj", 0]` - Root value must be object
+ * - `["", "arr", 0]` - Root value must be array
+ *
+ * **Handling Value Types vs Constants**:
+ *
+ * - **Constant values**: When discriminator finds a `ConType`, it creates exact value matches.
+ * - **Value types**: When discriminator finds primitive types without constants, it matches by `typeof`.
+ * - **Precedence**: Constant discriminators are preferred over type discriminators for more specific matching.
+ *
+ * The discriminator creates JSON Expression conditions that can be evaluated at
+ * runtime to determine which type variant a value matches in a union type. JSON
+ * Expression can be compiled to JavaScript for efficient evaluation.
+ */
 export class Discriminator {
   public static findConst(type: Type): Discriminator | undefined {
-    if (type instanceof ConType) return new Discriminator('', type);
-    else if (type instanceof TupType) {
-      const types = type.types;
+    if (type instanceof ConType) {
+      return new Discriminator('', type);
+    } else if (type instanceof ArrType) {
+      const {_head = []} = type;
+      // TODO: add support for array tail.
+      const types = _head;
       for (let i = 0; i < types.length; i++) {
         const t = types[i];
         const d = Discriminator.findConst(t);
         if (d) return new Discriminator('/' + i + d.path, d.type);
       }
     } else if (type instanceof ObjType) {
-      const fields = type.fields as ObjectFieldType<string, Type>[];
+      const fields = type.fields as ObjKeyType<string, Type>[];
       for (let i = 0; i < fields.length; i++) {
         const f = fields[i];
-        const d = Discriminator.findConst(f.value);
+        const d = Discriminator.findConst(f.val);
         if (d) return new Discriminator('/' + f.key + d.path, d.type);
       }
     }
@@ -54,7 +100,7 @@ export class Discriminator {
   ) {}
 
   condition(): Expr {
-    if (this.type instanceof ConType) return ['==', this.type.value(), ['$', this.path]];
+    if (this.type instanceof ConType) return ['==', this.type.literal(), ['$', this.path]];
     if (this.type instanceof BoolType) return ['==', ['type', ['$', this.path]], 'boolean'];
     if (this.type instanceof NumType) return ['==', ['type', ['$', this.path]], 'number'];
     if (this.type instanceof StrType) return ['==', ['type', ['$', this.path]], 'string'];
@@ -68,18 +114,17 @@ export class Discriminator {
   }
 
   typeSpecifier(): string {
-    const mnemonic = this.type.getTypeName();
-    switch (mnemonic) {
+    const kind = this.type.kind();
+    switch (kind) {
       case 'bool':
       case 'str':
       case 'num':
       case 'con':
-        return mnemonic;
+        return kind;
       case 'obj':
       case 'map':
         return 'obj';
       case 'arr':
-      case 'tup':
         return 'arr';
       case 'fn':
       case 'fn$':
@@ -92,7 +137,7 @@ export class Discriminator {
     const type = this.type;
     const path = this.path;
     const typeSpecifier = this.typeSpecifier();
-    const value = type instanceof ConType ? type.value() : 0;
+    const value = type instanceof ConType ? type.literal() : 0;
     return JSON.stringify([path, typeSpecifier, value]);
   }
 }

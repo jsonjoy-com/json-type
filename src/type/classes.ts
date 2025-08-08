@@ -6,8 +6,7 @@ import {NumType} from './classes/NumType';
 import {StrType} from './classes/StrType';
 import {BinType} from './classes/BinType';
 import {ArrType} from './classes/ArrType';
-import {TupType} from './classes/TupType';
-import {ObjType, ObjectFieldType, ObjectOptionalFieldType} from './classes/ObjType';
+import {ObjType, ObjKeyType, ObjKeyOptType} from './classes/ObjType';
 import {MapType} from './classes/MapType';
 import {RefType} from './classes/RefType';
 import {OrType} from './classes/OrType';
@@ -22,9 +21,8 @@ export {
   StrType,
   BinType,
   ArrType,
-  TupType,
-  ObjectFieldType,
-  ObjectOptionalFieldType,
+  ObjKeyType,
+  ObjKeyOptType,
   ObjType,
   MapType,
   RefType,

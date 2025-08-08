@@ -21,7 +21,7 @@ type ObjValueTuple<T, KS extends any[] = UnionToTuple<keyof T>, R extends any[] 
   : R;
 
 type RecordToFields<O extends Record<string, Type>> = ObjValueTuple<{
-  [K in keyof O]: classes.ObjectFieldType<K extends string ? K : never, O[K]>;
+  [K in keyof O]: classes.ObjKeyType<K extends string ? K : never, O[K]>;
 }>;
 
 export class TypeBuilder {
@@ -79,6 +79,7 @@ export class TypeBuilder {
 
   // --------------------------------------------------------------- shorthands
 
+  public readonly or = <F extends Type[]>(...types: F) => this.Or(...types);
   public readonly undefined = () => this.undef;
   public readonly null = () => this.nil;
   public readonly boolean = () => this.bool;
@@ -86,17 +87,17 @@ export class TypeBuilder {
   public readonly string = () => this.str;
   public readonly binary = () => this.bin;
 
-  public readonly con = <V>(value: schema.Narrow<V>, options?: schema.Optional<schema.ConstSchema>) =>
+  public readonly con = <V>(value: schema.Narrow<V>, options?: schema.Optional<schema.ConSchema>) =>
     this.Const(value, options);
   public readonly literal = this.con;
 
-  public readonly array = <T>(type?: T, options?: schema.Optional<schema.ArraySchema>) =>
+  public readonly array = <T>(type?: T, options?: schema.Optional<schema.ArrSchema>) =>
     this.Array<T extends Type ? T : classes.AnyType>(
       (type ?? this.any) as T extends Type ? T : classes.AnyType,
       options,
     );
 
-  public readonly tuple = <F extends Type[]>(...types: F) => this.Tuple(...types);
+  public readonly tuple = <F extends Type[]>(...types: F) => this.Tuple(types);
 
   /**
    * Creates an object type with the specified properties. This is a shorthand for
@@ -120,11 +121,9 @@ export class TypeBuilder {
    * @returns An object type.
    */
   public readonly object = <R extends Record<string, Type>>(record: R): classes.ObjType<RecordToFields<R>> => {
-    const fields: classes.ObjectFieldType<any, any>[] = [];
+    const fields: classes.ObjKeyType<any, any>[] = [];
     for (const [key, value] of Object.entries(record)) fields.push(this.prop(key, value));
-    const obj = new classes.ObjType<RecordToFields<R>>(fields as any);
-    obj.system = this.system;
-    return obj;
+    return new classes.ObjType<RecordToFields<R>>(fields as any).sys(this.system);
   };
 
   /**
@@ -154,12 +153,10 @@ export class TypeBuilder {
   // --------------------------------------------------- base node constructors
 
   public Any(options?: schema.Optional<schema.AnySchema>) {
-    const type = new classes.AnyType(s.Any(options));
-    type.system = this.system;
-    return type;
+    return new classes.AnyType(s.Any(options)).sys(this.system);
   }
 
-  public Const<V>(value: schema.Narrow<V>, options?: schema.Optional<schema.ConstSchema>) {
+  public Const<const V>(value: schema.Narrow<V>, options?: schema.Optional<schema.ConSchema>) {
     type V2 = string extends V
       ? never
       : number extends V
@@ -169,101 +166,76 @@ export class TypeBuilder {
           : any[] extends V
             ? never
             : V;
-    const type = new classes.ConType<V2>(schema.s.Const(value, options));
-    type.system = this.system;
-    return type;
+    return new classes.ConType<V2>(schema.s.Const(value, options)).sys(this.system);
   }
 
-  public Boolean(options?: schema.Optional<schema.BooleanSchema>) {
-    const type = new classes.BoolType(s.Boolean(options));
-    type.system = this.system;
-    return type;
+  public Boolean(options?: schema.Optional<schema.BoolSchema>) {
+    return new classes.BoolType(s.Boolean(options)).sys(this.system);
   }
 
-  public Number(options?: schema.Optional<schema.NumberSchema>) {
-    const type = new classes.NumType(s.Number(options));
-    type.system = this.system;
-    return type;
+  public Number(options?: schema.Optional<schema.NumSchema>) {
+    return new classes.NumType(s.Number(options)).sys(this.system);
   }
 
-  public String(options?: schema.Optional<schema.StringSchema>) {
-    const type = new classes.StrType(s.String(options));
-    type.system = this.system;
-    return type;
+  public String(options?: schema.Optional<schema.StrSchema>) {
+    return new classes.StrType(s.String(options)).sys(this.system);
   }
 
-  public Binary<T extends Type>(type: T, options: schema.Optional<schema.BinarySchema> = {}) {
-    const bin = new classes.BinType(type, options);
-    bin.system = this.system;
-    return bin;
+  public Binary<T extends Type>(type: T, options: schema.Optional<schema.BinSchema> = {}) {
+    return new classes.BinType(type, options).sys(this.system);
   }
 
-  public Array<T extends Type>(type: T, options?: schema.Optional<schema.ArraySchema>) {
-    const arr = new classes.ArrType<T>(type, options);
-    arr.system = this.system;
-    return arr;
+  public Array<T extends Type>(type: T, options?: schema.Optional<schema.ArrSchema>) {
+    return new classes.ArrType<T, [], []>(type, void 0, void 0, options).sys(this.system);
   }
 
-  public Tuple<F extends Type[]>(...types: F) {
-    const tup = new classes.TupType<F>(types);
-    tup.system = this.system;
-    return tup;
+  public Tuple<const Head extends Type[], Item extends Type | void = undefined, const Tail extends Type[] = []>(
+    head: Head,
+    item?: Item,
+    tail?: Tail,
+    options?: schema.Optional<schema.ArrSchema>,
+  ) {
+    return new classes.ArrType(item, head, tail, options).sys(this.system);
   }
 
-  public Object<F extends classes.ObjectFieldType<any, any>[]>(...fields: F) {
-    const obj = new classes.ObjType<F>(fields);
-    obj.system = this.system;
-    return obj;
+  public Object<F extends classes.ObjKeyType<any, any>[]>(...fields: F) {
+    return new classes.ObjType<F>(fields).sys(this.system);
   }
 
   public prop<K extends string, V extends Type>(key: K, value: V) {
-    const field = new classes.ObjectFieldType<K, V>(key, value);
-    field.system = this.system;
-    return field;
+    return new classes.ObjKeyType<K, V>(key, value).sys(this.system);
   }
 
   public propOpt<K extends string, V extends Type>(key: K, value: V) {
-    const field = new classes.ObjectOptionalFieldType<K, V>(key, value);
-    field.system = this.system;
-    return field;
+    return new classes.ObjKeyOptType<K, V>(key, value).sys(this.system);
   }
 
   public Map<T extends Type>(val: T, key?: Type, options?: schema.Optional<schema.MapSchema>) {
-    const map = new classes.MapType<T>(val, key, options);
-    map.system = this.system;
-    return map;
+    return new classes.MapType<T>(val, key, options).sys(this.system);
   }
 
   public Or<F extends Type[]>(...types: F) {
-    const or = new classes.OrType<F>(types);
-    or.system = this.system;
-    return or;
+    return new classes.OrType<F>(types).sys(this.system);
   }
 
   public Ref<T extends Type | TypeAlias<any, any>>(ref: string) {
-    const type = new classes.RefType<TypeOfAlias<T>>(ref);
-    type.system = this.system;
-    return type;
+    return new classes.RefType<TypeOfAlias<T>>(ref).sys(this.system);
   }
 
   public Function<Req extends Type, Res extends Type, Ctx = unknown>(
     req: Req,
     res: Res,
-    options?: schema.Optional<schema.FunctionSchema>,
+    options?: schema.Optional<schema.FnSchema>,
   ) {
-    const fn = new classes.FnType<Req, Res, Ctx>(req, res, options);
-    fn.system = this.system;
-    return fn;
+    return new classes.FnType<Req, Res, Ctx>(req, res, options).sys(this.system);
   }
 
   public Function$<Req extends Type, Res extends Type, Ctx = unknown>(
     req: Req,
     res: Res,
-    options?: schema.Optional<schema.FunctionStreamingSchema>,
+    options?: schema.Optional<schema.FnStreamingSchema>,
   ) {
-    const fn = new classes.FnRxType<Req, Res, Ctx>(req, res, options);
-    fn.system = this.system;
-    return fn;
+    return new classes.FnRxType<Req, Res, Ctx>(req, res, options).sys(this.system);
   }
 
   public import(node: schema.Schema): Type {
@@ -278,10 +250,15 @@ export class TypeBuilder {
         return this.String(node);
       case 'bin':
         return this.Binary(this.import(node.type), node);
-      case 'arr':
-        return this.Array(this.import(node.type), node);
-      case 'tup':
-        return this.Tuple(...node.types.map((t: schema.Schema) => this.import(t))).options(node);
+      case 'arr': {
+        const {head, type, tail, ...rest} = node as schema.ArrSchema;
+        return this.Tuple(
+          head ? head.map((h: any) => this.import(h)) : void 0,
+          type ? this.import(type) : void 0,
+          tail ? tail.map((t: any) => this.import(t)) : void 0,
+          rest,
+        );
+      }
       case 'obj': {
         return this.Object(
           ...node.fields.map((f: any) =>
@@ -336,9 +313,10 @@ export class TypeBuilder {
             }
           };
           const allElementsOfTheSameType = value.every((v) => getType(v) === getType(value[0]));
+          this.Array(this.from(value[0]));
           return allElementsOfTheSameType
             ? this.Array(this.from(value[0]))
-            : this.Tuple(...value.map((v) => this.from(v)));
+            : this.tuple(...value.map((v) => this.from(v)));
         }
         return this.Object(...Object.entries(value).map(([key, value]) => this.prop(key, this.from(value))));
       default:

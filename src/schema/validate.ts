@@ -1,13 +1,13 @@
 import type {Display} from './common';
-import type {TExample, TType, WithValidator, Schema} from './schema';
+import type {TExample, TType, Schema} from './schema';
 
-export const validateDisplay = ({title, description, intro}: Display): void => {
+const validateDisplay = ({title, description, intro}: Display): void => {
   if (title !== undefined && typeof title !== 'string') throw new Error('INVALID_TITLE');
   if (description !== undefined && typeof description !== 'string') throw new Error('INVALID_DESCRIPTION');
   if (intro !== undefined && typeof intro !== 'string') throw new Error('INVALID_INTRO');
 };
 
-export const validateTExample = (example: TExample): void => {
+const validateTExample = (example: TExample): void => {
   validateDisplay(example);
 };
 
@@ -23,15 +23,7 @@ export const validateTType = (tType: TType, kind: string): void => {
   }
 };
 
-export const validateWithValidator = ({validator}: WithValidator): void => {
-  if (validator !== undefined) {
-    if (Array.isArray(validator)) {
-      for (const v of validator) if (typeof v !== 'string') throw new Error('INVALID_VALIDATOR');
-    } else if (typeof validator !== 'string') throw new Error('INVALID_VALIDATOR');
-  }
-};
-
-export const validateMinMax = (min: number | undefined, max: number | undefined) => {
+const validateMinMax = (min: number | undefined, max: number | undefined) => {
   if (min !== undefined) {
     if (typeof min !== 'number') throw new Error('MIN_TYPE');
     if (min < 0) throw new Error('MIN_NEGATIVE');
@@ -45,21 +37,17 @@ export const validateMinMax = (min: number | undefined, max: number | undefined)
   if (min !== undefined && max !== undefined && min > max) throw new Error('MIN_MAX');
 };
 
-// Individual schema validation functions for each type
-
 const validateAnySchema = (schema: any): void => {
   validateTType(schema, 'any');
 };
 
-const validateBooleanSchema = (schema: any): void => {
+const validateBoolSchema = (schema: any): void => {
   validateTType(schema, 'bool');
 };
 
-const validateNumberSchema = (schema: any): void => {
+const validateNumSchema = (schema: any): void => {
   validateTType(schema, 'num');
-  validateWithValidator(schema);
   const {format, gt, gte, lt, lte} = schema;
-
   if (gt !== undefined && typeof gt !== 'number') throw new Error('GT_TYPE');
   if (gte !== undefined && typeof gte !== 'number') throw new Error('GTE_TYPE');
   if (lt !== undefined && typeof lt !== 'number') throw new Error('LT_TYPE');
@@ -68,7 +56,6 @@ const validateNumberSchema = (schema: any): void => {
   if (lt !== undefined && lte !== undefined) throw new Error('LT_LTE');
   if ((gt !== undefined || gte !== undefined) && (lt !== undefined || lte !== undefined))
     if ((gt ?? gte)! > (lt ?? lte)!) throw new Error('GT_LT');
-
   if (format !== undefined) {
     if (typeof format !== 'string') throw new Error('FORMAT_TYPE');
     if (!format) throw new Error('FORMAT_EMPTY');
@@ -93,9 +80,8 @@ const validateNumberSchema = (schema: any): void => {
   }
 };
 
-const validateStringSchema = (schema: any): void => {
+const validateStrSchema = (schema: any): void => {
   validateTType(schema, 'str');
-  validateWithValidator(schema);
   const {min, max, ascii, noJsonEscape, format} = schema;
 
   validateMinMax(min, max);
@@ -119,57 +105,53 @@ const validateStringSchema = (schema: any): void => {
 
 const binaryFormats = new Set(['bencode', 'bson', 'cbor', 'ion', 'json', 'msgpack', 'resp3', 'ubjson']);
 
-const validateBinarySchema = (schema: any, validateChildSchema: (schema: Schema) => void): void => {
+const validateBinSchema = (schema: any): void => {
   validateTType(schema, 'bin');
   const {min, max, format} = schema;
   validateMinMax(min, max);
   if (format !== undefined) {
     if (!binaryFormats.has(format)) throw new Error('FORMAT');
   }
-  validateChildSchema(schema.type);
+  validateSchema(schema.type);
 };
 
-const validateArraySchema = (schema: any, validateChildSchema: (schema: Schema) => void): void => {
+const validateArrSchema = (schema: any): void => {
   validateTType(schema, 'arr');
   const {min, max} = schema;
   validateMinMax(min, max);
-  validateChildSchema(schema.type);
+  if (!('head' in schema) && !('type' in schema) && !('tail' in schema)) throw new Error('EMPTY_ARR');
+  if ('tail' in schema && !('type' in schema)) throw new Error('LONE_TAIL');
+  const {head, type, tail} = schema;
+  if (type) validateSchema(type);
+  if (head) for (const h of head) validateSchema(h);
+  if (tail) for (const t of tail) validateSchema(t);
 };
 
-const validateConstSchema = (schema: any): void => {
+const validateConSchema = (schema: any): void => {
   validateTType(schema, 'con');
 };
 
-const validateTupleSchema = (schema: any, validateChildSchema: (schema: Schema) => void): void => {
-  validateTType(schema, 'tup');
-  validateWithValidator(schema);
-  const {types} = schema;
-  if (!Array.isArray(types)) throw new Error('TYPES_TYPE');
-  for (const type of types) validateChildSchema(type);
-};
-
-const validateObjectSchema = (schema: any, validateChildSchema: (schema: Schema) => void): void => {
+const validateObjSchema = (schema: any): void => {
   validateTType(schema, 'obj');
-  validateWithValidator(schema);
   const {fields, unknownFields} = schema;
   if (!Array.isArray(fields)) throw new Error('FIELDS_TYPE');
   if (unknownFields !== undefined && typeof unknownFields !== 'boolean') throw new Error('UNKNOWN_FIELDS_TYPE');
-  for (const field of fields) validateChildSchema(field);
+  for (const field of fields) validateSchema(field);
 };
 
-const validateFieldSchema = (schema: any, validateChildSchema: (schema: Schema) => void): void => {
+const validateFieldSchema = (schema: any): void => {
   validateTType(schema, 'field');
   const {key, optional} = schema;
   if (typeof key !== 'string') throw new Error('KEY_TYPE');
   if (optional !== undefined && typeof optional !== 'boolean') throw new Error('OPTIONAL_TYPE');
-  validateChildSchema(schema.value);
+  validateSchema(schema.value);
 };
 
-const validateMapSchema = (schema: any, validateChildSchema: (schema: Schema) => void): void => {
+const validateMapSchema = (schema: any): void => {
   validateTType(schema, 'map');
-  validateChildSchema(schema.value);
+  validateSchema(schema.value);
   if (schema.key) {
-    validateChildSchema(schema.key);
+    validateSchema(schema.key);
   }
 };
 
@@ -180,25 +162,25 @@ const validateRefSchema = (schema: any): void => {
   if (!ref) throw new Error('REF_EMPTY');
 };
 
-const validateOrSchema = (schema: any, validateChildSchema: (schema: Schema) => void): void => {
+const validateOrSchema = (schema: any): void => {
   validateTType(schema, 'or');
   const {types, discriminator} = schema;
   if (!discriminator || (discriminator[0] === 'num' && discriminator[1] === -1)) throw new Error('DISCRIMINATOR');
   if (!Array.isArray(types)) throw new Error('TYPES_TYPE');
   if (!types.length) throw new Error('TYPES_LENGTH');
-  for (const type of types) validateChildSchema(type);
+  for (const type of types) validateSchema(type);
 };
 
-const validateFunctionSchema = (schema: any, validateChildSchema: (schema: Schema) => void): void => {
+const validateFunctionSchema = (schema: any): void => {
   validateTType(schema, 'fn');
-  validateChildSchema(schema.req);
-  validateChildSchema(schema.res);
+  validateSchema(schema.req);
+  validateSchema(schema.res);
 };
 
-const validateFunctionStreamingSchema = (schema: any, validateChildSchema: (schema: Schema) => void): void => {
+const validateFunctionStreamingSchema = (schema: any): void => {
   validateTType(schema, 'fn$');
-  validateChildSchema(schema.req);
-  validateChildSchema(schema.res);
+  validateSchema(schema.req);
+  validateSchema(schema.res);
 };
 
 /**
@@ -206,51 +188,49 @@ const validateFunctionStreamingSchema = (schema: any, validateChildSchema: (sche
  * This replaces the individual validateSchema() methods from type classes.
  */
 export const validateSchema = (schema: Schema): void => {
+  if (typeof schema !== 'object') throw new Error('INVALID_SCHEMA');
   switch (schema.kind) {
     case 'any':
       validateAnySchema(schema);
       break;
     case 'bool':
-      validateBooleanSchema(schema);
+      validateBoolSchema(schema);
       break;
     case 'num':
-      validateNumberSchema(schema);
+      validateNumSchema(schema);
       break;
     case 'str':
-      validateStringSchema(schema);
+      validateStrSchema(schema);
       break;
     case 'bin':
-      validateBinarySchema(schema, validateSchema);
+      validateBinSchema(schema);
       break;
     case 'arr':
-      validateArraySchema(schema, validateSchema);
+      validateArrSchema(schema);
       break;
     case 'con':
-      validateConstSchema(schema);
-      break;
-    case 'tup':
-      validateTupleSchema(schema, validateSchema);
+      validateConSchema(schema);
       break;
     case 'obj':
-      validateObjectSchema(schema, validateSchema);
+      validateObjSchema(schema);
       break;
     case 'field':
-      validateFieldSchema(schema, validateSchema);
+      validateFieldSchema(schema);
       break;
     case 'map':
-      validateMapSchema(schema, validateSchema);
+      validateMapSchema(schema);
       break;
     case 'ref':
       validateRefSchema(schema);
       break;
     case 'or':
-      validateOrSchema(schema, validateSchema);
+      validateOrSchema(schema);
       break;
     case 'fn':
-      validateFunctionSchema(schema, validateSchema);
+      validateFunctionSchema(schema);
       break;
     case 'fn$':
-      validateFunctionStreamingSchema(schema, validateSchema);
+      validateFunctionStreamingSchema(schema);
       break;
     default:
       throw new Error(`Unknown schema kind: ${(schema as any).kind}`);

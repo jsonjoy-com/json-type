@@ -1,10 +1,9 @@
 import {printTree} from 'tree-dump/lib/printTree';
 import * as schema from '../../schema';
+import {Value} from '../../value';
 import {AbsType} from './AbsType';
 import type {SchemaOf, Type} from '../types';
 import type {ResolveType} from '../../system';
-import type {Observable} from 'rxjs';
-import {Value} from '../../value';
 
 const fnNotImplemented: schema.FunctionValue<any, any> = async () => {
   throw new Error('NOT_IMPLEMENTED');
@@ -17,28 +16,20 @@ const toStringTree = (tab: string = '', type: FnType<Type, Type, any> | FnRxType
   ]);
 };
 
-type FunctionImpl<Req extends Type, Res extends Type, Ctx = unknown> = (
-  req: ResolveType<Req>,
-  ctx: Ctx,
-) => ResolveType<Res> | Promise<ResolveType<Res>>;
-
 export class FnType<Req extends Type, Res extends Type, Ctx = unknown> extends AbsType<
-  schema.FunctionSchema<SchemaOf<Req>, SchemaOf<Res>, Ctx>
+  schema.FnSchema<SchemaOf<Req>, SchemaOf<Res>, Ctx>
 > {
-  protected schema: schema.FunctionSchema<SchemaOf<Req>, SchemaOf<Res>, Ctx>;
-
   public fn: schema.FunctionValue<schema.TypeOf<SchemaOf<Req>>, schema.TypeOf<SchemaOf<Res>>> = fnNotImplemented;
 
   constructor(
     public readonly req: Req,
     public readonly res: Res,
-    options?: schema.Optional<schema.FunctionSchema<SchemaOf<Req>, SchemaOf<Res>>>,
+    options?: schema.Optional<schema.FnSchema<SchemaOf<Req>, SchemaOf<Res>>>,
   ) {
-    super();
-    this.schema = {
+    super({
       ...options,
       ...schema.s.Function(schema.s.any, schema.s.any),
-    } as any;
+    } as any);
   }
 
   public input<T extends Type>(req: T): FnType<T, Res> {
@@ -71,11 +62,7 @@ export class FnType<Req extends Type, Res extends Type, Ctx = unknown> extends A
     return this as any;
   }
 
-  public value(data: ResolveType<FnType<Req, Res, Ctx>>) {
-    return new Value<FnType<Req, Res, Ctx>>(this, data);
-  }
-
-  public getSchema(): schema.FunctionSchema<SchemaOf<Req>, SchemaOf<Res>, Ctx> {
+  public getSchema(): schema.FnSchema<SchemaOf<Req>, SchemaOf<Res>, Ctx> {
     return {
       ...this.schema,
       req: this.req.getSchema() as SchemaOf<Req>,
@@ -88,27 +75,20 @@ export class FnType<Req extends Type, Res extends Type, Ctx = unknown> extends A
   }
 }
 
-type FunctionStreamingImpl<Req extends Type, Res extends Type, Ctx = unknown> = (
-  req: Observable<ResolveType<Req>>,
-  ctx: Ctx,
-) => Observable<ResolveType<Res>>;
-
 export class FnRxType<Req extends Type, Res extends Type, Ctx = unknown> extends AbsType<
-  schema.FunctionStreamingSchema<SchemaOf<Req>, SchemaOf<Res>, Ctx>
+  schema.FnStreamingSchema<SchemaOf<Req>, SchemaOf<Res>, Ctx>
 > {
   public readonly isStreaming = true;
-  protected schema: schema.FunctionStreamingSchema<SchemaOf<Req>, SchemaOf<Res>, Ctx>;
 
   constructor(
     public readonly req: Req,
     public readonly res: Res,
-    options?: schema.Optional<schema.FunctionStreamingSchema<SchemaOf<Req>, SchemaOf<Res>>>,
+    options?: schema.Optional<schema.FnStreamingSchema<SchemaOf<Req>, SchemaOf<Res>>>,
   ) {
-    super();
-    this.schema = {
+    super({
       ...options,
       ...schema.s.Function$(schema.s.any, schema.s.any),
-    } as any;
+    } as any);
   }
 
   public request<T extends Type>(req: T): FnType<T, Res> {
@@ -129,7 +109,7 @@ export class FnRxType<Req extends Type, Res extends Type, Ctx = unknown> extends
     return this.response(res);
   }
 
-  public getSchema(): schema.FunctionStreamingSchema<SchemaOf<Req>, SchemaOf<Res>, Ctx> {
+  public getSchema(): schema.FnStreamingSchema<SchemaOf<Req>, SchemaOf<Res>, Ctx> {
     return {
       ...this.schema,
       req: this.req.getSchema() as SchemaOf<Req>,
