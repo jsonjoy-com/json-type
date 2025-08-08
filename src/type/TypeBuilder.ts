@@ -189,7 +189,7 @@ export class TypeBuilder {
     return new classes.ArrType<T, [], []>(type, void 0, void 0, options).sys(this.system);
   }
 
-  public Tuple<const Head extends Type[], Item extends Type | void, const Tail extends Type[]>(head: Head, item?: Item, tail?: Tail, options?: schema.Optional<schema.ArrSchema>) {
+  public Tuple<const Head extends Type[], Item extends Type | void = undefined, const Tail extends Type[] = []>(head: Head, item?: Item, tail?: Tail, options?: schema.Optional<schema.ArrSchema>) {
     return new classes.ArrType(item, head, tail, options).sys(this.system);
   }
 
