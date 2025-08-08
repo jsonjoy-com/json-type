@@ -829,9 +829,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jsonjoy.com/json-pack@npm:^1.9.0":
-  version: 1.9.0
-  resolution: "@jsonjoy.com/json-pack@npm:1.9.0"
+"@jsonjoy.com/json-pack@npm:^1.9.1":
+  version: 1.9.1
+  resolution: "@jsonjoy.com/json-pack@npm:1.9.1"
   dependencies:
     "@jsonjoy.com/base64": "npm:^1.1.2"
     "@jsonjoy.com/buffers": "npm:^1.0.0"
@@ -842,7 +842,7 @@ __metadata:
     thingies: "npm:^2.5.0"
   peerDependencies:
     tslib: 2
-  checksum: 10c0/df3c348eef05727adb64bb68e9ad92efe72c6c7d60927b0302d2919f54b4a5e4a5a416cf778c3cddf1c1c4f7720606f4b0c910128127bf567ee734782021264d
+  checksum: 10c0/af57a3863dada6762b413e8a745e17e95a7b84cef5e778320b5451cad2bca516e863ced4c934e2c7d2a5e5d0a6c8e08850579ac07ebad7be43b6ce31d93dd5d0
   languageName: node
   linkType: hard
 
@@ -887,7 +887,7 @@ __metadata:
     "@jsonjoy.com/buffers": "npm:^1.0.0"
     "@jsonjoy.com/codegen": "npm:^1.0.0"
     "@jsonjoy.com/json-expression": "npm:^1.1.0"
-    "@jsonjoy.com/json-pack": "npm:^1.9.0"
+    "@jsonjoy.com/json-pack": "npm:^1.9.1"
     "@jsonjoy.com/json-random": "npm:^1.2.0"
     "@jsonjoy.com/util": "npm:^1.9.0"
     "@types/benchmark": "npm:^2.1.5"

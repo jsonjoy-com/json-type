@@ -59,7 +59,7 @@
     "@jsonjoy.com/buffers": "^1.0.0",
     "@jsonjoy.com/codegen": "^1.0.0",
     "@jsonjoy.com/json-expression": "^1.1.0",
-    "@jsonjoy.com/json-pack": "^1.9.0",
+    "@jsonjoy.com/json-pack": "^1.9.1",
     "@jsonjoy.com/json-random": "^1.2.0",
     "@jsonjoy.com/util": "^1.9.0",
     "sonic-forest": "^1.2.1",
