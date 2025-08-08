@@ -5,6 +5,12 @@
  */
 
 import {s} from '../schema';
+import {genRandomExample} from '@jsonjoy.com/json-random/lib/examples';
+import {RandomJson} from '@jsonjoy.com/json-random';
+
+export const randomJson = () => {
+  return Math.random() < .5 ? genRandomExample() : RandomJson.generate();
+};
 
 /**
  * Basic primitive type schemas

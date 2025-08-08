@@ -302,16 +302,7 @@ export class TypeBuilder {
         if (value === null) return this.nil;
         if (Array.isArray(value)) {
           if (value.length === 0) return this.arr;
-          const getType = (v: unknown): string => {
-            switch (typeof v) {
-              case 'object':
-                if (v === null) return 'nil';
-                if (Array.isArray(v)) return 'arr';
-                return 'obj';
-              default:
-                return typeof v;
-            }
-          };
+          const getType = (v: unknown): string => this.from(v) + '';
           const allElementsOfTheSameType = value.every((v) => getType(v) === getType(value[0]));
           this.Array(this.from(value[0]));
           return allElementsOfTheSameType

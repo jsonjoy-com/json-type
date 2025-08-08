@@ -27,7 +27,7 @@ export class ObjKeyType<K extends string, V extends Type> extends AbsType<schema
   }
 
   protected toStringTitle(): string {
-    return `"${this.key}":`;
+    return JSON.stringify(this.key);
   }
 
   public toString(tab: string = ''): string {
@@ -47,7 +47,7 @@ export class ObjKeyOptType<K extends string, V extends Type> extends ObjKeyType<
   }
 
   protected toStringTitle(): string {
-    return `"${this.key}"?:`;
+    return JSON.stringify(this.key) + '?';
   }
 }
 
