@@ -18,7 +18,8 @@ test('can encode random values', () => {
       const fn = JsonCodegen.get(type);
       fn(json, encoder);
       const encoded = encoder.writer.flush();
-      const decoded = parse(Buffer.from(encoded).toString('utf-8'));
+      // const decoded = parse(Buffer.from(encoded).toString('utf-8'));
+      const decoded = decoder.decode(encoded);
       expect(decoded).toEqual(json);
     } catch (error) {
       console.log(JSON.stringify(json, null, 2));
