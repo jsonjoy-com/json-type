@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>12/12</span>
+                <span class='fraction'>8/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">66.66% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>2/3</span>
+                <span class='fraction'>0/0</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>5/5</span>
+                <span class='fraction'>3/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>12/12</span>
+                <span class='fraction'>8/8</span>
             </div>
         
             
@@ -82,54 +82,10 @@
 <a name='L17'></a><a href='#L17'>17</a>
 <a name='L18'></a><a href='#L18'>18</a>
 <a name='L19'></a><a href='#L19'>19</a>
-<a name='L20'></a><a href='#L20'>20</a>
-<a name='L21'></a><a href='#L21'>21</a>
-<a name='L22'></a><a href='#L22'>22</a>
-<a name='L23'></a><a href='#L23'>23</a>
-<a name='L24'></a><a href='#L24'>24</a>
-<a name='L25'></a><a href='#L25'>25</a>
-<a name='L26'></a><a href='#L26'>26</a>
-<a name='L27'></a><a href='#L27'>27</a>
-<a name='L28'></a><a href='#L28'>28</a>
-<a name='L29'></a><a href='#L29'>29</a>
-<a name='L30'></a><a href='#L30'>30</a>
-<a name='L31'></a><a href='#L31'>31</a>
-<a name='L32'></a><a href='#L32'>32</a>
-<a name='L33'></a><a href='#L33'>33</a>
-<a name='L34'></a><a href='#L34'>34</a>
-<a name='L35'></a><a href='#L35'>35</a>
-<a name='L36'></a><a href='#L36'>36</a>
-<a name='L37'></a><a href='#L37'>37</a>
-<a name='L38'></a><a href='#L38'>38</a>
-<a name='L39'></a><a href='#L39'>39</a>
-<a name='L40'></a><a href='#L40'>40</a>
-<a name='L41'></a><a href='#L41'>41</a>
-<a name='L42'></a><a href='#L42'>42</a>
-<a name='L43'></a><a href='#L43'>43</a>
-<a name='L44'></a><a href='#L44'>44</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">30x</span>
-<span class="cline-any cline-yes">30x</span>
+<a name='L20'></a><a href='#L20'>20</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">28x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">30x</span>
-<span class="cline-any cline-yes">530x</span>
-<span class="cline-any cline-yes">530x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">28x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -143,53 +99,25 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import type * as schema from '../../schema';
-import {asString} from '@jsonjoy.com/util/lib/strings/asString';
 import {AbsType} from './AbsType';
-import {isAscii, isUtf8} from '../../util/stringFormats';
-import {ValidationError} from '../../constants';
-import type {ValidatorCodegenContext} from '../../codegen/validator/ValidatorCodegenContext';
-import type {ValidationPath} from '../../codegen/validator/types';
-import type {JsonTextEncoderCodegenContext} from '../../codegen/json/JsonTextEncoderCodegenContext';
-import type {CborEncoderCodegenContext} from '../../codegen/binary/CborEncoderCodegenContext';
-import type {JsonEncoderCodegenContext} from '../../codegen/binary/JsonEncoderCodegenContext';
-import type {BinaryEncoderCodegenContext} from '../../codegen/binary/BinaryEncoderCodegenContext';
-import type {JsExpression} from '@jsonjoy.com/util/lib/codegen/util/JsExpression';
-import type {MessagePackEncoderCodegenContext} from '../../codegen/binary/MessagePackEncoderCodegenContext';
-import type {BinaryJsonEncoder} from '@jsonjoy.com/json-pack/lib/types';
-import type {TypeSystem} from '../../system/TypeSystem';
-import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
-import type * as ts from '../../typescript/types';
-import type * as jtd from '../../jtd/types';
 &nbsp;
-export class StrType extends AbsType&lt;schema.StringSchema&gt; {
-  constructor(protected schema: schema.StringSchema) {
-    super();
-  }
-&nbsp;
-  public format(format: schema.StringSchema['format']): this {
+export class StrType extends AbsType&lt;schema.StrSchema&gt; {
+  public format(format: schema.StrSchema['format']): this {
     this.schema.format = format;
     return this;
   }
 &nbsp;
-  public min(min: schema.StringSchema['min']): this {
+  public min(min: schema.StrSchema['min']): this {
     this.schema.min = min;
     return this;
   }
 &nbsp;
-  public max(max: schema.StringSchema['max']): this {
+  public max(max: schema.StrSchema['max']): this {
     this.schema.max = max;
     return this;
-  }
-&nbsp;
-  public toJson(value: unknown, system: TypeSystem | undefined = this.system): json_string&lt;unknown&gt; {
-    return &lt;json_string&lt;string&gt;&gt;(this.schema.noJsonEscape ? <span class="branch-0 cbranch-no" title="branch not covered" >'"' + value + '"' </span>: asString(value as string));
   }
 }
 &nbsp;</pre></td></tr></table></pre>
@@ -199,7 +127,7 @@ export class StrType extends AbsType&lt;schema.StringSchema&gt; {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-30T23:30:13.368Z
+                at 2025-08-08T16:19:01.944Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

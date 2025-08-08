@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">93.1% </span>
+                <span class="strong">89.47% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>27/29</span>
+                <span class='fraction'>17/19</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>0/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">66.66% </span>
-                <span class="quiet">Branches</span>
-                <span class='fraction'>2/3</span>
-            </div>
-        
-            
-            <div class='fl pad1y space-right2'>
-                <span class="strong">75% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>6/8</span>
+                <span class='fraction'>4/6</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">92.85% </span>
+                <span class="strong">88.88% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>26/28</span>
+                <span class='fraction'>16/18</span>
             </div>
         
             
@@ -136,18 +136,18 @@
 <a name='L71'></a><a href='#L71'>71</a>
 <a name='L72'></a><a href='#L72'>72</a>
 <a name='L73'></a><a href='#L73'>73</a>
-<a name='L74'></a><a href='#L74'>74</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">30x</span>
-<span class="cline-any cline-yes">30x</span>
-<span class="cline-any cline-yes">30x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">30x</span>
-<span class="cline-any cline-yes">30x</span>
+<a name='L74'></a><a href='#L74'>74</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">28x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">28x</span>
+<span class="cline-any cline-yes">28x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">30x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">28x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">40x</span>
 <span class="cline-any cline-yes">40x</span>
@@ -167,29 +167,29 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -239,31 +239,31 @@ export class TypeAlias&lt;K extends string, T extends Type&gt; implements Printa
     return this.id + printTree(tab, [(tab) =&gt; this.type.toString(tab)]);
   }
 &nbsp;
-  public toTypeScriptAst(): ts.TsInterfaceDeclaration | ts.TsTypeAliasDeclaration {
-    const type = this.type;
-    if (type instanceof ObjType) {
-      const ast = this.type.toTypeScriptAst() as ts.TsTypeLiteral;
-      const node: ts.TsInterfaceDeclaration = {
-        node: 'InterfaceDeclaration',
-        name: this.id,
-        members: ast.members,
-      };
-      return node;
-    } else {
-      const node: ts.TsTypeAliasDeclaration = {
-        node: 'TypeAliasDeclaration',
-        name: this.id,
-        type: type.toTypeScriptAst(),
-      };
-      // TODO: Figure out if this is still needed, and possibly bring it back.
-      // augmentWithComment(type, node);
-      return node;
-    }
-  }
+  // public toTypeScriptAst(): ts.TsInterfaceDeclaration | ts.TsTypeAliasDeclaration {
+  //   const type = this.type;
+  //   if (type instanceof ObjType) {
+  //     const ast = this.type.toTypeScriptAst() as ts.TsTypeLiteral;
+  //     const node: ts.TsInterfaceDeclaration = {
+  //       node: 'InterfaceDeclaration',
+  //       name: this.id,
+  //       members: ast.members,
+  //     };
+  //     return node;
+  //   } else {
+  //     const node: ts.TsTypeAliasDeclaration = {
+  //       node: 'TypeAliasDeclaration',
+  //       name: this.id,
+  //       type: type.toTypeScriptAst(),
+  //     };
+  //     // TODO: Figure out if this is still needed, and possibly bring it back.
+  //     // augmentWithComment(type, node);
+  //     return node;
+  //   }
+  // }
 &nbsp;
-  public toTypeScript(): string {
-    return toText(this.toTypeScriptAst());
-  }
+  // public toTypeScript(): string {
+  //   return toText(this.toTypeScriptAst());
+  // }
 &nbsp;
   public toJsonSchema(): JsonSchemaGenericKeywords {
     const node: JsonSchemaGenericKeywords = {
@@ -289,7 +289,7 @@ export class TypeAlias&lt;K extends string, T extends Type&gt; implements Printa
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-30T23:30:13.368Z
+                at 2025-08-08T16:19:01.944Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

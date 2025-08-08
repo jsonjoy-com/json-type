@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">60.65% </span>
+                <span class="strong">63.93% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>37/61</span>
+                <span class='fraction'>39/61</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">61.76% </span>
+                <span class="strong">62.85% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>21/34</span>
+                <span class='fraction'>22/35</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/2</span>
+                <span class='fraction'>1/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">66.66% </span>
+                <span class="strong">70.37% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>36/54</span>
+                <span class='fraction'>38/54</span>
             </div>
         
             
@@ -189,9 +189,7 @@
 <a name='L124'></a><a href='#L124'>124</a>
 <a name='L125'></a><a href='#L125'>125</a>
 <a name='L126'></a><a href='#L126'>126</a>
-<a name='L127'></a><a href='#L127'>127</a>
-<a name='L128'></a><a href='#L128'>128</a>
-<a name='L129'></a><a href='#L129'>129</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L127'></a><a href='#L127'>127</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
@@ -257,7 +255,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -294,12 +296,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -319,8 +315,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import type * as jtd from './types';
-import type * as schema from '../schema';
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import {ObjKeyOptType, type ArrType, type ObjType, type RefType, type Type} from '../type';
+import type * as jtd from './types';
 &nbsp;
 const NUMS_TYPE_MAPPING = new Map&lt;string, jtd.JtdType&gt;([
   ['u8', 'uint8'],
@@ -336,8 +332,8 @@ const NUMS_TYPE_MAPPING = new Map&lt;string, jtd.JtdType&gt;([
  * Main router function that converts any Schema to JTD form.
  * Uses a switch statement to route to the appropriate converter logic.
  */
-export function toJtdForm(schema: schema.Schema): jtd.JtdForm {
-  const typeName = schema.kind;
+export function toJtdForm(type: Type): jtd.JtdForm {
+  const typeName = type.kind();
 &nbsp;
   switch (typeName) {
     case 'any': {
@@ -349,7 +345,7 @@ export function toJtdForm(schema: schema.Schema): jtd.JtdForm {
       return form;
     }
     case 'con': {
-      const constSchema = schema as schema.ConstSchema;
+      const constSchema = type.getSchema();
       const value = constSchema.value;
       const valueType = typeof value;
       switch (valueType) {
@@ -374,7 +370,7 @@ export function toJtdForm(schema: schema.Schema): jtd.JtdForm {
 <span class="cstat-no" title="statement not covered" >      return form;</span>
     }
     case 'num': {
-      const numSchema = schema as schema.NumberSchema;
+      const numSchema = type.getSchema();
       return {
         type: (NUMS_TYPE_MAPPING.get(numSchema.format || '') ?? 'float64') as jtd.JtdType,
       };
@@ -383,27 +379,31 @@ export function toJtdForm(schema: schema.Schema): jtd.JtdForm {
       return {type: 'string'};
     }
     case 'arr': {
-      const arraySchema = schema as schema.ArraySchema;
-      return {
-        elements: [toJtdForm(arraySchema.type)],
-      };
+      const arr = type as ArrType;
+      if (arr._type) {
+        return {
+          elements: toJtdForm(arr._type),
+        };
+      } else <span class="missing-if-branch" title="else path not taken" >E</span>{
+<span class="cstat-no" title="statement not covered" >        return {nullable: true};</span>
+      }
     }
     case 'obj': {
-      const objSchema = schema as schema.ObjectSchema;
+      const obj = type as ObjType;
       const form: jtd.JtdPropertiesForm = {};
 &nbsp;
-      if (objSchema.fields &amp;&amp; objSchema.fields.length &gt; 0) {
+      if (obj.fields &amp;&amp; obj.fields.length &gt; 0) {
         form.properties = {};
         form.optionalProperties = {};
 &nbsp;
-        for (const field of objSchema.fields) {
+        for (const field of obj.fields) {
           const fieldName = field.key;
-          const fieldType = field.value;
+          const fieldType = field.val;
 &nbsp;
           if (fieldType) {
             const fieldJtd = toJtdForm(fieldType);
             // Check if field is optional
-            if (field.optional === true) {
+            if (field instanceof ObjKeyOptType) {
               form.optionalProperties[fieldName] = fieldJtd;
             } else {
               form.properties[fieldName] = fieldJtd;
@@ -413,35 +413,29 @@ export function toJtdForm(schema: schema.Schema): jtd.JtdForm {
       }
 &nbsp;
       // Handle additional properties - check the schema for unknownFields
-      <span class="missing-if-branch" title="if path not taken" >I</span>if (objSchema.unknownFields === false) {
+      <span class="missing-if-branch" title="if path not taken" >I</span>if (obj.schema.unknownFields === false) {
 <span class="cstat-no" title="statement not covered" >        form.additionalProperties = false;</span>
       }
 &nbsp;
       return form;
     }
-<span class="branch-7 cbranch-no" title="branch not covered" >    case 'tup': {</span>
-      const tupleSchema = <span class="cstat-no" title="statement not covered" >schema as schema.TupleSchema;</span>
-<span class="cstat-no" title="statement not covered" >      return {</span>
-        elements: tupleSchema.types.map(<span class="fstat-no" title="function not covered" >(e</span>lement: any) =&gt; <span class="cstat-no" title="statement not covered" >toJtdForm(element))</span>,
-      };
-    }
-<span class="branch-8 cbranch-no" title="branch not covered" >    case 'map': {</span>
-      const mapSchema = <span class="cstat-no" title="statement not covered" >schema as schema.MapSchema;</span>
+<span class="branch-7 cbranch-no" title="branch not covered" >    case 'map': {</span>
+      const mapSchema = <span class="cstat-no" title="statement not covered" >type.getSchema();</span>
 <span class="cstat-no" title="statement not covered" >      return {</span>
         values: toJtdForm(mapSchema.value),
       };
     }
-<span class="branch-9 cbranch-no" title="branch not covered" >    case 'ref': {</span>
-      const refSchema = <span class="cstat-no" title="statement not covered" >schema as schema.RefSchema;</span>
+<span class="branch-8 cbranch-no" title="branch not covered" >    case 'ref': {</span>
+      const ref = <span class="cstat-no" title="statement not covered" >type as RefType;</span>
 <span class="cstat-no" title="statement not covered" >      return {</span>
-        ref: refSchema.ref,
+        ref: ref.ref(),
       };
     }
     // case 'or':
     // case 'bin':
     // case 'fn':
     // case 'fn$':
-<span class="branch-10 cbranch-no" title="branch not covered" >    default: {</span>
+<span class="branch-9 cbranch-no" title="branch not covered" >    default: {</span>
       const form: jtd.JtdEmptyForm = <span class="cstat-no" title="statement not covered" >{nullable: false};</span>
 <span class="cstat-no" title="statement not covered" >      return form;</span>
     }
@@ -454,7 +448,7 @@ export function toJtdForm(schema: schema.Schema): jtd.JtdForm {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-30T23:30:13.368Z
+                at 2025-08-08T16:19:01.944Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
