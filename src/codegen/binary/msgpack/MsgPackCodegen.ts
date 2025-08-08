@@ -1,22 +1,22 @@
 import {AbstractBinaryCodegen} from '../AbstractBinaryCodegen';
 import {writer} from '../writer';
 import {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
-import {CborEncoder} from '@jsonjoy.com/json-pack/lib/cbor/CborEncoder';
+import {MsgPackEncoder} from '@jsonjoy.com/json-pack/lib/msgpack/MsgPackEncoder';
 import {lazyKeyedFactory} from '../../util';
 import {ObjKeyOptType, type ObjType, type Type} from '../../../type';
-import type {CompiledBinaryEncoder, SchemaPath} from '../../types';
 import {normalizeAccessor} from '@jsonjoy.com/codegen/lib/util/normalizeAccessor';
+import type {CompiledBinaryEncoder, SchemaPath} from '../../types';
 
-export class CborCodegen extends AbstractBinaryCodegen<CborEncoder> {
+export class MsgPackCodegen extends AbstractBinaryCodegen<MsgPackEncoder> {
   public static readonly get = lazyKeyedFactory((type: Type, name?: string) => {
-    const codegen = new CborCodegen(type, name);
+    const codegen = new MsgPackCodegen(type, name);
     const r = codegen.codegen.options.args[0];
     const expression = new JsExpression(() => r);
     codegen.onNode([], expression, type);
     return codegen.compile();
   });
 
-  protected encoder = new CborEncoder(writer);
+  protected encoder = new MsgPackEncoder(writer);
 
   protected onObj(path: SchemaPath, value: JsExpression, type: ObjType): void {
     const codegen = this.codegen;
@@ -27,7 +27,10 @@ export class CborCodegen extends AbstractBinaryCodegen<CborEncoder> {
     const optionalFields = fields.filter((field) => field instanceof ObjKeyOptType);
     const requiredLength = requiredFields.length;
     const optionalLength = optionalFields.length;
+    const totalMaxKnownFields = requiredLength + optionalLength;
+    if (totalMaxKnownFields > 0xffff) throw new Error('Too many fields');
     const encodeUnknownFields = !!type.schema.encodeUnknownFields;
+    const rFieldCount = codegen.r();
     const emitRequiredFields = () => {
       for (let i = 0; i < requiredLength; i++) {
         const field = requiredFields[i];
@@ -40,16 +43,17 @@ export class CborCodegen extends AbstractBinaryCodegen<CborEncoder> {
       for (let i = 0; i < optionalLength; i++) {
         const field = optionalFields[i];
         const accessor = normalizeAccessor(field.key);
-        codegen.js(`if (${JSON.stringify(field.key)} in ${r}) {`);
-        this.blob(this.gen((encoder) => encoder.writeStr(field.key)));
-        this.onNode([...path, field.key], new JsExpression(() => `${r}${accessor}`), field.val);
-        codegen.js(`}`);
+        codegen.if(`${r}${accessor} !== undefined`, () => {
+          codegen.js(`${rFieldCount}++;`);
+          this.blob(this.gen((encoder) => encoder.writeStr(field.key)));
+          this.onNode([...path, field.key], new JsExpression(() => `${r}${accessor}`), field.val);
+        });
       }
     };
     const emitUnknownFields = () => {
+      const ri = codegen.r();
       const rKeys = codegen.r();
       const rKey = codegen.r();
-      const ri = codegen.r();
       const rLength = codegen.r();
       const keys = fields.map((field) => JSON.stringify(field.key));
       const rKnownFields = codegen.addConstant(`new Set([${keys.join(',')}])`);
@@ -57,6 +61,7 @@ export class CborCodegen extends AbstractBinaryCodegen<CborEncoder> {
       codegen.js(`for (var ${ri} = 0; ${ri} < ${rLength}; ${ri}++) {`);
       codegen.js(`${rKey} = ${rKeys}[${ri}];`);
       codegen.js(`if (${rKnownFields}.has(${rKey})) continue;`);
+      codegen.js(`${rFieldCount}++;`);
       codegen.js(`encoder.writeStr(${rKey});`);
       codegen.js(`encoder.writeAny(${r}[${rKey}]);`);
       codegen.js(`}`);
@@ -66,20 +71,24 @@ export class CborCodegen extends AbstractBinaryCodegen<CborEncoder> {
       this.blob(this.gen((encoder) => encoder.writeObjHdr(length)));
       emitRequiredFields();
     } else if (!encodeUnknownFields) {
-      this.blob(this.gen((encoder) => encoder.writeStartObj()));
+      codegen.js(`var ${rFieldCount} = ${requiredLength};`);
+      const rHeaderPosition = codegen.var('writer.x');
+      this.blob(this.gen((encoder) => encoder.writeObjHdr(0xffff)));
       emitRequiredFields();
       emitOptionalFields();
-      this.blob(this.gen((encoder) => encoder.writeEndObj()));
+      codegen.js(`view.setUint16(${rHeaderPosition} + 1, ${rFieldCount});`);
     } else {
-      this.blob(this.gen((encoder) => encoder.writeStartObj()));
+      codegen.js(`var ${rFieldCount} = ${requiredLength};`);
+      const rHeaderPosition = codegen.var('writer.x');
+      this.blob(this.gen((encoder) => encoder.writeObjHdr(0xffffffff)));
       emitRequiredFields();
       emitOptionalFields();
       emitUnknownFields();
-      this.blob(this.gen((encoder) => encoder.writeEndObj()));
+      codegen.js(`view.setUint32(${rHeaderPosition} + 1, ${rFieldCount});`);
     }
   }
 
   protected genEncoder(type: Type): CompiledBinaryEncoder {
-    return CborCodegen.get(type);
+    return MsgPackCodegen.get(type);
   }
 }
