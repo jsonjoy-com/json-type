@@ -79,10 +79,6 @@ export class CborCodegen extends AbstractBinaryCodegen<CborEncoder> {
     }
   }
 
-  protected onMap(path: SchemaPath, val: JsExpression, type: MapType): void {
-    throw new Error('not implemented');
-  }
-
   protected genEncoder(type: Type): CompiledBinaryEncoder {
     return CborCodegen.get(type);
   }

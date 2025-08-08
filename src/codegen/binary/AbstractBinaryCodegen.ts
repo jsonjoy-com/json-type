@@ -8,7 +8,7 @@ import {floats, ints, uints} from '../../util';
 import {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
 import {DiscriminatorCodegen} from '../discriminator';
 import type {BinaryJsonEncoder} from '@jsonjoy.com/json-pack/lib/types';
-import type {AnyType, ArrType, BinType, BoolType, ConType, NumType, OrType, RefType, StrType, Type} from '../../type';
+import type {AnyType, ArrType, BinType, BoolType, ConType, MapType, NumType, OrType, RefType, StrType, Type} from '../../type';
 import type {CompiledBinaryEncoder, SchemaPath} from '../types';
 
 type Step = WriteBlobStep | CodegenStepExecJs;
@@ -189,6 +189,22 @@ var uint8 = writer.uint8, view = writer.view;`,
         codegen.js(/* js */ `${ri}++`);
       }
     }
+  }
+
+  protected onMap(path: SchemaPath, val: JsExpression, type: MapType): void {
+    const codegen = this.codegen;
+    const r = codegen.var(val.use());
+    const rKeys = codegen.var(/* js */ `Object.keys(${r})`);
+    const rKey = codegen.var();
+    const rLength = codegen.var(/* js */ `${rKeys}.length`);
+    const ri = codegen.var('0');
+    codegen.js(`encoder.writeObjHdr(${rLength});`);
+    codegen.js(`for(; ${ri} < ${rLength}; ${ri}++){`);
+    codegen.js(`${rKey} = ${rKeys}[${ri}];`);
+    codegen.js(`encoder.writeStr(${rKey});`);
+    const expr = new JsExpression(() => `${r}[${rKey}]`);
+    this.onNode([...path, {r: rKey}], expr, type._value);
+    codegen.js(/* js */ `}`);
   }
 
   protected onOr(path: SchemaPath, r: JsExpression, type: OrType<Type[]>): void {
