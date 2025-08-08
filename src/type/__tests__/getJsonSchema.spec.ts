@@ -1,10 +1,11 @@
 import {t} from '..';
+import {typeToJsonSchema} from '../../json-schema';
 import {TypeSystem} from '../../system';
 
 test('can print a type', () => {
   const type = t
     .Object(
-      t.prop('id', t.str.options({validator: ['id', 'uuid']})).options({
+      t.prop('id', t.str).options({
         description: 'The id of the object',
       }),
       t.prop('tags', t.Array(t.str).options({title: 'Tags'})).options({title: 'Always use tags'}),
@@ -31,7 +32,7 @@ test('can print a type', () => {
         t
           .Binary(
             t
-              .Tuple(t.Const(7 as const).options({description: '7 is the magic number'}), t.str, t.any)
+              .tuple(t.Const(7 as const).options({description: '7 is the magic number'}), t.str, t.any)
               .options({description: 'Should always have 3 elements'}),
           )
           .options({format: 'cbor'}),
@@ -40,7 +41,7 @@ test('can print a type', () => {
     )
     .options({unknownFields: true});
   // console.log(JSON.stringify(type.toJsonSchema(), null, 2));
-  expect(type.toJsonSchema()).toMatchInlineSnapshot(`
+  expect(typeToJsonSchema(type)).toMatchInlineSnapshot(`
 {
   "properties": {
     "arrayProperty": {
@@ -199,6 +200,6 @@ test('exports "ref" type to JSON Schema "$defs"', () => {
   const system = new TypeSystem();
   const t = system.t;
   const type = t.Object(t.prop('id', t.str), t.prop('user', t.Ref('User')));
-  const schema = type.toJsonSchema() as any;
+  const schema = typeToJsonSchema(type) as any;
   expect(schema.properties.user.$ref).toBe('#/$defs/User');
 });

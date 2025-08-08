@@ -215,7 +215,7 @@ function mapToJsonSchema(type: MapType<any>, ctx?: TypeExportContext): JsonSchem
   const result: JsonSchemaObject = {
     type: 'object',
     patternProperties: {
-      '.*': typeToJsonSchema((type as any).valueType, ctx),
+      '.*': typeToJsonSchema(type._value, ctx),
     },
   };
 

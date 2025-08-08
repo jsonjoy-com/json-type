@@ -1,4 +1,4 @@
-import {ArrType, ObjType} from '../type/classes';
+import {ArrType, FnRxType, FnType, MapType, ObjType, OrType} from '../type/classes';
 import {Type} from '../type/types';
 import {TypeAlias} from '../system';
 import type * as ts from './types';
@@ -171,19 +171,19 @@ export function toTypeScriptAst(type: Type): ts.TsType {
       return node;
     }
     case 'map': {
-      const mapSchema = type.getSchema();
+      const map = type as MapType;
       const node: ts.TsTypeReference = {
         node: 'TypeReference',
         typeName: 'Record',
-        typeArguments: [{node: 'StringKeyword'}, toTypeScriptAst(mapSchema.value)],
+        typeArguments: [{node: 'StringKeyword'}, toTypeScriptAst(map._value)],
       };
       return node;
     }
     case 'or': {
-      const orSchema = type.getSchema();
+      const or = type as OrType;
       const node: ts.TsUnionType = {
         node: 'UnionType',
-        types: orSchema.types.map((type: any) => toTypeScriptAst(type)),
+        types: or.types.map((type: any) => toTypeScriptAst(type)),
       };
       return node;
     }
@@ -199,11 +199,7 @@ export function toTypeScriptAst(type: Type): ts.TsType {
       return node;
     }
     case 'fn': {
-      const fnSchema = type.getSchema();
-      // Extract schemas from the type instances
-      const reqSchema = (fnSchema.req as any).getSchema ? (fnSchema.req as any).getSchema() : fnSchema.req;
-      const resSchema = (fnSchema.res as any).getSchema ? (fnSchema.res as any).getSchema() : fnSchema.res;
-
+      const fn = type as FnType<any, any>;
       const node: ts.TsFnType = {
         node: 'FnType',
         parameters: [
@@ -213,7 +209,7 @@ export function toTypeScriptAst(type: Type): ts.TsType {
               node: 'Identifier',
               name: 'request',
             },
-            type: toTypeScriptAst(reqSchema),
+            type: toTypeScriptAst(fn.req),
           },
         ],
         type: {
@@ -222,17 +218,13 @@ export function toTypeScriptAst(type: Type): ts.TsType {
             node: 'Identifier',
             name: 'Promise',
           },
-          typeArguments: [toTypeScriptAst(resSchema)],
+          typeArguments: [toTypeScriptAst(fn.res)],
         },
       };
       return node;
     }
     case 'fn$': {
-      const fnSchema = type.getSchema();
-      // Extract schemas from the type instances
-      const reqSchema = (fnSchema.req as any).getSchema ? (fnSchema.req as any).getSchema() : fnSchema.req;
-      const resSchema = (fnSchema.res as any).getSchema ? (fnSchema.res as any).getSchema() : fnSchema.res;
-
+      const fn = type as FnRxType<any, any>;
       const node: ts.TsFnType = {
         node: 'FnType',
         parameters: [
@@ -248,7 +240,7 @@ export function toTypeScriptAst(type: Type): ts.TsType {
                 node: 'Identifier',
                 name: 'Observable',
               },
-              typeArguments: [toTypeScriptAst(reqSchema)],
+              typeArguments: [toTypeScriptAst(fn.req)],
             },
           },
         ],
@@ -258,7 +250,7 @@ export function toTypeScriptAst(type: Type): ts.TsType {
             node: 'Identifier',
             name: 'Observable',
           },
-          typeArguments: [toTypeScriptAst(resSchema)],
+          typeArguments: [toTypeScriptAst(fn.res)],
         },
       };
       return node;
