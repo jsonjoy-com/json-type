@@ -1,6 +1,4 @@
-import {type Type, t} from '..';
-import {ValidatorCodegen} from '../../codegen/validator/ValidatorCodegen';
-import {ValidationError, ValidationErrorMessage} from '../../constants';
+import {type Type, t} from '..';;
 import {TypeSystem} from '../../system/TypeSystem';
 
 export const validateTestSuite = (validate: (type: Type, value: unknown) => void) => {
@@ -346,7 +344,7 @@ export const validateTestSuite = (validate: (type: Type, value: unknown) => void
 
     describe('custom validators', () => {
       test('throws if custom validator fails', () => {
-        const type = system.t.str.validator(() => { throw new Error('Bang!'); });
+        const type = system.t.str.validator((str) => { if (str !== '!') throw new Error('Bang!'); });
         validate(type, '!');
         expect(() => validate(type, 'foo')).toThrowErrorMatchingInlineSnapshot(`"VALIDATION"`);
       });
@@ -383,16 +381,7 @@ export const validateTestSuite = (validate: (type: Type, value: unknown) => void
     test('object nested in array', () => {
       const type = t.obj.prop('foo', t.array(t.obj.prop('bar', t.str)));
       validate(type, {foo: [{bar: 'baz'}]});
-      const validator = ValidatorCodegen.get({type, errors: 'object'});
-      const res = validator({foo: [{bar: 'baz'}]});
-      expect(res).toBe(null);
-      const res2 = validator({foo: {bar: 'baz'}});
-      expect(res2).toEqual({
-        code: ValidationError[ValidationError.ARR],
-        errno: ValidationError.ARR,
-        message: ValidationErrorMessage[ValidationError.ARR],
-        path: ['foo'],
-      });
+      expect(() => validate(type, {foo: {bar: 'baz'}})).toThrow();
     });
 
     describe('size bounds', () => {

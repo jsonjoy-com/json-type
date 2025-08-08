@@ -237,7 +237,7 @@ describe('validateSchema()', () => {
       description: 'An array',
       type: {kind: 'str', ascii: 'bytes'},
     });
-    expect(validateSchema(type.getSchema())).toThrow(new Error('ASCII'));
+    expect(() => validateSchema(type.getSchema())).toThrow(new Error('ASCII'));
   });
 
   test('validates array elements', () => {
@@ -246,7 +246,7 @@ describe('validateSchema()', () => {
       description: 'An array',
       type: {kind: 'str', ascii: 'bytes'},
     });
-    expect(validateSchema(type.getSchema())).toThrow(new Error('ASCII'));
+    expect(() => validateSchema(type.getSchema())).toThrow(new Error('ASCII'));
   });
 
   test('validates object', () => {
@@ -256,7 +256,7 @@ describe('validateSchema()', () => {
       fields: [],
       unknownFields: 123 as any,
     });
-    expect(validateSchema(type.getSchema())).toThrow(new Error('UNKNOWN_FIELDS_TYPE'));
+    expect(() => validateSchema(type.getSchema())).toThrow(new Error('UNKNOWN_FIELDS_TYPE'));
   });
 
   test('validates object fields', () => {
@@ -271,7 +271,7 @@ describe('validateSchema()', () => {
         },
       ],
     });
-    expect(validateSchema(type.getSchema())).toThrow(new Error('ASCII'));
+    expect(() => validateSchema(type.getSchema())).toThrow(new Error('ASCII'));
   });
 
   test('validates object fields - 2', () => {
@@ -287,14 +287,14 @@ describe('validateSchema()', () => {
         } as any,
       ],
     });
-    expect(validateSchema(type.getSchema())).toThrow(new Error('OPTIONAL_TYPE'));
+    expect(() => validateSchema(type.getSchema())).toThrow(new Error('OPTIONAL_TYPE'));
   });
 
   test('validates ref', () => {
     const type = t.import({
       kind: 'ref',
     } as any);
-    expect(validateSchema(type.getSchema())).toThrow(new Error('REF_TYPE'));
+    expect(() => validateSchema(type.getSchema())).toThrow(new Error('REF_TYPE'));
   });
 
   test('validates or', () => {
@@ -303,6 +303,6 @@ describe('validateSchema()', () => {
       types: [{kind: 'str', ascii: '123'} as any],
       discriminator: ['!', 0],
     });
-    expect(validateSchema(type.getSchema())).toThrow(new Error('ASCII'));
+    expect(() => validateSchema(type.getSchema())).toThrow(new Error('ASCII'));
   });
 });
