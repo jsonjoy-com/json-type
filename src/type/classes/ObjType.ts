@@ -7,6 +7,8 @@ import type {ExcludeFromTuple, PickFromTuple} from '../../util/types';
 export class ObjKeyType<K extends string, V extends Type> extends AbsType<
   schema.ObjFieldSchema<K, SchemaOf<V>>
 > {
+  public readonly optional: boolean = false;
+
   constructor(
     public readonly key: K,
     public readonly val: V,
@@ -36,7 +38,7 @@ export class ObjKeyType<K extends string, V extends Type> extends AbsType<
 }
 
 export class ObjKeyOptType<K extends string, V extends Type> extends ObjKeyType<K, V> {
-  public optional = true;
+  public readonly optional: boolean = true;
 
   constructor(
     public readonly key: K,

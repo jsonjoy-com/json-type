@@ -1,3 +1,4 @@
+import type {ObjType} from '../type/classes/ObjType';
 import type {AbsType} from '../type/classes/AbsType';
 import type {AnyType} from '../type/classes/AnyType';
 import type {ArrType} from '../type/classes/ArrType';
@@ -6,7 +7,6 @@ import type {BoolType} from '../type/classes/BoolType';
 import type {ConType} from '../type/classes/ConType';
 import type {MapType} from '../type/classes/MapType';
 import type {NumType} from '../type/classes/NumType';
-import type {ObjType} from '../type/classes/ObjType';
 import type {OrType} from '../type/classes/OrType';
 import type {RefType} from '../type/classes/RefType';
 import type {StrType} from '../type/classes/StrType';
@@ -113,7 +113,7 @@ function arrayToJsonSchema(type: ArrType<any, any, any>, ctx?: TypeExportContext
   const baseSchema = getBaseJsonSchema(type, ctx);
   const result: JsonSchemaArray = {
     type: 'array',
-    items: typeToJsonSchema((type as any).type, ctx),
+    items: typeToJsonSchema(type._type, ctx),
   };
 
   // Add base properties
@@ -258,10 +258,10 @@ function objectToJsonSchema(type: ObjType<any>, ctx?: TypeExportContext): JsonSc
   };
 
   const required = [];
-  const fields = (type as any).fields;
+  const fields = type.fields;
   for (const field of fields) {
-    result.properties![field.key] = typeToJsonSchema(field.value, ctx);
-    if (!field.constructor.name.includes('Optional')) {
+    result.properties![field.key] = typeToJsonSchema(field.val, ctx);
+    if (!field.optional) {
       required.push(field.key);
     }
   }

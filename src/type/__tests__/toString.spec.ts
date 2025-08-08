@@ -3,7 +3,7 @@ import {t} from '..';
 test('can print a type', () => {
   const type = t
     .Object(
-      t.prop('id', t.str.options({validator: ['id', 'uuid']})).options({
+      t.prop('id', t.str).options({
         description: 'The id of the object',
       }),
       t.prop('tags', t.Array(t.str).options({title: 'Tags'})).options({title: 'Always use tags'}),
@@ -30,7 +30,7 @@ test('can print a type', () => {
         t
           .Binary(
             t
-              .Tuple(t.Const(7 as const).options({description: '7 is the magic number'}), t.str, t.any)
+              .Tuple([t.Const(7 as const).options({description: '7 is the magic number'}), t.str, t.any])
               .options({description: 'Should always have 3 elements'}),
           )
           .options({format: 'cbor'}),

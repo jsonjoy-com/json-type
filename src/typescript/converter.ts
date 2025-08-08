@@ -1,4 +1,4 @@
-import {ObjType} from '../type/classes';
+import {ArrType, ObjType} from '../type/classes';
 import {Type} from '../type/types';
 import {TypeAlias} from '../system';
 import type * as ts from './types';
@@ -94,20 +94,39 @@ export function toTypeScriptAst(type: Type): ts.TsType {
       return node;
     }
     case 'arr': {
-      const arraySchema = type.getSchema();
-      // TODO: add head and tail tuple type support
-      // const tupleSchema = schema as schema.TupSchema;
-      // const node: ts.TsTupType = {
-      //   node: 'TupType',
-      //   elements: tupleSchema.types.map((type: any) => toTypeScriptAst(type) as ts.TsType),
-      // };
+      const arr = type as ArrType;
+      const {_head = [], _type, _tail = []} = arr;
+      if (_head.length || _tail.length) {
+        const node: ts.TsTupleType = {
+          node: 'TupleType',
+          elements: [],
+        };
+        for (const headType of _head) {
+          node.elements.push(toTypeScriptAst(headType) as ts.TsType);
+        }
+        if (_type) {
+          const rest: ts.RestType = {
+            node: 'RestType',
+            type: ({
+              node: 'ArrType',
+              elementType: toTypeScriptAst(_type) as ts.TsType,
+            }) as ts.TsArrType,
+          };
+          node.elements.push(rest);
+        }
+        for (const tailType of _tail) {
+          node.elements.push(toTypeScriptAst(tailType) as ts.TsType);
+        }
+        return node;
+      }
       const node: ts.TsArrType = {
         node: 'ArrType',
-        elementType: toTypeScriptAst(arraySchema.type) as ts.TsType,
+        elementType: toTypeScriptAst(arr._type) as ts.TsType,
       };
       return node;
     }
     case 'obj': {
+      const obj = type as ObjType<any>;
       const objSchema = type.getSchema();
       const node: ts.TsTypeLiteral = {
         node: 'TypeLiteral',
@@ -115,22 +134,23 @@ export function toTypeScriptAst(type: Type): ts.TsType {
       };
 
       // Handle fields
-      if (objSchema.fields && objSchema.fields.length > 0) {
-        for (const field of objSchema.fields) {
+      if (obj.fields && obj.fields.length > 0) {
+        for (const field of obj.fields) {
           const member: ts.TsPropertySignature = {
             node: 'PropertySignature',
             name: field.key,
-            type: toTypeScriptAst(field.value) as ts.TsType,
+            type: toTypeScriptAst(field.val) as ts.TsType,
           };
           if (field.optional === true) {
             member.optional = true;
           }
           // Add comment using the same logic as the original augmentWithComment
-          if (field.title || field.description) {
+          const fieldSchema = field.schema;
+          if (fieldSchema.title || fieldSchema.description) {
             let comment = '';
-            if (field.title) comment += '# ' + field.title;
-            if (field.title && field.description) comment += '\n\n';
-            if (field.description) comment += field.description;
+            if (fieldSchema.title) comment += '# ' + fieldSchema.title;
+            if (fieldSchema.title && fieldSchema.description) comment += '\n\n';
+            if (fieldSchema.description) comment += fieldSchema.description;
             member.comment = comment;
           }
           node.members.push(member);
@@ -251,7 +271,7 @@ export function toTypeScriptAst(type: Type): ts.TsType {
   }
 }
 
-const aliasToTs = (alias: TypeAlias<any, any>): ts.TsInterfaceDeclaration | ts.TsTypeAliasDeclaration => {
+export const aliasToTs = (alias: TypeAlias<any, any>): ts.TsInterfaceDeclaration | ts.TsTypeAliasDeclaration => {
   const type = alias.type;
   if (type instanceof ObjType) {
     const ast = toTypeScriptAst(type) as ts.TsTypeLiteral;
@@ -265,7 +285,7 @@ const aliasToTs = (alias: TypeAlias<any, any>): ts.TsInterfaceDeclaration | ts.T
     const node: ts.TsTypeAliasDeclaration = {
       node: 'TypeAliasDeclaration',
       name: alias.id,
-      type: type.toTypeScriptAst(),
+      type: toTypeScriptAst(type),
     };
     // TODO: Figure out if this is still needed, and possibly bring it back.
     // augmentWithComment(type, node);
