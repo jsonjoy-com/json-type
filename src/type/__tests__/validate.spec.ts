@@ -1,12 +1,17 @@
 import {type Type, t} from '..';
 import {validateTestSuite} from './validateTestSuite';
+import {ValidatorCodegen} from '../../codegen/validator/ValidatorCodegen';
 
 const validate = (type: Type, value: unknown) => {
-  type.validate(value);
+  const validator = ValidatorCodegen.get({type, errors: 'object'});
+  const result = validator(value);
+  if (result) {
+    throw new Error((result as any).code);
+  }
 };
 
 const validateCodegen = (type: Type, value: unknown) => {
-  const validator = type.validator('string');
+  const validator = ValidatorCodegen.get({type, errors: 'string'});
   const err = validator(value);
   if (err) {
     throw new Error(JSON.parse(err as string)[0]);

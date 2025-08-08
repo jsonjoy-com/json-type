@@ -427,7 +427,9 @@ export class ValidatorCodegen extends AbstractCodegen {
       return;
     }
     const discriminator = DiscriminatorCodegen.get(type);
+    const err = this.err(ValidationError.OR, path);
     const d = codegen.linkDependency(discriminator);
+    codegen.js(/* js */ `try {`);
     codegen.switch(
       /* js */ `${d}(${r.use()})`,
       types.map((caseType, index) => [
@@ -441,6 +443,7 @@ export class ValidatorCodegen extends AbstractCodegen {
         codegen.js(`return ${err}`);
       },
     );
+    codegen.js(/* js */ `} catch (e) {return ${err}}`);
   }
 
   protected onNode(path: SchemaPath, r: JsExpression, type: Type): void {

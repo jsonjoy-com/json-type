@@ -44,7 +44,7 @@ export interface JtdEnumForm extends JtdFormBase {
 }
 
 export interface JtdElementsForm extends JtdFormBase {
-  elements: JtdForm[];
+  elements: JtdForm;
 }
 
 export interface JtdPropertiesForm extends JtdFormBase {
