@@ -1280,7 +1280,7 @@ describe('custom validators', () => {
   test('can specify multiple validators', () => {
     const system = new TypeSystem();
     const type = system.t.str
-      .validator((value) => value === 'a' || value === 'b', 'is-ab')
+      .validator((value) => value !== 'a' && value !== 'b', 'is-ab')
       .validator((value) => value !== 'a', 'is-a');
     const validator = ValidatorCodegen.get({type, errors: 'object'});
     const res1 = validator('a');
