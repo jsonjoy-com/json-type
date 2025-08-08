@@ -25,10 +25,6 @@ export class CborCodegen extends AbstractBinaryCodegen<CborEncoder> {
 
   protected encoder = new CborEncoder(writer);
 
-  protected onArr(path: SchemaPath, r: JsExpression, type: ArrType): void {
-    throw new Error('not implemented');
-  }
-
   protected onObj(path: SchemaPath, value: JsExpression, type: ObjType): void {
     throw new Error('not implemented');
   }
