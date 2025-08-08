@@ -206,7 +206,7 @@ interface NumberSchema {
   format?: 'i' | 'u' | 'f' | 'i8' | 'i16' | 'i32' | 'i64' | 'u8' | 'u16' | 'u32' | 'u64' | 'f32' | 'f64';
   gt?: number;      // Greater than (exclusive)
   gte?: number;     // Greater than or equal to
-  lt?: number;      // Less than (exclusive) 
+  lt?: number;      // Less than (exclusive)
   lte?: number;     // Less than or equal to
   validator?: string | string[];
 }
@@ -214,7 +214,7 @@ interface NumberSchema {
 
 **Format options:**
 - `i*` - Signed integers (i8, i16, i32, i64)
-- `u*` - Unsigned integers (u8, u16, u32, u64)  
+- `u*` - Unsigned integers (u8, u16, u32, u64)
 - `f*` - Floating point (f32, f64)
 
 **Examples:**
@@ -234,7 +234,7 @@ interface StringSchema {
   ascii?: boolean;                   // @deprecated Use format: 'ascii'
   noJsonEscape?: boolean;            // Skip JSON escaping for performance
   min?: number;                      // Minimum length
-  max?: number;                      // Maximum length  
+  max?: number;                      // Maximum length
   validator?: string | string[];
 }
 ```
@@ -269,7 +269,7 @@ s.Binary(s.Object(), {format: 'cbor'})      // CBOR-encoded object
 
 ### Composite Types
 
-#### ArraySchema (`arr`)  
+#### ArraySchema (`arr`)
 Represents a JSON array with elements of a specific type.
 
 ```ts
@@ -310,9 +310,9 @@ Represents a JSON object with defined fields.
 ```ts
 interface ObjectSchema {
   kind: 'obj';
-  fields: ObjectFieldSchema[];       // Defined object fields
-  unknownFields?: boolean;           // @deprecated Allow undefined fields  
-  encodeUnknownFields?: boolean;     // Include unknown fields in output
+  keys: ObjectKeydSchema[];       // Defined object keys
+  decodeUnknownKeys?: boolean;
+  encodeUnknownKeys?: boolean;
   validator?: string | string[];
 }
 ```
@@ -325,12 +325,12 @@ s.Object([
 ])
 ```
 
-#### ObjectFieldSchema (`field`)
+#### ObjectKeySchema (`key`)
 Represents a single field in an object.
 
 ```ts
-interface ObjectFieldSchema {
-  kind: 'field';
+interface ObjectKeydSchema {
+  kind: 'key';
   key: string;                       // Field name
   type: TType;                       // Field value type
   optional?: boolean;                // Whether field is optional
@@ -340,7 +340,7 @@ interface ObjectFieldSchema {
 **Examples:**
 ```ts
 s.prop('id', s.String())             // Required field
-s.propOpt('description', s.String()) // Optional field  
+s.propOpt('description', s.String()) // Optional field
 ```
 
 #### MapSchema (`map`)
@@ -350,7 +350,7 @@ Represents an object treated as a map with string keys and uniform value types.
 interface MapSchema {
   kind: 'map';
   type: TType;                       // Type of all values
-  validator?: string | string[];  
+  validator?: string | string[];
 }
 ```
 
@@ -379,7 +379,7 @@ s.Const(42 as const)                 // Constant number
 s.Const(null)                        // Null constant
 ```
 
-#### RefSchema (`ref`)  
+#### RefSchema (`ref`)
 References another type by ID.
 
 ```ts
@@ -413,7 +413,7 @@ s.Or(s.String(), s.Number())         // String or number
 #### FunctionSchema (`fn`)
 Represents a function type with request and response.
 
-```ts  
+```ts
 interface FunctionSchema {
   kind: 'fn';
   req: TType;                        // Request type
@@ -432,7 +432,7 @@ Represents a streaming function type.
 ```ts
 interface FunctionStreamingSchema {
   kind: 'fn$';
-  req: TType;                        // Request stream type  
+  req: TType;                        // Request stream type
   res: TType;                        // Response stream type
 }
 ```
@@ -449,17 +449,17 @@ All node types extend the base `TType` interface with these common properties:
 ```ts
 interface TType {
   kind: string;                      // Node type identifier
-  
+
   // Display properties
   title?: string;                    // Human-readable title
   intro?: string;                    // Short description
   description?: string;              // Long description (may include Markdown)
-  
+
   // Metadata
   id?: string;                       // Unique identifier
   meta?: Record<string, unknown>;    // Custom metadata
   examples?: TExample[];             // Usage examples
-  
+
   // Deprecation
   deprecated?: {
     description?: string;            // Deprecation reason and alternative
@@ -475,7 +475,7 @@ Many types support custom validation through the `validator` property:
 // Single validator
 { validator: 'email' }
 
-// Multiple validators  
+// Multiple validators
 { validator: ['required', 'email'] }
 ```
 

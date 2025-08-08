@@ -15,32 +15,32 @@ describe('string', () => {
 
 describe('object', () => {
   test('can create an empty object using shorthand', () => {
-    expect(s.obj).toEqual({kind: 'obj', fields: []});
+    expect(s.obj).toEqual({kind: 'obj', keys: []});
   });
 
   test('can create an empty object using default syntax', () => {
-    expect(s.Object()).toEqual({kind: 'obj', fields: []});
+    expect(s.Object()).toEqual({kind: 'obj', keys: []});
   });
 
   test('can create an empty object using fields-first syntax', () => {
-    expect(s.Object()).toEqual({kind: 'obj', fields: []});
+    expect(s.Object()).toEqual({kind: 'obj', keys: []});
   });
 
   test('can create a named empty object using fields-first syntax', () => {
-    expect(s.Object([])).toEqual({kind: 'obj', fields: []});
+    expect(s.Object([])).toEqual({kind: 'obj', keys: []});
   });
 
   test('can create a named empty object using default syntax', () => {
-    expect(s.Object({fields: []})).toEqual({kind: 'obj', fields: []});
+    expect(s.Object({keys: []})).toEqual({kind: 'obj', keys: []});
   });
 
   test('can specify types', () => {
     const type = s.Object([s.prop('id', s.String('UserId')), s.prop('name', s.str)]);
     expect(type).toEqual({
       kind: 'obj',
-      fields: [
+      keys: [
         {
-          kind: 'field',
+          kind: 'key',
           key: 'id',
           value: {
             kind: 'str',
@@ -48,7 +48,7 @@ describe('object', () => {
           },
         },
         {
-          kind: 'field',
+          kind: 'key',
           key: 'name',
           value: {
             kind: 'str',

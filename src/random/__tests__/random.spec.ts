@@ -6,9 +6,12 @@
 import {t, type Type} from '../../type';
 import {allSchemas, schemaCategories} from '../../__tests__/fixtures';
 import {Random} from '../Random';
+import {ValidatorCodegen} from '../../codegen/validator/ValidatorCodegen';
 
 const validate = (type: Type, value: unknown) => {
-  // TODO: Implement validation logic
+  const validator = ValidatorCodegen.get({type, errors: 'object'});
+  const error = validator(value);
+  if (error) throw error;
 };
 
 describe('Random', () => {
@@ -206,9 +209,9 @@ describe('Random', () => {
           expect(() => validate(type, randomValue)).not.toThrow();
 
           // Test using compiled validator
-          // const validator = type.compileValidator({errors: 'object'});
-          // const error = validator(randomValue);
-          // expect(error).toBe(null);
+          const validator = ValidatorCodegen.get({type, errors: 'object'});
+          const error = validator(randomValue);
+          expect(error).toBe(null);
         }
       }
     });

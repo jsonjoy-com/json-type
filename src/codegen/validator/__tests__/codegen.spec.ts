@@ -31,13 +31,13 @@ const exec = (schema: Schema, json: unknown, error: any, options: Partial<Valida
 
 test('validates according to schema a POJO object', () => {
   const type = s.Object({
-    unknownFields: false,
-    fields: [
+    decodeUnknownKeys: false,
+    keys: [
       s.prop(
         'collection',
         s.Object({
-          unknownFields: false,
-          fields: [
+          decodeUnknownKeys: false,
+          keys: [
             s.prop('id', s.str),
             s.prop('ts', s.num),
             s.prop('cid', s.str),
@@ -922,7 +922,7 @@ describe('"obj" type', () => {
 
   test('object can have a field of any type', () => {
     const type = s.Object({
-      fields: [s.Field('foo', s.any)],
+      keys: [s.prop('foo', s.any)],
     });
     exec(type, {foo: 123}, null);
     exec(type, {foo: null}, null);
@@ -941,7 +941,7 @@ describe('"obj" type', () => {
 
   test('can detect extra properties in object', () => {
     const type = s.Object({
-      fields: [s.prop('foo', s.any), s.propOpt('zup', s.any)],
+      keys: [s.prop('foo', s.any), s.propOpt('zup', s.any)],
     });
     exec(type, {foo: 123}, null);
     exec(type, {foo: 123, zup: 'asdf'}, null);
@@ -960,7 +960,7 @@ describe('"obj" type', () => {
 
   test('can disable extra property check', () => {
     const type = s.Object({
-      fields: [s.Field('foo', s.any), s.FieldOpt('zup', s.any)],
+      keys: [s.prop('foo', s.any), s.propOpt('zup', s.any)],
     });
     exec(type, {foo: 123}, null, {skipObjectExtraFieldsCheck: true});
     exec(type, {foo: 123, zup: 'asdf'}, null, {
@@ -1051,8 +1051,8 @@ describe('"or" type', () => {
 
   test('object key can be of multiple types', () => {
     const type = s.Object({
-      fields: [
-        s.Field('foo', {
+      keys: [
+        s.prop('foo', {
           ...s.Or(s.num, s.str),
           discriminator: [
             'if',
@@ -1079,8 +1079,8 @@ describe('"or" type', () => {
 
   test('array can be of multiple types', () => {
     const type = s.Object({
-      fields: [
-        s.Field(
+      keys: [
+        s.prop(
           'gg',
           s.Array({
             ...s.Or(s.num, s.str),

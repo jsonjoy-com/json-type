@@ -119,7 +119,7 @@ console.log('Can compile a fast validator, which returns booleans as errors:');
 console.log();
 const validator = user.type.compileValidator({
   errors: 'boolean',
-  skipObjectExtraFieldsCheck: true,
+  skipObjectExtraKeysCheck: true,
 });
 console.log(validator.toString());
 
@@ -128,7 +128,7 @@ console.log('Can compile a fast validator, which returns JSON strings as errors:
 console.log();
 const validator2 = user.type.compileValidator({
   errors: 'string',
-  skipObjectExtraFieldsCheck: true,
+  skipObjectExtraKeysCheck: true,
 });
 console.log(validator2.toString());
 
@@ -137,6 +137,6 @@ console.log('Can compile a fast validator, which returns objects as errors:');
 console.log();
 const validator3 = user.type.compileValidator({
   errors: 'object',
-  skipObjectExtraFieldsCheck: true,
+  skipObjectExtraKeysCheck: true,
 });
 console.log(validator3.toString());

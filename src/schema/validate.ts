@@ -1,5 +1,5 @@
 import type {Display} from './common';
-import type {TExample, TType, Schema} from './schema';
+import type {TExample, TType, Schema, ObjSchema} from './schema';
 
 const validateDisplay = ({title, description, intro}: Display): void => {
   if (title !== undefined && typeof title !== 'string') throw new Error('INVALID_TITLE');
@@ -131,16 +131,19 @@ const validateConSchema = (schema: any): void => {
   validateTType(schema, 'con');
 };
 
-const validateObjSchema = (schema: any): void => {
+const validateObjSchema = (schema: ObjSchema): void => {
   validateTType(schema, 'obj');
-  const {fields, unknownFields} = schema;
-  if (!Array.isArray(fields)) throw new Error('FIELDS_TYPE');
-  if (unknownFields !== undefined && typeof unknownFields !== 'boolean') throw new Error('UNKNOWN_FIELDS_TYPE');
-  for (const field of fields) validateSchema(field);
+  const {keys, decodeUnknownKeys, encodeUnknownKeys} = schema;
+  if (!Array.isArray(keys)) throw new Error('KEYS_TYPE');
+  if (decodeUnknownKeys !== undefined && typeof decodeUnknownKeys !== 'boolean')
+    throw new Error('DECODE_UNKNOWN_KEYS_TYPE');
+  if (encodeUnknownKeys !== undefined && typeof encodeUnknownKeys !== 'boolean')
+    throw new Error('ENCODE_UNKNOWN_KEYS_TYPE');
+  for (const key of keys) validateSchema(key);
 };
 
-const validateFieldSchema = (schema: any): void => {
-  validateTType(schema, 'field');
+const validateKeySchema = (schema: any): void => {
+  validateTType(schema, 'key');
   const {key, optional} = schema;
   if (typeof key !== 'string') throw new Error('KEY_TYPE');
   if (optional !== undefined && typeof optional !== 'boolean') throw new Error('OPTIONAL_TYPE');
@@ -214,8 +217,8 @@ export const validateSchema = (schema: Schema): void => {
     case 'obj':
       validateObjSchema(schema);
       break;
-    case 'field':
-      validateFieldSchema(schema);
+    case 'key':
+      validateKeySchema(schema);
       break;
     case 'map':
       validateMapSchema(schema);

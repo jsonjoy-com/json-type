@@ -89,21 +89,21 @@ describe('"arr" type', () => {
 
 describe('"obj" type', () => {
   test('serializes object with required fields', () => {
-    const type = s.Object([s.Field('a', s.num), s.Field('b', s.str)]);
+    const type = s.Object([s.prop('a', s.num), s.prop('b', s.str)]);
     exec(type, {a: 123, b: 'asdf'});
   });
 
   test('serializes object with constant string with required fields', () => {
-    const type = s.Object([s.Field('a', s.num), s.Field('b', s.Const<'asdf'>('asdf'))]);
+    const type = s.Object([s.prop('a', s.num), s.prop('b', s.Const<'asdf'>('asdf'))]);
     exec(type, {a: 123, b: 'asdf'});
   });
 
   test('can serialize optional fields', () => {
     const type = s.Object([
-      s.Field('a', s.num),
-      s.Field('b', s.Const<'asdf'>('asdf')),
-      s.FieldOpt('c', s.str),
-      s.FieldOpt('d', s.num),
+      s.prop('a', s.num),
+      s.prop('b', s.Const<'asdf'>('asdf')),
+      s.propOpt('c', s.str),
+      s.propOpt('d', s.num),
     ]);
     exec(type, {a: 123, b: 'asdf'});
     exec(type, {a: 123, b: 'asdf', c: 'qwerty'});
@@ -113,7 +113,7 @@ describe('"obj" type', () => {
   test('can serialize object with unknown fields', () => {
     const type = s.Object(
       [s.prop('a', s.num), s.prop('b', s.Const<'asdf'>('asdf')), s.propOpt('c', s.str), s.propOpt('d', s.num)],
-      {encodeUnknownFields: true},
+      {encodeUnknownKeys: true},
     );
     exec(type, {a: 123, b: 'asdf'});
     exec(type, {a: 123, b: 'asdf', c: 'qwerty'});
@@ -154,7 +154,7 @@ describe('"map" type', () => {
 describe('general', () => {
   test('serializes according to schema a POJO object', () => {
     const type = s.Object({
-      fields: [
+      keys: [
         s.prop('a', s.num),
         s.prop('b', s.str),
         s.prop('c', s.nil),
@@ -163,7 +163,7 @@ describe('general', () => {
           'arr',
           s.Array(
             s.Object({
-              fields: [s.prop('foo', s.Array(s.num)), s.prop('.!@#', s.str)],
+              keys: [s.prop('foo', s.Array(s.num)), s.prop('.!@#', s.str)],
             }),
           ),
         ),
@@ -196,7 +196,7 @@ describe('general', () => {
   });
 
   test('can encode binary', () => {
-    const type = s.Object([s.Field('bin', s.bin)]);
+    const type = s.Object([s.prop('bin', s.bin)]);
     const json = {
       bin: new Uint8Array([1, 2, 3]),
     };

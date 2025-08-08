@@ -59,7 +59,7 @@ export class Discriminator {
         if (d) return new Discriminator('/' + i + d.path, d.type);
       }
     } else if (type instanceof ObjType) {
-      const fields = type.fields as ObjKeyType<string, Type>[];
+      const fields = type.keys as ObjKeyType<string, Type>[];
       for (let i = 0; i < fields.length; i++) {
         const f = fields[i];
         const d = Discriminator.findConst(f.val);

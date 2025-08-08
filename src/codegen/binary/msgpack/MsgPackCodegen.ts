@@ -21,7 +21,7 @@ export class MsgPackCodegen extends AbstractBinaryCodegen<MsgPackEncoder> {
   protected onObj(path: SchemaPath, value: JsExpression, type: ObjType): void {
     const codegen = this.codegen;
     const r = codegen.r();
-    const fields = type.fields;
+    const fields = type.keys;
     const length = fields.length;
     const requiredFields = fields.filter((field) => !(field instanceof ObjKeyOptType));
     const optionalFields = fields.filter((field) => field instanceof ObjKeyOptType);
@@ -29,7 +29,7 @@ export class MsgPackCodegen extends AbstractBinaryCodegen<MsgPackEncoder> {
     const optionalLength = optionalFields.length;
     const totalMaxKnownFields = requiredLength + optionalLength;
     if (totalMaxKnownFields > 0xffff) throw new Error('Too many fields');
-    const encodeUnknownFields = !!type.schema.encodeUnknownFields;
+    const encodeUnknownFields = !!type.schema.encodeUnknownKeys;
     const rFieldCount = codegen.r();
     const emitRequiredFields = () => {
       for (let i = 0; i < requiredLength; i++) {

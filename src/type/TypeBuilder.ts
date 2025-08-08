@@ -121,9 +121,9 @@ export class TypeBuilder {
    * @returns An object type.
    */
   public readonly object = <R extends Record<string, Type>>(record: R): classes.ObjType<RecordToFields<R>> => {
-    const fields: classes.ObjKeyType<any, any>[] = [];
-    for (const [key, value] of Object.entries(record)) fields.push(this.prop(key, value));
-    return new classes.ObjType<RecordToFields<R>>(fields as any).sys(this.system);
+    const keys: classes.ObjKeyType<any, any>[] = [];
+    for (const [key, value] of Object.entries(record)) keys.push(this.prop(key, value));
+    return new classes.ObjType<RecordToFields<R>>(keys as any).sys(this.system);
   };
 
   /**
@@ -198,8 +198,8 @@ export class TypeBuilder {
     return new classes.ArrType(item, head, tail, options).sys(this.system);
   }
 
-  public Object<F extends classes.ObjKeyType<any, any>[]>(...fields: F) {
-    return new classes.ObjType<F>(fields).sys(this.system);
+  public Object<F extends classes.ObjKeyType<any, any>[]>(...keys: F) {
+    return new classes.ObjType<F>(keys).sys(this.system);
   }
 
   public prop<K extends string, V extends Type>(key: K, value: V) {
@@ -261,7 +261,7 @@ export class TypeBuilder {
       }
       case 'obj': {
         return this.Object(
-          ...node.fields.map((f: any) =>
+          ...node.keys.map((f: any) =>
             f.optional
               ? this.propOpt(f.key, this.import(f.value)).options(f)
               : this.prop(f.key, this.import(f.value)).options(f),
@@ -302,16 +302,7 @@ export class TypeBuilder {
         if (value === null) return this.nil;
         if (Array.isArray(value)) {
           if (value.length === 0) return this.arr;
-          const getType = (v: unknown): string => {
-            switch (typeof v) {
-              case 'object':
-                if (v === null) return 'nil';
-                if (Array.isArray(v)) return 'arr';
-                return 'obj';
-              default:
-                return typeof v;
-            }
-          };
+          const getType = (v: unknown): string => this.from(v) + '';
           const allElementsOfTheSameType = value.every((v) => getType(v) === getType(value[0]));
           this.Array(this.from(value[0]));
           return allElementsOfTheSameType

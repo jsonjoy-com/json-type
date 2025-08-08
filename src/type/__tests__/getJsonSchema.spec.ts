@@ -39,7 +39,7 @@ test('can print a type', () => {
       ),
       t.prop('map', t.Map(t.str)),
     )
-    .options({unknownFields: true});
+    .options({decodeUnknownKeys: true});
   // console.log(JSON.stringify(type.toJsonSchema(), null, 2));
   expect(typeToJsonSchema(type)).toMatchInlineSnapshot(`
 {

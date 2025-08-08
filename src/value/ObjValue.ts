@@ -28,7 +28,7 @@ export class ObjValue<T extends classes.ObjType<any>> extends Value<T> implement
 
   public keys(): string[] {
     const type = this.type as T;
-    return type.fields.map((field: classes.ObjKeyType<string, any>) => field.key);
+    return type.keys.map((field: classes.ObjKeyType<string, any>) => field.key);
   }
 
   public get<K extends keyof ObjValueToTypeMap<UnObjType<T>>>(
@@ -51,7 +51,7 @@ export class ObjValue<T extends classes.ObjType<any>> extends Value<T> implement
     const type = this.type;
     const system = type.system;
     if (!system) throw new Error('NO_SYSTEM');
-    type.fields.push(field);
+    type.keys.push(field);
     return this as any;
   }
 
@@ -75,7 +75,7 @@ export class ObjValue<T extends classes.ObjType<any>> extends Value<T> implement
     const type = this.type;
     const system = type.system;
     if (!system) throw new Error('NO_SYSTEM');
-    type.fields.push(...type.fields);
+    type.keys.push(...type.keys);
     return this as any;
   }
 

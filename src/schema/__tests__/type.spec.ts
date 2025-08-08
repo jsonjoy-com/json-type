@@ -5,7 +5,7 @@ test('can generate any type', () => {
     kind: 'obj',
     title: 'User address',
     description: 'Various address fields for user',
-    fields: [...s.Object(s.prop('street', s.String()), s.prop('zip', s.String())).fields],
+    keys: [...s.Object(s.prop('street', s.String()), s.prop('zip', s.String())).keys],
   };
   const userType = s.Object(
     s.prop('id', s.Number({format: 'i'})),
@@ -19,7 +19,7 @@ test('can generate any type', () => {
 
   expect(userType).toMatchObject({
     kind: 'obj',
-    fields: [
+    keys: [
       {
         key: 'id',
         value: {
@@ -46,7 +46,7 @@ test('can generate any type', () => {
           kind: 'obj',
           title: 'User address',
           description: 'Various address fields for user',
-          fields: [
+          keys: [
             {
               key: 'street',
               value: {

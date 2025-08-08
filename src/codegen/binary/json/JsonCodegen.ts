@@ -97,12 +97,12 @@ export class JsonCodegen extends AbstractBinaryCodegen<JsonEncoder> {
   protected onObj(path: SchemaPath, value: JsExpression, type: ObjType): void {
     const codegen = this.codegen;
     const r = codegen.var(value.use());
-    const fields = type.fields;
+    const fields = type.keys;
     const requiredFields = fields.filter((field) => !(field instanceof ObjKeyOptType));
     const optionalFields = fields.filter((field) => field instanceof ObjKeyOptType);
     const requiredLength = requiredFields.length;
     const optionalLength = optionalFields.length;
-    const encodeUnknownFields = !!type.schema.encodeUnknownFields;
+    const encodeUnknownFields = !!type.schema.encodeUnknownKeys;
     const separatorBlob = this.gen((encoder) => encoder.writeObjSeparator());
     const keySeparatorBlob = this.gen((encoder) => encoder.writeObjKeySeparator());
     const endBlob = this.gen((encoder) => encoder.writeEndObj());

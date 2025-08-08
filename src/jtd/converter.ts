@@ -75,11 +75,11 @@ export function toJtdForm(type: Type): jtd.JtdForm {
       const obj = type as ObjType;
       const form: jtd.JtdPropertiesForm = {};
 
-      if (obj.fields && obj.fields.length > 0) {
+      if (obj.keys && obj.keys.length > 0) {
         form.properties = {};
         form.optionalProperties = {};
 
-        for (const field of obj.fields) {
+        for (const field of obj.keys) {
           const fieldName = field.key;
           const fieldType = field.val;
 
@@ -96,7 +96,7 @@ export function toJtdForm(type: Type): jtd.JtdForm {
       }
 
       // Handle additional properties - check the schema for unknownFields
-      if (obj.schema.unknownFields === false) {
+      if (obj.schema.decodeUnknownKeys === false) {
         form.additionalProperties = false;
       }
 

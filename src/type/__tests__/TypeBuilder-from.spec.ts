@@ -20,37 +20,37 @@ test('can create a schema for a deeply nested object', () => {
   });
   expect(type + '').toMatchInlineSnapshot(`
 "obj
-├─ "id":
+├─ "id"
 │   └─ num
-├─ "foo":
+├─ "foo"
 │   └─ str
-├─ "verified":
+├─ "verified"
 │   └─ bool
-├─ "tags":
+├─ "tags"
 │   └─ arr
 │      └─ str
-├─ "emptyArr":
+├─ "emptyArr"
 │   └─ arr
 │      └─ any
-├─ "vectorClockIsTuple":
+├─ "vectorClockIsTuple"
 │   └─ arr
 │      └─ [ head, ... ]
 │         ├─ str
 │         └─ num
-├─ "tupleOfObjectsAndArrays":
+├─ "tupleOfObjectsAndArrays"
 │   └─ arr
 │      └─ [ head, ... ]
 │         ├─ arr
 │         │  └─ any
 │         ├─ obj
 │         └─ con → null
-├─ "nested":
+├─ "nested"
 │   └─ obj
-│      └─ "id":
+│      └─ "id"
 │          └─ num
-├─ "nil":
+├─ "nil"
 │   └─ con → null
-└─ "undef":
+└─ "undef"
     └─ con → undefined"
 `);
 });

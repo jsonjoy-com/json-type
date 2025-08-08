@@ -168,8 +168,10 @@ export class Random {
 
   public obj(type: ObjType<any>): Record<string, unknown> {
     const schema = type.getSchema();
-    const obj: Record<string, unknown> = schema.unknownFields ? <Record<string, unknown>>RandomJson.genObject() : {};
-    for (const f of type.fields) {
+    const obj: Record<string, unknown> = schema.decodeUnknownKeys
+      ? <Record<string, unknown>>RandomJson.genObject()
+      : {};
+    for (const f of type.keys) {
       const field = f as ObjKeyType<any, any>;
       const isOptional = field instanceof ObjKeyOptType;
       if (isOptional && Math.random() > 0.5) continue;

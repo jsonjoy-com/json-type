@@ -126,21 +126,17 @@ export class SchemaBuilder {
     return schema;
   }
 
-  public fields<F extends _.ObjFieldSchema<any, any>[]>(...fields: _.ObjSchema<F>['fields']): F {
-    return fields;
-  }
-
-  public Object<F extends _.ObjFieldSchema<string, _.Schema>[] | readonly _.ObjFieldSchema<string, _.Schema>[]>(
+  public Object<F extends _.ObjKeySchema<string, _.Schema>[] | readonly _.ObjKeySchema<string, _.Schema>[]>(
     options: _.NoT<_.ObjSchema<F>>,
   ): _.ObjSchema<F>;
-  public Object<F extends _.ObjFieldSchema<string, _.Schema>[] | readonly _.ObjFieldSchema<string, _.Schema>[]>(
-    fields: _.ObjSchema<F>['fields'],
+  public Object<F extends _.ObjKeySchema<string, _.Schema>[] | readonly _.ObjKeySchema<string, _.Schema>[]>(
+    keys: _.ObjSchema<F>['keys'],
     options?: _.Optional<_.ObjSchema<F>>,
   ): _.ObjSchema<F>;
-  public Object<F extends _.ObjFieldSchema<string, _.Schema>[] | readonly _.ObjFieldSchema<string, _.Schema>[]>(
-    ...fields: _.ObjSchema<F>['fields']
+  public Object<F extends _.ObjKeySchema<string, _.Schema>[] | readonly _.ObjKeySchema<string, _.Schema>[]>(
+    ...keys: _.ObjSchema<F>['keys']
   ): _.ObjSchema<F>;
-  public Object<F extends _.ObjFieldSchema<string, _.Schema>[] | readonly _.ObjFieldSchema<string, _.Schema>[]>(
+  public Object<F extends _.ObjKeySchema<string, _.Schema>[] | readonly _.ObjKeySchema<string, _.Schema>[]>(
     ...args: unknown[]
   ): _.ObjSchema<F> {
     const first = args[0];
@@ -148,54 +144,25 @@ export class SchemaBuilder {
       args.length === 1 &&
       first &&
       typeof first === 'object' &&
-      (first as _.NoT<_.ObjSchema<F>>).fields instanceof Array
+      (first as _.NoT<_.ObjSchema<F>>).keys instanceof Array
     )
       return {kind: 'obj', ...(first as _.NoT<_.ObjSchema<F>>)};
     if (args.length >= 1 && args[0] instanceof Array)
       return this.Object({
-        fields: args[0] as F,
+        keys: args[0] as F,
         ...(args[1] as _.Optional<_.ObjSchema<F>>),
       });
-    return this.Object({fields: args as F});
-  }
-
-  /** @deprecated Use `.prop`. */
-  public Field<K extends string, V extends _.Schema>(
-    key: K,
-    value: V,
-    options: Omit<_.NoT<_.ObjFieldSchema<K, V>>, 'key' | 'value' | 'optional'> = {},
-  ): _.ObjFieldSchema<K, V> {
-    return {
-      kind: 'field',
-      key,
-      value,
-      ...options,
-    };
-  }
-
-  /** @deprecated Use `.propOpt`. */
-  public FieldOpt<K extends string, V extends _.Schema>(
-    key: K,
-    value: V,
-    options: Omit<_.NoT<_.ObjFieldSchema<K, V>>, 'key' | 'value' | 'optional'> = {},
-  ): _.ObjOptionalFieldSchema<K, V> {
-    return {
-      kind: 'field',
-      key,
-      value,
-      ...options,
-      optional: true,
-    };
+    return this.Object({keys: args as F});
   }
 
   /** Declares an object property. */
   public prop<K extends string, V extends _.Schema>(
     key: K,
     value: V,
-    options: Omit<_.NoT<_.ObjFieldSchema<K, V>>, 'key' | 'value' | 'optional'> = {},
-  ): _.ObjFieldSchema<K, V> {
+    options: Omit<_.NoT<_.ObjKeySchema<K, V>>, 'key' | 'value' | 'optional'> = {},
+  ): _.ObjKeySchema<K, V> {
     return {
-      kind: 'field',
+      kind: 'key',
       key,
       value,
       ...options,
@@ -206,10 +173,10 @@ export class SchemaBuilder {
   public propOpt<K extends string, V extends _.Schema>(
     key: K,
     value: V,
-    options: Omit<_.NoT<_.ObjFieldSchema<K, V>>, 'key' | 'value' | 'optional'> = {},
-  ): _.ObjOptionalFieldSchema<K, V> {
+    options: Omit<_.NoT<_.ObjKeySchema<K, V>>, 'key' | 'value' | 'optional'> = {},
+  ): _.ObjOptKeySchema<K, V> {
     return {
-      kind: 'field',
+      kind: 'key',
       key,
       value,
       ...options,

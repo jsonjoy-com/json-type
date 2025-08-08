@@ -147,7 +147,7 @@ describe('"obj" type', () => {
 
   test('object with unknown fields', () => {
     const system = new TypeSystem();
-    const type = system.t.obj.options({encodeUnknownFields: true});
+    const type = system.t.obj.options({encodeUnknownKeys: true});
     const estimator = CapacityEstimatorCodegen.get(type);
     expect(estimator({foo: 'bar'})).toBe(maxEncodingCapacity({foo: 'bar'}));
   });

@@ -129,7 +129,7 @@ test('can infer a simple "obj" type', () => {
   const schema1 = s.obj;
   const schema2 = s.Object(s.prop('foo', s.str), s.propOpt('bar', s.num));
   const schema3 = s.Object({
-    fields: <const>[s.prop('bar', s.bool)],
+    keys: <const>[s.prop('bar', s.bool)],
   });
   const schema4 = s.Object([s.prop('baz', s.num), s.propOpt('bazOptional', s.bool), s.propOpt('z', s.str)], {});
   type T1 = TypeOf<typeof schema1>;

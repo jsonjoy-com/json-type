@@ -3,7 +3,7 @@ import {writer} from '../writer';
 import {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
 import {CborEncoder} from '@jsonjoy.com/json-pack/lib/cbor/CborEncoder';
 import {lazyKeyedFactory} from '../../util';
-import {ObjKeyOptType, type ObjType, type Type} from '../../../type';
+import {ObjKeyOptType, type MapType, type ObjType, type Type} from '../../../type';
 import type {CompiledBinaryEncoder, SchemaPath} from '../../types';
 import {normalizeAccessor} from '@jsonjoy.com/codegen/lib/util/normalizeAccessor';
 

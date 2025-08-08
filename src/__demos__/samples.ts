@@ -43,7 +43,7 @@ export const types = {
       s.prop(
         'meta',
         s.Object([], {
-          unknownFields: true,
+          decodeUnknownKeys: true,
         }),
       ),
     ],

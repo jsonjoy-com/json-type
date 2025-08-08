@@ -100,7 +100,7 @@ describe('"or" type', () => {
 test('encodes extra fields with "encodeUnknownFields" when referenced by ref', () => {
   const system = new TypeSystem();
   const {t} = system;
-  const type = t.Object(t.prop('foo', t.str), t.propOpt('zzz', t.num)).options({encodeUnknownFields: true});
+  const type = t.Object(t.prop('foo', t.str), t.propOpt('zzz', t.num)).options({encodeUnknownKeys: true});
   system.alias('foo', type);
   const type2 = system.t.Ref('foo');
   const encoder = JsonTextCodegen.get(type2);
