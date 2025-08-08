@@ -33,15 +33,17 @@ test('can create a schema for a deeply nested object', () => {
 │   └─ arr
 │      └─ any
 ├─ "vectorClockIsTuple":
-│   └─ tup
-│      ├─ str
-│      └─ num
+│   └─ arr
+│      └─ [ head, ... ]
+│         ├─ str
+│         └─ num
 ├─ "tupleOfObjectsAndArrays":
-│   └─ tup
-│      ├─ arr
-│      │  └─ any
-│      ├─ obj
-│      └─ con → null
+│   └─ arr
+│      └─ [ head, ... ]
+│         ├─ arr
+│         │  └─ any
+│         ├─ obj
+│         └─ con → null
 ├─ "nested":
 │   └─ obj
 │      └─ "id":
