@@ -301,9 +301,8 @@ export interface ArrSchema<T extends TType = any, Head extends TType[] = any, Ta
  * }
  * ```
  */
-export interface ObjSchema<
-  Keys extends ObjKeySchema<string, TType>[] | readonly ObjKeySchema<string, TType>[] = any,
-> extends TType<object> {
+export interface ObjSchema<Keys extends ObjKeySchema<string, TType>[] | readonly ObjKeySchema<string, TType>[] = any>
+  extends TType<object> {
   kind: 'obj';
 
   /**
@@ -351,8 +350,7 @@ export interface ObjKeySchema<K extends string = string, V extends TType = TType
   optional?: boolean;
 }
 
-export interface ObjOptKeySchema<K extends string = string, V extends TType = TType>
-  extends ObjKeySchema<K, V> {
+export interface ObjOptKeySchema<K extends string = string, V extends TType = TType> extends ObjKeySchema<K, V> {
   optional: true;
 }
 

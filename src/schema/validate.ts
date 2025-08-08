@@ -135,8 +135,10 @@ const validateObjSchema = (schema: ObjSchema): void => {
   validateTType(schema, 'obj');
   const {keys, decodeUnknownKeys, encodeUnknownKeys} = schema;
   if (!Array.isArray(keys)) throw new Error('KEYS_TYPE');
-  if (decodeUnknownKeys !== undefined && typeof decodeUnknownKeys !== 'boolean') throw new Error('DECODE_UNKNOWN_KEYS_TYPE');
-  if (encodeUnknownKeys !== undefined && typeof encodeUnknownKeys !== 'boolean') throw new Error('ENCODE_UNKNOWN_KEYS_TYPE');
+  if (decodeUnknownKeys !== undefined && typeof decodeUnknownKeys !== 'boolean')
+    throw new Error('DECODE_UNKNOWN_KEYS_TYPE');
+  if (encodeUnknownKeys !== undefined && typeof encodeUnknownKeys !== 'boolean')
+    throw new Error('ENCODE_UNKNOWN_KEYS_TYPE');
   for (const key of keys) validateSchema(key);
 };
 

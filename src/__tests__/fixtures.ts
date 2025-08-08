@@ -10,7 +10,7 @@ import {genRandomExample} from '@jsonjoy.com/json-random/lib/examples';
 import {RandomJson} from '@jsonjoy.com/json-random';
 
 export const randomJson = () => {
-  return Math.random() < .5 ? genRandomExample() : RandomJson.generate();
+  return Math.random() < 0.5 ? genRandomExample() : RandomJson.generate();
 };
 
 /**
