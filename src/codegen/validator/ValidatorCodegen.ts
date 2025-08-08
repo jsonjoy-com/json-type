@@ -1,6 +1,5 @@
 import {Codegen} from '@jsonjoy.com/codegen';
 import {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
-import {lazy} from '@jsonjoy.com/util/lib/lazyFunction';
 import {ValidationError, ValidationErrorMessage} from '../../constants';
 import {deepEqualCodegen} from '@jsonjoy.com/util/lib/json-equal/deepEqualCodegen';
 import {AbstractCodegen} from '../AbstractCodege';
@@ -8,12 +7,11 @@ import {floats, ints, uints} from '../../util';
 import {isAscii, isUtf8} from '../../util/stringFormats';
 import {ObjKeyOptType, type AnyType, type ArrType, type BinType, type BoolType, type ConType, type MapType, type NumType, type ObjType, type OrType, type RefType, type StrType, type Type} from '../../type';
 import {normalizeAccessor} from '@jsonjoy.com/codegen/lib/util/normalizeAccessor';
+import {lazyKeyedFactory} from '../util';
+import {DiscriminatorCodegen} from '../discriminator';
 import {canSkipObjectKeyUndefinedCheck} from './util';
 import type {JsonTypeValidator} from './types';
 import type {SchemaPath} from '../types';
-import {DiscriminatorCodegen} from '../discriminator';
-
-const CACHE = new WeakMap<Type, (value: unknown) => void>;
 
 export interface ValidatorCodegenOptions {
   /** Type for which to generate the validator. */
@@ -57,20 +55,16 @@ export interface ValidatorCodegenOptions {
 }
 
 export class ValidatorCodegen extends AbstractCodegen {
-  public static readonly get = (options: ValidatorCodegenOptions) => {
-    const type = options.type;
-    const fn = CACHE.get(type);
-    if (fn) return fn;
+  public static readonly _get = lazyKeyedFactory((key: Type, options: ValidatorCodegenOptions) => {
     const codegen = new ValidatorCodegen(options);
-    return lazy(() => {
-      const r = codegen.codegen.options.args[0];
-      const expression = new JsExpression(() => r);
-      codegen.onNode([], expression, type);
-      const newFn = codegen.compile();
-      CACHE.set(type, newFn);
-      return newFn;
-    });
-  };
+    const r = codegen.codegen.options.args[0];
+    const expression = new JsExpression(() => r);
+    codegen.onNode([], expression, options.type);
+    return codegen.compile();
+  });
+
+  public static readonly get = (options: ValidatorCodegenOptions) =>
+    ValidatorCodegen._get(options.type, options);
 
   public readonly options: ValidatorCodegenOptions;
   public readonly codegen: Codegen;

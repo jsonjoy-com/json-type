@@ -1,18 +1,16 @@
 import {Codegen, CodegenStepExecJs} from '@jsonjoy.com/codegen';
-import {lazy} from '@jsonjoy.com/util/lib/lazyFunction';
 import {asString} from '@jsonjoy.com/util/lib/strings/asString';
 import {toBase64} from '@jsonjoy.com/base64/lib/toBase64';
 import {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
 import {stringify} from '@jsonjoy.com/json-pack/lib/json-binary/codec';
 import {normalizeAccessor} from '@jsonjoy.com/codegen/lib/util/normalizeAccessor';
 import {ObjKeyOptType} from '../../type';
+import {lazyKeyedFactory} from '../util';
+import {DiscriminatorCodegen} from '../discriminator';
 import type {ArrType, MapType, OrType, RefType, ConType, ObjType, StrType, Type} from '../../type';
 import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
-import {DiscriminatorCodegen} from '../discriminator';
 
 export type JsonEncoderFn = <T>(value: T) => json_string<T>;
-
-const CACHE = new WeakMap<Type, JsonEncoderFn>;
 
 class WriteTextStep {
   constructor(public str: string) {}
@@ -21,19 +19,13 @@ class WriteTextStep {
 type Step = WriteTextStep | CodegenStepExecJs;
 
 export class JsonTextCodegen {
-  public static readonly get = (type: Type, name?: string) => {
-    const fn = CACHE.get(type);
-    if (fn) return fn;
-    return lazy(() => {
-      const codegen = new JsonTextCodegen(type, name);
-      const r = codegen.codegen.options.args[0];
-      const expression = new JsExpression(() => r);
-      codegen.onNode(expression, type);
-      const newFn = codegen.compile();
-      CACHE.set(type, newFn);
-      return newFn;
-    });
-  };
+  public static readonly get = lazyKeyedFactory((type: Type, name?: string) => {
+    const codegen = new JsonTextCodegen(type, name);
+    const r = codegen.codegen.options.args[0];
+    const expression = new JsExpression(() => r);
+    codegen.onNode(expression, type);
+    return codegen.compile();
+  });
 
   public readonly codegen: Codegen<JsonEncoderFn>;
 

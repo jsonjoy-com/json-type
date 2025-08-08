@@ -1,27 +1,19 @@
-import {lazy} from '@jsonjoy.com/util/lib/lazyFunction';
 import {AbstractBinaryCodegen} from '../AbstractBinaryCodegen';
 import {writer} from '../writer';
 import {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
 import {CborEncoder} from '@jsonjoy.com/json-pack/lib/cbor/CborEncoder';
-import {type ArrType, type MapType, type ObjType, type Type} from '../../../type';
+import {lazyKeyedFactory} from '../../util';
+import {type MapType, type ObjType, type Type} from '../../../type';
 import type {CompiledBinaryEncoder, SchemaPath} from '../../types';
 
-const CACHE = new WeakMap<Type, CompiledBinaryEncoder>;
-
 export class CborCodegen extends AbstractBinaryCodegen<CborEncoder> {
-  public static readonly get = (type: Type, name?: string) => {
-    const fn = CACHE.get(type);
-    if (fn) return fn;
-    return lazy(() => {
-      const codegen = new CborCodegen(type, name);
-      const r = codegen.codegen.options.args[0];
-      const expression = new JsExpression(() => r);
-      codegen.onNode([], expression, type);
-      const newFn = codegen.compile();
-      CACHE.set(type, newFn);
-      return newFn;
-    });
-  };
+  public static readonly get = lazyKeyedFactory((type: Type, name?: string) => {
+    const codegen = new CborCodegen(type, name);
+    const r = codegen.codegen.options.args[0];
+    const expression = new JsExpression(() => r);
+    codegen.onNode([], expression, type);
+    return codegen.compile();
+  });
 
   protected encoder = new CborEncoder(writer);
 

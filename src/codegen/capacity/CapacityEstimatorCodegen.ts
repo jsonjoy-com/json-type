@@ -3,32 +3,24 @@ import {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
 import {normalizeAccessor} from '@jsonjoy.com/codegen/lib/util/normalizeAccessor';
 import {MaxEncodingOverhead, maxEncodingCapacity} from '@jsonjoy.com/util/lib/json-size';
 import {BoolType, ConType, NumType, ObjKeyOptType} from '../../type';
-import {lazy} from '@jsonjoy.com/util/lib/lazyFunction';
-import type {ObjKeyType, ArrType, MapType, RefType, Type, OrType} from '../../type';
 import {DiscriminatorCodegen} from '../discriminator';
+import {lazyKeyedFactory} from '../util';
+import type {ObjKeyType, ArrType, MapType, RefType, Type, OrType} from '../../type';
 
 export type CompiledCapacityEstimator = (value: unknown) => number;
-
-const CACHE = new WeakMap<Type, CompiledCapacityEstimator>;
 
 class IncrementSizeStep {
   constructor(public readonly inc: number) {}
 }
 
 export class CapacityEstimatorCodegen {
-  public static readonly get = (type: Type, name?: string) => {
-    const estimator = CACHE.get(type);
-    if (estimator) return estimator;
-    return lazy(() => {
-      const codegen = new CapacityEstimatorCodegen(type, name);
-      const r = codegen.codegen.options.args[0];
-      const expression = new JsExpression(() => r);
-      codegen.onNode(expression, type);
-      const newEstimator = codegen.compile();
-      CACHE.set(type, newEstimator);
-      return newEstimator;
-    });
-  };
+  public static readonly get = lazyKeyedFactory((type: Type, name?: string) => {
+    const codegen = new CapacityEstimatorCodegen(type, name);
+    const r = codegen.codegen.options.args[0];
+    const expression = new JsExpression(() => r);
+    codegen.onNode(expression, type);
+    return codegen.compile();
+  });
 
   public readonly codegen: Codegen<CompiledCapacityEstimator>;
 

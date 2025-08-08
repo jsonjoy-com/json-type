@@ -1,28 +1,20 @@
-import {lazy} from '@jsonjoy.com/util/lib/lazyFunction';
 import {AbstractBinaryCodegen} from '../AbstractBinaryCodegen';
 import {writer} from '../writer';
 import {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
 import {JsonEncoder} from '@jsonjoy.com/json-pack/lib/json/JsonEncoder';
 import {ObjKeyOptType, type ArrType, type MapType, type ObjType, type Type} from '../../../type';
 import {normalizeAccessor} from '@jsonjoy.com/codegen/lib/util/normalizeAccessor';
+import {lazyKeyedFactory} from '../../util';
 import type {CompiledBinaryEncoder, SchemaPath} from '../../types';
 
-const CACHE = new WeakMap<Type, CompiledBinaryEncoder>;
-
 export class JsonCodegen extends AbstractBinaryCodegen<JsonEncoder> {
-  public static readonly get = (type: Type, name?: string) => {
-    const fn = CACHE.get(type);
-    if (fn) return fn;
-    return lazy(() => {
-      const codegen = new JsonCodegen(type, name);
-      const r = codegen.codegen.options.args[0];
-      const expression = new JsExpression(() => r);
-      codegen.onNode([], expression, type);
-      const newFn = codegen.compile();
-      CACHE.set(type, newFn);
-      return newFn;
-    });
-  };
+  public static readonly get = lazyKeyedFactory((type: Type, name?: string) => {
+    const codegen = new JsonCodegen(type, name);
+    const r = codegen.codegen.options.args[0];
+    const expression = new JsExpression(() => r);
+    codegen.onNode([], expression, type);
+    return codegen.compile();
+  });
 
   protected encoder = new JsonEncoder(writer);
 
