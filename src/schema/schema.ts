@@ -256,7 +256,8 @@ export interface BinSchema<T extends TType = any> extends TType {
  * }
  * ```
  */
-export interface ArrSchema<T extends TType = any, Head extends TType[] = any, Tail extends TType[] = any> extends TType<Array<unknown>> {
+export interface ArrSchema<T extends TType = any, Head extends TType[] = any, Tail extends TType[] = any>
+  extends TType<Array<unknown>> {
   kind: 'arr';
   /** One or more "one-of" types that array contains. */
   type?: T;
@@ -362,8 +363,7 @@ export interface ObjOptionalFieldSchema<K extends string = string, V extends TTy
  * Represents an object, which is treated as a map. All keys are strings and all
  * values are of the same type.
  */
-export interface MapSchema<V extends TType = any, K extends TType = any>
-  extends TType<Record<string, unknown>> {
+export interface MapSchema<V extends TType = any, K extends TType = any> extends TType<Record<string, unknown>> {
   kind: 'map';
   /**
    * Type of all keys in the map. Defaults to string type.
@@ -408,8 +408,7 @@ export interface FnSchema<Req extends TType = TType, Res extends TType = TType, 
 
 export type FnStreamingValue<Req, Res, Ctx = unknown> = (req: Observable<Req>, ctx?: Ctx) => Observable<Res>;
 
-export interface FnStreamingSchema<Req extends TType = TType, Res extends TType = TType, Ctx = unknown>
-  extends TType {
+export interface FnStreamingSchema<Req extends TType = TType, Res extends TType = TType, Ctx = unknown> extends TType {
   /** @todo Rename to `fn`. Make it a property on the schema instead. */
   kind: 'fn$';
   req: Req;
@@ -458,7 +457,11 @@ export type TypeOfValue<T> = T extends BoolSchema
     : T extends StrSchema
       ? string
       : T extends ArrSchema<infer U, infer Head, infer Tail>
-        ? [...{[K in keyof Head]: TypeOf<Head[K]>}, ...(Schema extends U ? [] : TypeOf<U>[]), ...(Tail extends JsonSchema[] ? {[K in keyof Tail]: TypeOf<Tail[K]>} : [])]
+        ? [
+            ...{[K in keyof Head]: TypeOf<Head[K]>},
+            ...(Schema extends U ? [] : TypeOf<U>[]),
+            ...(Tail extends JsonSchema[] ? {[K in keyof Tail]: TypeOf<Tail[K]>} : []),
+          ]
         : T extends ConSchema<infer U>
           ? U
           : T extends ObjSchema<infer F>

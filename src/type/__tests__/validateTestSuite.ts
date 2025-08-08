@@ -1,4 +1,4 @@
-import {type Type, t} from '..';;
+import {type Type, t} from '..';
 import {TypeSystem} from '../../system/TypeSystem';
 
 export const validateTestSuite = (validate: (type: Type, value: unknown) => void) => {
@@ -344,7 +344,9 @@ export const validateTestSuite = (validate: (type: Type, value: unknown) => void
 
     describe('custom validators', () => {
       test('throws if custom validator fails', () => {
-        const type = system.t.str.validator((str) => { if (str !== '!') throw new Error('Bang!'); });
+        const type = system.t.str.validator((str) => {
+          if (str !== '!') throw new Error('Bang!');
+        });
         validate(type, '!');
         expect(() => validate(type, 'foo')).toThrowErrorMatchingInlineSnapshot(`"VALIDATION"`);
       });

@@ -1,7 +1,7 @@
 import {b} from '@jsonjoy.com/buffers/lib/b';
 import {ValidationError} from '../../../constants';
 import {type OrSchema, s, type Schema} from '../../../schema';
-import {ValidatorCodegen, ValidatorCodegenOptions} from '../ValidatorCodegen';
+import {ValidatorCodegen, type ValidatorCodegenOptions} from '../ValidatorCodegen';
 import {TypeSystem} from '../../../system';
 
 const exec = (schema: Schema, json: unknown, error: any, options: Partial<ValidatorCodegenOptions> = {}) => {
@@ -151,7 +151,7 @@ describe('"con" type', () => {
 });
 
 describe('"bool" type', () => {
-    test('boolean', () => {
+  test('boolean', () => {
     const type = s.bool;
     exec(type, true, null);
     exec(type, false, null);
@@ -393,7 +393,6 @@ describe('"bin" type', () => {
       path: [],
     });
   });
-
 });
 
 describe('"num" type', () => {
@@ -985,16 +984,12 @@ describe('"map" type', () => {
     exec(type, {a: null}, null);
     exec(type, {a: {}}, null);
     exec(type, {a: []}, null);
-    exec(
-      type,
-      [],
-      {
-        code: 'MAP',
-        errno: ValidationError.MAP,
-        message: 'Not a map.',
-        path: [],
-      },
-    );
+    exec(type, [], {
+      code: 'MAP',
+      errno: ValidationError.MAP,
+      message: 'Not a map.',
+      path: [],
+    });
   });
 
   test('can have a map of numbers', () => {
@@ -1003,18 +998,26 @@ describe('"map" type', () => {
     exec(type, {a: 123}, null);
     exec(type, {a: -123}, null);
     exec(type, {a: 0}, null);
-    exec(type, {a: '123'}, {
-      code: 'NUM',
-      errno: ValidationError.NUM,
-      message: 'Not a number.',
-      path: ['a'],
-    });
-    exec(type, {_: 123, a: '123'}, {
-      code: 'NUM',
-      errno: ValidationError.NUM,
-      message: 'Not a number.',
-      path: ['a'],
-    });
+    exec(
+      type,
+      {a: '123'},
+      {
+        code: 'NUM',
+        errno: ValidationError.NUM,
+        message: 'Not a number.',
+        path: ['a'],
+      },
+    );
+    exec(
+      type,
+      {_: 123, a: '123'},
+      {
+        code: 'NUM',
+        errno: ValidationError.NUM,
+        message: 'Not a number.',
+        path: ['a'],
+      },
+    );
   });
 });
 
@@ -1032,17 +1035,18 @@ describe('"or" type', () => {
   });
 
   test('checks inner type', () => {
-    const type = s.Or(s.Object(
-      s.prop('type', s.Const<'num'>('num')),
-      s.prop('foo', s.num),
-    ), s.num);
+    const type = s.Or(s.Object(s.prop('type', s.Const<'num'>('num')), s.prop('foo', s.num)), s.num);
     exec(type, {type: 'num', foo: 123}, null);
-    exec(type, {type: 'num', foo: '123'}, {
-      code: 'NUM',
-      errno: ValidationError.NUM,
-      message: 'Not a number.',
-      path: ['foo'],
-    });
+    exec(
+      type,
+      {type: 'num', foo: '123'},
+      {
+        code: 'NUM',
+        errno: ValidationError.NUM,
+        message: 'Not a number.',
+        path: ['foo'],
+      },
+    );
   });
 
   test('object key can be of multiple types', () => {
@@ -1138,9 +1142,11 @@ describe('"or" type', () => {
 describe('"ref" type', () => {
   test('a single type', () => {
     const system = new TypeSystem();
-    system.t.object({
-      foo: system.t.string(),
-    }).alias('TheObject');
+    system.t
+      .object({
+        foo: system.t.string(),
+      })
+      .alias('TheObject');
     const type = system.t.object({
       x: system.t.Ref('TheObject'),
     });
@@ -1274,7 +1280,7 @@ describe('custom validators', () => {
   test('can specify multiple validators', () => {
     const system = new TypeSystem();
     const type = system.t.str
-      .validator((value) => (value === 'a' || value === 'b' ? false : true), 'is-ab')
+      .validator((value) => value === 'a' || value === 'b', 'is-ab')
       .validator((value) => value !== 'a', 'is-a');
     const validator = ValidatorCodegen.get({type, errors: 'object'});
     const res1 = validator('a');
@@ -1305,8 +1311,8 @@ describe('custom validators', () => {
       system.t.prop(
         'id',
         system.t.str.validator((id: string): void => {
-        if (!/^[a-z]+$/.test(id)) throw new Error('Asset ID must be a string.');
-      }, 'assetId'),
+          if (!/^[a-z]+$/.test(id)) throw new Error('Asset ID must be a string.');
+        }, 'assetId'),
       ),
     );
     const validator = ValidatorCodegen.get({type, errors: 'object'});
@@ -1324,14 +1330,11 @@ describe('custom validators', () => {
   test('returns the error, which validator throws, even inside a "ref" type', () => {
     const system = new TypeSystem();
     system.t.str
-      .validator(
-        (id: string) => {
-          if (id === 'xxxxxxx') return;
-          if (id === 'y') return;
-          throw new Error('Asset ID must be a string.');
-        },
-        'assetId'
-      )
+      .validator((id: string) => {
+        if (id === 'xxxxxxx') return;
+        if (id === 'y') return;
+        throw new Error('Asset ID must be a string.');
+      }, 'assetId')
       .alias('ID');
     const type = system.t.Object(system.t.prop('id', system.t.Ref('ID')));
     const validator = ValidatorCodegen.get({type, errors: 'object'});
@@ -1354,4 +1357,3 @@ describe('custom validators', () => {
     });
   });
 });
-

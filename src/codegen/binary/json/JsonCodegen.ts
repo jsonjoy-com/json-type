@@ -30,60 +30,68 @@ export class JsonCodegen extends AbstractBinaryCodegen<JsonEncoder> {
         codegen.js(`throw new Error('ARR_LEN');`);
       });
     }
-    codegen.if(/* js */ `${rLen} === 0`, () => {
-      this.blob(
-        this.gen((encoder) => {
-          encoder.writeStartArr();
-          encoder.writeEndArr();
-        }),
-      );
-    }, () => {
-      const ri = codegen.var('0');
-      const separatorBlob = this.gen((encoder) => encoder.writeObjSeparator());
-      this.blob(
-        this.gen((encoder) => {
-          encoder.writeStartArr();
-        }),
-      );
-      if (headLen) {
-        for (let i = 0; i < headLen; i++) {
-          const isLast = i === headLen - 1;
-          this.onNode([...path, {r: i + ''}], new JsExpression(() => /* js */ `${r.use()}[${i}]`), _head[i]);
-          if (!isLast) this.blob(separatorBlob);
-        }
-        codegen.js(/* js */ `${ri} += ${headLen}`);
-      }
-      if (_type) {
-        if (!_head.length) {
-          codegen.if(`${rLen} > ${_tail.length}`, () => {
-            this.onNode([...path, {r: '0'}], new JsExpression(() => /* js */ `${r.use()}[0]`), type._type);
-            codegen.js(/* js */ `${ri}++`);
-          });
-        }
-        codegen.js(/* js */ `for(; ${ri} < ${rLen} - ${_tail.length}; ${ri}++) {`);
-        this.blob(separatorBlob);
-        this.onNode([...path, {r: ri}], new JsExpression(() => /* js */ `${r.use()}[${ri}]`), type._type);
-        codegen.js(/* js */ `}`);
-      }
-      if (tailLen) {
-        for (let i = 0; i < tailLen; i++) {
-          const isFirst = i === 0;
-          if (isFirst) {
-            codegen.if(`${ri} + ${i} > 0`, () => {
-              this.blob(separatorBlob);
-            });
-          } else {
-            this.blob(separatorBlob);
+    codegen.if(
+      /* js */ `${rLen} === 0`,
+      () => {
+        this.blob(
+          this.gen((encoder) => {
+            encoder.writeStartArr();
+            encoder.writeEndArr();
+          }),
+        );
+      },
+      () => {
+        const ri = codegen.var('0');
+        const separatorBlob = this.gen((encoder) => encoder.writeObjSeparator());
+        this.blob(
+          this.gen((encoder) => {
+            encoder.writeStartArr();
+          }),
+        );
+        if (headLen) {
+          for (let i = 0; i < headLen; i++) {
+            const isLast = i === headLen - 1;
+            this.onNode([...path, {r: i + ''}], new JsExpression(() => /* js */ `${r.use()}[${i}]`), _head[i]);
+            if (!isLast) this.blob(separatorBlob);
           }
-          this.onNode([...path, {r: `${ri} + ${i}`}], new JsExpression(() => /* js */ `${r.use()}[${ri}+${i}]`), _tail[i]);
+          codegen.js(/* js */ `${ri} += ${headLen}`);
         }
-      }
-      this.blob(
-        this.gen((encoder) => {
-          encoder.writeEndArr();
-        }),
-      );
-    });
+        if (_type) {
+          if (!_head.length) {
+            codegen.if(`${rLen} > ${_tail.length}`, () => {
+              this.onNode([...path, {r: '0'}], new JsExpression(() => /* js */ `${r.use()}[0]`), type._type);
+              codegen.js(/* js */ `${ri}++`);
+            });
+          }
+          codegen.js(/* js */ `for(; ${ri} < ${rLen} - ${_tail.length}; ${ri}++) {`);
+          this.blob(separatorBlob);
+          this.onNode([...path, {r: ri}], new JsExpression(() => /* js */ `${r.use()}[${ri}]`), type._type);
+          codegen.js(/* js */ `}`);
+        }
+        if (tailLen) {
+          for (let i = 0; i < tailLen; i++) {
+            const isFirst = i === 0;
+            if (isFirst) {
+              codegen.if(`${ri} + ${i} > 0`, () => {
+                this.blob(separatorBlob);
+              });
+            } else {
+              this.blob(separatorBlob);
+            }
+            this.onNode(
+              [...path, {r: `${ri} + ${i}`}],
+              new JsExpression(() => /* js */ `${r.use()}[${ri}+${i}]`),
+              _tail[i],
+            );
+          }
+        }
+        this.blob(
+          this.gen((encoder) => {
+            encoder.writeEndArr();
+          }),
+        );
+      },
+    );
   }
 
   protected onObj(path: SchemaPath, value: JsExpression, type: ObjType): void {
@@ -108,11 +116,7 @@ export class JsonCodegen extends AbstractBinaryCodegen<JsonEncoder> {
           }),
         );
         const accessor = normalizeAccessor(field.key);
-        this.onNode(
-          [...path, field.key],
-          new JsExpression(() => `(${r}${accessor})`),
-          field.val,
-        );
+        this.onNode([...path, field.key], new JsExpression(() => `(${r}${accessor})`), field.val);
         this.blob(separatorBlob);
       }
     };
@@ -127,11 +131,7 @@ export class JsonCodegen extends AbstractBinaryCodegen<JsonEncoder> {
             }),
           );
           this.blob(keySeparatorBlob);
-          this.onNode(
-            [...path, field.key],
-            new JsExpression(() => `${r}${accessor}`),
-            field.val,
-          );
+          this.onNode([...path, field.key], new JsExpression(() => `${r}${accessor}`), field.val);
           this.blob(separatorBlob);
         });
       }

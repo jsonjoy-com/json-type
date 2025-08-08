@@ -178,7 +178,8 @@ test('string patch', () => {
     title: 'Delete String',
     description: 'Deletes the current position in the source string.',
   });
-  const StringPatch = t.array(t.or(StringOperationInsert, StringOperationEqual, StringOperationDelete))
+  const StringPatch = t
+    .array(t.or(StringOperationInsert, StringOperationEqual, StringOperationDelete))
     .title('String Patch')
     .description(
       'A list of string operations that can be applied to a source string to produce a destination string, or vice versa.',

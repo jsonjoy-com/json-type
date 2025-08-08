@@ -1,4 +1,4 @@
-import {TypeAlias, TypeSystem} from '..';
+import {type TypeAlias, TypeSystem} from '..';
 import {aliasToTs, toTypeScriptAst} from '../../typescript/converter';
 import {toText} from '../../typescript/toText';
 

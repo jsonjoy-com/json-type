@@ -8,16 +8,33 @@ import {floats, ints, uints} from '../../util';
 import {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
 import {DiscriminatorCodegen} from '../discriminator';
 import type {BinaryJsonEncoder} from '@jsonjoy.com/json-pack/lib/types';
-import type {AnyType, ArrType, BinType, BoolType, ConType, MapType, NumType, OrType, RefType, StrType, Type} from '../../type';
+import type {
+  AnyType,
+  ArrType,
+  BinType,
+  BoolType,
+  ConType,
+  MapType,
+  NumType,
+  OrType,
+  RefType,
+  StrType,
+  Type,
+} from '../../type';
 import type {CompiledBinaryEncoder, SchemaPath} from '../types';
 
 type Step = WriteBlobStep | CodegenStepExecJs;
 
-export abstract class AbstractBinaryCodegen<Encoder extends BinaryJsonEncoder> extends AbstractCodegen<CompiledBinaryEncoder> {
+export abstract class AbstractBinaryCodegen<
+  Encoder extends BinaryJsonEncoder,
+> extends AbstractCodegen<CompiledBinaryEncoder> {
   protected abstract encoder: Encoder;
   public readonly codegen: Codegen<CompiledBinaryEncoder>;
 
-  constructor(public readonly type: Type, name?: string) {
+  constructor(
+    public readonly type: Type,
+    name?: string,
+  ) {
     super();
     this.codegen = new Codegen<CompiledBinaryEncoder>({
       name: 'toBinary' + (name ? '_' + name : ''),

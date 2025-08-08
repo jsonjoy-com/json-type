@@ -15,22 +15,24 @@ export const normalizeAccessor = (key: string): string => {
  */
 export const lazyKeyedFactory = <
   K extends WeakKey,
-  FactoryThis extends any,
+  FactoryThis,
   FactoryArgs extends [key: K, ...args: any[]],
-  Method extends (...args: any[]) => any
->(factory: ((this: FactoryThis, ...args: FactoryArgs) => Method)) => {
+  Method extends (...args: any[]) => any,
+>(
+  factory: (this: FactoryThis, ...args: FactoryArgs) => Method,
+) => {
   const cache = new WeakMap<K, Method>();
   return function (this: FactoryThis, ...factoryArgs: FactoryArgs) {
     const factoryThis = this;
     const key = factoryArgs[0];
     let estimator = cache.get(key);
     if (estimator) return estimator;
-    return (function (this: any, ...methodArgs: Parameters<Method>) {
+    return function (this: any, ...methodArgs: Parameters<Method>) {
       if (!estimator) {
         estimator = factory.call(factoryThis, ...factoryArgs);
         cache.set(key, estimator);
       }
       return estimator.call(this, ...methodArgs);
-    }) as Method;
+    } as Method;
   };
 };

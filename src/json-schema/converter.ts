@@ -95,20 +95,20 @@ function anyToJsonSchema(type: AnyType, ctx?: TypeExportContext): JsonSchemaAny 
 
 function arrayToJsonSchema(type: ArrType<any, any, any>, ctx?: TypeExportContext): JsonSchemaArray {
   // TODO: Handle head and tail tuples.
-//   function tupleToJsonSchema(type: TupType<any>, ctx?: TypeExportContext): JsonSchemaArray {
-//   const baseSchema = getBaseJsonSchema(type, ctx);
-//   const types = (type as any).types;
-//   const result: JsonSchemaArray = {
-//     type: 'array',
-//     items: false,
-//     prefixItems: types.map((t: any) => typeToJsonSchema(t, ctx)),
-//   };
+  //   function tupleToJsonSchema(type: TupType<any>, ctx?: TypeExportContext): JsonSchemaArray {
+  //   const baseSchema = getBaseJsonSchema(type, ctx);
+  //   const types = (type as any).types;
+  //   const result: JsonSchemaArray = {
+  //     type: 'array',
+  //     items: false,
+  //     prefixItems: types.map((t: any) => typeToJsonSchema(t, ctx)),
+  //   };
 
-//   // Add base properties
-//   Object.assign(result, baseSchema);
+  //   // Add base properties
+  //   Object.assign(result, baseSchema);
 
-//   return result;
-// }
+  //   return result;
+  // }
   const schema = type.getSchema();
   const baseSchema = getBaseJsonSchema(type, ctx);
   const result: JsonSchemaArray = {

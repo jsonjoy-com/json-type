@@ -144,7 +144,9 @@ describe('StrType format validation', () => {
     });
 
     test('validates format and ascii consistency', () => {
-      expect(() => validateSchema(t.String({format: 'ascii', ascii: false}).getSchema())).toThrow('FORMAT_ASCII_MISMATCH');
+      expect(() => validateSchema(t.String({format: 'ascii', ascii: false}).getSchema())).toThrow(
+        'FORMAT_ASCII_MISMATCH',
+      );
       expect(() => validateSchema(t.String({format: 'ascii', ascii: true}).getSchema())).not.toThrow();
       expect(() => validateSchema(t.String({format: 'utf8', ascii: true}).getSchema())).not.toThrow(); // UTF-8 can have ascii=true
     });

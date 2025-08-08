@@ -1,6 +1,6 @@
-import {ArrType, FnRxType, FnType, MapType, ObjType, OrType} from '../type/classes';
-import {Type} from '../type/types';
-import {TypeAlias} from '../system';
+import {type ArrType, type FnRxType, type FnType, type MapType, ObjType, type OrType} from '../type/classes';
+import type {Type} from '../type/types';
+import type {TypeAlias} from '../system';
 import type * as ts from './types';
 import type * as schema from '../schema';
 
@@ -107,10 +107,10 @@ export function toTypeScriptAst(type: Type): ts.TsType {
         if (_type) {
           const rest: ts.RestType = {
             node: 'RestType',
-            type: ({
+            type: {
               node: 'ArrType',
               elementType: toTypeScriptAst(_type) as ts.TsType,
-            }) as ts.TsArrType,
+            } as ts.TsArrType,
           };
           node.elements.push(rest);
         }

@@ -4,12 +4,17 @@ import {printTree} from 'tree-dump';
 import type {SchemaOf, Type} from '../types';
 import type {TypeExportContext} from '../../system/TypeExportContext';
 
-export class ArrType<T extends Type | void = any, const Head extends Type[] = any, const Tail extends Type[] = any>
-  extends AbsType<schema.ArrSchema<
+export class ArrType<
+  T extends Type | void = any,
+  const Head extends Type[] = any,
+  const Tail extends Type[] = any,
+> extends AbsType<
+  schema.ArrSchema<
     T extends void ? schema.Schema : SchemaOf<T extends Type ? T : never>,
     {[K in keyof Head]: SchemaOf<Head[K]>},
     {[K in keyof Tail]: SchemaOf<Tail[K]>}
-  >> {
+  >
+> {
   constructor(
     public readonly _type?: T,
     public readonly _head?: Head,
@@ -54,17 +59,36 @@ export class ArrType<T extends Type | void = any, const Head extends Type[] = an
     return schema;
   }
 
-  public getOptions(): schema.Optional<schema.ArrSchema<T extends void ? schema.Schema : SchemaOf<T extends Type ? T : never>>> {
+  public getOptions(): schema.Optional<
+    schema.ArrSchema<T extends void ? schema.Schema : SchemaOf<T extends Type ? T : never>>
+  > {
     const {kind, type, ...options} = this.schema;
     return options as any;
   }
 
   public toString(tab: string = ''): string {
     const {_head, _type, _tail} = this;
-    return super.toString(tab) + printTree(tab, [
-      _head && _head.length ? (tab) => ('[ head, ... ]' + printTree(tab, _head!.map((t) => (tab) => t.toString(tab)))) : null,
-      _type ? ((tab) => _type ? _type.toString(tab) : '...') : null,
-      _tail && _tail.length ? (tab) => ('[ ..., tail ]' + printTree(tab, _tail!.map((t) => (tab) => t.toString(tab)))) : null,
-    ]);
+    return (
+      super.toString(tab) +
+      printTree(tab, [
+        _head && _head.length
+          ? (tab) =>
+              '[ head, ... ]' +
+              printTree(
+                tab,
+                _head!.map((t) => (tab) => t.toString(tab)),
+              )
+          : null,
+        _type ? (tab) => (_type ? _type.toString(tab) : '...') : null,
+        _tail && _tail.length
+          ? (tab) =>
+              '[ ..., tail ]' +
+              printTree(
+                tab,
+                _tail!.map((t) => (tab) => t.toString(tab)),
+              )
+          : null,
+      ])
+    );
   }
 }

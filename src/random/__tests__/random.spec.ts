@@ -3,7 +3,7 @@
  * Tests that generated random values conform to their JSON Type schemas.
  */
 
-import {t, Type} from '../../type';
+import {t, type Type} from '../../type';
 import {allSchemas, schemaCategories} from '../../__tests__/fixtures';
 import {Random} from '../Random';
 

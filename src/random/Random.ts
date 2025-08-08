@@ -1,8 +1,24 @@
 import {of} from 'rxjs';
 import {RandomJson} from '@jsonjoy.com/json-random';
 import {cloneBinary} from '@jsonjoy.com/util/lib/json-clone';
-import {ObjKeyOptType, ObjKeyType, type ObjType} from '../type/classes/ObjType';
-import type {AnyType, t, Type, StrType, ArrType, BinType, BoolType, ConType, FnType, MapType, NumType, OrType, RefType, AbsType, FnRxType} from '../type';
+import {ObjKeyOptType, type ObjKeyType, type ObjType} from '../type/classes/ObjType';
+import type {
+  AnyType,
+  t,
+  Type,
+  StrType,
+  ArrType,
+  BinType,
+  BoolType,
+  ConType,
+  FnType,
+  MapType,
+  NumType,
+  OrType,
+  RefType,
+  AbsType,
+  FnRxType,
+} from '../type';
 
 export class Random {
   public static readonly gen = <T extends Type>(type: T): t.infer<T> => {
@@ -63,7 +79,9 @@ export class Random {
   }
 
   public bin(type: BinType<any>): Uint8Array {
-    const octets = RandomJson.genString().split('').map((c) => c.charCodeAt(0));
+    const octets = RandomJson.genString()
+      .split('')
+      .map((c) => c.charCodeAt(0));
     return new Uint8Array(octets);
   }
 

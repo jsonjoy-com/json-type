@@ -189,7 +189,12 @@ export class TypeBuilder {
     return new classes.ArrType<T, [], []>(type, void 0, void 0, options).sys(this.system);
   }
 
-  public Tuple<const Head extends Type[], Item extends Type | void = undefined, const Tail extends Type[] = []>(head: Head, item?: Item, tail?: Tail, options?: schema.Optional<schema.ArrSchema>) {
+  public Tuple<const Head extends Type[], Item extends Type | void = undefined, const Tail extends Type[] = []>(
+    head: Head,
+    item?: Item,
+    tail?: Tail,
+    options?: schema.Optional<schema.ArrSchema>,
+  ) {
     return new classes.ArrType(item, head, tail, options).sys(this.system);
   }
 
@@ -245,14 +250,15 @@ export class TypeBuilder {
         return this.String(node);
       case 'bin':
         return this.Binary(this.import(node.type), node);
-      case 'arr':
+      case 'arr': {
         const {head, type, tail, ...rest} = node as schema.ArrSchema;
         return this.Tuple(
           head ? head.map((h: any) => this.import(h)) : void 0,
           type ? this.import(type) : void 0,
           tail ? tail.map((t: any) => this.import(t)) : void 0,
           rest,
-      );
+        );
+      }
       case 'obj': {
         return this.Object(
           ...node.fields.map((f: any) =>
@@ -307,7 +313,7 @@ export class TypeBuilder {
             }
           };
           const allElementsOfTheSameType = value.every((v) => getType(v) === getType(value[0]));
-          this.Array(this.from(value[0]))
+          this.Array(this.from(value[0]));
           return allElementsOfTheSameType
             ? this.Array(this.from(value[0]))
             : this.tuple(...value.map((v) => this.from(v)));

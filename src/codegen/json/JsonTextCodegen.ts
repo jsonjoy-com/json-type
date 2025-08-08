@@ -29,7 +29,10 @@ export class JsonTextCodegen {
 
   public readonly codegen: Codegen<JsonEncoderFn>;
 
-  constructor(protected readonly type: Type, name?: string) {
+  constructor(
+    protected readonly type: Type,
+    name?: string,
+  ) {
     this.codegen = new Codegen<JsonEncoderFn>({
       name: 'toJson' + (name ? '_' + name : ''),
       prologue: `var s = '';`,
@@ -94,23 +97,23 @@ export class JsonTextCodegen {
     this.writeText(']');
   }
 
-// export const tup = (
-//   ctx: JsonTextCodegen,
-//   value: JsExpression,
-//   type: Type,
-//   encodeFn: JsonTextEncoderFunction,
-// ): void => {
-//   const tupType = type as any; // TupType
-//   const codegen = ctx.codegen;
-//   const r = codegen.var(value.use());
-//   const types = tupType.types;
-//   ctx.writeText('[');
-//   for (let i = 0; i < types.length; i++) {
-//     if (i > 0) ctx.writeText(',');
-//     encodeFn(ctx, new JsExpression(() => `${r}[${i}]`), types[i]);
-//   }
-//   ctx.writeText(']');
-// };
+  // export const tup = (
+  //   ctx: JsonTextCodegen,
+  //   value: JsExpression,
+  //   type: Type,
+  //   encodeFn: JsonTextEncoderFunction,
+  // ): void => {
+  //   const tupType = type as any; // TupType
+  //   const codegen = ctx.codegen;
+  //   const r = codegen.var(value.use());
+  //   const types = tupType.types;
+  //   ctx.writeText('[');
+  //   for (let i = 0; i < types.length; i++) {
+  //     if (i > 0) ctx.writeText(',');
+  //     encodeFn(ctx, new JsExpression(() => `${r}[${i}]`), types[i]);
+  //   }
+  //   ctx.writeText(']');
+  // };
 
   protected onObj(value: JsExpression, objType: ObjType): void {
     const {fields} = objType;
@@ -169,24 +172,24 @@ if (${rLength}) {
   }
 
   protected onMap(value: JsExpression, type: MapType<any>): void {
-      this.writeText('{');
-      const r = this.codegen.var(value.use());
-      const rKeys = this.codegen.var(/* js */ `Object.keys(${r})`);
-      const rLength = this.codegen.var(/* js */ `${rKeys}.length`);
-      const rKey = this.codegen.var();
-      this.codegen.if(/* js */ `${rLength}`, () => {
-        this.js(/* js */ `${rKey} = ${rKeys}[0];`);
-        this.js(/* js */ `s += asString(${rKey}) + ':';`);
-        const innerValue = new JsExpression(() => /* js */ `${r}[${rKey}]`);
-        this.onNode(innerValue, type._value);
-      });
-      this.js(/* js */ `for (var i = 1; i < ${rLength}; i++) {`);
-      this.js(/* js */ `${rKey} = ${rKeys}[i];`);
-      this.js(/* js */ `s += ',' + asString(${rKey}) + ':';`);
+    this.writeText('{');
+    const r = this.codegen.var(value.use());
+    const rKeys = this.codegen.var(/* js */ `Object.keys(${r})`);
+    const rLength = this.codegen.var(/* js */ `${rKeys}.length`);
+    const rKey = this.codegen.var();
+    this.codegen.if(/* js */ `${rLength}`, () => {
+      this.js(/* js */ `${rKey} = ${rKeys}[0];`);
+      this.js(/* js */ `s += asString(${rKey}) + ':';`);
       const innerValue = new JsExpression(() => /* js */ `${r}[${rKey}]`);
       this.onNode(innerValue, type._value);
-      this.js(/* js */ `}`);
-      this.writeText('}');
+    });
+    this.js(/* js */ `for (var i = 1; i < ${rLength}; i++) {`);
+    this.js(/* js */ `${rKey} = ${rKeys}[i];`);
+    this.js(/* js */ `s += ',' + asString(${rKey}) + ':';`);
+    const innerValue = new JsExpression(() => /* js */ `${r}[${rKey}]`);
+    this.onNode(innerValue, type._value);
+    this.js(/* js */ `}`);
+    this.writeText('}');
   }
 
   protected onRef(value: JsExpression, ref: RefType<any>): void {

@@ -24,7 +24,10 @@ export class CapacityEstimatorCodegen {
 
   public readonly codegen: Codegen<CompiledCapacityEstimator>;
 
-  constructor(public readonly type: Type, name?: string) {
+  constructor(
+    public readonly type: Type,
+    name?: string,
+  ) {
     this.codegen = new Codegen({
       name: 'approxSize' + (name ? '_' + name : ''),
       args: ['r0'],
@@ -57,14 +60,14 @@ export class CapacityEstimatorCodegen {
     const codegen = this.codegen;
     const r = codegen.var(value.use());
     codegen.js(/* js */ `size += maxEncodingCapacity(${r});`);
-  };
+  }
 
   protected genArr(value: JsExpression, type: ArrType<any, any, any>): void {
     const codegen = this.codegen;
     this.inc(MaxEncodingOverhead.Array);
     const rLen = codegen.var(/* js */ `${value.use()}.length`);
     codegen.js(/* js */ `size += ${MaxEncodingOverhead.ArrayElement} * ${rLen}`);
-    const itemType =  type._type as (Type | undefined);
+    const itemType = type._type as Type | undefined;
     const headType = type._head as Type[] | undefined;
     const tailType = type._tail as Type[] | undefined;
     const headLength = headType ? headType.length : 0;
@@ -72,11 +75,12 @@ export class CapacityEstimatorCodegen {
     if (itemType) {
       const isConstantSizeType = type instanceof ConType || type instanceof BoolType || type instanceof NumType;
       if (isConstantSizeType) {
-        const elementSize = type instanceof ConType
-          ? maxEncodingCapacity(type.literal())
-          : type instanceof BoolType
-            ? MaxEncodingOverhead.Boolean
-            : MaxEncodingOverhead.Number;
+        const elementSize =
+          type instanceof ConType
+            ? maxEncodingCapacity(type.literal())
+            : type instanceof BoolType
+              ? MaxEncodingOverhead.Boolean
+              : MaxEncodingOverhead.Number;
         codegen.js(/* js */ `size += ${rLen} * ${elementSize};`);
       } else {
         const r = codegen.var(value.use());
@@ -88,8 +92,7 @@ export class CapacityEstimatorCodegen {
     }
     if (headLength > 0) {
       const r = codegen.var(value.use());
-      for (let i = 0; i < headLength; i++)
-        this.onNode(new JsExpression(() => /* js */ `${r}[${i}]`), headType![i]);
+      for (let i = 0; i < headLength; i++) this.onNode(new JsExpression(() => /* js */ `${r}[${i}]`), headType![i]);
     }
     if (tailLength > 0) {
       const r = codegen.var(value.use());
@@ -211,6 +214,6 @@ export class CapacityEstimatorCodegen {
         break;
       default:
         throw new Error(`"${kind}" type capacity estimation not implemented`);
-      }
-  };
+    }
+  }
 }

@@ -9,7 +9,7 @@ export abstract class AbsType<S extends schema.Schema> implements BaseType<S>, P
   /** Default type system to use, if any. */
   public system?: TypeSystem;
 
-  public readonly _validators: [validator: ((value: unknown) => void), name?: string][] = [];
+  public readonly _validators: [validator: (value: unknown) => void, name?: string][] = [];
 
   constructor(public readonly schema: S) {}
 

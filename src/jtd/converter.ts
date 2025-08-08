@@ -109,7 +109,7 @@ export function toJtdForm(type: Type): jtd.JtdForm {
       };
     }
     case 'ref': {
-      const ref = type as RefType
+      const ref = type as RefType;
       return {
         ref: ref.ref(),
       };

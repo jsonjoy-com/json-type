@@ -5,7 +5,21 @@ import {deepEqualCodegen} from '@jsonjoy.com/util/lib/json-equal/deepEqualCodege
 import {AbstractCodegen} from '../AbstractCodege';
 import {floats, ints, uints} from '../../util';
 import {isAscii, isUtf8} from '../../util/stringFormats';
-import {ObjKeyOptType, type AnyType, type ArrType, type BinType, type BoolType, type ConType, type MapType, type NumType, type ObjType, type OrType, type RefType, type StrType, type Type} from '../../type';
+import {
+  ObjKeyOptType,
+  type AnyType,
+  type ArrType,
+  type BinType,
+  type BoolType,
+  type ConType,
+  type MapType,
+  type NumType,
+  type ObjType,
+  type OrType,
+  type RefType,
+  type StrType,
+  type Type,
+} from '../../type';
 import {normalizeAccessor} from '@jsonjoy.com/codegen/lib/util/normalizeAccessor';
 import {lazyKeyedFactory} from '../util';
 import {DiscriminatorCodegen} from '../discriminator';
@@ -63,8 +77,7 @@ export class ValidatorCodegen extends AbstractCodegen {
     return codegen.compile();
   });
 
-  public static readonly get = (options: ValidatorCodegenOptions) =>
-    ValidatorCodegen._get(options.type, options);
+  public static readonly get = (options: ValidatorCodegenOptions) => ValidatorCodegen._get(options.type, options);
 
   public readonly options: ValidatorCodegenOptions;
   public readonly codegen: Codegen;
@@ -159,7 +172,7 @@ export class ValidatorCodegen extends AbstractCodegen {
       const emitRc = this.options.errors === 'object';
       codegen.js(
         /* js */ `try { var ${rerr} = ${v}(${r.use()}); if (${rerr}) return ${err}; } catch (e) {` +
-        `${emitRc ? /* js */ `var ${rc} = e ? e : new Error('Validator ${JSON.stringify(name)} failed.');` : ''} return ${errInCatch}}`
+          `${emitRc ? /* js */ `var ${rc} = e ? e : new Error('Validator ${JSON.stringify(name)} failed.');` : ''} return ${errInCatch}}`,
       );
     }
   }
@@ -316,7 +329,7 @@ export class ValidatorCodegen extends AbstractCodegen {
         this.onNode([...path, {r: i + ''}], new JsExpression(() => /* js */ `${r.use()}[${i}]`), _head[i]);
     }
     if (_type) {
-      CHECK_MIN_MAX: {
+      {
         const tupleLength = _head.length + _tail.length;
         const errLen = this.err(ValidationError.ARR_LEN, path);
         if (min !== undefined) codegen.js(/* js */ `if (${rl} < ${min} + ${tupleLength}) return ${errLen};`);
@@ -329,7 +342,11 @@ export class ValidatorCodegen extends AbstractCodegen {
     }
     if (_tail.length) {
       for (let i = 0; i < _tail.length; i++) {
-        this.onNode([...path, {r: `(${ri}+${i})`}], new JsExpression(() => /* js */ `${r.use()}[${ri}+${i}]`), _tail[i]);
+        this.onNode(
+          [...path, {r: `(${ri}+${i})`}],
+          new JsExpression(() => /* js */ `${r.use()}[${ri}+${i}]`),
+          _tail[i],
+        );
       }
     }
   }
@@ -341,7 +358,9 @@ export class ValidatorCodegen extends AbstractCodegen {
     const canSkipObjectTypeCheck = this.options.unsafeMode && length > 0;
     if (!canSkipObjectTypeCheck) {
       const err = this.err(ValidationError.OBJ, path);
-      codegen.js(/* js */ `if (typeof ${r.use()} !== 'object' || !${r.use()} || (${r.use()} instanceof Array)) return ${err};`);
+      codegen.js(
+        /* js */ `if (typeof ${r.use()} !== 'object' || !${r.use()} || (${r.use()} instanceof Array)) return ${err};`,
+      );
     }
     const checkExtraKeys = length && !type.getOptions().unknownFields && !this.options.skipObjectExtraFieldsCheck;
     if (checkExtraKeys) {
@@ -379,7 +398,9 @@ export class ValidatorCodegen extends AbstractCodegen {
     const codegen = this.codegen;
     const err = this.err(ValidationError.MAP, path);
     const rMap = codegen.var(r.use());
-    codegen.js(/* js */ `if (!${rMap} || (typeof ${rMap} !== 'object') || (${rMap}.constructor !== Object)) return ${err};`);
+    codegen.js(
+      /* js */ `if (!${rMap} || (typeof ${rMap} !== 'object') || (${rMap}.constructor !== Object)) return ${err};`,
+    );
     const rKeys = codegen.var(/* js */ `Object.keys(${rMap});`);
     const rLength = codegen.var(/* js */ `${rKeys}.length`);
     const rKey = codegen.r();

@@ -1,6 +1,19 @@
-import {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
+import type {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
 import type {Codegen} from '@jsonjoy.com/codegen';
-import type {AnyType, ArrType, BinType, BoolType, ConType, MapType, NumType, ObjType, OrType, RefType, StrType, Type} from '../type';
+import type {
+  AnyType,
+  ArrType,
+  BinType,
+  BoolType,
+  ConType,
+  MapType,
+  NumType,
+  ObjType,
+  OrType,
+  RefType,
+  StrType,
+  Type,
+} from '../type';
 import type {SchemaPath} from './types';
 
 export abstract class AbstractCodegen<Fn extends (...deps: any[]) => any = (...deps: unknown[]) => unknown> {

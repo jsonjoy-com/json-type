@@ -4,9 +4,7 @@ import {AbsType} from './AbsType';
 import type {SchemaOf, SchemaOfObjectFields, Type} from '../types';
 import type {ExcludeFromTuple, PickFromTuple} from '../../util/types';
 
-export class ObjKeyType<K extends string, V extends Type> extends AbsType<
-  schema.ObjFieldSchema<K, SchemaOf<V>>
-> {
+export class ObjKeyType<K extends string, V extends Type> extends AbsType<schema.ObjFieldSchema<K, SchemaOf<V>>> {
   public readonly optional: boolean = false;
 
   constructor(
@@ -60,10 +58,7 @@ export class ObjType<F extends ObjKeyType<any, any>[] = ObjKeyType<any, any>[]> 
     super(schema.s.obj as any);
   }
 
-  private _field(
-    field: ObjKeyType<any, any>,
-    options?: schema.Optional<schema.ObjFieldSchema<any, any>>,
-  ): void {
+  private _field(field: ObjKeyType<any, any>, options?: schema.Optional<schema.ObjFieldSchema<any, any>>): void {
     if (options) field.options(options);
     field.system = this.system;
     this.fields.push(field as any);

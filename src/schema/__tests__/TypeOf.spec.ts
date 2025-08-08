@@ -205,11 +205,7 @@ test('can infer a simple "fn$" type', () => {
 
 test('can infer a complex "fn" type', () => {
   const arr = s.Array(s.Object(s.prop('op', s.str), s.prop('path', s.str)));
-  const req = s.Object(
-    s.prop('id', s.str),
-    s.prop('age', s.num),
-    s.prop('patch', s.Object(s.prop('ops', arr))),
-  );
+  const req = s.Object(s.prop('id', s.str), s.prop('age', s.num), s.prop('patch', s.Object(s.prop('ops', arr))));
   const res = s.Object(s.prop('id', s.String()));
   const schema1 = s.Function(req, res);
   type T1 = TypeOf<typeof schema1>;

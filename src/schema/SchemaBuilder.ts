@@ -1,4 +1,4 @@
-import {Type} from '../type';
+import type {Type} from '../type';
 import type * as _ from './schema';
 
 export class SchemaBuilder {
@@ -115,8 +115,12 @@ export class SchemaBuilder {
     return {kind: 'con', value: value as any, ...options};
   }
 
-  public Tuple<const Head extends _.Schema[], T extends _.Schema = _.Schema, const Tail extends [] | _.Schema[] = []>(head: Head, type?: T, tail?: Tail): _.ArrSchema<Type extends T ? _.Schema : T, Head, Tail> {
-    const schema: _.ArrSchema<T, Head, Tail> =  {kind: 'arr', head};
+  public Tuple<const Head extends _.Schema[], T extends _.Schema = _.Schema, const Tail extends [] | _.Schema[] = []>(
+    head: Head,
+    type?: T,
+    tail?: Tail,
+  ): _.ArrSchema<Type extends T ? _.Schema : T, Head, Tail> {
+    const schema: _.ArrSchema<T, Head, Tail> = {kind: 'arr', head};
     if (type) schema.type = type;
     if (tail) schema.tail = tail;
     return schema;
