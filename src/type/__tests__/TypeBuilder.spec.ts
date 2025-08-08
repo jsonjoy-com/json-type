@@ -63,11 +63,11 @@ test('can construct a realistic object', () => {
   );
   expect(type.getSchema()).toStrictEqual({
     kind: 'obj',
-    fields: [
-      {kind: 'field', key: 'id', value: {kind: 'str'}},
-      {kind: 'field', key: 'name', value: {kind: 'str'}, optional: true},
-      {kind: 'field', key: 'age', value: {kind: 'num'}, optional: true},
-      {kind: 'field', key: 'verified', value: {kind: 'bool'}},
+    keys: [
+      {kind: 'key', key: 'id', value: {kind: 'str'}},
+      {kind: 'key', key: 'name', value: {kind: 'str'}, optional: true},
+      {kind: 'key', key: 'age', value: {kind: 'num'}, optional: true},
+      {kind: 'key', key: 'verified', value: {kind: 'bool'}},
     ],
   });
   type T = TypeOf<SchemaOf<typeof type>>;
@@ -152,27 +152,27 @@ describe('import()', () => {
   test('can import an object schema', () => {
     const type = t.import({
       kind: 'obj',
-      fields: [
-        {kind: 'field', key: 'id', value: {kind: 'str'}},
-        {kind: 'field', key: 'name', value: {kind: 'str'}, optional: true},
-        {kind: 'field', key: 'age', value: {kind: 'num'}, optional: true},
-        {kind: 'field', key: 'verified', value: {kind: 'bool'}},
+      keys: [
+        {kind: 'key', key: 'id', value: {kind: 'str'}},
+        {kind: 'key', key: 'name', value: {kind: 'str'}, optional: true},
+        {kind: 'key', key: 'age', value: {kind: 'num'}, optional: true},
+        {kind: 'key', key: 'verified', value: {kind: 'bool'}},
       ],
     }) as ObjType<any>;
     expect(type).toBeInstanceOf(ObjType);
     expect(type.kind()).toBe('obj');
     const id = type.getField('id')!;
     expect(id).toBeInstanceOf(ObjKeyType);
-    expect(id.kind()).toBe('field');
+    expect(id.kind()).toBe('key');
     expect(id.val).toBeInstanceOf(StrType);
     expect(id.val.kind()).toBe('str');
     expect(type.getSchema()).toStrictEqual({
       kind: 'obj',
-      fields: [
-        {kind: 'field', key: 'id', value: {kind: 'str'}},
-        {kind: 'field', key: 'name', value: {kind: 'str'}, optional: true},
-        {kind: 'field', key: 'age', value: {kind: 'num'}, optional: true},
-        {kind: 'field', key: 'verified', value: {kind: 'bool'}},
+      keys: [
+        {kind: 'key', key: 'id', value: {kind: 'str'}},
+        {kind: 'key', key: 'name', value: {kind: 'str'}, optional: true},
+        {kind: 'key', key: 'age', value: {kind: 'num'}, optional: true},
+        {kind: 'key', key: 'verified', value: {kind: 'bool'}},
       ],
     });
   });
@@ -253,19 +253,19 @@ describe('validateSchema()', () => {
     const type = t.import({
       kind: 'obj',
       description: 'An object',
-      fields: [],
-      unknownFields: 123 as any,
+      keys: [],
+      decodeUnknownKeys: 123 as any,
     });
-    expect(() => validateSchema(type.getSchema())).toThrow(new Error('UNKNOWN_FIELDS_TYPE'));
+    expect(() => validateSchema(type.getSchema())).toThrow(new Error('DECODE_UNKNOWN_KEYS_TYPE'));
   });
 
   test('validates object fields', () => {
     const type = t.import({
       kind: 'obj',
       description: 'An object',
-      fields: [
+      keys: [
         {
-          kind: 'field',
+          kind: 'key',
           key: 'id',
           value: {kind: 'str', ascii: 'bytes'} as any,
         },
@@ -278,9 +278,9 @@ describe('validateSchema()', () => {
     const type = t.import({
       kind: 'obj',
       description: 'An object',
-      fields: [
+      keys: [
         {
-          kind: 'field',
+          kind: 'key',
           key: 'id',
           optional: 123,
           value: {kind: 'str'},

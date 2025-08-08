@@ -5,7 +5,7 @@ import {MaxEncodingOverhead, maxEncodingCapacity} from '@jsonjoy.com/util/lib/js
 import {BoolType, ConType, NumType, ObjKeyOptType} from '../../type';
 import {DiscriminatorCodegen} from '../discriminator';
 import {lazyKeyedFactory} from '../util';
-import type {ObjKeyType, ArrType, MapType, RefType, Type, OrType} from '../../type';
+import type {ObjKeyType, ArrType, MapType, RefType, Type, OrType, ObjType} from '../../type';
 
 export type CompiledCapacityEstimator = (value: unknown) => number;
 
@@ -104,14 +104,14 @@ export class CapacityEstimatorCodegen {
   protected genObj(value: JsExpression, type: Type): void {
     const codegen = this.codegen;
     const r = codegen.var(value.use());
-    const objectType = type as any; // ObjType
-    const encodeUnknownFields = !!objectType.schema.encodeUnknownFields;
+    const objectType = type as ObjType;
+    const encodeUnknownFields = !!objectType.schema.encodeUnknownKeys;
     if (encodeUnknownFields) {
       codegen.js(/* js */ `size += maxEncodingCapacity(${r});`);
       return;
     }
     this.inc(MaxEncodingOverhead.Object);
-    const fields = objectType.fields;
+    const fields = objectType.keys;
     for (const f of fields) {
       const field = f as ObjKeyType<any, any>;
       const accessor = normalizeAccessor(field.key);

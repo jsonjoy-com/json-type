@@ -353,7 +353,7 @@ export class ValidatorCodegen extends AbstractCodegen {
 
   protected onObj(path: SchemaPath, r: JsExpression, type: ObjType): void {
     const codegen = this.codegen;
-    const fields = type.fields;
+    const fields = type.keys;
     const length = fields.length;
     const canSkipObjectTypeCheck = this.options.unsafeMode && length > 0;
     if (!canSkipObjectTypeCheck) {
@@ -362,7 +362,7 @@ export class ValidatorCodegen extends AbstractCodegen {
         /* js */ `if (typeof ${r.use()} !== 'object' || !${r.use()} || (${r.use()} instanceof Array)) return ${err};`,
       );
     }
-    const checkExtraKeys = length && !type.getOptions().unknownFields && !this.options.skipObjectExtraFieldsCheck;
+    const checkExtraKeys = length && !type.getOptions().decodeUnknownKeys && !this.options.skipObjectExtraFieldsCheck;
     if (checkExtraKeys) {
       const rk = codegen.getRegister();
       codegen.js(/* js */ `for (var ${rk} in ${r.use()}) {`);

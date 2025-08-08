@@ -289,7 +289,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
       const t = system.t;
       const type = t
         .Object(t.prop('id', t.str), t.propOpt('name', t.str), t.prop('age', t.num), t.propOpt('address', t.str))
-        .options({encodeUnknownFields: true});
+        .options({encodeUnknownKeys: true});
       const value: any = {
         id: 'xxxxx',
         name: 'Go Lang',
@@ -313,7 +313,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
             t.Object(t.propOpt('hobbies', t.Array(t.str)), t.propOpt('sports', t.Array(t.Tuple([t.num, t.str])))),
           ),
         )
-        .options({encodeUnknownFields: true});
+        .options({encodeUnknownKeys: true});
       const decoded = transcode(system, type, {
         id: 'xxxxx',
         name: 'Go Lang',
@@ -353,7 +353,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
       const t = system.t;
       const type = t
         .Object(t.propOpt('id', t.str), t.propOpt('name', t.str), t.propOpt('address', t.str))
-        .options({encodeUnknownFields: true});
+        .options({encodeUnknownKeys: true});
       let value: any = {
         id: 'xxxxx',
         name: 'Go Lang',
@@ -380,7 +380,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
       const t = system.t;
       const type = t
         .Object(t.propOpt('id', t.str), t.propOpt('name', t.str), t.propOpt('address', t.str))
-        .options({encodeUnknownFields: false});
+        .options({encodeUnknownKeys: false});
       let value: any = {
         id: 'xxxxx',
         name: 'Go Lang',
@@ -550,7 +550,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
     test('supports "encodeUnknownFields" property', () => {
       const system = new TypeSystem();
       const t = system.t;
-      const type = t.Object(t.prop('a', t.Object().options({encodeUnknownFields: true})));
+      const type = t.Object(t.prop('a', t.Object().options({encodeUnknownKeys: true})));
       const value = {
         a: {
           foo: 123,

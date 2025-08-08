@@ -5,7 +5,7 @@ import type * as ts from './types';
 import type * as schema from '../schema';
 
 const augmentWithComment = (
-  type: schema.Schema | schema.ObjFieldSchema,
+  type: schema.Schema | schema.ObjKeySchema,
   node: ts.TsDeclaration | ts.TsPropertySignature | ts.TsTypeLiteral,
 ) => {
   if (type.title || type.description) {
@@ -127,15 +127,15 @@ export function toTypeScriptAst(type: Type): ts.TsType {
     }
     case 'obj': {
       const obj = type as ObjType<any>;
-      const objSchema = type.getSchema();
+      const objSchema = type.getSchema() as schema.ObjSchema;
       const node: ts.TsTypeLiteral = {
         node: 'TypeLiteral',
         members: [],
       };
 
       // Handle fields
-      if (obj.fields && obj.fields.length > 0) {
-        for (const field of obj.fields) {
+      if (obj.keys && obj.keys.length > 0) {
+        for (const field of obj.keys) {
           const member: ts.TsPropertySignature = {
             node: 'PropertySignature',
             name: field.key,
@@ -158,7 +158,7 @@ export function toTypeScriptAst(type: Type): ts.TsType {
       }
 
       // Handle unknown/additional fields
-      if (objSchema.unknownFields || (objSchema as any).encodeUnknownFields) {
+      if (objSchema.decodeUnknownKeys || (objSchema as any).encodeUnknownKeys) {
         node.members.push({
           node: 'IndexSignature',
           type: {node: 'UnknownKeyword'},

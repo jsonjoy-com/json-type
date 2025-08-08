@@ -97,32 +97,14 @@ export class JsonTextCodegen {
     this.writeText(']');
   }
 
-  // export const tup = (
-  //   ctx: JsonTextCodegen,
-  //   value: JsExpression,
-  //   type: Type,
-  //   encodeFn: JsonTextEncoderFunction,
-  // ): void => {
-  //   const tupType = type as any; // TupType
-  //   const codegen = ctx.codegen;
-  //   const r = codegen.var(value.use());
-  //   const types = tupType.types;
-  //   ctx.writeText('[');
-  //   for (let i = 0; i < types.length; i++) {
-  //     if (i > 0) ctx.writeText(',');
-  //     encodeFn(ctx, new JsExpression(() => `${r}[${i}]`), types[i]);
-  //   }
-  //   ctx.writeText(']');
-  // };
-
   protected onObj(value: JsExpression, objType: ObjType): void {
-    const {fields} = objType;
+    const {keys: fields} = objType;
     const schema = objType.getOptions();
     const codegen = this.codegen;
     const r = codegen.getRegister();
     this.js(/* js */ `var ${r} = ${value.use()};`);
     const rKeys = this.codegen.getRegister();
-    if (schema.encodeUnknownFields) {
+    if (schema.encodeUnknownKeys) {
       this.js(/* js */ `var ${rKeys} = new Set(Object.keys(${r}));`);
     }
     const requiredFields = fields.filter((field) => !(field instanceof ObjKeyOptType));
@@ -134,7 +116,7 @@ export class JsonTextCodegen {
       this.writeText(JSON.stringify(field.key) + ':');
       const accessor = normalizeAccessor(field.key);
       const valueExpression = new JsExpression(() => `${r}${accessor}`);
-      if (schema.encodeUnknownFields) this.js(/* js */ `${rKeys}.delete(${JSON.stringify(field.key)});`);
+      if (schema.encodeUnknownKeys) this.js(/* js */ `${rKeys}.delete(${JSON.stringify(field.key)});`);
       this.onNode(valueExpression, field.val);
     }
     const rHasFields = codegen.getRegister();
@@ -143,7 +125,7 @@ export class JsonTextCodegen {
       const field = optionalFields[i];
       const accessor = normalizeAccessor(field.key);
       const rValue = codegen.getRegister();
-      if (schema.encodeUnknownFields) this.js(/* js */ `${rKeys}.delete(${JSON.stringify(field.key)});`);
+      if (schema.encodeUnknownKeys) this.js(/* js */ `${rKeys}.delete(${JSON.stringify(field.key)});`);
       this.js(/* js */ `var ${rValue} = ${r}${accessor};`);
       this.js(`if (${rValue} !== undefined) {`);
       if (requiredFields.length) {
@@ -157,7 +139,7 @@ export class JsonTextCodegen {
       this.onNode(valueExpression, field.val);
       this.js(`}`);
     }
-    if (schema.encodeUnknownFields) {
+    if (schema.encodeUnknownKeys) {
       const [rList, ri, rLength, rk] = [codegen.r(), codegen.r(), codegen.r(), codegen.r()];
       this.js(`var ${rLength} = ${rKeys}.size;
 if (${rLength}) {

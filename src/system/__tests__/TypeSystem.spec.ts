@@ -15,9 +15,9 @@ describe('.toString()', () => {
 └─ aliases
    ├─ User0
    │  └─ obj
-   │     ├─ "id":
+   │     ├─ "id"
    │     │   └─ str
-   │     └─ "address"?:
+   │     └─ "address"?
    │         └─ ref → [Address]
    ├─ User1
    │  └─ ref → [User0]
@@ -25,9 +25,9 @@ describe('.toString()', () => {
    │  └─ ref → [User1]
    ├─ Address0
    │  └─ obj
-   │     ├─ "id":
+   │     ├─ "id"
    │     │   └─ str
-   │     └─ "user"?:
+   │     └─ "user"?
    │         └─ ref → [User]
    ├─ Address1
    │  └─ ref → [Address0]
@@ -45,9 +45,9 @@ describe('.toString()', () => {
 └─ aliases
    └─ User
       └─ obj
-         ├─ "id":
+         ├─ "id"
          │   └─ str
-         └─ "friend"?:
+         └─ "friend"?
              └─ ref → [User]"
 `);
   });

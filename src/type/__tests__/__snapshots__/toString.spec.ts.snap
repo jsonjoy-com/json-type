@@ -2,73 +2,73 @@
 
 exports[`can print a type 1`] = `
 "obj
-├─ "id": "The id of the object"
+├─ "id" "The id of the object"
 │   └─ str
-├─ "tags": "Always use tags"
+├─ "tags" "Always use tags"
 │   └─ arr "Tags"
 │      └─ str
-├─ "optional"?:
+├─ "optional"?
 │   └─ any
-├─ "booleanProperty":
+├─ "booleanProperty"
 │   └─ bool
-├─ "numberProperty":
+├─ "numberProperty"
 │   └─ num
-├─ "binaryProperty":
+├─ "binaryProperty"
 │   └─ bin
 │      └─ any
-├─ "arrayProperty":
+├─ "arrayProperty"
 │   └─ arr
 │      └─ any
-├─ "objectProperty":
+├─ "objectProperty"
 │   └─ obj
-│      └─ "id":
+│      └─ "id"
 │          └─ str
-├─ "unionProperty":
+├─ "unionProperty"
 │   └─ or
 │      ├─ str
 │      ├─ num
 │      └─ con → null
-├─ "enumAsConst"?:
+├─ "enumAsConst"?
 │   └─ or
 │      ├─ con → "a"
 │      ├─ con → "b"
 │      └─ con → "c"
-├─ "refField"?:
+├─ "refField"?
 │   └─ ref → [refId]
-├─ "und"?:
+├─ "und"?
 │   └─ con → undefined
-├─ "operation":
+├─ "operation"
 │   └─ obj
-│      ├─ "type":
+│      ├─ "type"
 │      │   └─ con "Always use replace" → "replace"
-│      ├─ "path":
+│      ├─ "path"
 │      │   └─ str
-│      └─ "value":
+│      └─ "value"
 │          └─ any
-├─ "binaryOperation":
+├─ "binaryOperation"
 │   └─ bin
 │      └─ arr "Should always have 3 elements"
 │         └─ [ head, ... ]
 │            ├─ con "7 is the magic number" → 7
 │            ├─ str
 │            └─ any
-├─ "map":
+├─ "map"
 │   └─ map
 │      └─ num
-├─ "simpleFn1":
+├─ "simpleFn1"
 │   └─ fn
 │      ├─ req: con → undefined
 │      └─ res: con → undefined
-├─ "simpleFn2":
+├─ "simpleFn2"
 │   └─ fn$
 │      ├─ req: con → undefined
 │      └─ res: con → undefined
-└─ "function":
+└─ "function"
     └─ fn
        ├─ req: obj
-       │       └─ "id":
+       │       └─ "id"
        │           └─ str
        └─ res: obj
-               └─ "name":
+               └─ "name"
                    └─ str"
 `;

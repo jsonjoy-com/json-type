@@ -3,6 +3,6 @@
 exports[`can print to string 1`] = `
 "ObjValue
 └─ obj
-   └─ "foo":
+   └─ "foo"
        └─ str"
 `;

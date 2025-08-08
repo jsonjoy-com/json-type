@@ -258,7 +258,7 @@ function objectToJsonSchema(type: ObjType<any>, ctx?: TypeExportContext): JsonSc
   };
 
   const required = [];
-  const fields = type.fields;
+  const fields = type.keys;
   for (const field of fields) {
     result.properties![field.key] = typeToJsonSchema(field.val, ctx);
     if (!field.optional) {
@@ -267,7 +267,7 @@ function objectToJsonSchema(type: ObjType<any>, ctx?: TypeExportContext): JsonSc
   }
 
   if (required.length) result.required = required;
-  if (schema.unknownFields === false) result.additionalProperties = false;
+  if (schema.decodeUnknownKeys === false) result.additionalProperties = false;
 
   // Add base properties
   Object.assign(result, baseSchema);

@@ -385,9 +385,9 @@ describe('validateSchema', () => {
     test('validates valid object schema', () => {
       const schema: Schema = {
         kind: 'obj',
-        fields: [
+        keys: [
           {
-            kind: 'field',
+            kind: 'key',
             key: 'name',
             value: {kind: 'str'},
           },
@@ -399,19 +399,19 @@ describe('validateSchema', () => {
     test('validates object schema with unknownFields', () => {
       const schema: Schema = {
         kind: 'obj',
-        fields: [],
-        unknownFields: true,
+        keys: [],
+        decodeUnknownKeys: true,
       };
       expect(() => validateSchema(schema)).not.toThrow();
     });
 
-    test('throws for invalid fields type', () => {
-      expect(() => validateSchema({kind: 'obj', fields: 'not-array'} as any)).toThrow('FIELDS_TYPE');
+    test('throws for invalid keys type', () => {
+      expect(() => validateSchema({kind: 'obj', keys: 'not-array'} as any)).toThrow('KEYS_TYPE');
     });
 
     test('throws for invalid unknownFields type', () => {
-      expect(() => validateSchema({kind: 'obj', fields: [], unknownFields: 'true'} as any)).toThrow(
-        'UNKNOWN_FIELDS_TYPE',
+      expect(() => validateSchema({kind: 'obj', keys: [], decodeUnknownKeys: 'true'} as any)).toThrow(
+        'UNKNOWN_KEYS_TYPE',
       );
     });
   });
@@ -419,7 +419,7 @@ describe('validateSchema', () => {
   describe('field schema', () => {
     test('validates valid field schema', () => {
       const schema: Schema = {
-        kind: 'field',
+        kind: 'key',
         key: 'test',
         value: {kind: 'str'},
       };
@@ -428,7 +428,7 @@ describe('validateSchema', () => {
 
     test('validates optional field schema', () => {
       const schema: Schema = {
-        kind: 'field',
+        kind: 'key',
         key: 'test',
         value: {kind: 'str'},
         optional: true,
@@ -439,7 +439,7 @@ describe('validateSchema', () => {
     test('throws for invalid key type', () => {
       expect(() =>
         validateSchema({
-          kind: 'field',
+          kind: 'key',
           key: 123,
           value: {kind: 'str'},
         } as any),
@@ -449,7 +449,7 @@ describe('validateSchema', () => {
     test('throws for invalid optional type', () => {
       expect(() =>
         validateSchema({
-          kind: 'field',
+          kind: 'key',
           key: 'test',
           value: {kind: 'str'},
           optional: 'true',

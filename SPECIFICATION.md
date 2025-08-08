@@ -32,7 +32,7 @@ A simple user type:
 {
   "kind": "obj",
   "title": "User",
-  "fields": [
+  "keys": [
     { "kind": "field", "key": "id", "type": { "kind": "str" }, "title": "User ID" },
     { "kind": "field", "key": "name", "type": { "kind": "str" } },
     { "kind": "field", "key": "age", "type": { "kind": "num", "gte": 0 }, "optional": true }
@@ -246,9 +246,9 @@ Represents a fixed-length array, each position with its own type.
 Represents a JSON object with a defined set of fields. `obj` fields are ordered and can be required or optional. Optional fields are usually defined at the end of the `fields` array. Even if in many languages objects are unordered, the order of fields in the schema is a useful feature as the field order can be used in documentation, code generation, and serialization to binary formats.
 
 **Properties:**
-- `fields` (array): Array of field nodes (see below).
-- `unknownFields` (boolean, deprecated): Allow fields not listed.
-- `encodeUnknownFields` (boolean): Emit unknown fields during encoding.
+- `keys` (array): Array of field nodes (see below).
+- `decodeUnknownKeys` (boolean, deprecated): Allow fields not listed.
+- `encodeUnknownKeys` (boolean): Emit unknown fields during encoding.
 - `validator` (string or array): Custom validation.
 
 **Example:**
@@ -467,7 +467,7 @@ All nodes may contain the following metadata:
 - **Type inference:** Types can be mapped to language types using the structure.
 - **Optional and required fields:** Fields are required by default; set `optional: true` for optional fields.
 - **Type composition:** Types can be nested and composed arbitrarily.
-- **Unknown fields:** By default, unknown fields are rejected. Use `unknownFields: true` or `encodeUnknownFields: true` to allow or preserve them.
+- **Unknown fields:** By default, unknown fields are rejected. Use `decodeUnknownKeys: true` or `encodeUnknownKeys: true` to allow or preserve them.
 
 ---
 

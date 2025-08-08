@@ -40,7 +40,7 @@ test('can print a type', () => {
       t.prop('simpleFn2', t.fn$),
       t.prop('function', t.Function(t.Object(t.prop('id', t.str)), t.Object(t.prop('name', t.str)))),
     )
-    .options({unknownFields: true});
+    .options({decodeUnknownKeys: true});
   // console.log(type + '');
   expect(type + '').toMatchSnapshot();
 });

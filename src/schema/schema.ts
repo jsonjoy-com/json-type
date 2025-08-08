@@ -278,9 +278,9 @@ export interface ArrSchema<T extends TType = any, Head extends TType[] = any, Ta
  * ```json
  * {
  *   "kind": "obj",
- *   "fields": [
+ *   "keys": [
  *     {
- *       "kind": "field",
+ *       "kind": "key",
  *       "key": "name",
  *       "type": {
  *         "kind": "str"
@@ -288,7 +288,7 @@ export interface ArrSchema<T extends TType = any, Head extends TType[] = any, Ta
  *       "optional": false
  *     },
  *     {
- *       "kind": "field",
+ *       "kind": "key",
  *       "key": "age",
  *       "type": {
  *         "kind": "num",
@@ -297,25 +297,25 @@ export interface ArrSchema<T extends TType = any, Head extends TType[] = any, Ta
  *       "optional": true
  *     }
  *   ],
- *   "unknownFields": false
+ *   "decodeUnknownKeys": false
  * }
  * ```
  */
 export interface ObjSchema<
-  Fields extends ObjFieldSchema<string, TType>[] | readonly ObjFieldSchema<string, TType>[] = any,
+  Keys extends ObjKeySchema<string, TType>[] | readonly ObjKeySchema<string, TType>[] = any,
 > extends TType<object> {
   kind: 'obj';
 
   /**
-   * Sorted list of fields this object contains. Although object fields in JSON
+   * Sorted list of keys this object contains. Although object keys in JSON
    * are not guaranteed to be in any particular order, this list is sorted so
-   * that the order of fields is consistent when generating documentation or code.
+   * that the order of keys is consistent when generating documentation or code.
    */
-  fields: Fields;
+  keys: Keys;
 
   /**
-   * Whether the object may have fields that are not explicitly defined in the
-   * "fields" list. This setting is similar to "additionalProperties" in JSON
+   * Whether the object may have keys that are not explicitly defined in the
+   * "keys" list. This setting is similar to "additionalProperties" in JSON
    * Schema. Defaults to false.
    *
    * To define an object with of unknown shape use the following annotation:
@@ -323,17 +323,14 @@ export interface ObjSchema<
    * ```json
    * {
    *   "kind": "obj",
-   *   "fields": [],
-   *   "unknownFields": true
+   *   "keys": [],
+   *   "decodeUnknownKeys": true
    * }
    * ```
-   *
-   * @deprecated
-   * @todo Rename ot `decodeUnknownFields`.
    */
-  unknownFields?: boolean;
+  decodeUnknownKeys?: boolean;
 
-  encodeUnknownFields?: boolean;
+  encodeUnknownKeys?: boolean;
 }
 
 /**
@@ -341,8 +338,8 @@ export interface ObjSchema<
  *
  * @todo Rename to `key`.
  */
-export interface ObjFieldSchema<K extends string = string, V extends TType = TType> extends TType<[K, V]>, Display {
-  kind: 'field';
+export interface ObjKeySchema<K extends string = string, V extends TType = TType> extends TType<[K, V]>, Display {
+  kind: 'key';
   /** Key name of the field. */
   key: K;
 
@@ -354,8 +351,8 @@ export interface ObjFieldSchema<K extends string = string, V extends TType = TTy
   optional?: boolean;
 }
 
-export interface ObjOptionalFieldSchema<K extends string = string, V extends TType = TType>
-  extends ObjFieldSchema<K, V> {
+export interface ObjOptKeySchema<K extends string = string, V extends TType = TType>
+  extends ObjKeySchema<K, V> {
   optional: true;
 }
 
@@ -434,8 +431,8 @@ export type JsonSchema =
   | ArrSchema
   | ConSchema
   | ObjSchema
-  | ObjFieldSchema
-  | ObjOptionalFieldSchema
+  | ObjKeySchema
+  | ObjOptKeySchema
   | MapSchema;
 
 export type Schema = JsonSchema | RefSchema | OrSchema | AnySchema | FnSchema | FnStreamingSchema;
@@ -484,12 +481,12 @@ type TypeFields<F> = TypeOfFieldMap<FieldsAdjustedForOptional<ToObject<{[K in ke
 
 type ToObject<T> = T extends [string, unknown][] ? {[K in T[number] as K[0]]: K[1]} : never;
 
-type ObjectFieldToTuple<F> = F extends ObjFieldSchema<infer K, infer V> ? [K, F] : never;
+type ObjectFieldToTuple<F> = F extends ObjKeySchema<infer K, infer V> ? [K, F] : never;
 
 type NoEmptyInterface<I> = keyof I extends never ? Record<string, never> : I;
 
 type OptionalFields<T> = {
-  [K in keyof T]-?: T[K] extends ObjOptionalFieldSchema ? K : never;
+  [K in keyof T]-?: T[K] extends ObjOptKeySchema ? K : never;
 }[keyof T];
 
 type RequiredFields<T> = Exclude<keyof T, OptionalFields<T>>;
@@ -498,7 +495,7 @@ type FieldsAdjustedForOptional<T> = Pick<T, RequiredFields<T>> & Partial<Pick<T,
 
 type TypeOfFieldMap<T> = {[K in keyof T]: TypeOf<FieldValue<T[K]>>};
 
-type FieldValue<F> = F extends ObjFieldSchema<any, infer V> ? V : never;
+type FieldValue<F> = F extends ObjKeySchema<any, infer V> ? V : never;
 
 type UndefToVoid<T> = T extends undefined ? void : T;
 
