@@ -161,12 +161,34 @@ var uint8 = writer.uint8, view = writer.view;`,
     const r = codegen.getRegister(); // array
     const rl = codegen.getRegister(); // array.length
     const ri = codegen.getRegister(); // index
-    const rItem = codegen.getRegister(); // item
-    codegen.js(/* js */ `var ${r} = ${val.use()}, ${rl} = ${r}.length, ${ri} = 0, ${rItem};`);
+    const {_head = [], _type, _tail = []} = type;
+    const headLength = _head.length;
+    const tailLength = _tail.length;
+    const constLen = headLength + tailLength;
+    codegen.js(/* js */ `var ${r} = ${val.use()}, ${rl} = ${r}.length, ${ri} = 0;`);
+    if (constLen) {
+      codegen.if(/* js */ `${rl} < ${constLen}`, () => {
+        codegen.js(`throw new Error('ARR_LEN');`);
+      });
+    }
     codegen.js(/* js */ `encoder.writeArrHdr(${rl});`);
-    codegen.js(/* js */ `for(; ${ri} < ${rl}; ${ri}++) {`);
-    this.onNode([...path, {r: ri}], new JsExpression(() => /* js */ `${r}[${ri}]`), type._type);
-    codegen.js(/* js */ `}`);
+    if (headLength > 0) {
+      for (let i = 0; i < headLength; i++) {
+        this.onNode([...path, {r: ri}], new JsExpression(() => /* js */ `${r}[${ri}]`), _head[i]);
+        codegen.js(/* js */ `${ri}++`);
+      }
+    }
+    if (_type) {
+      codegen.js(/* js */ `for(; ${ri} < ${rl} - ${tailLength}; ${ri}++) {`);
+      this.onNode([...path, {r: ri}], new JsExpression(() => /* js */ `${r}[${ri}]`), _type);
+      codegen.js(/* js */ `}`);
+    }
+    if (tailLength > 0) {
+      for (let i = 0; i < tailLength; i++) {
+        this.onNode([...path, {r: ri}], new JsExpression(() => /* js */ `${r}[${ri}]`), _tail[i]);
+        codegen.js(/* js */ `${ri}++`);
+      }
+    }
   }
 
   protected onOr(path: SchemaPath, r: JsExpression, type: OrType<Type[]>): void {
