@@ -3,7 +3,7 @@ import {AbstractBinaryCodegen} from '../AbstractBinaryCodegen';
 import {writer} from '../writer';
 import {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
 import {JsonEncoder} from '@jsonjoy.com/json-pack/lib/json/JsonEncoder';
-import {ObjKeyOptType, type ArrType, type MapType, type ObjType, type OrType, type RefType, type Type} from '../../../type';
+import {ObjKeyOptType, type ArrType, type MapType, type ObjType, type Type} from '../../../type';
 import {normalizeAccessor} from '@jsonjoy.com/codegen/lib/util/normalizeAccessor';
 import type {CompiledBinaryEncoder, SchemaPath} from '../../types';
 
@@ -29,7 +29,16 @@ export class JsonCodegen extends AbstractBinaryCodegen<JsonEncoder> {
   protected onArr(path: SchemaPath, r: JsExpression, type: ArrType): void {
     const codegen = this.codegen;
     const rLen = codegen.var(/* js */ `${r.use()}.length`);
-    codegen.if(`${rLen} === 0`, () => {
+    const {_head = [], _type, _tail = []} = type;
+    const headLen = _head.length;
+    const tailLen = _tail.length;
+    const constLen = headLen + tailLen;
+    if (constLen) {
+      codegen.if(/* js */ `${rLen} < ${constLen}`, () => {
+        codegen.js(`throw new Error('ARR_LEN');`);
+      });
+    }
+    codegen.if(/* js */ `${rLen} === 0`, () => {
       this.blob(
         this.gen((encoder) => {
           encoder.writeStartArr();
@@ -39,19 +48,18 @@ export class JsonCodegen extends AbstractBinaryCodegen<JsonEncoder> {
     }, () => {
       const ri = codegen.var('0');
       const separatorBlob = this.gen((encoder) => encoder.writeObjSeparator());
-      const {_head = [], _type, _tail = []} = type;
       this.blob(
         this.gen((encoder) => {
           encoder.writeStartArr();
         }),
       );
-      if (_head.length) {
-        for (let i = 0; i < _head.length; i++) {
-          const isLast = i === _head.length - 1;
+      if (headLen) {
+        for (let i = 0; i < headLen; i++) {
+          const isLast = i === headLen - 1;
           this.onNode([...path, {r: i + ''}], new JsExpression(() => /* js */ `${r.use()}[${i}]`), _head[i]);
           if (!isLast) this.blob(separatorBlob);
         }
-        codegen.js(/* js */ `${ri} += ${_head.length}`);
+        codegen.js(/* js */ `${ri} += ${headLen}`);
       }
       if (_type) {
         if (!_head.length) {
@@ -65,8 +73,8 @@ export class JsonCodegen extends AbstractBinaryCodegen<JsonEncoder> {
         this.onNode([...path, {r: ri}], new JsExpression(() => /* js */ `${r.use()}[${ri}]`), type._type);
         codegen.js(/* js */ `}`);
       }
-      if (_tail.length) {
-        for (let i = 0; i < _tail.length; i++) {
+      if (tailLen) {
+        for (let i = 0; i < tailLen; i++) {
           const isFirst = i === 0;
           if (isFirst) {
             codegen.if(`${ri} + ${i} > 0`, () => {

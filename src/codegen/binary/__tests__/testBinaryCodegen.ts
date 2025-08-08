@@ -195,7 +195,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
       expect(transcode(system, type, value)).toStrictEqual(value);
     });
 
-    test('elements and tail', () => {
+    test('elements and 2-tail', () => {
       const system = new TypeSystem();
       const t = system.t;
       const type = system.t.Tuple([], t.bool, [t.str, t.num]);
@@ -205,6 +205,22 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
       expect(transcode(system, type, value2)).toStrictEqual(value2);
       const value3: any[] = ['abc', 123];
       expect(transcode(system, type, value3)).toStrictEqual(value3);
+      const value4: any[] = [123];
+      expect(() => transcode(system, type, value4)).toThrow();
+    });
+
+    test('elements and 1-tail', () => {
+      const system = new TypeSystem();
+      const t = system.t;
+      const type = system.t.Tuple([], t.bool, [t.num]);
+      const value1: any[] = [true, false, 123];
+      expect(transcode(system, type, value1)).toStrictEqual(value1);
+      const value2: any[] = [true, 123];
+      expect(transcode(system, type, value2)).toStrictEqual(value2);
+      const value3: any[] = [123];
+      expect(transcode(system, type, value3)).toStrictEqual(value3);
+      const value4: any[] = [];
+      expect(() => transcode(system, type, value4)).toThrow();
     });
   });
 
