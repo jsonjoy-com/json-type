@@ -100,6 +100,13 @@ describe('"arr" kind', () => {
     const arr1: T1 = ['foo', 1] satisfies [string, number];
     const arr2: [string, number] = ['foo', 1] satisfies T1;
   });
+
+  test('named tuple members', () => {
+    const schema1 = s.Tuple([s.Key('foo', s.str), s.num]);
+    type T1 = TypeOf<typeof schema1>;
+    const arr1: T1 = ['foo', 1] satisfies [string, number];
+    const arr2: [string, number] = ['foo', 1] satisfies T1;
+  });
 });
 
 test('can infer a simple "const" type', () => {
@@ -127,11 +134,11 @@ test('can infer a simple "tuple" type', () => {
 
 test('can infer a simple "obj" type', () => {
   const schema1 = s.obj;
-  const schema2 = s.Object(s.prop('foo', s.str), s.propOpt('bar', s.num));
+  const schema2 = s.Object(s.Key('foo', s.str), s.KeyOpt('bar', s.num));
   const schema3 = s.Object({
-    keys: <const>[s.prop('bar', s.bool)],
+    keys: <const>[s.Key('bar', s.bool)],
   });
-  const schema4 = s.Object([s.prop('baz', s.num), s.propOpt('bazOptional', s.bool), s.propOpt('z', s.str)], {});
+  const schema4 = s.Object([s.Key('baz', s.num), s.KeyOpt('bazOptional', s.bool), s.KeyOpt('z', s.str)], {});
   type T1 = TypeOf<typeof schema1>;
   type T2 = TypeOf<typeof schema2>;
   type T3 = TypeOf<typeof schema3>;
@@ -174,7 +181,7 @@ test('can infer a simple "or" type', () => {
 
 test('can infer a simple "ref" type', () => {
   const schema1 = s.str;
-  const schema2 = s.Object(s.prop('foo', s.Ref<typeof schema1>('another-str')));
+  const schema2 = s.Object(s.Key('foo', s.Ref<typeof schema1>('another-str')));
   type T1 = TypeOf<typeof schema1>;
   type T2 = TypeOf<typeof schema2>;
   const val1: T1 = 'foo';
@@ -204,9 +211,9 @@ test('can infer a simple "fn$" type', () => {
 });
 
 test('can infer a complex "fn" type', () => {
-  const arr = s.Array(s.Object(s.prop('op', s.str), s.prop('path', s.str)));
-  const req = s.Object(s.prop('id', s.str), s.prop('age', s.num), s.prop('patch', s.Object(s.prop('ops', arr))));
-  const res = s.Object(s.prop('id', s.String()));
+  const arr = s.Array(s.Object(s.Key('op', s.str), s.Key('path', s.str)));
+  const req = s.Object(s.Key('id', s.str), s.Key('age', s.num), s.Key('patch', s.Object(s.Key('ops', arr))));
+  const res = s.Object(s.Key('id', s.String()));
   const schema1 = s.Function(req, res);
   type T1 = TypeOf<typeof schema1>;
   const val1: T1 = async ({patch, id}) => {
@@ -217,12 +224,12 @@ test('can infer a complex "fn" type', () => {
 
 test('can infer a realistic schema', () => {
   const schema = s.Object(
-    s.prop('id', s.str),
-    s.prop('age', s.num),
-    s.prop('tags', s.Array(s.Or(s.str, s.num))),
-    s.prop('data', s.Object(s.prop('foo', s.str), s.prop('bar', s.num))),
-    s.prop('approved', s.bool),
-    s.prop('meta', s.any),
+    s.Key('id', s.str),
+    s.Key('age', s.num),
+    s.Key('tags', s.Array(s.Or(s.str, s.num))),
+    s.Key('data', s.Object(s.Key('foo', s.str), s.Key('bar', s.num))),
+    s.Key('approved', s.bool),
+    s.Key('meta', s.any),
   );
   type T = TypeOf<typeof schema>;
   const val: T = {
@@ -239,7 +246,7 @@ test('can infer a realistic schema', () => {
 });
 
 test('can specify an optional fields', () => {
-  const schema = s.Object(s.propOpt('meta', s.Object(s.prop('foo', s.str), s.propOpt('bar', s.num))));
+  const schema = s.Object(s.KeyOpt('meta', s.Object(s.Key('foo', s.str), s.KeyOpt('bar', s.num))));
   type T = TypeOf<typeof schema>;
   const val0: T = {};
   const val1: T = {

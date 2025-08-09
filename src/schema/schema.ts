@@ -479,17 +479,19 @@ export type TypeOfValue<T> = T extends BoolSchema
           ]
         : T extends ConSchema<infer U>
           ? U
-          : T extends ObjSchema<infer F>
-            ? NoEmptyInterface<TypeFields<Mutable<F>>>
-            : T extends MapSchema<infer U>
-              ? Record<string, TypeOf<U>>
-              : T extends BinSchema
-                ? Uint8Array
-                : T extends FnSchema<infer Req, infer Res, infer Ctx>
-                  ? (req: TypeOf<Req>, ctx: Ctx) => UndefToVoid<TypeOf<Res>> | Promise<UndefToVoid<TypeOf<Res>>>
-                  : T extends FnRxSchema<infer Req, infer Res, infer Ctx>
-                    ? (req$: Observable<TypeOf<Req>>, ctx: Ctx) => Observable<UndefToVoid<TypeOf<Res>>>
-                    : never;
+          : T extends KeySchema<infer K, infer V>
+            ? TypeOf<V>
+            : T extends ObjSchema<infer F>
+              ? NoEmptyInterface<TypeFields<Mutable<F>>>
+              : T extends MapSchema<infer U>
+                ? Record<string, TypeOf<U>>
+                : T extends BinSchema
+                  ? Uint8Array
+                  : T extends FnSchema<infer Req, infer Res, infer Ctx>
+                    ? (req: TypeOf<Req>, ctx: Ctx) => UndefToVoid<TypeOf<Res>> | Promise<UndefToVoid<TypeOf<Res>>>
+                    : T extends FnRxSchema<infer Req, infer Res, infer Ctx>
+                      ? (req$: Observable<TypeOf<Req>>, ctx: Ctx) => Observable<UndefToVoid<TypeOf<Res>>>
+                      : never;
 
 export type TypeOfMap<M extends Record<string, Schema>> = {
   [K in keyof M]: TypeOf<M[K]>;

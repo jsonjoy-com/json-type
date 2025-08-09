@@ -33,24 +33,24 @@ test('validates according to schema a POJO object', () => {
   const type = s.Object({
     decodeUnknownKeys: false,
     keys: [
-      s.prop(
+      s.Key(
         'collection',
         s.Object({
           decodeUnknownKeys: false,
           keys: [
-            s.prop('id', s.str),
-            s.prop('ts', s.num),
-            s.prop('cid', s.str),
-            s.prop('prid', s.str),
-            s.propOpt('slug', s.str),
-            s.propOpt('name', s.str),
-            s.propOpt('src', s.str),
-            s.propOpt('authz', s.str),
-            s.prop('tags', s.Array(s.str)),
+            s.Key('id', s.str),
+            s.Key('ts', s.num),
+            s.Key('cid', s.str),
+            s.Key('prid', s.str),
+            s.KeyOpt('slug', s.str),
+            s.KeyOpt('name', s.str),
+            s.KeyOpt('src', s.str),
+            s.KeyOpt('authz', s.str),
+            s.Key('tags', s.Array(s.str)),
           ],
         }),
       ),
-      s.prop('bin.', s.bin),
+      s.Key('bin.', s.bin),
     ],
   });
   const json = {
@@ -922,7 +922,7 @@ describe('"obj" type', () => {
 
   test('object can have a field of any type', () => {
     const type = s.Object({
-      keys: [s.prop('foo', s.any)],
+      keys: [s.Key('foo', s.any)],
     });
     exec(type, {foo: 123}, null);
     exec(type, {foo: null}, null);
@@ -941,7 +941,7 @@ describe('"obj" type', () => {
 
   test('can detect extra properties in object', () => {
     const type = s.Object({
-      keys: [s.prop('foo', s.any), s.propOpt('zup', s.any)],
+      keys: [s.Key('foo', s.any), s.KeyOpt('zup', s.any)],
     });
     exec(type, {foo: 123}, null);
     exec(type, {foo: 123, zup: 'asdf'}, null);
@@ -960,7 +960,7 @@ describe('"obj" type', () => {
 
   test('can disable extra property check', () => {
     const type = s.Object({
-      keys: [s.prop('foo', s.any), s.propOpt('zup', s.any)],
+      keys: [s.Key('foo', s.any), s.KeyOpt('zup', s.any)],
     });
     exec(type, {foo: 123}, null, {skipObjectExtraFieldsCheck: true});
     exec(type, {foo: 123, zup: 'asdf'}, null, {
@@ -1035,7 +1035,7 @@ describe('"or" type', () => {
   });
 
   test('checks inner type', () => {
-    const type = s.Or(s.Object(s.prop('type', s.Const<'num'>('num')), s.prop('foo', s.num)), s.num);
+    const type = s.Or(s.Object(s.Key('type', s.Const<'num'>('num')), s.Key('foo', s.num)), s.num);
     exec(type, {type: 'num', foo: 123}, null);
     exec(
       type,
@@ -1052,7 +1052,7 @@ describe('"or" type', () => {
   test('object key can be of multiple types', () => {
     const type = s.Object({
       keys: [
-        s.prop('foo', {
+        s.Key('foo', {
           ...s.Or(s.num, s.str),
           discriminator: [
             'if',
@@ -1080,7 +1080,7 @@ describe('"or" type', () => {
   test('array can be of multiple types', () => {
     const type = s.Object({
       keys: [
-        s.prop(
+        s.Key(
           'gg',
           s.Array({
             ...s.Or(s.num, s.str),

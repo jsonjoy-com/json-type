@@ -89,21 +89,21 @@ describe('"arr" type', () => {
 
 describe('"obj" type', () => {
   test('serializes object with required fields', () => {
-    const type = s.Object([s.prop('a', s.num), s.prop('b', s.str)]);
+    const type = s.Object([s.Key('a', s.num), s.Key('b', s.str)]);
     exec(type, {a: 123, b: 'asdf'});
   });
 
   test('serializes object with constant string with required fields', () => {
-    const type = s.Object([s.prop('a', s.num), s.prop('b', s.Const<'asdf'>('asdf'))]);
+    const type = s.Object([s.Key('a', s.num), s.Key('b', s.Const<'asdf'>('asdf'))]);
     exec(type, {a: 123, b: 'asdf'});
   });
 
   test('can serialize optional fields', () => {
     const type = s.Object([
-      s.prop('a', s.num),
-      s.prop('b', s.Const<'asdf'>('asdf')),
-      s.propOpt('c', s.str),
-      s.propOpt('d', s.num),
+      s.Key('a', s.num),
+      s.Key('b', s.Const<'asdf'>('asdf')),
+      s.KeyOpt('c', s.str),
+      s.KeyOpt('d', s.num),
     ]);
     exec(type, {a: 123, b: 'asdf'});
     exec(type, {a: 123, b: 'asdf', c: 'qwerty'});
@@ -112,7 +112,7 @@ describe('"obj" type', () => {
 
   test('can serialize object with unknown fields', () => {
     const type = s.Object(
-      [s.prop('a', s.num), s.prop('b', s.Const<'asdf'>('asdf')), s.propOpt('c', s.str), s.propOpt('d', s.num)],
+      [s.Key('a', s.num), s.Key('b', s.Const<'asdf'>('asdf')), s.KeyOpt('c', s.str), s.KeyOpt('d', s.num)],
       {encodeUnknownKeys: true},
     );
     exec(type, {a: 123, b: 'asdf'});
@@ -155,19 +155,19 @@ describe('general', () => {
   test('serializes according to schema a POJO object', () => {
     const type = s.Object({
       keys: [
-        s.prop('a', s.num),
-        s.prop('b', s.str),
-        s.prop('c', s.nil),
-        s.prop('d', s.bool),
-        s.prop(
+        s.Key('a', s.num),
+        s.Key('b', s.str),
+        s.Key('c', s.nil),
+        s.Key('d', s.bool),
+        s.Key(
           'arr',
           s.Array(
             s.Object({
-              keys: [s.prop('foo', s.Array(s.num)), s.prop('.!@#', s.str)],
+              keys: [s.Key('foo', s.Array(s.num)), s.Key('.!@#', s.str)],
             }),
           ),
         ),
-        s.prop('bin', s.bin),
+        s.Key('bin', s.bin),
       ],
     });
     const json = {
@@ -196,7 +196,7 @@ describe('general', () => {
   });
 
   test('can encode binary', () => {
-    const type = s.Object([s.prop('bin', s.bin)]);
+    const type = s.Object([s.Key('bin', s.bin)]);
     const json = {
       bin: new Uint8Array([1, 2, 3]),
     };
@@ -211,7 +211,7 @@ describe('"ref" type', () => {
   test('can serialize reference by resolving to type', () => {
     const system = new ModuleType();
     system.alias('ID', system.t.str);
-    const schema = s.Object([s.prop('name', s.str), s.prop('id', s.Ref<any>('ID')), s.prop('createdAt', s.num)]);
+    const schema = s.Object([s.Key('name', s.str), s.Key('id', s.Ref<any>('ID')), s.Key('createdAt', s.num)]);
     const type = system.t.import(schema);
     const fn = JsonTextCodegen.get(type);
     const json = {

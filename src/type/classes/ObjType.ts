@@ -11,7 +11,7 @@ export class ObjKeyType<K extends string, V extends Type> extends AbsType<schema
     public readonly key: K,
     public readonly val: V,
   ) {
-    super(schema.s.prop(key, schema.s.any) as any);
+    super(schema.s.Key(key, schema.s.any) as any);
   }
 
   public getSchema(): schema.KeySchema<K, SchemaOf<V>> {
@@ -43,7 +43,7 @@ export class ObjKeyOptType<K extends string, V extends Type> extends ObjKeyType<
     public readonly val: V,
   ) {
     super(key, val);
-    (this as any).schema = schema.s.propOpt(key, schema.s.any) as any;
+    (this as any).schema = schema.s.KeyOpt(key, schema.s.any) as any;
   }
 
   protected toStringTitle(): string {
