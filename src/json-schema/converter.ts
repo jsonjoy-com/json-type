@@ -1,5 +1,5 @@
 import {TypeExportContext} from '../type/classes/ModuleType/TypeExportContext';
-import {AliasType} from '../type';
+import type {AliasType} from '../type';
 import type {ObjType} from '../type/classes/ObjType';
 import type {AbsType} from '../type/classes/AbsType';
 import type {AnyType} from '../type/classes/AnyType';

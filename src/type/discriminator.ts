@@ -80,8 +80,7 @@ export class Discriminator {
     const expanded: Type[] = [];
     const expand = (type: Type): Type[] => {
       if (type.kind() === 'ref') type = (type as RefType).resolve();
-      if (type.kind() === 'or')
-        return (type as OrType).types.flatMap((t: Type) => expand(t));
+      if (type.kind() === 'or') return (type as OrType).types.flatMap((t: Type) => expand(t));
       return [type];
     };
     for (let i = 0; i < length; i++) expanded.push(...expand(types[i]));

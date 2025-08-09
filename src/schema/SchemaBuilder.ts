@@ -196,7 +196,11 @@ export class SchemaBuilder {
     };
   }
 
-  public Function<Req extends _.Schema, Res extends _.Schema>(req: Req, res: Res, options: Omit<_.NoT<_.FnSchema>, 'req' | 'res'> = {}): _.FnSchema<Req, Res> {
+  public Function<Req extends _.Schema, Res extends _.Schema>(
+    req: Req,
+    res: Res,
+    options: Omit<_.NoT<_.FnSchema>, 'req' | 'res'> = {},
+  ): _.FnSchema<Req, Res> {
     return {
       ...options,
       kind: 'fn',
@@ -205,7 +209,11 @@ export class SchemaBuilder {
     };
   }
 
-  public Function$<Req extends _.Schema, Res extends _.Schema>(req: Req, res: Res, options: Omit<_.NoT<_.FnRxSchema>, 'req' | 'res'> = {}): _.FnRxSchema<Req, Res> {
+  public Function$<Req extends _.Schema, Res extends _.Schema>(
+    req: Req,
+    res: Res,
+    options: Omit<_.NoT<_.FnRxSchema>, 'req' | 'res'> = {},
+  ): _.FnRxSchema<Req, Res> {
     return {
       ...options,
       kind: 'fn$',

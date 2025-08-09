@@ -301,8 +301,9 @@ export interface ArrSchema<T extends SchemaBase = any, Head extends SchemaBase[]
  * }
  * ```
  */
-export interface ObjSchema<Keys extends KeySchema<string, SchemaBase>[] | readonly KeySchema<string, SchemaBase>[] = any>
-  extends SchemaBase<object> {
+export interface ObjSchema<
+  Keys extends KeySchema<string, SchemaBase>[] | readonly KeySchema<string, SchemaBase>[] = any,
+> extends SchemaBase<object> {
   kind: 'obj';
 
   /**
@@ -347,7 +348,9 @@ export interface ObjSchema<Keys extends KeySchema<string, SchemaBase>[] | readon
  *
  * @todo Rename to `key`.
  */
-export interface KeySchema<K extends string = string, V extends SchemaBase = SchemaBase> extends SchemaBase<[K, V]>, Display {
+export interface KeySchema<K extends string = string, V extends SchemaBase = SchemaBase>
+  extends SchemaBase<[K, V]>,
+    Display {
   kind: 'key';
   /** Key name of the field. */
   key: K;
@@ -368,7 +371,8 @@ export interface OptKeySchema<K extends string = string, V extends SchemaBase = 
  * Represents an object, which is treated as a map. All keys are strings and all
  * values are of the same type.
  */
-export interface MapSchema<V extends SchemaBase = any, K extends SchemaBase = any> extends SchemaBase<Record<string, unknown>> {
+export interface MapSchema<V extends SchemaBase = any, K extends SchemaBase = any>
+  extends SchemaBase<Record<string, unknown>> {
   kind: 'map';
   /**
    * Type of all keys in the map. Defaults to string type.
@@ -404,7 +408,8 @@ export interface OrSchema<T extends SchemaBase[] = SchemaBase[]> extends SchemaB
 
 export type FunctionValue<Req, Res, Ctx = unknown> = (req: Req, ctx?: Ctx) => Res | Promise<Res>;
 
-export interface FnSchema<Req extends SchemaBase = SchemaBase, Res extends SchemaBase = SchemaBase, Ctx = unknown> extends SchemaBase {
+export interface FnSchema<Req extends SchemaBase = SchemaBase, Res extends SchemaBase = SchemaBase, Ctx = unknown>
+  extends SchemaBase {
   kind: 'fn';
   req: Req;
   res: Res;
@@ -413,7 +418,8 @@ export interface FnSchema<Req extends SchemaBase = SchemaBase, Res extends Schem
 
 export type FnStreamingValue<Req, Res, Ctx = unknown> = (req: Observable<Req>, ctx?: Ctx) => Observable<Res>;
 
-export interface FnRxSchema<Req extends SchemaBase = SchemaBase, Res extends SchemaBase = SchemaBase, Ctx = unknown> extends SchemaBase {
+export interface FnRxSchema<Req extends SchemaBase = SchemaBase, Res extends SchemaBase = SchemaBase, Ctx = unknown>
+  extends SchemaBase {
   /** @todo Rename to `fn`. Make it a property on the schema instead. */
   kind: 'fn$';
   req: Req;

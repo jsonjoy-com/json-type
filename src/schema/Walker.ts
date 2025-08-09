@@ -1,4 +1,4 @@
-import type {Schema} from "./schema";
+import type {Schema} from './schema';
 
 export interface WalkerOpts {
   onType?: (type: Schema) => void;
@@ -12,7 +12,7 @@ export class Walker {
 
   constructor(private opts: WalkerOpts = {}) {}
 
-  public walk (type: Schema): void {
+  public walk(type: Schema): void {
     const onType = this.opts.onType ?? ((type: Schema) => {});
     switch (type.kind) {
       case 'key': {

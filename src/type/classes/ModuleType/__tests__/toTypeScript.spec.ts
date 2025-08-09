@@ -1,7 +1,7 @@
 import {ModuleType} from '..';
 import {aliasToTs} from '../../../../typescript/converter';
 import {toText} from '../../../../typescript/toText';
-import {AliasType} from '../../AliasType';
+import type {AliasType} from '../../AliasType';
 
 const aliasToTsText = (alias: AliasType<any, any>): string => {
   return toText(aliasToTs(alias));

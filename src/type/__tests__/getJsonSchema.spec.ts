@@ -1,7 +1,6 @@
 import {ModuleType, t} from '..';
 import {typeToJsonSchema} from '../../json-schema';
 
-
 test('can print a type', () => {
   const type = t
     .Object(

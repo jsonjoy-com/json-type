@@ -186,9 +186,7 @@ describe('validateSchema()', () => {
       format: 'i32',
     };
     expect(validateSchema(t.import(schema).getSchema())).toBeUndefined();
-    expect(() => validateSchema({...schema, description: 123} as any)).toThrow(
-      new Error('INVALID_DESCRIPTION'),
-    );
+    expect(() => validateSchema({...schema, description: 123} as any)).toThrow(new Error('INVALID_DESCRIPTION'));
     expect(() => validateSchema({...schema, title: 123} as any)).toThrow(new Error('INVALID_TITLE'));
     expect(() => validateSchema({...schema, intro: null} as any)).toThrow(new Error('INVALID_INTRO'));
     expect(() => validateSchema({...schema, gt: null} as any)).toThrow(new Error('GT_TYPE'));
@@ -205,9 +203,7 @@ describe('validateSchema()', () => {
       description: 'A string',
     };
     expect(validateSchema({...schema} as any)).toBeUndefined();
-    expect(() => validateSchema({...schema, description: 123} as any)).toThrow(
-      new Error('INVALID_DESCRIPTION'),
-    );
+    expect(() => validateSchema({...schema, description: 123} as any)).toThrow(new Error('INVALID_DESCRIPTION'));
     expect(() => validateSchema({...schema, title: 123} as any)).toThrow(new Error('INVALID_TITLE'));
     expect(() => validateSchema({...schema, intro: null} as any)).toThrow(new Error('INVALID_INTRO'));
     expect(() => validateSchema({...schema, min: null} as any)).toThrow(new Error('MIN_TYPE'));

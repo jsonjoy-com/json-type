@@ -57,7 +57,7 @@ export class ModuleType implements Printable {
       map[alias.key] = alias.value as Schema;
     }
     const expandObjFields = (aliasOfObj: string | ObjSchema): KeySchema[] => {
-      const obj = typeof aliasOfObj === 'string' ? map[aliasOfObj] as ObjSchema : aliasOfObj;
+      const obj = typeof aliasOfObj === 'string' ? (map[aliasOfObj] as ObjSchema) : aliasOfObj;
       if (!obj || obj.kind !== 'obj') throw new Error('NO_OBJ');
       if (obj.extends) {
         const uniqueFields: Map<string, KeySchema> = new Map();
@@ -65,16 +65,19 @@ export class ModuleType implements Printable {
           const parentFields = expandObjFields(parent);
           for (const field of parentFields) uniqueFields.set(field.key, field);
         }
+        // biome-ignore lint: allow delete
         delete obj.extends;
         for (const field of obj.keys) uniqueFields.set(field.key, field);
         obj.keys = [...uniqueFields.values()];
       }
       return obj.keys;
     };
-    Walker.walk(module, {onType: (type) => {
-      if (type.kind !== 'obj') return;
-      if (type.extends) expandObjFields(type);
-    }});
+    Walker.walk(module, {
+      onType: (type) => {
+        if (type.kind !== 'obj') return;
+        if (type.extends) expandObjFields(type);
+      },
+    });
     this.importTypes(map);
   }
 

@@ -2,7 +2,6 @@ import * as schema from '../schema';
 import * as classes from './classes';
 import type {Type, TypeOfAlias} from './types';
 
-
 const {s} = schema;
 
 type UnionToIntersection<U> = (U extends never ? never : (arg: U) => never) extends (arg: infer I) => void ? I : never;
@@ -261,7 +260,8 @@ export class TypeBuilder {
         const fields = node.keys.map((f: any) =>
           f.optional
             ? this.propOpt(f.key, this.import(f.value)).options(f)
-            : this.prop(f.key, this.import(f.value)).options(f));
+            : this.prop(f.key, this.import(f.value)).options(f),
+        );
         return this.Object(...fields).options(node);
       }
       case 'map':

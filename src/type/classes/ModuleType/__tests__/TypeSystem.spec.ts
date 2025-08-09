@@ -1,4 +1,4 @@
-import {ModuleType} from "..";
+import {ModuleType} from '..';
 
 describe('.toString()', () => {
   test('prints type system with nested refs', () => {
