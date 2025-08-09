@@ -1,8 +1,8 @@
-import {TypeSystem} from '../../system';
+import {ModuleType} from '../../type/classes/ModuleType';
 import {ObjValue} from '../ObjValue';
 
 test('can retrieve field as Value', () => {
-  const system = new TypeSystem();
+  const system = new ModuleType();
   const {t} = system;
   const obj = new ObjValue(t.Object(t.prop('foo', t.str)), {foo: 'bar'});
   const foo = obj.get('foo');
@@ -11,7 +11,7 @@ test('can retrieve field as Value', () => {
 });
 
 test('can print to string', () => {
-  const system = new TypeSystem();
+  const system = new ModuleType();
   const {t} = system;
   const obj = new ObjValue(t.Object(t.prop('foo', t.str)), {foo: 'bar'});
   expect(obj + '').toMatchSnapshot();

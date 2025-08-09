@@ -3,12 +3,12 @@ import {JsonEncoder} from '@jsonjoy.com/json-pack/lib/json/JsonEncoder';
 import {Writer} from '@jsonjoy.com/buffers/lib/Writer';
 import {parse} from '@jsonjoy.com/json-pack/lib/json-binary';
 import {JsonCodegen} from '../JsonCodegen';
-import type {TypeSystem} from '../../../../system';
+import type {ModuleType} from '../../../../type/classes/ModuleType';
 import type {Type} from '../../../../type';
 
 const encoder = new JsonEncoder(new Writer(16));
 
-const transcode = (system: TypeSystem, type: Type, value: unknown) => {
+const transcode = (system: ModuleType, type: Type, value: unknown) => {
   const fn = JsonCodegen.get(type);
   encoder.writer.reset();
   fn(value, encoder);

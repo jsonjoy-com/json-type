@@ -1,11 +1,11 @@
+import {ModuleType} from '../../../type/classes/ModuleType';
 import {b} from '@jsonjoy.com/buffers/lib/b';
 import {ValidationError} from '../../../constants';
 import {type OrSchema, s, type Schema} from '../../../schema';
 import {ValidatorCodegen, type ValidatorCodegenOptions} from '../ValidatorCodegen';
-import {TypeSystem} from '../../../system';
 
 const exec = (schema: Schema, json: unknown, error: any, options: Partial<ValidatorCodegenOptions> = {}) => {
-  const system = new TypeSystem();
+  const system = new ModuleType();
   const type = system.t.import(schema);
 
   const fn1 = ValidatorCodegen.get({type, errors: 'boolean', ...options});
@@ -1141,7 +1141,7 @@ describe('"or" type', () => {
 
 describe('"ref" type', () => {
   test('a single type', () => {
-    const system = new TypeSystem();
+    const system = new ModuleType();
     system.t
       .object({
         foo: system.t.string(),
@@ -1261,7 +1261,7 @@ describe('single root element', () => {
 
 describe('custom validators', () => {
   test('can specify a custom validator for a string', () => {
-    const system = new TypeSystem();
+    const system = new ModuleType();
     const type = system.t.String().validator((value) => value !== 'a', 'is-a');
     const validator = ValidatorCodegen.get({type, errors: 'object'});
     const res1 = validator('a');
@@ -1278,7 +1278,7 @@ describe('custom validators', () => {
   });
 
   test('can specify multiple validators', () => {
-    const system = new TypeSystem();
+    const system = new ModuleType();
     const type = system.t.str
       .validator((value) => value !== 'a' && value !== 'b', 'is-ab')
       .validator((value) => value !== 'a', 'is-a');
@@ -1306,7 +1306,7 @@ describe('custom validators', () => {
   });
 
   test('returns the error, which validator throws', () => {
-    const system = new TypeSystem();
+    const system = new ModuleType();
     const type = system.t.Object(
       system.t.prop(
         'id',
@@ -1328,7 +1328,7 @@ describe('custom validators', () => {
   });
 
   test('returns the error, which validator throws, even inside a "ref" type', () => {
-    const system = new TypeSystem();
+    const system = new ModuleType();
     system.t.str
       .validator((id: string) => {
         if (id === 'xxxxxxx') return;

@@ -1,11 +1,11 @@
 import {printTree} from 'tree-dump/lib/printTree';
-import type {TypeSystem} from '.';
-import type {Type} from '../type';
+import type {ModuleType} from './ModuleType';
+import type {Type} from '../../type';
 import type {Printable} from 'tree-dump/lib/types';
 
 export class AliasType<K extends string, T extends Type> implements Printable {
   public constructor(
-    public readonly system: TypeSystem,
+    public readonly system: ModuleType,
     public readonly id: K,
     public readonly type: T,
   ) {}

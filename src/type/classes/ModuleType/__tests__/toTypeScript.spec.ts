@@ -1,13 +1,14 @@
-import {type AliasType, TypeSystem} from '..';
-import {aliasToTs, toTypeScriptAst} from '../../typescript/converter';
-import {toText} from '../../typescript/toText';
+import {ModuleType} from '..';
+import {aliasToTs} from '../../../../typescript/converter';
+import {toText} from '../../../../typescript/toText';
+import {AliasType} from '../../AliasType';
 
 const aliasToTsText = (alias: AliasType<any, any>): string => {
   return toText(aliasToTs(alias));
 };
 
 test('generates TypeScript source for simple string type', () => {
-  const system = new TypeSystem();
+  const system = new ModuleType();
   const {t} = system;
   const alias = system.alias('ID', t.str);
   expect(aliasToTsText(alias)).toMatchInlineSnapshot(`
@@ -17,7 +18,7 @@ test('generates TypeScript source for simple string type', () => {
 });
 
 test('emit a simple type interface', () => {
-  const system = new TypeSystem();
+  const system = new ModuleType();
   const {t} = system;
   const alias = system.alias(
     'BlogPost',
@@ -36,7 +37,7 @@ test('emit a simple type interface', () => {
 });
 
 test('emit an interface with all type kinds', () => {
-  const system = new TypeSystem();
+  const system = new ModuleType();
   const {t} = system;
   const alias = system.alias(
     'BlogPost',

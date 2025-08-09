@@ -1,10 +1,9 @@
 import {Value} from './Value';
-import {TypeSystem} from '../system/TypeSystem';
 import {printTree} from 'tree-dump/lib/printTree';
+import {ModuleType} from '../type/classes/ModuleType';
 import type * as classes from '../type';
 import type {TypeBuilder} from '../type/TypeBuilder';
 import type {Printable} from 'tree-dump/lib/types';
-import type {ResolveType} from '../system/types';
 
 export type UnObjType<T> = T extends classes.ObjType<infer U> ? U : never;
 export type UnObjValue<T> = T extends ObjValue<infer U> ? U : never;
@@ -16,9 +15,9 @@ export type ObjValueToTypeMap<F> = ToObject<{
 }>;
 
 export class ObjValue<T extends classes.ObjType<any>> extends Value<T> implements Printable {
-  public static new = (system: TypeSystem = new TypeSystem()) => new ObjValue(system.t.obj, {});
+  public static new = (system: ModuleType = new ModuleType()) => new ObjValue(system.t.obj, {});
 
-  public get system(): TypeSystem {
+  public get system(): classes.ModuleType {
     return (this.type as T).getSystem();
   }
 
@@ -44,7 +43,7 @@ export class ObjValue<T extends classes.ObjType<any>> extends Value<T> implement
 
   public field<F extends classes.ObjKeyType<any, any>>(
     field: F | ((t: TypeBuilder) => F),
-    data: ResolveType<UnObjFieldTypeVal<F>>,
+    data: classes.ResolveType<UnObjFieldTypeVal<F>>,
   ): ObjValue<classes.ObjType<[...UnObjType<T>, F]>> {
     field = typeof field === 'function' ? field((this.type as classes.ObjType<any>).getSystem().t) : field;
     (this.data as any)[field.key] = data;
@@ -58,7 +57,7 @@ export class ObjValue<T extends classes.ObjType<any>> extends Value<T> implement
   public add<K extends string, V extends classes.Type>(
     key: K,
     type: V | ((t: TypeBuilder) => V),
-    data: ResolveType<V>,
+    data: classes.ResolveType<V>,
   ) {
     const system = (this.type as classes.ObjType<any>).getSystem();
     const t = system.t;

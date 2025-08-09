@@ -1,6 +1,6 @@
-import {t} from '..';
+import {ModuleType, t} from '..';
 import {typeToJsonSchema} from '../../json-schema';
-import {TypeSystem} from '../../system';
+
 
 test('can print a type', () => {
   const type = t
@@ -197,7 +197,7 @@ test('can print a type', () => {
 });
 
 test('exports "ref" type to JSON Schema "$defs"', () => {
-  const system = new TypeSystem();
+  const system = new ModuleType();
   const t = system.t;
   const type = t.Object(t.prop('id', t.str), t.prop('user', t.Ref('User')));
   const schema = typeToJsonSchema(type) as any;

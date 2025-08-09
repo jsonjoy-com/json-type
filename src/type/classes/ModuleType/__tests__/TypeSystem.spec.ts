@@ -1,8 +1,8 @@
-import {TypeSystem} from '../TypeSystem';
+import {ModuleType} from "..";
 
 describe('.toString()', () => {
   test('prints type system with nested refs', () => {
-    const system = new TypeSystem();
+    const system = new ModuleType();
     const {t} = system;
     system.alias('User0', t.Object(t.prop('id', t.str), t.propOpt('address', t.Ref('Address'))));
     system.alias('User1', t.Ref('User0'));
@@ -11,7 +11,7 @@ describe('.toString()', () => {
     system.alias('Address1', t.Ref('Address0'));
     const address = system.alias('Address', t.Ref('Address1'));
     expect(system.toString()).toMatchInlineSnapshot(`
-"TypeSystem
+"Module
 └─ aliases
    ├─ User0
    │  └─ obj
@@ -37,11 +37,11 @@ describe('.toString()', () => {
   });
 
   test('prints type with nested self reference', () => {
-    const system = new TypeSystem();
+    const system = new ModuleType();
     const {t} = system;
     system.alias('User', t.obj.prop('id', t.str).opt('friend', t.Ref('User')));
     expect(system.toString()).toMatchInlineSnapshot(`
-"TypeSystem
+"Module
 └─ aliases
    └─ User
       └─ obj

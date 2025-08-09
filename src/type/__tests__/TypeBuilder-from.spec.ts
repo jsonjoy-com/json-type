@@ -1,6 +1,6 @@
-import {TypeSystem} from '../../system';
+import {ModuleType} from '../../type/classes/ModuleType';
 
-const system = new TypeSystem();
+const system = new ModuleType();
 const t = system.t;
 
 test('can create a schema for a deeply nested object', () => {

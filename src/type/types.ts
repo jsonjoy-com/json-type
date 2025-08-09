@@ -1,5 +1,6 @@
 import type * as schema from '../schema';
 import type * as classes from './classes';
+import type {AliasType} from './classes/AliasType';
 
 export type * from './classes';
 
@@ -49,3 +50,15 @@ export type FilterFunctions<T> = {
       ? T[K]
       : never;
 };
+
+export type TypeOfAlias<T> = T extends AliasType<any, infer T> ? T : T extends Type ? T : never;
+
+export type ResolveType<T> = T extends AliasType<any, infer T>
+  ? schema.TypeOf<SchemaOf<T>>
+  : T extends Type
+    ? schema.TypeOf<SchemaOf<T>>
+    : T extends schema.Schema
+      ? schema.TypeOf<T>
+      : never;
+
+export type infer<T> = ResolveType<T>;

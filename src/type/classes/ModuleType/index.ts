@@ -1,15 +1,12 @@
-import {RefType} from '../type/classes';
-import {TypeBuilder} from '../type/TypeBuilder';
-import {AliasType} from './TypeAlias';
+import {TypeBuilder} from '../../TypeBuilder';
+import {AliasType} from '../AliasType';
 import {printTree} from 'tree-dump/lib/printTree';
-import type {TypeMap} from '../schema';
-import type {Type} from '../type';
+import type {RefType} from '../RefType';
 import type {Printable} from 'tree-dump/lib/types';
+import type {TypeMap} from '../../../schema';
+import type {Type} from '../../../type';
 
-/**
- * @todo Rename to Module.
- */
-export class TypeSystem implements Printable {
+export class ModuleType implements Printable {
   public readonly t = new TypeBuilder(this);
 
   public readonly aliases: Map<string, AliasType<string, any>> = new Map();
@@ -36,7 +33,7 @@ export class TypeSystem implements Printable {
 
   public readonly resolve = <K extends string>(id: K): AliasType<K, Type> => {
     const alias = this.unalias(id);
-    return alias.type instanceof RefType ? this.resolve<K>(alias.type.ref() as K) : alias;
+    return alias.type.kind() === 'ref' ? this.resolve<K>((alias.type as RefType).ref() as K) : alias;
   };
 
   public exportTypes() {
@@ -62,7 +59,7 @@ export class TypeSystem implements Printable {
 
   public toString(tab: string = '') {
     return (
-      'TypeSystem' +
+      'Module' +
       printTree(tab, [
         (tab) =>
           'aliases' +

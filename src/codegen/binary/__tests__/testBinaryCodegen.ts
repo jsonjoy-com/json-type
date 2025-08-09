@@ -1,10 +1,10 @@
-import {TypeSystem} from '../../../system';
+import {ModuleType} from '../../../type/classes/ModuleType';
 import type {Type} from '../../../type';
 
-export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, value: unknown) => void) => {
+export const testBinaryCodegen = (transcode: (system: ModuleType, type: Type, value: unknown) => void) => {
   describe('"any" type', () => {
     test('can encode any value - 1', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const any = system.t.any;
       const value = {foo: 'bar'};
       const decoded = transcode(system, any, value);
@@ -12,7 +12,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
     });
 
     test('can encode any value - 2', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const any = system.t.any;
       const value = 123;
       const decoded = transcode(system, any, value);
@@ -22,7 +22,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
 
   describe('"con" type', () => {
     test('can encode number const', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const any = system.t.Const<123>(123);
       const value = {foo: 'bar'};
       const decoded = transcode(system, any, value);
@@ -30,7 +30,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
     });
 
     test('can encode array const', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const any = system.t.Const(<const>[1, 2, 3]);
       const decoded = transcode(system, any, [false, true, null]);
       expect(decoded).toStrictEqual([1, 2, 3]);
@@ -39,7 +39,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
 
   describe('"bool" type', () => {
     test('can encode booleans', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const any = system.t.bool;
       expect(transcode(system, any, true)).toStrictEqual(true);
       expect(transcode(system, any, false)).toStrictEqual(false);
@@ -50,7 +50,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
 
   describe('"num" type', () => {
     test('can encode any number', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const any = system.t.num;
       expect(transcode(system, any, 0)).toBe(0);
       expect(transcode(system, any, 1)).toBe(1);
@@ -61,7 +61,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
     });
 
     test('can encode an integer', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const any = system.t.num.options({format: 'i'});
       expect(transcode(system, any, 0)).toBe(0);
       expect(transcode(system, any, 1)).toBe(1);
@@ -71,7 +71,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
     });
 
     test('can encode an unsigned ints', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const any = system.t.num.options({format: 'u8'});
       expect(transcode(system, any, 0)).toBe(0);
       expect(transcode(system, any, 1)).toBe(1);
@@ -80,7 +80,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
     });
 
     test('can encode an floats', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const any = system.t.num.options({format: 'f'});
       expect(transcode(system, any, 0)).toBe(0);
       expect(transcode(system, any, 1)).toBe(1);
@@ -92,7 +92,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
 
   describe('"str" type', () => {
     test('can encode regular strings', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const type = system.t.str;
       let value = '';
       expect(transcode(system, type, value)).toBe(value);
@@ -108,7 +108,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
     });
 
     test('can encode ascii strings', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const type = system.t.str.options({ascii: true});
       let value = '';
       expect(transcode(system, type, value)).toBe(value);
@@ -126,7 +126,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
 
   describe('"bin" type', () => {
     test('can encode binary data', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const type = system.t.bin;
       let value = new Uint8Array();
       expect(transcode(system, type, value)).toStrictEqual(value);
@@ -137,7 +137,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
 
   describe('"arr" type', () => {
     test('can encode simple arrays', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const type = system.t.arr;
       let value: any[] = [];
       expect(transcode(system, type, value)).toStrictEqual(value);
@@ -146,7 +146,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
     });
 
     test('can encode array inside array', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const type = system.t.Array(system.t.arr);
       const value: any[] = [
         [1, 2, 3],
@@ -157,14 +157,14 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
     });
 
     test('can encode array of strings', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const type = system.t.Array(system.t.str);
       const value: any[] = ['1', '2', '3'];
       expect(transcode(system, type, value)).toStrictEqual(value);
     });
 
     test('can encode a simple tuple', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const t = system.t;
       const type = system.t.Tuple([t.str, t.num, t.bool]);
       const value: any[] = ['abc', 123, true];
@@ -172,7 +172,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
     });
 
     test('can encode an empty tuple', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const t = system.t;
       const type = system.t.Tuple([]);
       const value: any[] = [];
@@ -180,7 +180,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
     });
 
     test('can encode a tuple of arrays', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const t = system.t;
       const type = system.t.Tuple([t.arr, t.arr]);
       const value: any[] = [[], [1, 'b', false]];
@@ -188,7 +188,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
     });
 
     test('can encode a tuple tail', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const t = system.t;
       const type = system.t.Tuple([t.arr, t.arr], t.bool, [t.str, t.num]);
       const value: any[] = [[], [1, 'b', false], true, false, 'abc', 123];
@@ -196,7 +196,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
     });
 
     test('elements and 2-tail', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const t = system.t;
       const type = system.t.Tuple([], t.bool, [t.str, t.num]);
       const value1: any[] = [true, false, 'abc', 123];
@@ -210,7 +210,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
     });
 
     test('elements and 1-tail', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const t = system.t;
       const type = system.t.Tuple([], t.bool, [t.num]);
       const value1: any[] = [true, false, 123];
@@ -226,7 +226,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
 
   describe('"obj" type', () => {
     test('can encode empty object', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const t = system.t;
       const type = t.obj;
       const value: any = {};
@@ -234,7 +234,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
     });
 
     test('can encode empty object, which has optional fields', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const t = system.t;
       const type = t.Object(t.propOpt('field1', t.str));
       const value1: any = {};
@@ -244,7 +244,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
     });
 
     test('can encode fixed size object', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const t = system.t;
       const type = t.Object(t.prop('field1', t.str), t.prop('field2', t.num), t.prop('bool', t.bool));
       const value: any = {
@@ -256,7 +256,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
     });
 
     test('can encode object with an optional field', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const t = system.t;
       const type = t.Object(t.prop('id', t.str), t.propOpt('name', t.str));
       const value: any = {
@@ -267,7 +267,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
     });
 
     test('can encode object with a couple of optional fields', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const t = system.t;
       const type = t.Object(
         t.prop('id', t.str),
@@ -285,7 +285,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
     });
 
     test('can encode object with unknown fields', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const t = system.t;
       const type = t
         .Object(t.prop('id', t.str), t.propOpt('name', t.str), t.prop('age', t.num), t.propOpt('address', t.str))
@@ -301,7 +301,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
     });
 
     test('can encode nested objects', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const t = system.t;
       const type = t
         .Object(
@@ -349,7 +349,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
     });
 
     test('can encode object with only optional fields (encodeUnknownFields = true)', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const t = system.t;
       const type = t
         .Object(t.propOpt('id', t.str), t.propOpt('name', t.str), t.propOpt('address', t.str))
@@ -376,7 +376,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
     });
 
     test('can encode object with only optional fields (encodeUnknownFields = false)', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const t = system.t;
       const type = t
         .Object(t.propOpt('id', t.str), t.propOpt('name', t.str), t.propOpt('address', t.str))
@@ -405,7 +405,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
 
   describe('"map" type', () => {
     test('can encode empty map', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const t = system.t;
       const type = t.map;
       const value: any = {};
@@ -413,7 +413,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
     });
 
     test('can encode empty map with one key', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const t = system.t;
       const type = t.map;
       const value: any = {a: 'asdf'};
@@ -421,7 +421,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
     });
 
     test('can encode typed map with two keys', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const t = system.t;
       const type = t.Map(t.bool);
       const value: any = {x: true, y: false};
@@ -429,7 +429,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
     });
 
     test('can encode nested maps', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const t = system.t;
       const type = t.Map(t.Map(t.bool));
       const value: any = {a: {x: true, y: false}};
@@ -439,7 +439,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
 
   describe('"ref" type', () => {
     test('can encode a simple reference', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const t = system.t;
       system.alias('Obj', t.Object(t.prop('foo', t.str)));
       const type = t.Ref('Obj');
@@ -451,7 +451,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
 
   describe('"or" type', () => {
     test('can encode a simple union type', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const t = system.t;
       const type = system.t.Or(t.str, t.num).options({
         discriminator: ['if', ['==', 'string', ['type', ['get', '']]], 0, 1],
@@ -463,7 +463,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
 
   describe('various', () => {
     test('encodes benchmark example', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const t = system.t;
       const response = system.alias(
         'Response',
@@ -522,7 +522,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
     });
 
     test('serializes according to schema a POJO object', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const t = system.t;
       const type = t.Object(
         t.prop('a', t.num),
@@ -548,7 +548,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
     });
 
     test('supports "encodeUnknownFields" property', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const t = system.t;
       const type = t.Object(t.prop('a', t.Object().options({encodeUnknownKeys: true})));
       const value = {
@@ -561,7 +561,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
     });
 
     test('supports "encodeUnknownFields" property', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const t = system.t;
       const type = t.Object(t.prop('a', t.num), t.propOpt('b', t.num), t.prop('c', t.bool), t.propOpt('d', t.nil));
       const json1 = {
@@ -588,7 +588,7 @@ export const testBinaryCodegen = (transcode: (system: TypeSystem, type: Type, va
     });
 
     test('supports "encodeUnknownFields" property', () => {
-      const system = new TypeSystem();
+      const system = new ModuleType();
       const t = system.t;
       const type = t.Object(
         t.prop(

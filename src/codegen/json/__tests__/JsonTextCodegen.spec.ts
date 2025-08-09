@@ -1,5 +1,5 @@
 import {t} from '../../../type';
-import {TypeSystem} from '../../../system';
+import {ModuleType} from '../../../type/classes/ModuleType';
 import {JsonTextCodegen} from '../JsonTextCodegen';
 import {parse} from '@jsonjoy.com/json-pack/lib/json-binary/codec';
 
@@ -98,7 +98,7 @@ describe('"or" type', () => {
 });
 
 test('encodes extra fields with "encodeUnknownFields" when referenced by ref', () => {
-  const system = new TypeSystem();
+  const system = new ModuleType();
   const {t} = system;
   const type = t.Object(t.prop('foo', t.str), t.propOpt('zzz', t.num)).options({encodeUnknownKeys: true});
   system.alias('foo', type);
@@ -108,7 +108,7 @@ test('encodes extra fields with "encodeUnknownFields" when referenced by ref', (
 });
 
 test('add circular reference test', () => {
-  const system = new TypeSystem();
+  const system = new ModuleType();
   const {t} = system;
   const user = system.alias('User', t.Object(t.prop('id', t.str), t.propOpt('address', t.Ref('Address'))));
   const address = system.alias('Address', t.Object(t.prop('id', t.str), t.propOpt('user', t.Ref('User'))));
@@ -152,7 +152,7 @@ test('add circular reference test', () => {
 });
 
 test('add circular reference test with chain of refs', () => {
-  const system = new TypeSystem();
+  const system = new ModuleType();
   const {t} = system;
   system.alias('User0', t.Object(t.prop('id', t.str), t.propOpt('address', t.Ref('Address'))));
   system.alias('User1', t.Ref('User0'));

@@ -1,9 +1,7 @@
 import {printTree} from 'tree-dump/lib/printTree';
 import * as schema from '../../schema';
-import {Value} from '../../value';
 import {AbsType} from './AbsType';
 import type {SchemaOf, Type} from '../types';
-import type {ResolveType} from '../../system';
 
 const fnNotImplemented: schema.FunctionValue<any, any> = async () => {
   throw new Error('NOT_IMPLEMENTED');

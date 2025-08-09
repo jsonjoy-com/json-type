@@ -1,6 +1,6 @@
 import {type ArrType, type FnRxType, type FnType, type MapType, ObjType, type OrType} from '../type/classes';
 import type {Type} from '../type/types';
-import type {AliasType} from '../system';
+import type {AliasType} from '../type/classes/AliasType';
 import type * as ts from './types';
 import type * as schema from '../schema';
 

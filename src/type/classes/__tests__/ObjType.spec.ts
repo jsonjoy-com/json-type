@@ -1,5 +1,5 @@
 import {t} from '../..';
-import type {ResolveType} from '../../../system';
+import type {ResolveType} from '../../../type/types';
 
 describe('.prop()', () => {
   test('can add a property to an object', () => {

@@ -1,9 +1,7 @@
 import * as schema from '../schema';
 import * as classes from './classes';
-import type {Type} from './types';
-import type {TypeSystem} from '../system/TypeSystem';
-import type {AliasType} from '../system/TypeAlias';
-import type {TypeOfAlias} from '../system/types';
+import type {Type, TypeOfAlias} from './types';
+
 
 const {s} = schema;
 
@@ -25,7 +23,7 @@ type RecordToFields<O extends Record<string, Type>> = ObjValueTuple<{
 }>;
 
 export class TypeBuilder {
-  constructor(public system?: TypeSystem) {}
+  constructor(public system?: classes.ModuleType) {}
 
   // -------------------------------------------------------------- empty types
 
@@ -218,7 +216,7 @@ export class TypeBuilder {
     return new classes.OrType<F>(types).sys(this.system);
   }
 
-  public Ref<T extends Type | AliasType<any, any>>(ref: string) {
+  public Ref<T extends Type | classes.AliasType<any, any>>(ref: string) {
     return new classes.RefType<TypeOfAlias<T>>(ref).sys(this.system);
   }
 
