@@ -2,9 +2,13 @@ import {RefType} from '../type/classes';
 import {TypeBuilder} from '../type/TypeBuilder';
 import {TypeAlias} from './TypeAlias';
 import {printTree} from 'tree-dump/lib/printTree';
-import type {Type, TypeMap} from '../type';
+import {TypeMap} from '../schema';
+import type {Type} from '../type';
 import type {Printable} from 'tree-dump/lib/types';
 
+/**
+ * @todo Rename to Module.
+ */
 export class TypeSystem implements Printable {
   public readonly t = new TypeBuilder(this);
 

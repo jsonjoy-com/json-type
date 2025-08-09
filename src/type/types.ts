@@ -29,16 +29,14 @@ export type SchemaOfMap<M extends Record<string, Type>> = {
 };
 
 export type SchemaOfObjectFieldType<F> = F extends classes.ObjKeyOptType<infer K, infer V>
-  ? schema.ObjOptKeySchema<K, SchemaOf<V>>
+  ? schema.OptKeySchema<K, SchemaOf<V>>
   : F extends classes.ObjKeyType<infer K, infer V>
-    ? schema.ObjKeySchema<K, SchemaOf<V>>
+    ? schema.KeySchema<K, SchemaOf<V>>
     : never;
 
 export type SchemaOfObjectFields<F> = {
   [K in keyof F]: SchemaOfObjectFieldType<F[K]>;
 };
-
-export type TypeMap = {[name: string]: schema.Schema};
 
 export type FilterFunctions<T> = {
   [K in keyof T as T[K] extends classes.FnType<any, any, any>

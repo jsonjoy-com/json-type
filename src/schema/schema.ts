@@ -301,7 +301,7 @@ export interface ArrSchema<T extends TType = any, Head extends TType[] = any, Ta
  * }
  * ```
  */
-export interface ObjSchema<Keys extends ObjKeySchema<string, TType>[] | readonly ObjKeySchema<string, TType>[] = any>
+export interface ObjSchema<Keys extends KeySchema<string, TType>[] | readonly KeySchema<string, TType>[] = any>
   extends TType<object> {
   kind: 'obj';
 
@@ -337,7 +337,7 @@ export interface ObjSchema<Keys extends ObjKeySchema<string, TType>[] | readonly
  *
  * @todo Rename to `key`.
  */
-export interface ObjKeySchema<K extends string = string, V extends TType = TType> extends TType<[K, V]>, Display {
+export interface KeySchema<K extends string = string, V extends TType = TType> extends TType<[K, V]>, Display {
   kind: 'key';
   /** Key name of the field. */
   key: K;
@@ -350,7 +350,7 @@ export interface ObjKeySchema<K extends string = string, V extends TType = TType
   optional?: boolean;
 }
 
-export interface ObjOptKeySchema<K extends string = string, V extends TType = TType> extends ObjKeySchema<K, V> {
+export interface OptKeySchema<K extends string = string, V extends TType = TType> extends KeySchema<K, V> {
   optional: true;
 }
 
@@ -411,12 +411,16 @@ export interface FnStreamingSchema<Req extends TType = TType, Res extends TType 
   __ctx_brand?: Ctx;
 }
 
-export interface TypeSystemSchema {
-  // biome-ignore lint: fix this at some point...
-  types: {
-    // [alias: string]:
-  };
+export interface AliasSchema extends KeySchema {
+  pub?: boolean;
 }
+
+export interface ModuleSchema<Aliases extends AliasSchema[] = AliasSchema[]> {
+  kind: 'module';
+  keys: Aliases;
+}
+
+export type TypeMap = {[alias: string]: Schema};
 
 /**
  * Any valid JSON type.
@@ -429,8 +433,8 @@ export type JsonSchema =
   | ArrSchema
   | ConSchema
   | ObjSchema
-  | ObjKeySchema
-  | ObjOptKeySchema
+  | KeySchema
+  | OptKeySchema
   | MapSchema;
 
 export type Schema = JsonSchema | RefSchema | OrSchema | AnySchema | FnSchema | FnStreamingSchema;
@@ -479,12 +483,12 @@ type TypeFields<F> = TypeOfFieldMap<FieldsAdjustedForOptional<ToObject<{[K in ke
 
 type ToObject<T> = T extends [string, unknown][] ? {[K in T[number] as K[0]]: K[1]} : never;
 
-type ObjectFieldToTuple<F> = F extends ObjKeySchema<infer K, infer V> ? [K, F] : never;
+type ObjectFieldToTuple<F> = F extends KeySchema<infer K, infer V> ? [K, F] : never;
 
 type NoEmptyInterface<I> = keyof I extends never ? Record<string, never> : I;
 
 type OptionalFields<T> = {
-  [K in keyof T]-?: T[K] extends ObjOptKeySchema ? K : never;
+  [K in keyof T]-?: T[K] extends OptKeySchema ? K : never;
 }[keyof T];
 
 type RequiredFields<T> = Exclude<keyof T, OptionalFields<T>>;
@@ -493,7 +497,7 @@ type FieldsAdjustedForOptional<T> = Pick<T, RequiredFields<T>> & Partial<Pick<T,
 
 type TypeOfFieldMap<T> = {[K in keyof T]: TypeOf<FieldValue<T[K]>>};
 
-type FieldValue<F> = F extends ObjKeySchema<any, infer V> ? V : never;
+type FieldValue<F> = F extends KeySchema<any, infer V> ? V : never;
 
 type UndefToVoid<T> = T extends undefined ? void : T;
 

@@ -5,7 +5,7 @@ import type * as ts from './types';
 import type * as schema from '../schema';
 
 const augmentWithComment = (
-  type: schema.Schema | schema.ObjKeySchema,
+  type: schema.Schema | schema.KeySchema,
   node: ts.TsDeclaration | ts.TsPropertySignature | ts.TsTypeLiteral,
 ) => {
   if (type.title || type.description) {

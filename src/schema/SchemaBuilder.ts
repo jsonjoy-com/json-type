@@ -126,17 +126,17 @@ export class SchemaBuilder {
     return schema;
   }
 
-  public Object<F extends _.ObjKeySchema<string, _.Schema>[] | readonly _.ObjKeySchema<string, _.Schema>[]>(
+  public Object<F extends _.KeySchema<string, _.Schema>[] | readonly _.KeySchema<string, _.Schema>[]>(
     options: _.NoT<_.ObjSchema<F>>,
   ): _.ObjSchema<F>;
-  public Object<F extends _.ObjKeySchema<string, _.Schema>[] | readonly _.ObjKeySchema<string, _.Schema>[]>(
+  public Object<F extends _.KeySchema<string, _.Schema>[] | readonly _.KeySchema<string, _.Schema>[]>(
     keys: _.ObjSchema<F>['keys'],
     options?: _.Optional<_.ObjSchema<F>>,
   ): _.ObjSchema<F>;
-  public Object<F extends _.ObjKeySchema<string, _.Schema>[] | readonly _.ObjKeySchema<string, _.Schema>[]>(
+  public Object<F extends _.KeySchema<string, _.Schema>[] | readonly _.KeySchema<string, _.Schema>[]>(
     ...keys: _.ObjSchema<F>['keys']
   ): _.ObjSchema<F>;
-  public Object<F extends _.ObjKeySchema<string, _.Schema>[] | readonly _.ObjKeySchema<string, _.Schema>[]>(
+  public Object<F extends _.KeySchema<string, _.Schema>[] | readonly _.KeySchema<string, _.Schema>[]>(
     ...args: unknown[]
   ): _.ObjSchema<F> {
     const first = args[0];
@@ -159,8 +159,8 @@ export class SchemaBuilder {
   public prop<K extends string, V extends _.Schema>(
     key: K,
     value: V,
-    options: Omit<_.NoT<_.ObjKeySchema<K, V>>, 'key' | 'value' | 'optional'> = {},
-  ): _.ObjKeySchema<K, V> {
+    options: Omit<_.NoT<_.KeySchema<K, V>>, 'key' | 'value' | 'optional'> = {},
+  ): _.KeySchema<K, V> {
     return {
       kind: 'key',
       key,
@@ -173,8 +173,8 @@ export class SchemaBuilder {
   public propOpt<K extends string, V extends _.Schema>(
     key: K,
     value: V,
-    options: Omit<_.NoT<_.ObjKeySchema<K, V>>, 'key' | 'value' | 'optional'> = {},
-  ): _.ObjOptKeySchema<K, V> {
+    options: Omit<_.NoT<_.KeySchema<K, V>>, 'key' | 'value' | 'optional'> = {},
+  ): _.OptKeySchema<K, V> {
     return {
       kind: 'key',
       key,
