@@ -70,28 +70,16 @@ export class SchemaBuilder {
     };
   }
 
-  public Array<T extends _.Schema>(
-    id: string,
-    type: T,
-    options?: Omit<_.NoT<_.ArrSchema<T, [], []>>, 'id' | 'type'>,
-  ): _.ArrSchema<T>;
-  public Array<T extends _.Schema>(type: T, options?: Omit<_.NoT<_.ArrSchema<T>>, 'type'>): _.ArrSchema<T, [], []>;
-  public Array<T extends _.Schema>(
-    a: string | T,
-    b?: T | Omit<_.NoT<_.ArrSchema<T>>, 'type'>,
-    c?: Omit<_.NoT<_.ArrSchema<T>>, 'id' | 'type'>,
-  ): _.ArrSchema<T, [], []> {
-    if (typeof a === 'string') return this.Array(b as T, {id: a, ...(c || {})});
+  public Array<T extends _.Schema>(type: T, options?: Omit<_.NoT<_.ArrSchema<T>>, 'type'>): _.ArrSchema<T, [], []> {
     return {
-      ...(b as Omit<_.NoT<_.ArrSchema<T>>, 'id' | 'type'>),
+      ...options,
       kind: 'arr',
-      type: a as T,
+      type,
     };
   }
 
   /**
    * Use TypeScript const when defining a constant value.
-   *
    *
    * @example
    *

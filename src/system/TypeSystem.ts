@@ -2,7 +2,7 @@ import {RefType} from '../type/classes';
 import {TypeBuilder} from '../type/TypeBuilder';
 import {TypeAlias} from './TypeAlias';
 import {printTree} from 'tree-dump/lib/printTree';
-import {TypeMap} from '../schema';
+import type {TypeMap} from '../schema';
 import type {Type} from '../type';
 import type {Printable} from 'tree-dump/lib/types';
 
