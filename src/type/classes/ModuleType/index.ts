@@ -5,6 +5,7 @@ import type {RefType} from '../RefType';
 import type {Printable} from 'tree-dump/lib/types';
 import type {KeySchema, ModuleSchema, ObjSchema, Schema, TypeMap} from '../../../schema';
 import type {Type} from '../../../type';
+import {Walker} from '../../../schema/Walker';
 
 export class ModuleType implements Printable {
   public static readonly from = (module: ModuleSchema): ModuleType => {
@@ -70,44 +71,10 @@ export class ModuleType implements Printable {
       }
       return obj.keys;
     };
-    const visitedRefs: Set<string> = new Set();
-    const extendFields = (node: Schema) => {
-      if (!node) throw new Error('Node is undefined');
-      switch (node.kind) {
-        case 'obj': {
-          if (node.extends) expandObjFields(node);
-          for (const key of node.keys) extendFields(key.value);
-          break;
-        }
-        case 'map': {
-          extendFields(node.value);
-          break;
-        }
-        case 'arr': {
-          if (node.head) for (const item of node.head) extendFields(item);
-          if (node.type) extendFields(node.type);
-          if (node.tail) for (const item of node.tail) extendFields(item);
-          break;
-        }
-        case 'ref': {
-          const ref = node.ref;
-          if (visitedRefs.has(ref)) return;
-          visitedRefs.add(ref);
-          const type = map[node.ref];
-          extendFields(type);
-          break;
-        }
-        case 'or': {
-          for (const type of node.types) extendFields(type as Schema);
-          break;
-        }
-        case 'module': {
-          for (const type of node.keys) extendFields(type.value as Schema);
-          break;
-        }
-      }
-    };
-    extendFields(module);
+    Walker.walk(module, {onType: (type) => {
+      if (type.kind !== 'obj') return;
+      if (type.extends) expandObjFields(type);
+    }});
     this.importTypes(map);
   }
 
