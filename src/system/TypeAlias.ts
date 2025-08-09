@@ -3,10 +3,7 @@ import type {TypeSystem} from '.';
 import type {Type} from '../type';
 import type {Printable} from 'tree-dump/lib/types';
 
-/**
- * @todo Rename to `Alias`.
- */
-export class TypeAlias<K extends string, T extends Type> implements Printable {
+export class AliasType<K extends string, T extends Type> implements Printable {
   public constructor(
     public readonly system: TypeSystem,
     public readonly id: K,
@@ -17,7 +14,7 @@ export class TypeAlias<K extends string, T extends Type> implements Printable {
     return this.type;
   }
 
-  public resolve(): TypeAlias<string, Type> {
+  public resolve(): AliasType<string, Type> {
     return this.system.resolve(this.id);
   }
 

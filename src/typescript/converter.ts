@@ -1,6 +1,6 @@
 import {type ArrType, type FnRxType, type FnType, type MapType, ObjType, type OrType} from '../type/classes';
 import type {Type} from '../type/types';
-import type {TypeAlias} from '../system';
+import type {AliasType} from '../system';
 import type * as ts from './types';
 import type * as schema from '../schema';
 
@@ -263,7 +263,7 @@ export function toTypeScriptAst(type: Type): ts.TsType {
   }
 }
 
-export const aliasToTs = (alias: TypeAlias<any, any>): ts.TsInterfaceDeclaration | ts.TsTypeAliasDeclaration => {
+export const aliasToTs = (alias: AliasType<any, any>): ts.TsInterfaceDeclaration | ts.TsTypeAliasDeclaration => {
   const type = alias.type;
   if (type instanceof ObjType) {
     const ast = toTypeScriptAst(type) as ts.TsTypeLiteral;

@@ -26,9 +26,9 @@ import type {
   JsonSchemaOr,
   JsonSchemaValueNode,
 } from './types';
-import type {TypeAlias} from '../system';
+import type {AliasType} from '../system';
 
-export const aliasToJsonSchema = (alias: TypeAlias<any, any>): JsonSchemaGenericKeywords => {
+export const aliasToJsonSchema = (alias: AliasType<any, any>): JsonSchemaGenericKeywords => {
   const node: JsonSchemaGenericKeywords = {
     $id: alias.id,
     $ref: '#/$defs/' + alias.id,

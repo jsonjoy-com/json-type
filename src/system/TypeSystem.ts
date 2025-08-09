@@ -1,6 +1,6 @@
 import {RefType} from '../type/classes';
 import {TypeBuilder} from '../type/TypeBuilder';
-import {TypeAlias} from './TypeAlias';
+import {AliasType} from './TypeAlias';
 import {printTree} from 'tree-dump/lib/printTree';
 import type {TypeMap} from '../schema';
 import type {Type} from '../type';
@@ -12,29 +12,29 @@ import type {Printable} from 'tree-dump/lib/types';
 export class TypeSystem implements Printable {
   public readonly t = new TypeBuilder(this);
 
-  public readonly aliases: Map<string, TypeAlias<string, any>> = new Map();
+  public readonly aliases: Map<string, AliasType<string, any>> = new Map();
 
   /**
    * @todo Add ability fetch object of given type by its ID, analogous to
    * GraphQL "nodes".
    */
-  public readonly alias = <K extends string, T extends Type>(id: K, type: T): TypeAlias<K, T> => {
+  public readonly alias = <K extends string, T extends Type>(id: K, type: T): AliasType<K, T> => {
     const existingAlias = this.aliases.get(id);
-    if (existingAlias) return existingAlias as TypeAlias<K, T>;
-    const alias = new TypeAlias<K, T>(this, id, type);
+    if (existingAlias) return existingAlias as AliasType<K, T>;
+    const alias = new AliasType<K, T>(this, id, type);
     this.aliases.set(id, alias);
     return alias;
   };
 
-  public readonly unalias = <K extends string>(id: K): TypeAlias<K, Type> => {
+  public readonly unalias = <K extends string>(id: K): AliasType<K, Type> => {
     const alias = this.aliases.get(id);
     if (!alias) throw new Error(`Alias [id = ${id}] not found.`);
-    return <TypeAlias<K, Type>>alias;
+    return <AliasType<K, Type>>alias;
   };
 
   public readonly hasAlias = (id: string): boolean => this.aliases.has(id);
 
-  public readonly resolve = <K extends string>(id: K): TypeAlias<K, Type> => {
+  public readonly resolve = <K extends string>(id: K): AliasType<K, Type> => {
     const alias = this.unalias(id);
     return alias.type instanceof RefType ? this.resolve<K>(alias.type.ref() as K) : alias;
   };
@@ -50,7 +50,7 @@ export class TypeSystem implements Printable {
   public importTypes<A extends TypeMap>(
     types: A,
   ): {
-    readonly [K in keyof A]: TypeAlias<
+    readonly [K in keyof A]: AliasType<
       K extends string ? K : never,
       /** @todo Replace `any` by inferred type here. */ any
     >;

@@ -1,8 +1,8 @@
-import {type TypeAlias, TypeSystem} from '..';
+import {type AliasType, TypeSystem} from '..';
 import {aliasToTs, toTypeScriptAst} from '../../typescript/converter';
 import {toText} from '../../typescript/toText';
 
-const aliasToTsText = (alias: TypeAlias<any, any>): string => {
+const aliasToTsText = (alias: AliasType<any, any>): string => {
   return toText(aliasToTs(alias));
 };
 

@@ -1,4 +1,4 @@
-import {type ConSchema, type ModuleSchema, type ObjSchema, type OrSchema, type RefSchema} from "../schema";
+import type {ConSchema,  ModuleSchema, ObjSchema, OrSchema, RefSchema} from "../schema";
 
 export const module: ModuleSchema = {
   kind: 'module',

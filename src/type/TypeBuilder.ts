@@ -2,7 +2,7 @@ import * as schema from '../schema';
 import * as classes from './classes';
 import type {Type} from './types';
 import type {TypeSystem} from '../system/TypeSystem';
-import type {TypeAlias} from '../system/TypeAlias';
+import type {AliasType} from '../system/TypeAlias';
 import type {TypeOfAlias} from '../system/types';
 
 const {s} = schema;
@@ -218,7 +218,7 @@ export class TypeBuilder {
     return new classes.OrType<F>(types).sys(this.system);
   }
 
-  public Ref<T extends Type | TypeAlias<any, any>>(ref: string) {
+  public Ref<T extends Type | AliasType<any, any>>(ref: string) {
     return new classes.RefType<TypeOfAlias<T>>(ref).sys(this.system);
   }
 
