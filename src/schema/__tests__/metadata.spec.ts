@@ -2,9 +2,8 @@ import {s} from '..';
 
 describe('metadata', () => {
   test('can add custom metadata', () => {
-    expect(s.String('validator', {meta: {regex: true}})).toEqual({
+    expect(s.String({meta: {regex: true}})).toEqual({
       kind: 'str',
-      id: 'validator',
       meta: {regex: true},
     });
   });
@@ -12,27 +11,25 @@ describe('metadata', () => {
 
 describe('deprecations', () => {
   test('can deprecate a type', () => {
-    const schema = s.String('validator', {
+    const schema = s.String({
       deprecated: {},
     });
     expect(schema).toEqual({
       kind: 'str',
-      id: 'validator',
       deprecated: {},
     });
   });
 
   test('can deprecate a type with a message', () => {
-    const schema = s.String('validator', {
+    const schema = s.String({
       deprecated: {
         info: 'Use the new type',
       },
     });
     expect(schema).toEqual({
       kind: 'str',
-      id: 'validator',
       deprecated: {
-        description: 'Use the new type',
+        info: 'Use the new type',
       },
     });
   });

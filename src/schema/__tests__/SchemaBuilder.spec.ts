@@ -6,9 +6,8 @@ describe('string', () => {
   });
 
   test('can create a named a string type', () => {
-    expect(s.String('UserName')).toEqual({
+    expect(s.String()).toEqual({
       kind: 'str',
-      id: 'UserName',
     });
   });
 });
@@ -35,7 +34,7 @@ describe('object', () => {
   });
 
   test('can specify types', () => {
-    const type = s.Object([s.prop('id', s.String('UserId')), s.prop('name', s.str)]);
+    const type = s.Object([s.prop('id', s.String()), s.prop('name', s.str)]);
     expect(type).toEqual({
       kind: 'obj',
       keys: [
@@ -44,7 +43,6 @@ describe('object', () => {
           key: 'id',
           value: {
             kind: 'str',
-            id: 'UserId',
           },
         },
         {

@@ -62,11 +62,6 @@ describe('validateTType()', () => {
     expect(() => validateTType(ttype, 'str')).not.toThrow();
   });
 
-  // test('validates TType with id', () => {
-  //   const ttype: TType = {kind: 'str', id: 'test-id'};
-  //   expect(() => validateTType(ttype, 'str')).not.toThrow();
-  // });
-
   test('validates TType with examples', () => {
     const ttype: SchemaBase = {
       kind: 'str',
@@ -81,11 +76,6 @@ describe('validateTType()', () => {
   test('throws for invalid kind', () => {
     const ttype: SchemaBase = {kind: 'str'};
     expect(() => validateTType(ttype, 'num')).toThrow('INVALID_TYPE');
-  });
-
-  test('throws for invalid id', () => {
-    expect(() => validateTType({kind: 'str', id: 123} as any, 'str')).toThrow('INVALID_ID');
-    expect(() => validateTType({kind: 'str', id: null} as any, 'str')).toThrow('INVALID_ID');
   });
 
   test('throws for invalid examples', () => {
