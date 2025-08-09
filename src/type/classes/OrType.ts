@@ -40,6 +40,9 @@ export class OrType<T extends Type[] = any> extends AbsType<schema.OrSchema<{[K 
   }
 
   public toString(tab: string = ''): string {
-    return super.toString(tab) + printTree(tab, [...this.types.map((type) => (tab: string) => type.toString(tab))]);
+    return super.toString(tab) + printTree(tab, [
+      (tab: string) => 'discriminator: ' + JSON.stringify(this.schema.discriminator, null, 2).split('\n').join('\n' + tab),
+      ...this.types.map((type) => (tab: string) => type.toString(tab))
+    ]);
   }
 }
