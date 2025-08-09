@@ -1,6 +1,6 @@
 import {ArrType, BoolType, ConType, NumType, type ObjKeyType, ObjType, StrType} from './classes';
 import type {Expr} from '@jsonjoy.com/json-expression';
-import type {Type} from './types';
+import type {RefType, Type} from './types';
 
 /**
  * Discriminator class for automatically identifying distinguishing patterns in
@@ -78,9 +78,11 @@ export class Discriminator {
     const length = types.length;
     const specifiers = new Set<string>();
     const discriminators: Discriminator[] = [];
+    // TODO: expand all "or" types...
     for (let i = 1; i < length; i++) {
       const type = types[i];
-      const d = Discriminator.find(type);
+      const resolved = type.kind() === 'ref' ? (type as RefType).resolve() : type;
+      const d = Discriminator.find(resolved);
       const specifier = d.toSpecifier();
       if (specifiers.has(specifier)) throw new Error('Duplicate discriminator: ' + specifier);
       specifiers.add(specifier);

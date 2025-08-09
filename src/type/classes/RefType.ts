@@ -16,6 +16,10 @@ export class RefType<T extends Type = any> extends AbsType<schema.RefSchema<Sche
     return options as any;
   }
 
+  public resolve(): Type {
+    return this.getSystem().resolve(this.ref()).type as Type;
+  }
+
   public toStringTitle(tab: string = ''): string {
     const options = this.toStringOptions();
     return `${super.toStringTitle()} → [${this.schema.ref}]` + (options ? ` ${options}` : '');
