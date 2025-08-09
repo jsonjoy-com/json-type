@@ -3,15 +3,15 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for src/system/TypeSystem.ts</title>
+    <title>Code coverage report for src/type/classes/ModuleType/index.ts</title>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="../../prettify.css" />
-    <link rel="stylesheet" href="../../base.css" />
-    <link rel="shortcut icon" type="image/x-icon" href="../../favicon.png" />
+    <link rel="stylesheet" href="../../../../prettify.css" />
+    <link rel="stylesheet" href="../../../../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../../../../favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style type='text/css'>
         .coverage-summary .sorter {
-            background-image: url(../../sort-arrow-sprite.png);
+            background-image: url(../../../../sort-arrow-sprite.png);
         }
     </style>
 </head>
@@ -19,34 +19,34 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/system</a> TypeSystem.ts</h1>
+        <h1><a href="../../../../index.html">All files</a> / <a href="index.html">src/type/classes/ModuleType</a> index.ts</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">69.44% </span>
+                <span class="strong">87.5% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>25/36</span>
+                <span class='fraction'>56/64</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">60% </span>
+                <span class="strong">76.92% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>3/5</span>
+                <span class='fraction'>10/13</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">72.72% </span>
+                <span class="strong">86.66% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>8/11</span>
+                <span class='fraction'>13/15</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">77.41% </span>
+                <span class="strong">92.59% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>24/31</span>
+                <span class='fraction'>50/54</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line medium'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -135,41 +135,87 @@
 <a name='L70'></a><a href='#L70'>70</a>
 <a name='L71'></a><a href='#L71'>71</a>
 <a name='L72'></a><a href='#L72'>72</a>
-<a name='L73'></a><a href='#L73'>73</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">31x</span>
-<span class="cline-any cline-yes">31x</span>
-<span class="cline-any cline-yes">31x</span>
-<span class="cline-any cline-yes">31x</span>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a>
+<a name='L89'></a><a href='#L89'>89</a>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a>
+<a name='L95'></a><a href='#L95'>95</a>
+<a name='L96'></a><a href='#L96'>96</a>
+<a name='L97'></a><a href='#L97'>97</a>
+<a name='L98'></a><a href='#L98'>98</a>
+<a name='L99'></a><a href='#L99'>99</a>
+<a name='L100'></a><a href='#L100'>100</a>
+<a name='L101'></a><a href='#L101'>101</a>
+<a name='L102'></a><a href='#L102'>102</a>
+<a name='L103'></a><a href='#L103'>103</a>
+<a name='L104'></a><a href='#L104'>104</a>
+<a name='L105'></a><a href='#L105'>105</a>
+<a name='L106'></a><a href='#L106'>106</a>
+<a name='L107'></a><a href='#L107'>107</a>
+<a name='L108'></a><a href='#L108'>108</a>
+<a name='L109'></a><a href='#L109'>109</a>
+<a name='L110'></a><a href='#L110'>110</a>
+<a name='L111'></a><a href='#L111'>111</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">33x</span>
+<span class="cline-any cline-yes">33x</span>
+<span class="cline-any cline-yes">33x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">31x</span>
-<span class="cline-any cline-yes">487x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">487x</span>
+<span class="cline-any cline-yes">33x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">487x</span>
-<span class="cline-any cline-yes">40x</span>
-<span class="cline-any cline-yes">40x</span>
-<span class="cline-any cline-yes">40x</span>
-<span class="cline-any cline-yes">40x</span>
-<span class="cline-any cline-yes">40x</span>
+<span class="cline-any cline-yes">33x</span>
+<span class="cline-any cline-yes">33x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">487x</span>
-<span class="cline-any cline-yes">32x</span>
-<span class="cline-any cline-yes">32x</span>
-<span class="cline-any cline-yes">32x</span>
+<span class="cline-any cline-yes">529x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">529x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">487x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">487x</span>
-<span class="cline-any cline-yes">32x</span>
-<span class="cline-any cline-yes">32x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">529x</span>
+<span class="cline-any cline-yes">63x</span>
+<span class="cline-any cline-yes">63x</span>
+<span class="cline-any cline-yes">63x</span>
+<span class="cline-any cline-yes">63x</span>
+<span class="cline-any cline-yes">63x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">529x</span>
+<span class="cline-any cline-yes">82x</span>
+<span class="cline-any cline-yes">82x</span>
+<span class="cline-any cline-yes">82x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">529x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">529x</span>
+<span class="cline-any cline-yes">82x</span>
+<span class="cline-any cline-yes">82x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -181,6 +227,33 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">35x</span>
+<span class="cline-any cline-yes">35x</span>
+<span class="cline-any cline-yes">35x</span>
+<span class="cline-any cline-yes">17x</span>
+<span class="cline-any cline-yes">17x</span>
+<span class="cline-any cline-yes">18x</span>
+<span class="cline-any cline-yes">147x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">17x</span>
+<span class="cline-any cline-yes">58x</span>
+<span class="cline-any cline-yes">17x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">35x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">323x</span>
+<span class="cline-any cline-yes">35x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -188,60 +261,71 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import {RefType} from '../type/classes';
-import {TypeBuilder} from '../type/TypeBuilder';
-import {TypeAlias} from './TypeAlias';
+<span class="cline-any cline-yes">28x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import {TypeBuilder} from '../../TypeBuilder';
+import {AliasType} from '../AliasType';
 import {printTree} from 'tree-dump/lib/printTree';
-import type {Type, TypeMap} from '../type';
+import type {RefType} from '../RefType';
 import type {Printable} from 'tree-dump/lib/types';
+import type {KeySchema, ModuleSchema, ObjSchema, Schema, TypeMap} from '../../../schema';
+import type {Type} from '../../../type';
+import {Walker} from '../../../schema/Walker';
 &nbsp;
-export class TypeSystem implements Printable {
+export class ModuleType implements Printable {
+  public static readonly from = (module: ModuleSchema): ModuleType =&gt; {
+    const type = new ModuleType();
+    type.import(module);
+    return type;
+  };
+&nbsp;
   public readonly t = new TypeBuilder(this);
 &nbsp;
-  public readonly aliases: Map&lt;string, TypeAlias&lt;string, any&gt;&gt; = new Map();
+  public readonly aliases: Map&lt;string, AliasType&lt;string, any&gt;&gt; = new Map();
 &nbsp;
   /**
    * @todo Add ability fetch object of given type by its ID, analogous to
    * GraphQL "nodes".
    */
-  public readonly alias = &lt;K extends string, T extends Type&gt;(id: K, type: T): TypeAlias&lt;K, T&gt; =&gt; {
+  public readonly alias = &lt;K extends string, T extends Type&gt;(id: K, type: T): AliasType&lt;K, T&gt; =&gt; {
     const existingAlias = this.aliases.get(id);
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (existingAlias) <span class="cstat-no" title="statement not covered" >return existingAlias as TypeAlias&lt;K, T&gt;;</span>
-    const alias = new TypeAlias&lt;K, T&gt;(this, id, type);
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (existingAlias) <span class="cstat-no" title="statement not covered" >return existingAlias as AliasType&lt;K, T&gt;;</span>
+    const alias = new AliasType&lt;K, T&gt;(this, id, type);
     this.aliases.set(id, alias);
     return alias;
   };
 &nbsp;
-  public readonly unalias = &lt;K extends string&gt;(id: K): TypeAlias&lt;K, Type&gt; =&gt; {
+  public readonly unalias = &lt;K extends string&gt;(id: K): AliasType&lt;K, Type&gt; =&gt; {
     const alias = this.aliases.get(id);
     <span class="missing-if-branch" title="if path not taken" >I</span>if (!alias) <span class="cstat-no" title="statement not covered" >throw new Error(`Alias [id = ${id}] not found.`);</span>
-    return &lt;TypeAlias&lt;K, Type&gt;&gt;alias;
+    return &lt;AliasType&lt;K, Type&gt;&gt;alias;
   };
 &nbsp;
   public readonly hasAlias = <span class="fstat-no" title="function not covered" >(i</span>d: string): boolean =&gt; <span class="cstat-no" title="statement not covered" >this.aliases.has(id);</span>
 &nbsp;
-  public readonly resolve = &lt;K extends string&gt;(id: K): TypeAlias&lt;K, Type&gt; =&gt; {
+  public readonly resolve = &lt;K extends string&gt;(id: K): AliasType&lt;K, Type&gt; =&gt; {
     const alias = this.unalias(id);
-    return alias.type instanceof RefType ? this.resolve&lt;K&gt;(alias.type.ref() as K) : alias;
+    return alias.type.kind() === 'ref' ? this.resolve&lt;K&gt;((alias.type as RefType).ref() as K) : alias;
   };
 &nbsp;
   public <span class="fstat-no" title="function not covered" >exportTypes(</span>) {
@@ -252,22 +336,52 @@ export class TypeSystem implements Printable {
 <span class="cstat-no" title="statement not covered" >    return result;</span>
   }
 &nbsp;
-  public <span class="fstat-no" title="function not covered" >importTypes&lt;</span>A extends TypeMap&gt;(
-    types: A,
+  public import(module: ModuleSchema): void {
+    const map: TypeMap = {};
+    for (const alias of module.keys) {
+      map[alias.key] = alias.value as Schema;
+    }
+    const expandObjFields = (aliasOfObj: string | ObjSchema): KeySchema[] =&gt; {
+      const obj = typeof aliasOfObj === 'string' ? (map[aliasOfObj] as ObjSchema) : aliasOfObj;
+      <span class="missing-if-branch" title="if path not taken" >I</span>if (!obj || obj.kind !== 'obj') <span class="cstat-no" title="statement not covered" >throw new Error('NO_OBJ');</span>
+      if (obj.extends) {
+        const uniqueFields: Map&lt;string, KeySchema&gt; = new Map();
+        for (const parent of obj.extends) {
+          const parentFields = expandObjFields(parent);
+          for (const field of parentFields) uniqueFields.set(field.key, field);
+        }
+        // biome-ignore lint: allow delete
+        delete obj.extends;
+        for (const field of obj.keys) uniqueFields.set(field.key, field);
+        obj.keys = [...uniqueFields.values()];
+      }
+      return obj.keys;
+    };
+    Walker.walk(module, {
+      onType: (type) =&gt; {
+        if (type.kind !== 'obj') return;
+        if (type.extends) expandObjFields(type);
+      },
+    });
+    this.importTypes(map);
+  }
+&nbsp;
+  public importTypes&lt;Aliases extends TypeMap&gt;(
+    aliases: Aliases,
   ): {
-    readonly [K in keyof A]: TypeAlias&lt;
+    readonly [K in keyof Aliases]: AliasType&lt;
       K extends string ? K : never,
       /** @todo Replace `any` by inferred type here. */ any
     &gt;;
   } {
-    const result = <span class="cstat-no" title="statement not covered" >{} as any;</span>
-<span class="cstat-no" title="statement not covered" >    for (const id in types) <span class="cstat-no" title="statement not covered" >result[id] = this.alias(id, this.t.import(types[id]));</span></span>
-<span class="cstat-no" title="statement not covered" >    return result;</span>
+    const result = {} as any;
+    for (const id in aliases) result[id] = this.alias(id, this.t.import(aliases[id]));
+    return result;
   }
 &nbsp;
   public toString(tab: string = '') {
     return (
-      'TypeSystem' +
+      'Module' +
       printTree(tab, [
         (tab) =&gt;
           'aliases' +
@@ -286,16 +400,16 @@ export class TypeSystem implements Printable {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-08T23:22:48.168Z
+                at 2025-08-09T20:56:51.405Z
             </div>
-        <script src="../../prettify.js"></script>
+        <script src="../../../../prettify.js"></script>
         <script>
             window.onload = function () {
                 prettyPrint();
             };
         </script>
-        <script src="../../sorter.js"></script>
-        <script src="../../block-navigation.js"></script>
+        <script src="../../../../sorter.js"></script>
+        <script src="../../../../block-navigation.js"></script>
     </body>
 </html>
     
