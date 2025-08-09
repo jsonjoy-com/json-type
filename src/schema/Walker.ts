@@ -15,6 +15,11 @@ export class Walker {
   public walk (type: Schema): void {
     const onType = this.opts.onType ?? ((type: Schema) => {});
     switch (type.kind) {
+      case 'key': {
+        onType(type);
+        this.walk(type.value as Schema);
+        break;
+      }
       case 'any':
       case 'con':
       case 'bool':
@@ -56,11 +61,6 @@ export class Walker {
         onType(type);
         this.walk(type.req as Schema);
         this.walk(type.res as Schema);
-        break;
-      }
-      case 'key': {
-        onType(type);
-        this.walk(type.value as Schema);
         break;
       }
       case 'module': {

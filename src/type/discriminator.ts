@@ -1,6 +1,6 @@
 import {ArrType, BoolType, ConType, NumType, type ObjKeyType, ObjType, StrType} from './classes';
 import type {Expr} from '@jsonjoy.com/json-expression';
-import type {RefType, Type} from './types';
+import type {OrType, RefType, Type} from './types';
 
 /**
  * Discriminator class for automatically identifying distinguishing patterns in
@@ -75,14 +75,21 @@ export class Discriminator {
   }
 
   public static createExpression(types: Type[]): Expr {
-    const length = types.length;
     const specifiers = new Set<string>();
+    const length = types.length;
+    const expanded: Type[] = [];
+    const expand = (type: Type): Type[] => {
+      if (type.kind() === 'ref') type = (type as RefType).resolve();
+      if (type.kind() === 'or')
+        return (type as OrType).types.flatMap((t: Type) => expand(t));
+      return [type];
+    };
+    for (let i = 0; i < length; i++) expanded.push(...expand(types[i]));
+    const expandedLength = expanded.length;
     const discriminators: Discriminator[] = [];
-    // TODO: expand all "or" types...
-    for (let i = 1; i < length; i++) {
-      const type = types[i];
-      const resolved = type.kind() === 'ref' ? (type as RefType).resolve() : type;
-      const d = Discriminator.find(resolved);
+    for (let i = 1; i < expandedLength; i++) {
+      const type = expanded[i];
+      const d = Discriminator.find(type);
       const specifier = d.toSpecifier();
       if (specifiers.has(specifier)) throw new Error('Duplicate discriminator: ' + specifier);
       specifiers.add(specifier);
