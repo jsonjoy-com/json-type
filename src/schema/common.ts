@@ -18,13 +18,13 @@ export interface Display {
   description?: string;
 }
 
-/**
- * Something that can be identified by a string. So it can be registered
- * in a registry and then referenced by ID.
- */
-export interface Identifiable {
-  /**
-   * Unique ID of something, i.e. a name, symbol, etc.
-   */
-  id: string;
-}
+// /**
+//  * Something that can be identified by a string. So it can be registered
+//  * in a registry and then referenced by ID.
+//  */
+// export interface Identifiable {
+//   /**
+//    * Unique ID of something, i.e. a name, symbol, etc.
+//    */
+//   id: string;
+// }

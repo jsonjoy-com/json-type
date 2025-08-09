@@ -50,30 +50,23 @@ export class SchemaBuilder {
     return this.Function$(this.any, this.any);
   }
 
-  public Boolean(id: string, options?: Omit<_.NoT<_.BoolSchema>, 'id'>): _.BoolSchema;
-  public Boolean(options?: _.NoT<_.BoolSchema>): _.BoolSchema;
-  public Boolean(a?: string | _.NoT<_.BoolSchema>, b?: _.NoT<_.BoolSchema> | void): _.BoolSchema {
-    if (typeof a === 'string') return this.Boolean({id: a, ...(b || {})});
-    return {kind: 'bool', ...(a || {})};
+  public Boolean(options?: _.NoT<_.BoolSchema>): _.BoolSchema {
+    return {...options, kind: 'bool'};
   }
 
   public Number(options?: _.NoT<_.NumSchema>): _.NumSchema {
-    return {kind: 'num', ...options};
+    return {...options, kind: 'num'};
   }
 
-  public String(id: string, options?: _.NoT<_.StrSchema>): _.StrSchema;
-  public String(options?: _.NoT<_.StrSchema>): _.StrSchema;
-  public String(a?: string | _.NoT<_.StrSchema>, b?: _.NoT<_.StrSchema>): _.StrSchema {
-    if (typeof a === 'string') return this.String({id: a, ...(b || {})});
-    return {kind: 'str', ...(a || {})};
+  public String(options?: _.NoT<_.StrSchema>): _.StrSchema {
+    return {...options, kind: 'str'};
   }
 
-  // public Binary<T extends Schema>(options: Optional<BinarySchema<T>> & Pick<BinarySchema<T>, 'type'>): BinarySchema<T>;
   public Binary<T extends _.Schema>(type: T, options: _.Optional<Omit<_.BinSchema, 'type'>> = {}): _.BinSchema<T> {
     return {
+      ...options,
       kind: 'bin',
       type,
-      ...options,
     };
   }
 
@@ -90,8 +83,8 @@ export class SchemaBuilder {
   ): _.ArrSchema<T, [], []> {
     if (typeof a === 'string') return this.Array(b as T, {id: a, ...(c || {})});
     return {
-      kind: 'arr',
       ...(b as Omit<_.NoT<_.ArrSchema<T>>, 'id' | 'type'>),
+      kind: 'arr',
       type: a as T,
     };
   }
@@ -112,7 +105,7 @@ export class SchemaBuilder {
   ): _.ConSchema<
     string extends V ? never : number extends V ? never : boolean extends V ? never : any[] extends V ? never : V
   > {
-    return {kind: 'con', value: value as any, ...options};
+    return {...options, kind: 'con', value: value as any};
   }
 
   public Tuple<const Head extends _.Schema[], T extends _.Schema = _.Schema, const Tail extends [] | _.Schema[] = []>(
@@ -162,10 +155,10 @@ export class SchemaBuilder {
     options: Omit<_.NoT<_.KeySchema<K, V>>, 'key' | 'value' | 'optional'> = {},
   ): _.KeySchema<K, V> {
     return {
+      ...options,
       kind: 'key',
       key,
       value,
-      ...options,
     };
   }
 
@@ -176,10 +169,10 @@ export class SchemaBuilder {
     options: Omit<_.NoT<_.KeySchema<K, V>>, 'key' | 'value' | 'optional'> = {},
   ): _.OptKeySchema<K, V> {
     return {
+      ...options,
       kind: 'key',
       key,
       value,
-      ...options,
       optional: true,
     };
   }
@@ -189,18 +182,19 @@ export class SchemaBuilder {
     key?: K,
     options?: Omit<_.NoT<_.MapSchema<V, K>>, 'value' | 'key'>,
   ): _.MapSchema<V, K> {
-    return {kind: 'map', value, ...(key && {key}), ...options};
+    return {...(key && {key}), ...options, kind: 'map', value};
   }
 
   public Any(options: _.NoT<_.AnySchema> = {}): _.AnySchema {
     return {
-      kind: 'any',
       ...options,
+      kind: 'any',
     };
   }
 
-  public Ref<T extends _.TType = any>(ref: string): _.RefSchema<T> {
+  public Ref<T extends _.SchemaBase = any>(ref: string, options: Omit<_.NoT<_.RefSchema>, 'ref'> = {}): _.RefSchema<T> {
     return {
+      ...options,
       kind: 'ref',
       ref: ref as string & T,
     };
@@ -214,16 +208,18 @@ export class SchemaBuilder {
     };
   }
 
-  public Function<Req extends _.Schema, Res extends _.Schema>(req: Req, res: Res): _.FnSchema<Req, Res> {
+  public Function<Req extends _.Schema, Res extends _.Schema>(req: Req, res: Res, options: Omit<_.NoT<_.FnSchema>, 'req' | 'res'> = {}): _.FnSchema<Req, Res> {
     return {
+      ...options,
       kind: 'fn',
       req,
       res,
     };
   }
 
-  public Function$<Req extends _.Schema, Res extends _.Schema>(req: Req, res: Res): _.FnStreamingSchema<Req, Res> {
+  public Function$<Req extends _.Schema, Res extends _.Schema>(req: Req, res: Res, options: Omit<_.NoT<_.FnRxSchema>, 'req' | 'res'> = {}): _.FnRxSchema<Req, Res> {
     return {
+      ...options,
       kind: 'fn$',
       req,
       res,

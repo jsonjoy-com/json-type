@@ -56,7 +56,7 @@ function getBaseJsonSchema(type: AbsType<any>, ctx?: TypeExportContext): JsonSch
   if (typeSchema.title) jsonSchema.title = typeSchema.title;
   if (typeSchema.description) jsonSchema.description = typeSchema.description;
   if (typeSchema.examples) {
-    jsonSchema.examples = typeSchema.examples.map((example: schema.TExample) => example.value);
+    jsonSchema.examples = typeSchema.examples.map((example: schema.SchemaExample) => example.value);
   }
 
   return jsonSchema;

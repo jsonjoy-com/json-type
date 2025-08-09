@@ -1,5 +1,5 @@
 import type {Display} from './common';
-import type {TExample, TType, Schema, ObjSchema} from './schema';
+import type {SchemaExample, SchemaBase, Schema, ObjSchema} from './schema';
 
 const validateDisplay = ({title, description, intro}: Display): void => {
   if (title !== undefined && typeof title !== 'string') throw new Error('INVALID_TITLE');
@@ -7,14 +7,14 @@ const validateDisplay = ({title, description, intro}: Display): void => {
   if (intro !== undefined && typeof intro !== 'string') throw new Error('INVALID_INTRO');
 };
 
-const validateTExample = (example: TExample): void => {
+const validateTExample = (example: SchemaExample): void => {
   validateDisplay(example);
 };
 
-export const validateTType = (tType: TType, kind: string): void => {
+export const validateTType = (tType: SchemaBase, kind: string): void => {
   validateDisplay(tType);
-  const {id} = tType;
-  if (id !== undefined && typeof id !== 'string') throw new Error('INVALID_ID');
+  // const {id} = tType;
+  // if (id !== undefined && typeof id !== 'string') throw new Error('INVALID_ID');
   if (tType.kind !== kind) throw new Error('INVALID_TYPE');
   const {examples} = tType;
   if (examples) {

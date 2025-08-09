@@ -1,9 +1,9 @@
 import type {Observable} from 'rxjs';
 import type {Mutable} from '@jsonjoy.com/util/lib/types';
-import type {Display, Identifiable} from './common';
+import type {Display} from './common';
 import type {Expr} from '@jsonjoy.com/json-expression';
 
-export interface TType<Value = unknown> extends Display, Partial<Identifiable> {
+export interface SchemaBase<Value = unknown> extends Display {
   /**
    * The type of the JSON Type node.
    */
@@ -26,7 +26,7 @@ export interface TType<Value = unknown> extends Display, Partial<Identifiable> {
   /**
    * List of example usages of this type.
    */
-  examples?: TExample<Value>[];
+  examples?: SchemaExample<Value>[];
 
   /**
    * A flag that indicates that this type is deprecated. When a type is
@@ -38,14 +38,20 @@ export interface TType<Value = unknown> extends Display, Partial<Identifiable> {
      * A message that explains why the type is deprecated, and what to use
      * instead.
      */
-    description?: string;
+    info?: string;
   };
+
+  /**
+   * Custom metadata that can be attached to the type. This is useful for
+   * documentation generation, and for custom code generators.
+   */
+  metadata?: Record<string, unknown>;
 }
 
 /**
  * An example of how a value of a given type could look like.
  */
-export interface TExample<Value = unknown> extends Display {
+export interface SchemaExample<Value = unknown> extends Display {
   value: Value;
 }
 
@@ -63,14 +69,8 @@ export interface TExample<Value = unknown> extends Display {
  * }
  * ```
  */
-export interface AnySchema extends TType<unknown> {
+export interface AnySchema extends SchemaBase<unknown> {
   kind: 'any';
-
-  /**
-   * Custom metadata that can be attached to the type. This is useful for
-   * documentation generation, and for custom code generators.
-   */
-  metadata?: Record<string, unknown>;
 }
 
 /**
@@ -83,7 +83,7 @@ export interface AnySchema extends TType<unknown> {
  * }
  * ```
  */
-export interface ConSchema<V = any> extends TType {
+export interface ConSchema<V = any> extends SchemaBase {
   kind: 'con';
   /** The value. */
   value: V;
@@ -103,7 +103,7 @@ export interface ConSchema<V = any> extends TType {
  * }
  * ```
  */
-export interface BoolSchema extends TType<boolean> {
+export interface BoolSchema extends SchemaBase<boolean> {
   kind: 'bool';
 }
 
@@ -121,7 +121,7 @@ export interface BoolSchema extends TType<boolean> {
  * }
  * ```
  */
-export interface NumSchema extends TType<number> {
+export interface NumSchema extends SchemaBase<number> {
   kind: 'num';
 
   /**
@@ -172,7 +172,7 @@ export interface NumSchema extends TType<number> {
  * }
  * ```
  */
-export interface StrSchema extends TType<string> {
+export interface StrSchema extends SchemaBase<string> {
   kind: 'str';
 
   /**
@@ -224,7 +224,7 @@ export interface StrSchema extends TType<string> {
  * }
  * ```
  */
-export interface BinSchema<T extends TType = any> extends TType {
+export interface BinSchema<T extends SchemaBase = any> extends SchemaBase {
   kind: 'bin';
 
   /** Type of value encoded in the binary data. */
@@ -256,8 +256,8 @@ export interface BinSchema<T extends TType = any> extends TType {
  * }
  * ```
  */
-export interface ArrSchema<T extends TType = any, Head extends TType[] = any, Tail extends TType[] = any>
-  extends TType<Array<unknown>> {
+export interface ArrSchema<T extends SchemaBase = any, Head extends SchemaBase[] = any, Tail extends SchemaBase[] = any>
+  extends SchemaBase<Array<unknown>> {
   kind: 'arr';
   /** One or more "one-of" types that array contains. */
   type?: T;
@@ -301,8 +301,8 @@ export interface ArrSchema<T extends TType = any, Head extends TType[] = any, Ta
  * }
  * ```
  */
-export interface ObjSchema<Keys extends KeySchema<string, TType>[] | readonly KeySchema<string, TType>[] = any>
-  extends TType<object> {
+export interface ObjSchema<Keys extends KeySchema<string, SchemaBase>[] | readonly KeySchema<string, SchemaBase>[] = any>
+  extends SchemaBase<object> {
   kind: 'obj';
 
   /**
@@ -311,6 +311,16 @@ export interface ObjSchema<Keys extends KeySchema<string, TType>[] | readonly Ke
    * that the order of keys is consistent when generating documentation or code.
    */
   keys: Keys;
+
+  /**
+   * List of types this object extends. When this type is used as part of the
+   * module, the `extends` field is used to determine which other type aliases
+   * this type extends. The other type alias MUST be of `obj` kind. An object
+   * can extend multiple other types. The fields of the extended types are
+   * deeply copied into this type, in order specified by the `extends` array:
+   * first type in the array is copied first, then the second, and so on.
+   */
+  extends?: string[];
 
   /**
    * Whether the object may have keys that are not explicitly defined in the
@@ -337,7 +347,7 @@ export interface ObjSchema<Keys extends KeySchema<string, TType>[] | readonly Ke
  *
  * @todo Rename to `key`.
  */
-export interface KeySchema<K extends string = string, V extends TType = TType> extends TType<[K, V]>, Display {
+export interface KeySchema<K extends string = string, V extends SchemaBase = SchemaBase> extends SchemaBase<[K, V]>, Display {
   kind: 'key';
   /** Key name of the field. */
   key: K;
@@ -350,7 +360,7 @@ export interface KeySchema<K extends string = string, V extends TType = TType> e
   optional?: boolean;
 }
 
-export interface OptKeySchema<K extends string = string, V extends TType = TType> extends KeySchema<K, V> {
+export interface OptKeySchema<K extends string = string, V extends SchemaBase = SchemaBase> extends KeySchema<K, V> {
   optional: true;
 }
 
@@ -358,7 +368,7 @@ export interface OptKeySchema<K extends string = string, V extends TType = TType
  * Represents an object, which is treated as a map. All keys are strings and all
  * values are of the same type.
  */
-export interface MapSchema<V extends TType = any, K extends TType = any> extends TType<Record<string, unknown>> {
+export interface MapSchema<V extends SchemaBase = any, K extends SchemaBase = any> extends SchemaBase<Record<string, unknown>> {
   kind: 'map';
   /**
    * Type of all keys in the map. Defaults to string type.
@@ -373,7 +383,7 @@ export interface MapSchema<V extends TType = any, K extends TType = any> extends
 /**
  * Reference to another type.
  */
-export interface RefSchema<T extends TType = TType> extends TType {
+export interface RefSchema<T extends SchemaBase = SchemaBase> extends SchemaBase {
   kind: 'ref';
 
   /** ID of the type it references. */
@@ -383,7 +393,7 @@ export interface RefSchema<T extends TType = TType> extends TType {
 /**
  * Represents a type that is one of a set of types.
  */
-export interface OrSchema<T extends TType[] = TType[]> extends TType {
+export interface OrSchema<T extends SchemaBase[] = SchemaBase[]> extends SchemaBase {
   kind: 'or';
 
   /** One or more "one-of" types. */
@@ -394,7 +404,7 @@ export interface OrSchema<T extends TType[] = TType[]> extends TType {
 
 export type FunctionValue<Req, Res, Ctx = unknown> = (req: Req, ctx?: Ctx) => Res | Promise<Res>;
 
-export interface FnSchema<Req extends TType = TType, Res extends TType = TType, Ctx = unknown> extends TType {
+export interface FnSchema<Req extends SchemaBase = SchemaBase, Res extends SchemaBase = SchemaBase, Ctx = unknown> extends SchemaBase {
   kind: 'fn';
   req: Req;
   res: Res;
@@ -403,7 +413,7 @@ export interface FnSchema<Req extends TType = TType, Res extends TType = TType, 
 
 export type FnStreamingValue<Req, Res, Ctx = unknown> = (req: Observable<Req>, ctx?: Ctx) => Observable<Res>;
 
-export interface FnStreamingSchema<Req extends TType = TType, Res extends TType = TType, Ctx = unknown> extends TType {
+export interface FnRxSchema<Req extends SchemaBase = SchemaBase, Res extends SchemaBase = SchemaBase, Ctx = unknown> extends SchemaBase {
   /** @todo Rename to `fn`. Make it a property on the schema instead. */
   kind: 'fn$';
   req: Req;
@@ -437,9 +447,9 @@ export type JsonSchema =
   | OptKeySchema
   | MapSchema;
 
-export type Schema = JsonSchema | RefSchema | OrSchema | AnySchema | FnSchema | FnStreamingSchema;
+export type Schema = JsonSchema | RefSchema | OrSchema | AnySchema | FnSchema | FnRxSchema;
 
-export type NoT<T extends TType> = Omit<T, 'kind'>;
+export type NoT<T extends SchemaBase> = Omit<T, 'kind'>;
 
 export type TypeOf<T> = T extends OrSchema<any>
   ? TypeOfValue<T['types'][number]>
@@ -471,7 +481,7 @@ export type TypeOfValue<T> = T extends BoolSchema
                 ? Uint8Array
                 : T extends FnSchema<infer Req, infer Res, infer Ctx>
                   ? (req: TypeOf<Req>, ctx: Ctx) => UndefToVoid<TypeOf<Res>> | Promise<UndefToVoid<TypeOf<Res>>>
-                  : T extends FnStreamingSchema<infer Req, infer Res, infer Ctx>
+                  : T extends FnRxSchema<infer Req, infer Res, infer Ctx>
                     ? (req$: Observable<TypeOf<Req>>, ctx: Ctx) => Observable<UndefToVoid<TypeOf<Res>>>
                     : never;
 

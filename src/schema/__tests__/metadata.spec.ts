@@ -25,7 +25,7 @@ describe('deprecations', () => {
   test('can deprecate a type with a message', () => {
     const schema = s.String('validator', {
       deprecated: {
-        description: 'Use the new type',
+        info: 'Use the new type',
       },
     });
     expect(schema).toEqual({

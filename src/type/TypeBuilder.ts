@@ -233,7 +233,7 @@ export class TypeBuilder {
   public Function$<Req extends Type, Res extends Type, Ctx = unknown>(
     req: Req,
     res: Res,
-    options?: schema.Optional<schema.FnStreamingSchema>,
+    options?: schema.Optional<schema.FnRxSchema>,
   ) {
     return new classes.FnRxType<Req, Res, Ctx>(req, res, options).sys(this.system);
   }

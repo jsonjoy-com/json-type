@@ -76,14 +76,14 @@ export class FnType<Req extends Type, Res extends Type, Ctx = unknown> extends A
 }
 
 export class FnRxType<Req extends Type, Res extends Type, Ctx = unknown> extends AbsType<
-  schema.FnStreamingSchema<SchemaOf<Req>, SchemaOf<Res>, Ctx>
+  schema.FnRxSchema<SchemaOf<Req>, SchemaOf<Res>, Ctx>
 > {
   public readonly isStreaming = true;
 
   constructor(
     public readonly req: Req,
     public readonly res: Res,
-    options?: schema.Optional<schema.FnStreamingSchema<SchemaOf<Req>, SchemaOf<Res>>>,
+    options?: schema.Optional<schema.FnRxSchema<SchemaOf<Req>, SchemaOf<Res>>>,
   ) {
     super({
       ...options,
@@ -109,7 +109,7 @@ export class FnRxType<Req extends Type, Res extends Type, Ctx = unknown> extends
     return this.response(res);
   }
 
-  public getSchema(): schema.FnStreamingSchema<SchemaOf<Req>, SchemaOf<Res>, Ctx> {
+  public getSchema(): schema.FnRxSchema<SchemaOf<Req>, SchemaOf<Res>, Ctx> {
     return {
       ...this.schema,
       req: this.req.getSchema() as SchemaOf<Req>,
