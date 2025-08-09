@@ -3,10 +3,16 @@ import {AliasType} from '../AliasType';
 import {printTree} from 'tree-dump/lib/printTree';
 import type {RefType} from '../RefType';
 import type {Printable} from 'tree-dump/lib/types';
-import type {TypeMap} from '../../../schema';
+import type {KeySchema, ModuleSchema, ObjSchema, Schema, TypeMap} from '../../../schema';
 import type {Type} from '../../../type';
 
 export class ModuleType implements Printable {
+  public static readonly from = (module: ModuleSchema): ModuleType => {
+    const type = new ModuleType();
+    type.import(module);
+    return type;
+  };
+
   public readonly t = new TypeBuilder(this);
 
   public readonly aliases: Map<string, AliasType<string, any>> = new Map();
@@ -44,16 +50,77 @@ export class ModuleType implements Printable {
     return result;
   }
 
-  public importTypes<A extends TypeMap>(
-    types: A,
+  public import(module: ModuleSchema): void {
+    const map: TypeMap = {};
+    for (const alias of module.keys) {
+      map[alias.key] = alias.value as Schema;
+    }
+    const expandObjFields = (aliasOfObj: string | ObjSchema): KeySchema[] => {
+      const obj = typeof aliasOfObj === 'string' ? map[aliasOfObj] as ObjSchema : aliasOfObj;
+      if (!obj || obj.kind !== 'obj') throw new Error('NO_OBJ');
+      if (obj.extends) {
+        const uniqueFields: Map<string, KeySchema> = new Map();
+        for (const parent of obj.extends) {
+          const parentFields = expandObjFields(parent);
+          for (const field of parentFields) uniqueFields.set(field.key, field);
+        }
+        delete obj.extends;
+        for (const field of obj.keys) uniqueFields.set(field.key, field);
+        obj.keys = [...uniqueFields.values()];
+      }
+      return obj.keys;
+    };
+    const visitedRefs: Set<string> = new Set();
+    const extendFields = (node: Schema) => {
+      if (!node) throw new Error('Node is undefined');
+      switch (node.kind) {
+        case 'obj': {
+          if (node.extends) expandObjFields(node);
+          for (const key of node.keys) extendFields(key.value);
+          break;
+        }
+        case 'map': {
+          extendFields(node.value);
+          break;
+        }
+        case 'arr': {
+          if (node.head) for (const item of node.head) extendFields(item);
+          if (node.type) extendFields(node.type);
+          if (node.tail) for (const item of node.tail) extendFields(item);
+          break;
+        }
+        case 'ref': {
+          const ref = node.ref;
+          if (visitedRefs.has(ref)) return;
+          visitedRefs.add(ref);
+          const type = map[node.ref];
+          extendFields(type);
+          break;
+        }
+        case 'or': {
+          for (const type of node.types) extendFields(type as Schema);
+          break;
+        }
+        case 'module': {
+          for (const type of node.keys) extendFields(type.value as Schema);
+          break;
+        }
+      }
+    };
+    extendFields(module);
+    this.importTypes(map);
+  }
+
+  public importTypes<Aliases extends TypeMap>(
+    aliases: Aliases,
   ): {
-    readonly [K in keyof A]: AliasType<
+    readonly [K in keyof Aliases]: AliasType<
       K extends string ? K : never,
       /** @todo Replace `any` by inferred type here. */ any
     >;
   } {
     const result = {} as any;
-    for (const id in types) result[id] = this.alias(id, this.t.import(types[id]));
+    for (const id in aliases) result[id] = this.alias(id, this.t.import(aliases[id]));
     return result;
   }
 

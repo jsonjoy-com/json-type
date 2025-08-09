@@ -66,7 +66,7 @@ export const module: ModuleSchema = {
         {kind: 'key', key: 'kind', value: {kind: 'con', value: 'num'} as ConSchema<'num'>},
         {kind: 'key', key: 'format', optional: true, value: {
           kind: 'or',
-          discriminator: '' as any,
+          discriminator: ['num', -1],
           types: [
             {kind: 'con', value: 'i'} as ConSchema<'i'>,
             {kind: 'con', value: 'u'} as ConSchema<'u'>,
@@ -96,7 +96,7 @@ export const module: ModuleSchema = {
         {kind: 'key', key: 'kind', value: {kind: 'con', value: 'str'} as ConSchema<'str'>},
         {kind: 'key', key: 'format', optional: true, value: {
           kind: 'or',
-          discriminator: '' as any,
+          discriminator: ['num', -1],
           types: [
             {kind: 'con', value: 'ascii'} as ConSchema<'ascii'>,
             {kind: 'con', value: 'utf8'} as ConSchema<'utf8'>,
@@ -116,7 +116,7 @@ export const module: ModuleSchema = {
         {kind: 'key', key: 'type', value: {kind: 'ref', ref: 'Schema'}},
         {kind: 'key', key: 'format', optional: true, value: {
           kind: 'or',
-          discriminator: '' as any,
+          discriminator: ['num', -1],
           types: [
             {kind: 'con', value: 'json'} as ConSchema<'json'>,
             {kind: 'con', value: 'cbor'} as ConSchema<'cbor'>,

@@ -258,13 +258,11 @@ export class TypeBuilder {
         );
       }
       case 'obj': {
-        return this.Object(
-          ...node.keys.map((f: any) =>
-            f.optional
-              ? this.propOpt(f.key, this.import(f.value)).options(f)
-              : this.prop(f.key, this.import(f.value)).options(f),
-          ),
-        ).options(node);
+        const fields = node.keys.map((f: any) =>
+          f.optional
+            ? this.propOpt(f.key, this.import(f.value)).options(f)
+            : this.prop(f.key, this.import(f.value)).options(f));
+        return this.Object(...fields).options(node);
       }
       case 'map':
         return this.Map(this.import(node.value), node.key ? this.import(node.key) : undefined, node);

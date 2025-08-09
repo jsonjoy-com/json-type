@@ -425,7 +425,7 @@ export interface AliasSchema extends KeySchema {
   pub?: boolean;
 }
 
-export interface ModuleSchema<Aliases extends AliasSchema[] = AliasSchema[]> {
+export interface ModuleSchema<Aliases extends AliasSchema[] = AliasSchema[]> extends SchemaBase {
   kind: 'module';
   keys: Aliases;
 }
@@ -447,7 +447,7 @@ export type JsonSchema =
   | OptKeySchema
   | MapSchema;
 
-export type Schema = JsonSchema | RefSchema | OrSchema | AnySchema | FnSchema | FnRxSchema;
+export type Schema = JsonSchema | RefSchema | OrSchema | AnySchema | FnSchema | FnRxSchema | AliasSchema | ModuleSchema;
 
 export type NoT<T extends SchemaBase> = Omit<T, 'kind'>;
 
