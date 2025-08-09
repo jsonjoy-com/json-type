@@ -1,9 +1,6 @@
 import * as schema from '../schema';
 import * as classes from './classes';
-import type {Type} from './types';
-import type {TypeSystem} from '../system/TypeSystem';
-import type {TypeAlias} from '../system/TypeAlias';
-import type {TypeOfAlias} from '../system/types';
+import type {Type, TypeOfAlias} from './types';
 
 const {s} = schema;
 
@@ -25,7 +22,7 @@ type RecordToFields<O extends Record<string, Type>> = ObjValueTuple<{
 }>;
 
 export class TypeBuilder {
-  constructor(public system?: TypeSystem) {}
+  constructor(public system?: classes.ModuleType) {}
 
   // -------------------------------------------------------------- empty types
 
@@ -218,7 +215,7 @@ export class TypeBuilder {
     return new classes.OrType<F>(types).sys(this.system);
   }
 
-  public Ref<T extends Type | TypeAlias<any, any>>(ref: string) {
+  public Ref<T extends Type | classes.AliasType<any, any>>(ref: string) {
     return new classes.RefType<TypeOfAlias<T>>(ref).sys(this.system);
   }
 
@@ -233,7 +230,7 @@ export class TypeBuilder {
   public Function$<Req extends Type, Res extends Type, Ctx = unknown>(
     req: Req,
     res: Res,
-    options?: schema.Optional<schema.FnStreamingSchema>,
+    options?: schema.Optional<schema.FnRxSchema>,
   ) {
     return new classes.FnRxType<Req, Res, Ctx>(req, res, options).sys(this.system);
   }
@@ -260,13 +257,12 @@ export class TypeBuilder {
         );
       }
       case 'obj': {
-        return this.Object(
-          ...node.keys.map((f: any) =>
-            f.optional
-              ? this.propOpt(f.key, this.import(f.value)).options(f)
-              : this.prop(f.key, this.import(f.value)).options(f),
-          ),
-        ).options(node);
+        const fields = node.keys.map((f: any) =>
+          f.optional
+            ? this.propOpt(f.key, this.import(f.value)).options(f)
+            : this.prop(f.key, this.import(f.value)).options(f),
+        );
+        return this.Object(...fields).options(node);
       }
       case 'map':
         return this.Map(this.import(node.value), node.key ? this.import(node.key) : undefined, node);

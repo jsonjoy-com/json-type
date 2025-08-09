@@ -1,7 +1,7 @@
 import {maxEncodingCapacity} from '@jsonjoy.com/util/lib/json-size';
 import {CapacityEstimatorCodegen} from '../CapacityEstimatorCodegen';
 import {t} from '../../../type';
-import {TypeSystem} from '../../../system';
+import {ModuleType} from '../../../type/classes/ModuleType';
 
 describe('"any" type', () => {
   test('returns the same result as maxEncodingCapacity()', () => {
@@ -14,7 +14,7 @@ describe('"any" type', () => {
 
 describe('"con" type', () => {
   test('returns exactly the same size as maxEncodingCapacity()', () => {
-    const system = new TypeSystem();
+    const system = new ModuleType();
     const type = system.t.Const({foo: [123]});
     const estimator = CapacityEstimatorCodegen.get(type);
     expect(estimator(null)).toBe(maxEncodingCapacity({foo: [123]}));
@@ -23,7 +23,7 @@ describe('"con" type', () => {
 
 describe('"nil" type', () => {
   test('returns exactly the same size as maxEncodingCapacity()', () => {
-    const system = new TypeSystem();
+    const system = new ModuleType();
     const type = system.t.nil;
     const estimator = CapacityEstimatorCodegen.get(type);
     expect(estimator(null)).toBe(maxEncodingCapacity(null));
@@ -32,7 +32,7 @@ describe('"nil" type', () => {
 
 describe('"bool" type', () => {
   test('returns 5', () => {
-    const system = new TypeSystem();
+    const system = new ModuleType();
     const type = system.t.bool;
     const estimator = CapacityEstimatorCodegen.get(type);
     expect(estimator(null)).toBe(5);
@@ -41,7 +41,7 @@ describe('"bool" type', () => {
 
 describe('"num" type', () => {
   test('returns 22', () => {
-    const system = new TypeSystem();
+    const system = new ModuleType();
     const type = system.t.num;
     const estimator = CapacityEstimatorCodegen.get(type);
     expect(estimator(null)).toBe(22);
@@ -50,14 +50,14 @@ describe('"num" type', () => {
 
 describe('"str" type', () => {
   test('empty string', () => {
-    const system = new TypeSystem();
+    const system = new ModuleType();
     const type = system.t.str;
     const estimator = CapacityEstimatorCodegen.get(type);
     expect(estimator('')).toBe(maxEncodingCapacity(''));
   });
 
   test('short string', () => {
-    const system = new TypeSystem();
+    const system = new ModuleType();
     const type = system.t.str;
     const estimator = CapacityEstimatorCodegen.get(type);
     expect(estimator('asdf')).toBe(maxEncodingCapacity('asdf'));
@@ -66,14 +66,14 @@ describe('"str" type', () => {
 
 describe('"bin" type', () => {
   test('empty', () => {
-    const system = new TypeSystem();
+    const system = new ModuleType();
     const type = system.t.bin;
     const estimator = CapacityEstimatorCodegen.get(type);
     expect(estimator(new Uint8Array())).toBe(maxEncodingCapacity(new Uint8Array()));
   });
 
   test('small buffer', () => {
-    const system = new TypeSystem();
+    const system = new ModuleType();
     const type = system.t.bin;
     const estimator = CapacityEstimatorCodegen.get(type);
     expect(estimator(new Uint8Array([1, 2, 3]))).toBe(maxEncodingCapacity(new Uint8Array([1, 2, 3])));
@@ -88,49 +88,49 @@ describe('"arr" type', () => {
   });
 
   test('simple elements', () => {
-    const system = new TypeSystem();
+    const system = new ModuleType();
     const type = system.t.arr;
     const estimator = CapacityEstimatorCodegen.get(type);
     expect(estimator([1, true, 'asdf'])).toBe(maxEncodingCapacity([1, true, 'asdf']));
   });
 
   test('typed array, optimizes computation', () => {
-    const system = new TypeSystem();
+    const system = new ModuleType();
     const type = system.t.Array(system.t.num);
     const estimator = CapacityEstimatorCodegen.get(type);
     expect(estimator([1, 2, 3])).toBe(maxEncodingCapacity([1, 2, 3]));
   });
 
   test('array of strings', () => {
-    const system = new TypeSystem();
+    const system = new ModuleType();
     const type = system.t.Array(system.t.str);
     const estimator = CapacityEstimatorCodegen.get(type);
     expect(estimator(['a', 'asdf'])).toBe(maxEncodingCapacity(['a', 'asdf']));
   });
 
   test('empty', () => {
-    const system = new TypeSystem();
+    const system = new ModuleType();
     const type = system.t.tuple();
     const estimator = CapacityEstimatorCodegen.get(type);
     expect(estimator([])).toBe(maxEncodingCapacity([]));
   });
 
   test('two elements', () => {
-    const system = new TypeSystem();
+    const system = new ModuleType();
     const type = system.t.tuple(system.t.num, system.t.str);
     const estimator = CapacityEstimatorCodegen.get(type);
     expect(estimator([1, 'asdf'])).toBe(maxEncodingCapacity([1, 'asdf']));
   });
 
   test('head 2-tuple', () => {
-    const system = new TypeSystem();
+    const system = new ModuleType();
     const type = system.t.Tuple([t.Const('abc'), t.Const('xxxxxxxxx')], t.num);
     const estimator = CapacityEstimatorCodegen.get(type);
     expect(estimator(['abc', 'xxxxxxxxx', 1])).toBe(maxEncodingCapacity(['abc', 'xxxxxxxxx', 1]));
   });
 
   test('tail 2-tuple', () => {
-    const system = new TypeSystem();
+    const system = new ModuleType();
     const type = system.t.Array(t.num).tail(t.str, t.str);
     const estimator = CapacityEstimatorCodegen.get(type);
     expect(estimator([1, 'abc', 'xxxxxxxxx'])).toBe(maxEncodingCapacity([1, 'abc', 'xxxxxxxxx']));
@@ -139,28 +139,28 @@ describe('"arr" type', () => {
 
 describe('"obj" type', () => {
   test('empty', () => {
-    const system = new TypeSystem();
+    const system = new ModuleType();
     const type = system.t.obj;
     const estimator = CapacityEstimatorCodegen.get(type);
     expect(estimator(123)).toBe(maxEncodingCapacity({}));
   });
 
   test('object with unknown fields', () => {
-    const system = new TypeSystem();
+    const system = new ModuleType();
     const type = system.t.obj.options({encodeUnknownKeys: true});
     const estimator = CapacityEstimatorCodegen.get(type);
     expect(estimator({foo: 'bar'})).toBe(maxEncodingCapacity({foo: 'bar'}));
   });
 
   test('one required key', () => {
-    const system = new TypeSystem();
+    const system = new ModuleType();
     const type = system.t.Object(system.t.prop('abc', system.t.str));
     const estimator = CapacityEstimatorCodegen.get(type);
     expect(estimator({abc: 'foo'})).toBe(maxEncodingCapacity({abc: 'foo'}));
   });
 
   test('one required and one optional keys', () => {
-    const system = new TypeSystem();
+    const system = new ModuleType();
     const type = system.t.Object(system.t.prop('abc', system.t.str), system.t.propOpt('key', system.t.num));
     const estimator = CapacityEstimatorCodegen.get(type);
     expect(estimator({abc: 'foo', key: 111})).toBe(maxEncodingCapacity({abc: 'foo', key: 111}));
@@ -169,21 +169,21 @@ describe('"obj" type', () => {
 
 describe('"map" type', () => {
   test('empty', () => {
-    const system = new TypeSystem();
+    const system = new ModuleType();
     const type = system.t.map;
     const estimator = CapacityEstimatorCodegen.get(type);
     expect(estimator(123)).toBe(maxEncodingCapacity({}));
   });
 
   test('with one field', () => {
-    const system = new TypeSystem();
+    const system = new ModuleType();
     const type = system.t.Map(system.t.bool);
     const estimator = CapacityEstimatorCodegen.get(type);
     expect(estimator({foo: true})).toBe(maxEncodingCapacity({foo: true}));
   });
 
   test('three number fields', () => {
-    const system = new TypeSystem();
+    const system = new ModuleType();
     const type = system.t.Map(system.t.num);
     const estimator = CapacityEstimatorCodegen.get(type);
     const data = {foo: 1, bar: 2, baz: 3};
@@ -191,7 +191,7 @@ describe('"map" type', () => {
   });
 
   test('nested maps', () => {
-    const system = new TypeSystem();
+    const system = new ModuleType();
     const type = system.t.Map(system.t.Map(system.t.str));
     const estimator = CapacityEstimatorCodegen.get(type);
     const data = {foo: {bar: 'baz'}, baz: {bar: 'foo'}};
@@ -201,7 +201,7 @@ describe('"map" type', () => {
 
 describe('"ref" type', () => {
   test('two hops', () => {
-    const system = new TypeSystem();
+    const system = new ModuleType();
     system.alias('Id', system.t.str);
     system.alias('User', system.t.Object(system.t.prop('id', system.t.Ref('Id')), system.t.prop('name', system.t.str)));
     const type = system.t.Ref('User');
@@ -213,7 +213,7 @@ describe('"ref" type', () => {
 
 describe('"or" type', () => {
   test('empty', () => {
-    const system = new TypeSystem();
+    const system = new ModuleType();
     const type = system.t.Or(system.t.str, system.t.arr).options({
       discriminator: [
         'if',
@@ -229,7 +229,7 @@ describe('"or" type', () => {
 });
 
 test('add circular reference test', () => {
-  const system = new TypeSystem();
+  const system = new ModuleType();
   const {t} = system;
   const user = system.alias('User', t.Object(t.prop('id', t.str), t.propOpt('address', t.Ref('Address'))));
   const address = system.alias('Address', t.Object(t.prop('id', t.str), t.propOpt('user', t.Ref('User'))));

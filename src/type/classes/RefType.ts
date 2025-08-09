@@ -1,5 +1,5 @@
-import * as schema from '../../schema';
 import {AbsType} from './AbsType';
+import * as schema from '../../schema';
 import type {SchemaOf, Type} from '../types';
 
 export class RefType<T extends Type = any> extends AbsType<schema.RefSchema<SchemaOf<T>>> {
@@ -14,6 +14,10 @@ export class RefType<T extends Type = any> extends AbsType<schema.RefSchema<Sche
   public getOptions(): schema.Optional<schema.RefSchema<SchemaOf<T>>> {
     const {kind, ref, ...options} = this.schema;
     return options as any;
+  }
+
+  public resolve(): Type {
+    return this.getSystem().resolve(this.ref()).type as Type;
   }
 
   public toStringTitle(tab: string = ''): string {

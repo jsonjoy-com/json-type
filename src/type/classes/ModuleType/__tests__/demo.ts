@@ -1,6 +1,6 @@
-import {TypeSystem} from '../TypeSystem';
+import {ModuleType} from '..';
 
-const createTypes = (system: TypeSystem) => {
+const createTypes = (system: ModuleType) => {
   const t = system.t;
 
   // prettier-ignore
@@ -41,7 +41,7 @@ const createTypes = (system: TypeSystem) => {
   };
 };
 
-const system = new TypeSystem();
+const system = new ModuleType();
 const types = createTypes(system);
 system.importTypes(types);
 

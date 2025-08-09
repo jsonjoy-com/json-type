@@ -1,9 +1,10 @@
 import type * as schema from '../schema';
 import type * as classes from './classes';
+import type {AliasType} from './classes/AliasType';
 
 export type * from './classes';
 
-export interface BaseType<S extends schema.TType> {
+export interface BaseType<S extends schema.SchemaBase> {
   getSchema(): S;
 }
 
@@ -29,16 +30,14 @@ export type SchemaOfMap<M extends Record<string, Type>> = {
 };
 
 export type SchemaOfObjectFieldType<F> = F extends classes.ObjKeyOptType<infer K, infer V>
-  ? schema.ObjOptKeySchema<K, SchemaOf<V>>
+  ? schema.OptKeySchema<K, SchemaOf<V>>
   : F extends classes.ObjKeyType<infer K, infer V>
-    ? schema.ObjKeySchema<K, SchemaOf<V>>
+    ? schema.KeySchema<K, SchemaOf<V>>
     : never;
 
 export type SchemaOfObjectFields<F> = {
   [K in keyof F]: SchemaOfObjectFieldType<F[K]>;
 };
-
-export type TypeMap = {[name: string]: schema.Schema};
 
 export type FilterFunctions<T> = {
   [K in keyof T as T[K] extends classes.FnType<any, any, any>
@@ -51,3 +50,15 @@ export type FilterFunctions<T> = {
       ? T[K]
       : never;
 };
+
+export type TypeOfAlias<T> = T extends AliasType<any, infer T> ? T : T extends Type ? T : never;
+
+export type ResolveType<T> = T extends AliasType<any, infer T>
+  ? schema.TypeOf<SchemaOf<T>>
+  : T extends Type
+    ? schema.TypeOf<SchemaOf<T>>
+    : T extends schema.Schema
+      ? schema.TypeOf<T>
+      : never;
+
+export type infer<T> = ResolveType<T>;

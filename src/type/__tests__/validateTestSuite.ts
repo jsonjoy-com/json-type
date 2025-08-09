@@ -1,8 +1,7 @@
-import {type Type, t} from '..';
-import {TypeSystem} from '../../system/TypeSystem';
+import {type Type, t, ModuleType} from '..';
 
 export const validateTestSuite = (validate: (type: Type, value: unknown) => void) => {
-  const system = new TypeSystem();
+  const system = new ModuleType();
 
   describe('any', () => {
     test('validates any value', () => {

@@ -1,13 +1,13 @@
 /* tslint:disable no-console */
 
-import {TypeSystem} from '..';
+import {ModuleType} from '..';
 import {CborEncoder} from '@jsonjoy.com/json-pack/lib/cbor/CborEncoder';
 import {JsonEncoder} from '@jsonjoy.com/json-pack/lib/json/JsonEncoder';
 import type {CompiledBinaryEncoder} from '../codegen/types';
 import {EncodingFormat} from '@jsonjoy.com/json-pack/lib/constants';
 import {Writer} from '@jsonjoy.com/buffers/lib/Writer';
 
-const system = new TypeSystem();
+const system = new ModuleType();
 const {t} = system;
 
 const response = system.alias(

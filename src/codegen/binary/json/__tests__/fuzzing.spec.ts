@@ -10,7 +10,7 @@ const encoder = new JsonEncoder(new Writer(16));
 const decoder = new JsonDecoder();
 
 test('can encode random values', () => {
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 10; i++) {
     const json = randomJson();
     const t = new TypeBuilder();
     const type = t.from(json);

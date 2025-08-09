@@ -11,6 +11,8 @@ import {MapType} from './classes/MapType';
 import {RefType} from './classes/RefType';
 import {OrType} from './classes/OrType';
 import {FnType, FnRxType} from './classes/FnType';
+import {AliasType} from './classes/AliasType';
+import {ModuleType} from './classes/ModuleType';
 
 export {
   AbsType,
@@ -29,4 +31,6 @@ export {
   OrType,
   FnType,
   FnRxType,
+  AliasType,
+  ModuleType,
 };

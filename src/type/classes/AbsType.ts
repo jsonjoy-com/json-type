@@ -1,24 +1,23 @@
 import {Value} from '../../value';
 import type * as schema from '../../schema';
 import type {Printable} from 'tree-dump/lib/types';
-import type {TExample} from '../../schema';
-import type {BaseType} from '../types';
-import type {TypeSystem} from '../../system/TypeSystem';
+import type {SchemaExample} from '../../schema';
+import type {BaseType, ModuleType} from '../types';
 
 export abstract class AbsType<S extends schema.Schema> implements BaseType<S>, Printable {
   /** Default type system to use, if any. */
-  public system?: TypeSystem;
+  public system?: ModuleType;
 
   public readonly _validators: [validator: (value: unknown) => void, name?: string][] = [];
 
   constructor(public readonly schema: S) {}
 
-  public sys(system: TypeSystem | undefined): this {
+  public sys(system: ModuleType | undefined): this {
     this.system = system;
     return this;
   }
 
-  public getSystem(): TypeSystem {
+  public getSystem(): ModuleType {
     const system = this.system;
     if (!system) throw new Error('NO_SYSTEM');
     return system;
@@ -78,11 +77,11 @@ export abstract class AbsType<S extends schema.Schema> implements BaseType<S>, P
 
   public example(
     value: schema.TypeOf<S>,
-    title?: TExample['title'],
-    options?: Omit<TExample, 'value' | 'title'>,
+    title?: SchemaExample['title'],
+    options?: Omit<SchemaExample, 'value' | 'title'>,
   ): this {
     const examples = (this.schema.examples ??= []);
-    const example: TExample = {...options, value};
+    const example: SchemaExample = {...options, value};
     if (typeof title === 'string') example.title = title;
     examples.push(example);
     return this;

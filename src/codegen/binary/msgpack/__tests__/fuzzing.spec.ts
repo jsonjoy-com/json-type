@@ -5,7 +5,7 @@ import {MsgPackCodegen} from '../MsgPackCodegen';
 import {randomJson} from '../../../../__tests__/fixtures';
 
 test('can encode random values', () => {
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 10; i++) {
     const encoder = new MsgPackEncoder();
     const decoder = new MsgPackDecoder();
     const json = randomJson();

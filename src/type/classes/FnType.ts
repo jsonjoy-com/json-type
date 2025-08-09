@@ -1,9 +1,7 @@
 import {printTree} from 'tree-dump/lib/printTree';
 import * as schema from '../../schema';
-import {Value} from '../../value';
 import {AbsType} from './AbsType';
 import type {SchemaOf, Type} from '../types';
-import type {ResolveType} from '../../system';
 
 const fnNotImplemented: schema.FunctionValue<any, any> = async () => {
   throw new Error('NOT_IMPLEMENTED');
@@ -76,14 +74,14 @@ export class FnType<Req extends Type, Res extends Type, Ctx = unknown> extends A
 }
 
 export class FnRxType<Req extends Type, Res extends Type, Ctx = unknown> extends AbsType<
-  schema.FnStreamingSchema<SchemaOf<Req>, SchemaOf<Res>, Ctx>
+  schema.FnRxSchema<SchemaOf<Req>, SchemaOf<Res>, Ctx>
 > {
   public readonly isStreaming = true;
 
   constructor(
     public readonly req: Req,
     public readonly res: Res,
-    options?: schema.Optional<schema.FnStreamingSchema<SchemaOf<Req>, SchemaOf<Res>>>,
+    options?: schema.Optional<schema.FnRxSchema<SchemaOf<Req>, SchemaOf<Res>>>,
   ) {
     super({
       ...options,
@@ -109,7 +107,7 @@ export class FnRxType<Req extends Type, Res extends Type, Ctx = unknown> extends
     return this.response(res);
   }
 
-  public getSchema(): schema.FnStreamingSchema<SchemaOf<Req>, SchemaOf<Res>, Ctx> {
+  public getSchema(): schema.FnRxSchema<SchemaOf<Req>, SchemaOf<Res>, Ctx> {
     return {
       ...this.schema,
       req: this.req.getSchema() as SchemaOf<Req>,

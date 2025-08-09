@@ -1,6 +1,6 @@
 import {type Schema, s} from '../../../schema';
 import {t} from '../../../type';
-import {TypeSystem} from '../../../system/TypeSystem';
+import {ModuleType} from '../../../type/classes/ModuleType';
 import {JsonTextCodegen} from '../JsonTextCodegen';
 
 const exec = (schema: Schema, json: unknown, expected: unknown = json) => {
@@ -209,7 +209,7 @@ describe('general', () => {
 
 describe('"ref" type', () => {
   test('can serialize reference by resolving to type', () => {
-    const system = new TypeSystem();
+    const system = new ModuleType();
     system.alias('ID', system.t.str);
     const schema = s.Object([s.prop('name', s.str), s.prop('id', s.Ref<any>('ID')), s.prop('createdAt', s.num)]);
     const type = system.t.import(schema);

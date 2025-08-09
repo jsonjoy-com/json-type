@@ -4,7 +4,7 @@ import {AbsType} from './AbsType';
 import type {SchemaOf, SchemaOfObjectFields, Type} from '../types';
 import type {ExcludeFromTuple, PickFromTuple} from '../../util/types';
 
-export class ObjKeyType<K extends string, V extends Type> extends AbsType<schema.ObjKeySchema<K, SchemaOf<V>>> {
+export class ObjKeyType<K extends string, V extends Type> extends AbsType<schema.KeySchema<K, SchemaOf<V>>> {
   public readonly optional: boolean = false;
 
   constructor(
@@ -14,14 +14,14 @@ export class ObjKeyType<K extends string, V extends Type> extends AbsType<schema
     super(schema.s.prop(key, schema.s.any) as any);
   }
 
-  public getSchema(): schema.ObjKeySchema<K, SchemaOf<V>> {
+  public getSchema(): schema.KeySchema<K, SchemaOf<V>> {
     return {
       ...this.schema,
       value: this.val.getSchema() as any,
     };
   }
 
-  public getOptions(): schema.Optional<schema.ObjKeySchema<K, SchemaOf<V>>> {
+  public getOptions(): schema.Optional<schema.KeySchema<K, SchemaOf<V>>> {
     const {kind, key, value, optional, ...options} = this.schema;
     return options as any;
   }
@@ -58,7 +58,7 @@ export class ObjType<F extends ObjKeyType<any, any>[] = ObjKeyType<any, any>[]> 
     super(schema.s.obj as any);
   }
 
-  private _key(field: ObjKeyType<any, any>, options?: schema.Optional<schema.ObjKeySchema<any, any>>): void {
+  private _key(field: ObjKeyType<any, any>, options?: schema.Optional<schema.KeySchema<any, any>>): void {
     if (options) field.options(options);
     field.system = this.system;
     this.keys.push(field as any);
@@ -74,7 +74,7 @@ export class ObjType<F extends ObjKeyType<any, any>[] = ObjKeyType<any, any>[]> 
   public prop<K extends string, V extends Type>(
     key: K,
     value: V,
-    options?: schema.Optional<schema.ObjKeySchema<K, SchemaOf<V>>>,
+    options?: schema.Optional<schema.KeySchema<K, SchemaOf<V>>>,
   ): ObjType<[...F, ObjKeyType<K, V>]> {
     this._key(new ObjKeyType<K, V>(key, value), options);
     return <any>this;
@@ -90,7 +90,7 @@ export class ObjType<F extends ObjKeyType<any, any>[] = ObjKeyType<any, any>[]> 
   public opt<K extends string, V extends Type>(
     key: K,
     value: V,
-    options?: schema.Optional<schema.ObjKeySchema<K, SchemaOf<V>>>,
+    options?: schema.Optional<schema.KeySchema<K, SchemaOf<V>>>,
   ): ObjType<[...F, ObjKeyOptType<K, V>]> {
     this._key(new ObjKeyOptType<K, V>(key, value), options);
     return <any>this;

@@ -1,3 +1,5 @@
+import {TypeExportContext} from '../type/classes/ModuleType/TypeExportContext';
+import type {AliasType} from '../type';
 import type {ObjType} from '../type/classes/ObjType';
 import type {AbsType} from '../type/classes/AbsType';
 import type {AnyType} from '../type/classes/AnyType';
@@ -10,7 +12,6 @@ import type {NumType} from '../type/classes/NumType';
 import type {OrType} from '../type/classes/OrType';
 import type {RefType} from '../type/classes/RefType';
 import type {StrType} from '../type/classes/StrType';
-import type {TypeExportContext} from '../system/TypeExportContext';
 import type * as schema from '../schema';
 import type {
   JsonSchemaNode,
@@ -24,7 +25,25 @@ import type {
   JsonSchemaObject,
   JsonSchemaRef,
   JsonSchemaOr,
+  JsonSchemaValueNode,
 } from './types';
+
+export const aliasToJsonSchema = (alias: AliasType<any, any>): JsonSchemaGenericKeywords => {
+  const node: JsonSchemaGenericKeywords = {
+    $id: alias.id,
+    $ref: '#/$defs/' + alias.id,
+    $defs: {},
+  };
+  const ctx = new TypeExportContext();
+  ctx.visitRef(alias.id);
+  node.$defs![alias.id] = typeToJsonSchema(alias.type, ctx) as JsonSchemaValueNode;
+  let ref: string | undefined;
+  while ((ref = ctx.nextMentionedRef())) {
+    ctx.visitRef(ref);
+    node.$defs![ref] = typeToJsonSchema(alias.system.resolve(ref).type, ctx) as JsonSchemaValueNode;
+  }
+  return node;
+};
 
 /**
  * Extracts the base JSON Schema properties that are common to all types.
@@ -37,7 +56,7 @@ function getBaseJsonSchema(type: AbsType<any>, ctx?: TypeExportContext): JsonSch
   if (typeSchema.title) jsonSchema.title = typeSchema.title;
   if (typeSchema.description) jsonSchema.description = typeSchema.description;
   if (typeSchema.examples) {
-    jsonSchema.examples = typeSchema.examples.map((example: schema.TExample) => example.value);
+    jsonSchema.examples = typeSchema.examples.map((example: schema.SchemaExample) => example.value);
   }
 
   return jsonSchema;

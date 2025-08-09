@@ -1,7 +1,6 @@
 import {EMPTY} from 'rxjs';
 import {type SchemaOf, t} from '..';
 import type {TypeOf} from '../../schema';
-import type * as system from '../../system';
 
 test('const', () => {
   const type = t.Const(<const>42);
@@ -185,7 +184,7 @@ test('string patch', () => {
       'A list of string operations that can be applied to a source string to produce a destination string, or vice versa.',
     );
 
-  type T = system.infer<typeof StringPatch>;
+  type T = t.infer<typeof StringPatch>;
   const v: T = [
     [1, 'Hello'],
     [0, 'World'],
