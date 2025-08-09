@@ -1,7 +1,7 @@
 import {NumType, ObjType, StrType} from '../classes';
 import {ObjKeyType} from '../classes/ObjType';
 import {type SchemaOf, t} from '..';
-import type {TypeOf} from '../../schema';
+import type {NumSchema, TypeOf} from '../../schema';
 import {validateSchema} from '../../schema/validate';
 
 test('number', () => {
@@ -179,48 +179,47 @@ describe('import()', () => {
 });
 
 describe('validateSchema()', () => {
-  // test('can validate a number schema', () => {
-  //   const schema = {
-  //     kind: 'num',
-  //     description: 'A number',
-  //     format: 'i32',
-  //   };
-  //   expect(t.import(schema as any).validateSchema()).toBeUndefined();
-  //   expect(() => t.import({...schema, description: 123} as any).validateSchema()).toThrow(
-  //     new Error('INVALID_DESCRIPTION'),
-  //   );
-  //   expect(() => t.import({...schema, title: 123} as any).validateSchema()).toThrow(new Error('INVALID_TITLE'));
-  //   expect(() => t.import({...schema, intro: null} as any).validateSchema()).toThrow(new Error('INVALID_INTRO'));
-  //   expect(() => t.import({...schema, gt: null} as any).validateSchema()).toThrow(new Error('GT_TYPE'));
-  //   expect(() => t.import({...schema, lt: null} as any).validateSchema()).toThrow(new Error('LT_TYPE'));
-  //   expect(() => t.import({...schema, gte: '334'} as any).validateSchema()).toThrow(new Error('GTE_TYPE'));
-  //   expect(() => t.import({...schema, lte: '334'} as any).validateSchema()).toThrow(new Error('LTE_TYPE'));
-  //   expect(() => t.import({...schema, lt: 1, gt: 2} as any).validateSchema()).toThrow(new Error('GT_LT'));
-  //   expect(() => t.import({...schema, format: 'int'} as any).validateSchema()).toThrow(new Error('FORMAT_INVALID'));
-  //   expect(() => t.import({...schema, validator: 123} as any).validateSchema()).toThrow(new Error('INVALID_VALIDATOR'));
-  // });
+  test('can validate a number schema', () => {
+    const schema: NumSchema = {
+      kind: 'num',
+      description: 'A number',
+      format: 'i32',
+    };
+    expect(validateSchema(t.import(schema).getSchema())).toBeUndefined();
+    expect(() => validateSchema({...schema, description: 123} as any)).toThrow(
+      new Error('INVALID_DESCRIPTION'),
+    );
+    expect(() => validateSchema({...schema, title: 123} as any)).toThrow(new Error('INVALID_TITLE'));
+    expect(() => validateSchema({...schema, intro: null} as any)).toThrow(new Error('INVALID_INTRO'));
+    expect(() => validateSchema({...schema, gt: null} as any)).toThrow(new Error('GT_TYPE'));
+    expect(() => validateSchema({...schema, lt: null} as any)).toThrow(new Error('LT_TYPE'));
+    expect(() => validateSchema({...schema, gte: '334'} as any)).toThrow(new Error('GTE_TYPE'));
+    expect(() => validateSchema({...schema, lte: '334'} as any)).toThrow(new Error('LTE_TYPE'));
+    expect(() => validateSchema({...schema, lt: 1, gt: 2} as any)).toThrow(new Error('GT_LT'));
+    expect(() => validateSchema({...schema, format: 'int'} as any)).toThrow(new Error('FORMAT_INVALID'));
+  });
 
-  // test('can validate a string schema', () => {
-  //   const schema = {
-  //     kind: 'str',
-  //     description: 'A string',
-  //   };
-  //   expect(t.import(schema as any).validateSchema()).toBeUndefined();
-  //   expect(() => t.import({...schema, description: 123} as any).validateSchema()).toThrow(
-  //     new Error('INVALID_DESCRIPTION'),
-  //   );
-  //   expect(() => t.import({...schema, title: 123} as any).validateSchema()).toThrow(new Error('INVALID_TITLE'));
-  //   expect(() => t.import({...schema, intro: null} as any).validateSchema()).toThrow(new Error('INVALID_INTRO'));
-  //   expect(() => t.import({...schema, min: null} as any).validateSchema()).toThrow(new Error('MIN_TYPE'));
-  //   expect(() => t.import({...schema, max: 'asdf'} as any).validateSchema()).toThrow(new Error('MAX_TYPE'));
-  //   expect(() => t.import({...schema, min: -1} as any).validateSchema()).toThrow(new Error('MIN_NEGATIVE'));
-  //   expect(() => t.import({...schema, max: -1} as any).validateSchema()).toThrow(new Error('MAX_NEGATIVE'));
-  //   expect(() => t.import({...schema, max: 0.5} as any).validateSchema()).toThrow(new Error('MAX_DECIMAL'));
-  //   expect(() => t.import({...schema, min: 1.2} as any).validateSchema()).toThrow(new Error('MIN_DECIMAL'));
-  //   expect(() => t.import({...schema, min: 5, max: 3} as any).validateSchema()).toThrow(new Error('MIN_MAX'));
-  //   expect(() => t.import({...schema, ascii: 123} as any).validateSchema()).toThrow(new Error('ASCII'));
-  //   expect(() => t.import({...schema, ascii: 'bytes'} as any).validateSchema()).toThrow(new Error('ASCII'));
-  // });
+  test('can validate a string schema', () => {
+    const schema = {
+      kind: 'str',
+      description: 'A string',
+    };
+    expect(validateSchema({...schema} as any)).toBeUndefined();
+    expect(() => validateSchema({...schema, description: 123} as any)).toThrow(
+      new Error('INVALID_DESCRIPTION'),
+    );
+    expect(() => validateSchema({...schema, title: 123} as any)).toThrow(new Error('INVALID_TITLE'));
+    expect(() => validateSchema({...schema, intro: null} as any)).toThrow(new Error('INVALID_INTRO'));
+    expect(() => validateSchema({...schema, min: null} as any)).toThrow(new Error('MIN_TYPE'));
+    expect(() => validateSchema({...schema, max: 'asdf'} as any)).toThrow(new Error('MAX_TYPE'));
+    expect(() => validateSchema({...schema, min: -1} as any)).toThrow(new Error('MIN_NEGATIVE'));
+    expect(() => validateSchema({...schema, max: -1} as any)).toThrow(new Error('MAX_NEGATIVE'));
+    expect(() => validateSchema({...schema, max: 0.5} as any)).toThrow(new Error('MAX_DECIMAL'));
+    expect(() => validateSchema({...schema, min: 1.2} as any)).toThrow(new Error('MIN_DECIMAL'));
+    expect(() => validateSchema({...schema, min: 5, max: 3} as any)).toThrow(new Error('MIN_MAX'));
+    expect(() => validateSchema({...schema, ascii: 123} as any)).toThrow(new Error('ASCII'));
+    expect(() => validateSchema({...schema, ascii: 'bytes'} as any)).toThrow(new Error('ASCII'));
+  });
 
   test('validates an arbitrary self-constructed object', () => {
     const type = t.Object(
