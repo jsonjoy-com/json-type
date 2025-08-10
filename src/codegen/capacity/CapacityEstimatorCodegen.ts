@@ -91,12 +91,6 @@ export class CapacityEstimatorCodegen extends AbstractCodegen<CompiledCapacityEs
     const {_head = [], _type, _tail = []} = type;
     const headLength = _head.length;
     const tailLength = _tail.length;
-    // const tupleLength = headLength + tailLength;
-    // if (tupleLength) {
-    //   codegen.if(/* js */ `${rLen} < ${tupleLength}`, () => {
-    //     codegen.js(/* js */ `throw new Error('INV_LEN');`);
-    //   });
-    // }
     if (_type) {
       const isConstantSizeType = _type instanceof ConType || _type instanceof BoolType || _type instanceof NumType;
       if (isConstantSizeType) {
@@ -106,7 +100,7 @@ export class CapacityEstimatorCodegen extends AbstractCodegen<CompiledCapacityEs
             : _type instanceof BoolType
               ? MaxEncodingOverhead.Boolean
               : MaxEncodingOverhead.Number;
-        codegen.js(/* js */ `size += ${rLen} * ${elementSize};`);
+        codegen.js(/* js */ `size += (${rLen} - ${headLength + tailLength}) * ${elementSize};`);
       } else {
         const rv = codegen.var(r.use());
         const ri = codegen.getRegister();
