@@ -167,11 +167,11 @@ describe('obj', () => {
     const {t} = system;
     const type = system.t
       .Object(
-        t.prop('id', t.str).options({
+        t.Key('id', t.str).options({
           title: 'title-x',
           description: 'description-x',
         }),
-        t.propOpt('id', t.num),
+        t.KeyOpt('id', t.num),
       )
       .options({
         title: 'title',

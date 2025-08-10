@@ -1308,7 +1308,7 @@ describe('custom validators', () => {
   test('returns the error, which validator throws', () => {
     const system = new ModuleType();
     const type = system.t.Object(
-      system.t.prop(
+      system.t.Key(
         'id',
         system.t.str.validator((id: string): void => {
           if (!/^[a-z]+$/.test(id)) throw new Error('Asset ID must be a string.');
@@ -1336,7 +1336,7 @@ describe('custom validators', () => {
         throw new Error('Asset ID must be a string.');
       }, 'assetId')
       .alias('ID');
-    const type = system.t.Object(system.t.prop('id', system.t.Ref('ID')));
+    const type = system.t.Object(system.t.Key('id', system.t.Ref('ID')));
     const validator = ValidatorCodegen.get({type, errors: 'object'});
     expect(validator({id: 'xxxxxxx'})).toBe(null);
     expect(validator({id: 'y'})).toBe(null);

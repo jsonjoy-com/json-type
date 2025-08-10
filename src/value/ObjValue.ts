@@ -62,7 +62,7 @@ export class ObjValue<T extends classes.ObjType<any>> extends Value<T> implement
     const system = (this.type as classes.ObjType<any>).getSystem();
     const t = system.t;
     type = typeof type === 'function' ? type(t) : type;
-    return this.field(t.prop(key, type), data);
+    return this.field(t.Key(key, type), data);
   }
 
   public set<K extends string, V extends classes.Type>(key: K, value: Value<V>) {

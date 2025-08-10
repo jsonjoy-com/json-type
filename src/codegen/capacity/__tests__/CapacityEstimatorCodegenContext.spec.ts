@@ -154,14 +154,14 @@ describe('"obj" type', () => {
 
   test('one required key', () => {
     const system = new ModuleType();
-    const type = system.t.Object(system.t.prop('abc', system.t.str));
+    const type = system.t.Object(system.t.Key('abc', system.t.str));
     const estimator = CapacityEstimatorCodegen.get(type);
     expect(estimator({abc: 'foo'})).toBe(maxEncodingCapacity({abc: 'foo'}));
   });
 
   test('one required and one optional keys', () => {
     const system = new ModuleType();
-    const type = system.t.Object(system.t.prop('abc', system.t.str), system.t.propOpt('key', system.t.num));
+    const type = system.t.Object(system.t.Key('abc', system.t.str), system.t.KeyOpt('key', system.t.num));
     const estimator = CapacityEstimatorCodegen.get(type);
     expect(estimator({abc: 'foo', key: 111})).toBe(maxEncodingCapacity({abc: 'foo', key: 111}));
   });
@@ -203,7 +203,7 @@ describe('"ref" type', () => {
   test('two hops', () => {
     const system = new ModuleType();
     system.alias('Id', system.t.str);
-    system.alias('User', system.t.Object(system.t.prop('id', system.t.Ref('Id')), system.t.prop('name', system.t.str)));
+    system.alias('User', system.t.Object(system.t.Key('id', system.t.Ref('Id')), system.t.Key('name', system.t.str)));
     const type = system.t.Ref('User');
     const value = {id: 'asdf', name: 'foo'};
     const estimator = CapacityEstimatorCodegen.get(type);
@@ -231,8 +231,8 @@ describe('"or" type', () => {
 test('add circular reference test', () => {
   const system = new ModuleType();
   const {t} = system;
-  const user = system.alias('User', t.Object(t.prop('id', t.str), t.propOpt('address', t.Ref('Address'))));
-  const address = system.alias('Address', t.Object(t.prop('id', t.str), t.propOpt('user', t.Ref('User'))));
+  const user = system.alias('User', t.Object(t.Key('id', t.str), t.KeyOpt('address', t.Ref('Address'))));
+  const address = system.alias('Address', t.Object(t.Key('id', t.str), t.KeyOpt('user', t.Ref('User'))));
   const value1 = {
     id: 'user-1',
     address: {

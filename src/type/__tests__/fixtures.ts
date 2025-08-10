@@ -11,7 +11,7 @@ export const everyType = t.Object(
   // t.prop('arr', t.arr),
   // t.prop('obj', t.obj),
   // t.prop('any', t.any),
-  t.prop('undef', t.undef),
+  t.Key('undef', t.undef),
   // t.prop('const', t.Const(<const>'const')),
   // t.prop('const2', t.Const(<const>2)),
   // t.prop('emptyArray', t.arr.options({max: 0})),

@@ -2,7 +2,7 @@ import {type SchemaOf, t} from '..';
 import type {NumSchema, TypeOf} from '../../schema';
 import {validateSchema} from '../../schema/validate';
 import {NumType, ObjType, StrType} from '../classes';
-import {ObjKeyType} from '../classes/ObjType';
+import {KeyType} from '../classes/ObjType';
 
 test('number', () => {
   const type = t.Number({
@@ -56,10 +56,10 @@ test('array of any with options', () => {
 
 test('can construct a realistic object', () => {
   const type = t.Object(
-    t.prop('id', t.str),
-    t.propOpt('name', t.str),
-    t.propOpt('age', t.num),
-    t.prop('verified', t.bool),
+    t.Key('id', t.str),
+    t.KeyOpt('name', t.str),
+    t.KeyOpt('age', t.num),
+    t.Key('verified', t.bool),
   );
   expect(type.getSchema()).toStrictEqual({
     kind: 'obj',
@@ -162,7 +162,7 @@ describe('import()', () => {
     expect(type).toBeInstanceOf(ObjType);
     expect(type.kind()).toBe('obj');
     const id = type.getField('id')!;
-    expect(id).toBeInstanceOf(ObjKeyType);
+    expect(id).toBeInstanceOf(KeyType);
     expect(id.kind()).toBe('key');
     expect(id.val).toBeInstanceOf(StrType);
     expect(id.val.kind()).toBe('str');
@@ -219,9 +219,9 @@ describe('validateSchema()', () => {
 
   test('validates an arbitrary self-constructed object', () => {
     const type = t.Object(
-      t.prop('id', t.String()),
-      t.prop('name', t.String({title: 'Name'})),
-      t.prop('age', t.Number({format: 'u16'})),
+      t.Key('id', t.String()),
+      t.Key('name', t.String({title: 'Name'})),
+      t.Key('age', t.Number({format: 'u16'})),
     );
     validateSchema(type.getSchema());
   });

@@ -119,7 +119,7 @@ export class TypeBuilder {
    */
   public readonly object = <R extends Record<string, Type>>(record: R): classes.ObjType<RecordToFields<R>> => {
     const keys: classes.ObjKeyType<any, any>[] = [];
-    for (const [key, value] of Object.entries(record)) keys.push(this.prop(key, value));
+    for (const [key, value] of Object.entries(record)) keys.push(this.Key(key, value));
     return new classes.ObjType<RecordToFields<R>>(keys as any).sys(this.system);
   };
 
@@ -199,11 +199,11 @@ export class TypeBuilder {
     return new classes.ObjType<F>(keys).sys(this.system);
   }
 
-  public prop<K extends string, V extends Type>(key: K, value: V) {
+  public Key<K extends string, V extends Type>(key: K, value: V) {
     return new classes.ObjKeyType<K, V>(key, value).sys(this.system);
   }
 
-  public propOpt<K extends string, V extends Type>(key: K, value: V) {
+  public KeyOpt<K extends string, V extends Type>(key: K, value: V) {
     return new classes.ObjKeyOptType<K, V>(key, value).sys(this.system);
   }
 
@@ -259,8 +259,8 @@ export class TypeBuilder {
       case 'obj': {
         const fields = node.keys.map((f: any) =>
           f.optional
-            ? this.propOpt(f.key, this.import(f.value)).options(f)
-            : this.prop(f.key, this.import(f.value)).options(f),
+            ? this.KeyOpt(f.key, this.import(f.value)).options(f)
+            : this.Key(f.key, this.import(f.value)).options(f),
         );
         return this.Object(...fields).options(node);
       }
@@ -305,7 +305,7 @@ export class TypeBuilder {
             ? this.Array(this.from(value[0]))
             : this.tuple(...value.map((v) => this.from(v)));
         }
-        return this.Object(...Object.entries(value).map(([key, value]) => this.prop(key, this.from(value))));
+        return this.Object(...Object.entries(value).map(([key, value]) => this.Key(key, this.from(value))));
       default:
         return this.any;
     }

@@ -18,7 +18,7 @@ import type {
   Type,
   t,
 } from '../type';
-import {ObjKeyOptType, type ObjKeyType, type ObjType} from '../type/classes/ObjType';
+import {KeyOptType, type KeyType, type ObjType} from '../type/classes/ObjType';
 
 export class Random {
   public static readonly gen = <T extends Type>(type: T): t.infer<T> => {
@@ -172,8 +172,8 @@ export class Random {
       ? <Record<string, unknown>>RandomJson.genObject()
       : {};
     for (const f of type.keys) {
-      const field = f as ObjKeyType<any, any>;
-      const isOptional = field instanceof ObjKeyOptType;
+      const field = f as KeyType<any, any>;
+      const isOptional = field instanceof KeyOptType;
       if (isOptional && Math.random() > 0.5) continue;
       obj[field.key] = this.gen(field.val);
     }

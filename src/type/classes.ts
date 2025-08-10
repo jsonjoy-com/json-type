@@ -9,7 +9,7 @@ import {FnRxType, FnType} from './classes/FnType';
 import {MapType} from './classes/MapType';
 import {ModuleType} from './classes/ModuleType';
 import {NumType} from './classes/NumType';
-import {ObjKeyOptType, ObjKeyType, ObjType} from './classes/ObjType';
+import {KeyOptType, KeyType, ObjType} from './classes/ObjType';
 import {OrType} from './classes/OrType';
 import {RefType} from './classes/RefType';
 import {StrType} from './classes/StrType';
@@ -23,8 +23,8 @@ export {
   StrType,
   BinType,
   ArrType,
-  ObjKeyType,
-  ObjKeyOptType,
+  KeyType as ObjKeyType,
+  KeyOptType as ObjKeyOptType,
   ObjType,
   MapType,
   RefType,

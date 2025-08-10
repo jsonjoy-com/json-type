@@ -236,7 +236,7 @@ export const testBinaryCodegen = (transcode: (system: ModuleType, type: Type, va
     test('can encode empty object, which has optional fields', () => {
       const system = new ModuleType();
       const t = system.t;
-      const type = t.Object(t.propOpt('field1', t.str));
+      const type = t.Object(t.KeyOpt('field1', t.str));
       const value1: any = {};
       expect(transcode(system, type, value1)).toStrictEqual(value1);
       const value2: any = {field1: 'abc'};
@@ -246,7 +246,7 @@ export const testBinaryCodegen = (transcode: (system: ModuleType, type: Type, va
     test('can encode fixed size object', () => {
       const system = new ModuleType();
       const t = system.t;
-      const type = t.Object(t.prop('field1', t.str), t.prop('field2', t.num), t.prop('bool', t.bool));
+      const type = t.Object(t.Key('field1', t.str), t.Key('field2', t.num), t.Key('bool', t.bool));
       const value: any = {
         field1: 'abc',
         field2: 123,
@@ -258,7 +258,7 @@ export const testBinaryCodegen = (transcode: (system: ModuleType, type: Type, va
     test('can encode object with an optional field', () => {
       const system = new ModuleType();
       const t = system.t;
-      const type = t.Object(t.prop('id', t.str), t.propOpt('name', t.str));
+      const type = t.Object(t.Key('id', t.str), t.KeyOpt('name', t.str));
       const value: any = {
         id: 'xxxxx',
         name: 'Go Lang',
@@ -270,10 +270,10 @@ export const testBinaryCodegen = (transcode: (system: ModuleType, type: Type, va
       const system = new ModuleType();
       const t = system.t;
       const type = t.Object(
-        t.prop('id', t.str),
-        t.propOpt('name', t.str),
-        t.prop('age', t.num),
-        t.propOpt('address', t.str),
+        t.Key('id', t.str),
+        t.KeyOpt('name', t.str),
+        t.Key('age', t.num),
+        t.KeyOpt('address', t.str),
       );
       const value: any = {
         id: 'xxxxx',
@@ -288,7 +288,7 @@ export const testBinaryCodegen = (transcode: (system: ModuleType, type: Type, va
       const system = new ModuleType();
       const t = system.t;
       const type = t
-        .Object(t.prop('id', t.str), t.propOpt('name', t.str), t.prop('age', t.num), t.propOpt('address', t.str))
+        .Object(t.Key('id', t.str), t.KeyOpt('name', t.str), t.Key('age', t.num), t.KeyOpt('address', t.str))
         .options({encodeUnknownKeys: true});
       const value: any = {
         id: 'xxxxx',
@@ -305,12 +305,12 @@ export const testBinaryCodegen = (transcode: (system: ModuleType, type: Type, va
       const t = system.t;
       const type = t
         .Object(
-          t.prop('id', t.str),
-          t.propOpt('name', t.str),
-          t.prop('addr', t.Object(t.prop('street', t.str))),
-          t.prop(
+          t.Key('id', t.str),
+          t.KeyOpt('name', t.str),
+          t.Key('addr', t.Object(t.Key('street', t.str))),
+          t.Key(
             'interests',
-            t.Object(t.propOpt('hobbies', t.Array(t.str)), t.propOpt('sports', t.Array(t.Tuple([t.num, t.str])))),
+            t.Object(t.KeyOpt('hobbies', t.Array(t.str)), t.KeyOpt('sports', t.Array(t.Tuple([t.num, t.str])))),
           ),
         )
         .options({encodeUnknownKeys: true});
@@ -352,7 +352,7 @@ export const testBinaryCodegen = (transcode: (system: ModuleType, type: Type, va
       const system = new ModuleType();
       const t = system.t;
       const type = t
-        .Object(t.propOpt('id', t.str), t.propOpt('name', t.str), t.propOpt('address', t.str))
+        .Object(t.KeyOpt('id', t.str), t.KeyOpt('name', t.str), t.KeyOpt('address', t.str))
         .options({encodeUnknownKeys: true});
       let value: any = {
         id: 'xxxxx',
@@ -379,7 +379,7 @@ export const testBinaryCodegen = (transcode: (system: ModuleType, type: Type, va
       const system = new ModuleType();
       const t = system.t;
       const type = t
-        .Object(t.propOpt('id', t.str), t.propOpt('name', t.str), t.propOpt('address', t.str))
+        .Object(t.KeyOpt('id', t.str), t.KeyOpt('name', t.str), t.KeyOpt('address', t.str))
         .options({encodeUnknownKeys: false});
       let value: any = {
         id: 'xxxxx',
@@ -441,7 +441,7 @@ export const testBinaryCodegen = (transcode: (system: ModuleType, type: Type, va
     test('can encode a simple reference', () => {
       const system = new ModuleType();
       const t = system.t;
-      system.alias('Obj', t.Object(t.prop('foo', t.str)));
+      system.alias('Obj', t.Object(t.Key('foo', t.str)));
       const type = t.Ref('Obj');
       expect(transcode(system, type, {foo: 'bar'})).toStrictEqual({
         foo: 'bar',
@@ -468,29 +468,29 @@ export const testBinaryCodegen = (transcode: (system: ModuleType, type: Type, va
       const response = system.alias(
         'Response',
         t.Object(
-          t.prop(
+          t.Key(
             'collection',
             t.Object(
-              t.prop('id', t.String({ascii: true, noJsonEscape: true})),
-              t.prop('ts', t.num.options({format: 'u64'})),
-              t.prop('cid', t.String({ascii: true, noJsonEscape: true})),
-              t.prop('prid', t.String({ascii: true, noJsonEscape: true})),
-              t.prop('slug', t.String({ascii: true, noJsonEscape: true})),
-              t.propOpt('name', t.str),
-              t.propOpt('src', t.str),
-              t.propOpt('doc', t.str),
-              t.propOpt('longText', t.str),
-              t.prop('active', t.bool),
-              t.prop('views', t.Array(t.num)),
+              t.Key('id', t.String({ascii: true, noJsonEscape: true})),
+              t.Key('ts', t.num.options({format: 'u64'})),
+              t.Key('cid', t.String({ascii: true, noJsonEscape: true})),
+              t.Key('prid', t.String({ascii: true, noJsonEscape: true})),
+              t.Key('slug', t.String({ascii: true, noJsonEscape: true})),
+              t.KeyOpt('name', t.str),
+              t.KeyOpt('src', t.str),
+              t.KeyOpt('doc', t.str),
+              t.KeyOpt('longText', t.str),
+              t.Key('active', t.bool),
+              t.Key('views', t.Array(t.num)),
             ),
           ),
-          t.prop(
+          t.Key(
             'block',
             t.Object(
-              t.prop('id', t.String({ascii: true, noJsonEscape: true})),
-              t.prop('ts', t.num.options({format: 'u64'})),
-              t.prop('cid', t.String({ascii: true, noJsonEscape: true})),
-              t.prop('slug', t.String({ascii: true, noJsonEscape: true})),
+              t.Key('id', t.String({ascii: true, noJsonEscape: true})),
+              t.Key('ts', t.num.options({format: 'u64'})),
+              t.Key('cid', t.String({ascii: true, noJsonEscape: true})),
+              t.Key('slug', t.String({ascii: true, noJsonEscape: true})),
             ),
           ),
         ),
@@ -525,12 +525,12 @@ export const testBinaryCodegen = (transcode: (system: ModuleType, type: Type, va
       const system = new ModuleType();
       const t = system.t;
       const type = t.Object(
-        t.prop('a', t.num),
-        t.prop('b', t.str),
-        t.prop('c', t.nil),
-        t.prop('d', t.bool),
-        t.prop('arr', t.Array(t.Object(t.prop('foo', t.Array(t.num)), t.prop('.!@#', t.str)))),
-        t.prop('bin', t.bin),
+        t.Key('a', t.num),
+        t.Key('b', t.str),
+        t.Key('c', t.nil),
+        t.Key('d', t.bool),
+        t.Key('arr', t.Array(t.Object(t.Key('foo', t.Array(t.num)), t.Key('.!@#', t.str)))),
+        t.Key('bin', t.bin),
       );
       const value = {
         a: 1.1,
@@ -550,7 +550,7 @@ export const testBinaryCodegen = (transcode: (system: ModuleType, type: Type, va
     test('supports "encodeUnknownFields" property', () => {
       const system = new ModuleType();
       const t = system.t;
-      const type = t.Object(t.prop('a', t.Object().options({encodeUnknownKeys: true})));
+      const type = t.Object(t.Key('a', t.Object().options({encodeUnknownKeys: true})));
       const value = {
         a: {
           foo: 123,
@@ -563,7 +563,7 @@ export const testBinaryCodegen = (transcode: (system: ModuleType, type: Type, va
     test('supports "encodeUnknownFields" property', () => {
       const system = new ModuleType();
       const t = system.t;
-      const type = t.Object(t.prop('a', t.num), t.propOpt('b', t.num), t.prop('c', t.bool), t.propOpt('d', t.nil));
+      const type = t.Object(t.Key('a', t.num), t.KeyOpt('b', t.num), t.Key('c', t.bool), t.KeyOpt('d', t.nil));
       const json1 = {
         a: 1.1,
         b: 3,
@@ -591,18 +591,18 @@ export const testBinaryCodegen = (transcode: (system: ModuleType, type: Type, va
       const system = new ModuleType();
       const t = system.t;
       const type = t.Object(
-        t.prop(
+        t.Key(
           'collection',
           t.Object(
-            t.prop('id', t.str),
-            t.prop('ts', t.num),
-            t.prop('cid', t.str),
-            t.prop('prid', t.str),
-            t.prop('slug', t.str),
-            t.propOpt('name', t.str),
-            t.propOpt('src', t.str),
-            t.propOpt('doc', t.str),
-            t.propOpt('authz', t.str),
+            t.Key('id', t.str),
+            t.Key('ts', t.num),
+            t.Key('cid', t.str),
+            t.Key('prid', t.str),
+            t.Key('slug', t.str),
+            t.KeyOpt('name', t.str),
+            t.KeyOpt('src', t.str),
+            t.KeyOpt('doc', t.str),
+            t.KeyOpt('authz', t.str),
           ),
         ),
       );

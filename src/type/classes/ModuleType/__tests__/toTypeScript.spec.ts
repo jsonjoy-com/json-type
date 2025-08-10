@@ -22,7 +22,7 @@ test('emit a simple type interface', () => {
   const {t} = system;
   const alias = system.alias(
     'BlogPost',
-    t.Object(t.prop('id', t.str), t.prop('title', t.str), t.propOpt('body', t.str), t.propOpt('time', t.num)),
+    t.Object(t.Key('id', t.str), t.Key('title', t.str), t.KeyOpt('body', t.str), t.KeyOpt('time', t.num)),
   );
   // console.log(alias.toTypeScript());
   expect(aliasToTsText(alias)).toMatchInlineSnapshot(`
@@ -42,18 +42,18 @@ test('emit an interface with all type kinds', () => {
   const alias = system.alias(
     'BlogPost',
     t.Object(
-      t.prop('id', t.str),
-      t.prop('title', t.bool),
-      t.propOpt('body', t.str),
-      t.propOpt('time', t.num),
-      t.prop('arr', t.Array(t.str)),
-      t.prop('arrOfObjects', t.Array(t.Object(t.prop('reg', t.str)))),
-      t.prop('obj', t.Object(t.prop('reg', t.str), t.prop('arr', t.Array(t.str)))),
-      t.prop('tuple', t.Tuple([t.str, t.num, t.bool])),
-      t.prop('tupleWithRest', t.Tuple([t.str, t.num], t.bool)),
-      t.prop('tupleWithTail', t.Tuple([t.str, t.num], t.bool, [t.con('a')])),
-      t.prop('bin', t.bin),
-      t.prop('const', t.Const<'hello'>('hello')),
+      t.Key('id', t.str),
+      t.Key('title', t.bool),
+      t.KeyOpt('body', t.str),
+      t.KeyOpt('time', t.num),
+      t.Key('arr', t.Array(t.str)),
+      t.Key('arrOfObjects', t.Array(t.Object(t.Key('reg', t.str)))),
+      t.Key('obj', t.Object(t.Key('reg', t.str), t.Key('arr', t.Array(t.str)))),
+      t.Key('tuple', t.Tuple([t.str, t.num, t.bool])),
+      t.Key('tupleWithRest', t.Tuple([t.str, t.num], t.bool)),
+      t.Key('tupleWithTail', t.Tuple([t.str, t.num], t.bool, [t.con('a')])),
+      t.Key('bin', t.bin),
+      t.Key('const', t.Const<'hello'>('hello')),
     ),
   );
   // console.log(alias.toTypeScript());

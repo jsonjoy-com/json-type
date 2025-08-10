@@ -4,10 +4,10 @@ describe('.toString()', () => {
   test('prints type system with nested refs', () => {
     const system = new ModuleType();
     const {t} = system;
-    system.alias('User0', t.Object(t.prop('id', t.str), t.propOpt('address', t.Ref('Address'))));
+    system.alias('User0', t.Object(t.Key('id', t.str), t.KeyOpt('address', t.Ref('Address'))));
     system.alias('User1', t.Ref('User0'));
     const user = system.alias('User', t.Ref('User1'));
-    system.alias('Address0', t.Object(t.prop('id', t.str), t.propOpt('user', t.Ref('User'))));
+    system.alias('Address0', t.Object(t.Key('id', t.str), t.KeyOpt('user', t.Ref('User'))));
     system.alias('Address1', t.Ref('Address0'));
     const address = system.alias('Address', t.Ref('Address1'));
     expect(system.toString()).toMatchInlineSnapshot(`
