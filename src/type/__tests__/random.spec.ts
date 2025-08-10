@@ -10,11 +10,11 @@ test('generates random JSON', () => {
     return i;
   };
   const type = t.Object(
-    t.prop('id', t.str),
-    t.prop('name', t.str),
-    t.prop('tags', t.Array(t.str)),
-    t.propOpt('scores', t.Array(t.num)),
-    t.prop('refs', t.Map(t.str)),
+    t.Key('id', t.str),
+    t.Key('name', t.str),
+    t.Key('tags', t.Array(t.str)),
+    t.KeyOpt('scores', t.Array(t.num)),
+    t.Key('refs', t.Map(t.str)),
   );
   const json = Random.gen(type);
   expect(typeof json).toBe('object');

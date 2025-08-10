@@ -29,9 +29,9 @@ export type SchemaOfMap<M extends Record<string, Type>> = {
   [K in keyof M]: SchemaOf<M[K]>;
 };
 
-export type SchemaOfObjectFieldType<F> = F extends classes.ObjKeyOptType<infer K, infer V>
+export type SchemaOfObjectFieldType<F> = F extends classes.KeyOptType<infer K, infer V>
   ? schema.OptKeySchema<K, SchemaOf<V>>
-  : F extends classes.ObjKeyType<infer K, infer V>
+  : F extends classes.KeyType<infer K, infer V>
     ? schema.KeySchema<K, SchemaOf<V>>
     : never;
 

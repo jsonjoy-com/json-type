@@ -1,6 +1,6 @@
 import {type Type, t} from '..';
-import {validateTestSuite} from './validateTestSuite';
 import {ValidatorCodegen} from '../../codegen/validator/ValidatorCodegen';
+import {validateTestSuite} from './validateTestSuite';
 
 const validate = (type: Type, value: unknown) => {
   const validator = ValidatorCodegen.get({type, errors: 'object'});

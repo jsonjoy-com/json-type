@@ -1,24 +1,24 @@
-import {of} from 'rxjs';
-import {RandomJson} from '@jsonjoy.com/json-random';
+import {RandomJson, randomString} from '@jsonjoy.com/json-random';
 import {cloneBinary} from '@jsonjoy.com/util/lib/json-clone';
-import {ObjKeyOptType, type ObjKeyType, type ObjType} from '../type/classes/ObjType';
+import {of} from 'rxjs';
 import type {
+  AbsType,
   AnyType,
-  t,
-  Type,
-  StrType,
   ArrType,
   BinType,
   BoolType,
   ConType,
+  FnRxType,
   FnType,
   MapType,
   NumType,
   OrType,
   RefType,
-  AbsType,
-  FnRxType,
+  StrType,
+  Type,
+  t,
 } from '../type';
+import {KeyOptType, type KeyType, type ObjType} from '../type/classes/ObjType';
 
 export class Random {
   public static readonly gen = <T extends Type>(type: T): t.infer<T> => {
@@ -172,8 +172,8 @@ export class Random {
       ? <Record<string, unknown>>RandomJson.genObject()
       : {};
     for (const f of type.keys) {
-      const field = f as ObjKeyType<any, any>;
-      const isOptional = field instanceof ObjKeyOptType;
+      const field = f as KeyType<any, any>;
+      const isOptional = field instanceof KeyOptType;
       if (isOptional && Math.random() > 0.5) continue;
       obj[field.key] = this.gen(field.val);
     }
@@ -193,11 +193,16 @@ export class Random {
   }
 
   public str(type: StrType): string {
-    let length = Math.round(Math.random() * 10);
     const schema = type.getSchema();
+    const isAscii = schema.format === 'ascii' || schema.ascii;
     const {min, max} = schema;
-    if (min !== undefined && length < min) length = min + length;
-    if (max !== undefined && length > max) length = max;
-    return RandomJson.genString(length);
+    let targetLength = Math.round(Math.random() * 10);
+    if (min !== undefined && targetLength < min) targetLength = min + targetLength;
+    if (max !== undefined && targetLength > max) targetLength = max;
+    let str = isAscii ? randomString(['char', 32, 126, targetLength]) : RandomJson.genString(targetLength);
+    const length = str.length;
+    if (min !== undefined && length < min) str = str.padEnd(min, '.');
+    if (max !== undefined && length > max) str = str.slice(0, max);
+    return str;
   }
 }

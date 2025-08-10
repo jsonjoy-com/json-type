@@ -18,7 +18,7 @@ type ObjValueTuple<T, KS extends any[] = UnionToTuple<keyof T>, R extends any[] 
   : R;
 
 type RecordToFields<O extends Record<string, Type>> = ObjValueTuple<{
-  [K in keyof O]: classes.ObjKeyType<K extends string ? K : never, O[K]>;
+  [K in keyof O]: classes.KeyType<K extends string ? K : never, O[K]>;
 }>;
 
 export class TypeBuilder {
@@ -118,8 +118,8 @@ export class TypeBuilder {
    * @returns An object type.
    */
   public readonly object = <R extends Record<string, Type>>(record: R): classes.ObjType<RecordToFields<R>> => {
-    const keys: classes.ObjKeyType<any, any>[] = [];
-    for (const [key, value] of Object.entries(record)) keys.push(this.prop(key, value));
+    const keys: classes.KeyType<any, any>[] = [];
+    for (const [key, value] of Object.entries(record)) keys.push(this.Key(key, value));
     return new classes.ObjType<RecordToFields<R>>(keys as any).sys(this.system);
   };
 
@@ -195,16 +195,16 @@ export class TypeBuilder {
     return new classes.ArrType(item, head, tail, options).sys(this.system);
   }
 
-  public Object<F extends classes.ObjKeyType<any, any>[]>(...keys: F) {
+  public Object<F extends (classes.KeyType<any, any> | classes.KeyOptType<any, any>)[]>(...keys: F) {
     return new classes.ObjType<F>(keys).sys(this.system);
   }
 
-  public prop<K extends string, V extends Type>(key: K, value: V) {
-    return new classes.ObjKeyType<K, V>(key, value).sys(this.system);
+  public Key<K extends string, V extends Type>(key: K, value: V) {
+    return new classes.KeyType<K, V>(key, value).sys(this.system);
   }
 
-  public propOpt<K extends string, V extends Type>(key: K, value: V) {
-    return new classes.ObjKeyOptType<K, V>(key, value).sys(this.system);
+  public KeyOpt<K extends string, V extends Type>(key: K, value: V) {
+    return new classes.KeyOptType<K, V>(key, value).sys(this.system);
   }
 
   public Map<T extends Type>(val: T, key?: Type, options?: schema.Optional<schema.MapSchema>) {
@@ -259,11 +259,15 @@ export class TypeBuilder {
       case 'obj': {
         const fields = node.keys.map((f: any) =>
           f.optional
-            ? this.propOpt(f.key, this.import(f.value)).options(f)
-            : this.prop(f.key, this.import(f.value)).options(f),
+            ? this.KeyOpt(f.key, this.import(f.value)).options(f)
+            : this.Key(f.key, this.import(f.value)).options(f),
         );
         return this.Object(...fields).options(node);
       }
+      case 'key':
+        return node.optional
+          ? this.KeyOpt(node.key, this.import(node.value as schema.Schema)).options(node)
+          : this.Key(node.key, this.import(node.value as schema.Schema)).options(node);
       case 'map':
         return this.Map(this.import(node.value), node.key ? this.import(node.key) : undefined, node);
       case 'con':
@@ -305,7 +309,7 @@ export class TypeBuilder {
             ? this.Array(this.from(value[0]))
             : this.tuple(...value.map((v) => this.from(v)));
         }
-        return this.Object(...Object.entries(value).map(([key, value]) => this.prop(key, this.from(value))));
+        return this.Object(...Object.entries(value).map(([key, value]) => this.Key(key, this.from(value))));
       default:
         return this.any;
     }

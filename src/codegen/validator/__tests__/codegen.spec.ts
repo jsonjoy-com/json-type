@@ -1,7 +1,7 @@
-import {ModuleType} from '../../../type/classes/ModuleType';
 import {b} from '@jsonjoy.com/buffers/lib/b';
 import {ValidationError} from '../../../constants';
-import {type OrSchema, s, type Schema} from '../../../schema';
+import {type OrSchema, type Schema, s} from '../../../schema';
+import {ModuleType} from '../../../type/classes/ModuleType';
 import {ValidatorCodegen, type ValidatorCodegenOptions} from '../ValidatorCodegen';
 
 const exec = (schema: Schema, json: unknown, error: any, options: Partial<ValidatorCodegenOptions> = {}) => {
@@ -33,24 +33,24 @@ test('validates according to schema a POJO object', () => {
   const type = s.Object({
     decodeUnknownKeys: false,
     keys: [
-      s.prop(
+      s.Key(
         'collection',
         s.Object({
           decodeUnknownKeys: false,
           keys: [
-            s.prop('id', s.str),
-            s.prop('ts', s.num),
-            s.prop('cid', s.str),
-            s.prop('prid', s.str),
-            s.propOpt('slug', s.str),
-            s.propOpt('name', s.str),
-            s.propOpt('src', s.str),
-            s.propOpt('authz', s.str),
-            s.prop('tags', s.Array(s.str)),
+            s.Key('id', s.str),
+            s.Key('ts', s.num),
+            s.Key('cid', s.str),
+            s.Key('prid', s.str),
+            s.KeyOpt('slug', s.str),
+            s.KeyOpt('name', s.str),
+            s.KeyOpt('src', s.str),
+            s.KeyOpt('authz', s.str),
+            s.Key('tags', s.Array(s.str)),
           ],
         }),
       ),
-      s.prop('bin.', s.bin),
+      s.Key('bin.', s.bin),
     ],
   });
   const json = {
@@ -841,6 +841,24 @@ describe('"arr" type', () => {
     });
   });
 
+  test('named head 2-tuple', () => {
+    const type = s.Tuple([s.Key('num', s.num), s.Key('str', s.str)]);
+    exec(type, [0, ''], null);
+    exec(type, [1, 'x'], null);
+    exec(type, ['', 'x'], {
+      code: 'NUM',
+      errno: ValidationError.NUM,
+      message: 'Not a number.',
+      path: [0, 'num'],
+    });
+    exec(type, [-1, true], {
+      code: 'STR',
+      errno: ValidationError.STR,
+      message: 'Not a string.',
+      path: [1, 'str'],
+    });
+  });
+
   test('head + elements', () => {
     const type = s.Tuple([s.Const<true>(true)], s.num);
     exec(type, [true, 123], null);
@@ -922,7 +940,7 @@ describe('"obj" type', () => {
 
   test('object can have a field of any type', () => {
     const type = s.Object({
-      keys: [s.prop('foo', s.any)],
+      keys: [s.Key('foo', s.any)],
     });
     exec(type, {foo: 123}, null);
     exec(type, {foo: null}, null);
@@ -941,7 +959,7 @@ describe('"obj" type', () => {
 
   test('can detect extra properties in object', () => {
     const type = s.Object({
-      keys: [s.prop('foo', s.any), s.propOpt('zup', s.any)],
+      keys: [s.Key('foo', s.any), s.KeyOpt('zup', s.any)],
     });
     exec(type, {foo: 123}, null);
     exec(type, {foo: 123, zup: 'asdf'}, null);
@@ -960,7 +978,7 @@ describe('"obj" type', () => {
 
   test('can disable extra property check', () => {
     const type = s.Object({
-      keys: [s.prop('foo', s.any), s.propOpt('zup', s.any)],
+      keys: [s.Key('foo', s.any), s.KeyOpt('zup', s.any)],
     });
     exec(type, {foo: 123}, null, {skipObjectExtraFieldsCheck: true});
     exec(type, {foo: 123, zup: 'asdf'}, null, {
@@ -1035,7 +1053,7 @@ describe('"or" type', () => {
   });
 
   test('checks inner type', () => {
-    const type = s.Or(s.Object(s.prop('type', s.Const<'num'>('num')), s.prop('foo', s.num)), s.num);
+    const type = s.Or(s.Object(s.Key('type', s.Const<'num'>('num')), s.Key('foo', s.num)), s.num);
     exec(type, {type: 'num', foo: 123}, null);
     exec(
       type,
@@ -1052,7 +1070,7 @@ describe('"or" type', () => {
   test('object key can be of multiple types', () => {
     const type = s.Object({
       keys: [
-        s.prop('foo', {
+        s.Key('foo', {
           ...s.Or(s.num, s.str),
           discriminator: [
             'if',
@@ -1080,7 +1098,7 @@ describe('"or" type', () => {
   test('array can be of multiple types', () => {
     const type = s.Object({
       keys: [
-        s.prop(
+        s.Key(
           'gg',
           s.Array({
             ...s.Or(s.num, s.str),
@@ -1308,7 +1326,7 @@ describe('custom validators', () => {
   test('returns the error, which validator throws', () => {
     const system = new ModuleType();
     const type = system.t.Object(
-      system.t.prop(
+      system.t.Key(
         'id',
         system.t.str.validator((id: string): void => {
           if (!/^[a-z]+$/.test(id)) throw new Error('Asset ID must be a string.');
@@ -1336,7 +1354,7 @@ describe('custom validators', () => {
         throw new Error('Asset ID must be a string.');
       }, 'assetId')
       .alias('ID');
-    const type = system.t.Object(system.t.prop('id', system.t.Ref('ID')));
+    const type = system.t.Object(system.t.Key('id', system.t.Ref('ID')));
     const validator = ValidatorCodegen.get({type, errors: 'object'});
     expect(validator({id: 'xxxxxxx'})).toBe(null);
     expect(validator({id: 'y'})).toBe(null);

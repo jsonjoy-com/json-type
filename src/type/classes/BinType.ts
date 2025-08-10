@@ -1,7 +1,7 @@
 import {printTree} from 'tree-dump/lib/printTree';
 import * as schema from '../../schema';
-import {AbsType} from './AbsType';
 import type {SchemaOf, Type} from '../types';
+import {AbsType} from './AbsType';
 
 export class BinType<T extends Type = any> extends AbsType<schema.BinSchema> {
   constructor(

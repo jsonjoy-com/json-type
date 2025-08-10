@@ -1,7 +1,7 @@
 import {t} from '../../..';
 import {ValidatorCodegen} from '../../../codegen/validator/ValidatorCodegen';
-import {validateSchema} from '../../../schema/validate';
 import {typeToJsonSchema} from '../../../json-schema/converter';
+import {validateSchema} from '../../../schema/validate';
 
 test('can use helper functions to define type schema fields', () => {
   const string = t.String();

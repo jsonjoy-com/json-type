@@ -1,6 +1,6 @@
 import {t} from '..';
-import {Discriminator} from '../discriminator';
 import {ValidatorCodegen} from '../../codegen/validator/ValidatorCodegen';
+import {Discriminator} from '../discriminator';
 
 describe('Discriminator', () => {
   test('can find const discriminator at root node', () => {
@@ -28,7 +28,7 @@ describe('Discriminator', () => {
   });
 
   test('can find const discriminator in a object', () => {
-    const t1 = t.Object(t.prop('op', t.Const('replace')), t.prop('value', t.num), t.prop('path', t.str));
+    const t1 = t.Object(t.Key('op', t.Const('replace')), t.Key('value', t.num), t.Key('path', t.str));
     const d1 = Discriminator.find(t1);
     expect(d1!.toSpecifier()).toBe('["/op","con","replace"]');
   });
@@ -47,7 +47,7 @@ describe('Discriminator', () => {
 
   test('can find const node in nested fields', () => {
     const t1 = t.tuple(t.str, t.tuple(t.num, t.Const('foo')));
-    const t2 = t.Object(t.prop('type', t.tuple(t.Const(25), t.str, t.any)), t.prop('value', t.num));
+    const t2 = t.Object(t.Key('type', t.tuple(t.Const(25), t.str, t.any)), t.Key('value', t.num));
     const d1 = Discriminator.find(t1);
     const d2 = Discriminator.find(t2);
     // const d3 = Discriminator.find(t3);
@@ -71,12 +71,12 @@ describe('OrType', () => {
 
   test('can automatically infer discriminator in objects', () => {
     const or = t.Or(
-      t.Object(t.prop('op', t.Const('replace')), t.prop('path', t.str), t.prop('value', t.any)),
-      t.Object(t.prop('op', t.Const('add')), t.prop('path', t.str), t.prop('value', t.any)),
-      t.Object(t.prop('op', t.Const('test')), t.prop('path', t.str), t.prop('value', t.any)),
-      t.Object(t.prop('op', t.Const('move')), t.prop('path', t.str), t.prop('from', t.str)),
-      t.Object(t.prop('op', t.Const('copy')), t.prop('path', t.str), t.prop('from', t.str)),
-      t.Object(t.prop('op', t.Const('remove')), t.prop('path', t.str)),
+      t.Object(t.Key('op', t.Const('replace')), t.Key('path', t.str), t.Key('value', t.any)),
+      t.Object(t.Key('op', t.Const('add')), t.Key('path', t.str), t.Key('value', t.any)),
+      t.Object(t.Key('op', t.Const('test')), t.Key('path', t.str), t.Key('value', t.any)),
+      t.Object(t.Key('op', t.Const('move')), t.Key('path', t.str), t.Key('from', t.str)),
+      t.Object(t.Key('op', t.Const('copy')), t.Key('path', t.str), t.Key('from', t.str)),
+      t.Object(t.Key('op', t.Const('remove')), t.Key('path', t.str)),
     );
     const validator = ValidatorCodegen.get({type: or, errors: 'boolean'});
     expect(validator({op: 'replace', path: '/foo', value: 123})).toBe(false);

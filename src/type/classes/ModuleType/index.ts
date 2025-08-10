@@ -1,11 +1,11 @@
+import {printTree} from 'tree-dump/lib/printTree';
+import {Walker} from '../../../schema/Walker';
 import {TypeBuilder} from '../../TypeBuilder';
 import {AliasType} from '../AliasType';
-import {printTree} from 'tree-dump/lib/printTree';
-import type {RefType} from '../RefType';
 import type {Printable} from 'tree-dump/lib/types';
 import type {KeySchema, ModuleSchema, ObjSchema, Schema, TypeMap} from '../../../schema';
 import type {Type} from '../../../type';
-import {Walker} from '../../../schema/Walker';
+import type {RefType} from '../RefType';
 
 export class ModuleType implements Printable {
   public static readonly from = (module: ModuleSchema): ModuleType => {

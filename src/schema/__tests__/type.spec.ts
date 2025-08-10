@@ -5,16 +5,16 @@ test('can generate any type', () => {
     kind: 'obj',
     title: 'User address',
     description: 'Various address fields for user',
-    keys: [...s.Object(s.prop('street', s.String()), s.prop('zip', s.String())).keys],
+    keys: [...s.Object(s.Key('street', s.String()), s.Key('zip', s.String())).keys],
   };
   const userType = s.Object(
-    s.prop('id', s.Number({format: 'i'})),
-    s.prop('alwaysOne', s.Const<1>(1)),
-    s.prop('name', s.String()),
-    s.prop('address', address),
-    s.prop('timeCreated', s.Number()),
-    s.prop('tags', s.Array(s.Or(s.Number(), s.String()))),
-    s.prop('elements', s.Map(s.str)),
+    s.Key('id', s.Number({format: 'i'})),
+    s.Key('alwaysOne', s.Const<1>(1)),
+    s.Key('name', s.String()),
+    s.Key('address', address),
+    s.Key('timeCreated', s.Number()),
+    s.Key('tags', s.Array(s.Or(s.Number(), s.String()))),
+    s.Key('elements', s.Map(s.str)),
   );
 
   expect(userType).toMatchObject({

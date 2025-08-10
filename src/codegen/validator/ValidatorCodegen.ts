@@ -1,12 +1,9 @@
 import {Codegen} from '@jsonjoy.com/codegen';
 import {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
-import {ValidationError, ValidationErrorMessage} from '../../constants';
+import {normalizeAccessor} from '@jsonjoy.com/codegen/lib/util/normalizeAccessor';
 import {deepEqualCodegen} from '@jsonjoy.com/util/lib/json-equal/deepEqualCodegen';
-import {AbstractCodegen} from '../AbstractCodege';
-import {floats, ints, uints} from '../../util';
-import {isAscii, isUtf8} from '../../util/stringFormats';
+import {ValidationError, ValidationErrorMessage} from '../../constants';
 import {
-  ObjKeyOptType,
   type AnyType,
   type ArrType,
   type BinType,
@@ -14,18 +11,22 @@ import {
   type ConType,
   type MapType,
   type NumType,
+  KeyOptType,
   type ObjType,
   type OrType,
   type RefType,
   type StrType,
   type Type,
+  type KeyType,
 } from '../../type';
-import {normalizeAccessor} from '@jsonjoy.com/codegen/lib/util/normalizeAccessor';
-import {lazyKeyedFactory} from '../util';
+import {floats, ints, uints} from '../../util';
+import {isAscii, isUtf8} from '../../util/stringFormats';
+import {AbstractCodegen} from '../AbstractCodege';
 import {DiscriminatorCodegen} from '../discriminator';
-import {canSkipObjectKeyUndefinedCheck} from './util';
-import type {JsonTypeValidator} from './types';
 import type {SchemaPath} from '../types';
+import {lazyKeyedFactory} from '../util';
+import type {JsonTypeValidator} from './types';
+import {canSkipObjectKeyUndefinedCheck} from './util';
 
 export interface ValidatorCodegenOptions {
   /** Type for which to generate the validator. */
@@ -379,7 +380,7 @@ export class ValidatorCodegen extends AbstractCodegen {
       const accessor = normalizeAccessor(field.key);
       const keyPath = [...path, field.key];
       codegen.js(/* js */ `var ${rv} = ${r.use()}${accessor};`);
-      if (field instanceof ObjKeyOptType) {
+      if (field instanceof KeyOptType) {
         codegen.js(/* js */ `if (${rv} !== undefined) {`);
         this.onNode(keyPath, new JsExpression(() => rv), field.val);
         codegen.js(/* js */ `}`);
@@ -392,6 +393,10 @@ export class ValidatorCodegen extends AbstractCodegen {
         this.onNode(keyPath, new JsExpression(() => rv), field.val);
       }
     }
+  }
+
+  protected onKey(path: SchemaPath, r: JsExpression, type: KeyType<any, any>): void {
+    this.onNode([...path, type.key], r, type.val);
   }
 
   protected onMap(path: SchemaPath, r: JsExpression, type: MapType): void {

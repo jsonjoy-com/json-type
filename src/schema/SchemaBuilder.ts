@@ -137,7 +137,7 @@ export class SchemaBuilder {
   }
 
   /** Declares an object property. */
-  public prop<K extends string, V extends _.Schema>(
+  public Key<K extends string, V extends _.Schema>(
     key: K,
     value: V,
     options: Omit<_.NoT<_.KeySchema<K, V>>, 'key' | 'value' | 'optional'> = {},
@@ -151,7 +151,7 @@ export class SchemaBuilder {
   }
 
   /** Declares an optional object property. */
-  public propOpt<K extends string, V extends _.Schema>(
+  public KeyOpt<K extends string, V extends _.Schema>(
     key: K,
     value: V,
     options: Omit<_.NoT<_.KeySchema<K, V>>, 'key' | 'value' | 'optional'> = {},

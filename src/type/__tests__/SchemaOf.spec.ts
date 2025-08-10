@@ -61,6 +61,15 @@ describe('"arr" type', () => {
     const v2: T = [123, 'abc', 1];
   });
 
+  test('named 2-tuple', () => {
+    const type = t.Tuple([t.num, t.Key('id', t.str)]);
+    type S = SchemaOf<typeof type>;
+    type T = TypeOf<S>;
+    const v1: T = [123, 'abc'];
+    // @ts-expect-error
+    const v2: T = [123, 'abc', 1];
+  });
+
   test('2-tuple using shorthand', () => {
     const type = t.tuple(t.num, t.str);
     type S = SchemaOf<typeof type>;
@@ -105,14 +114,14 @@ describe('"arr" type', () => {
 });
 
 test('object', () => {
-  const type = t.Object(t.prop('a', t.num), t.prop('b', t.str));
+  const type = t.Object(t.Key('a', t.num), t.Key('b', t.str));
   type S = SchemaOf<typeof type>;
   type T = TypeOf<S>;
   const v: T = {a: 123, b: 'abc'};
 });
 
 test('optional field', () => {
-  const type = t.Object(t.prop('a', t.num), t.propOpt('b', t.str));
+  const type = t.Object(t.Key('a', t.num), t.KeyOpt('b', t.str));
   type S = SchemaOf<typeof type>;
   type T = TypeOf<S>;
   const v: T = {a: 123};

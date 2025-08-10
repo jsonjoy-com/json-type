@@ -1,11 +1,11 @@
 /* tslint:disable no-console */
 
-import {ModuleType} from '..';
-import {CborEncoder} from '@jsonjoy.com/json-pack/lib/cbor/CborEncoder';
-import {JsonEncoder} from '@jsonjoy.com/json-pack/lib/json/JsonEncoder';
-import type {CompiledBinaryEncoder} from '../codegen/types';
-import {EncodingFormat} from '@jsonjoy.com/json-pack/lib/constants';
 import {Writer} from '@jsonjoy.com/buffers/lib/Writer';
+import {CborEncoder} from '@jsonjoy.com/json-pack/lib/cbor/CborEncoder';
+import {EncodingFormat} from '@jsonjoy.com/json-pack/lib/constants';
+import {JsonEncoder} from '@jsonjoy.com/json-pack/lib/json/JsonEncoder';
+import {ModuleType} from '..';
+import type {CompiledBinaryEncoder} from '../codegen/types';
 
 const system = new ModuleType();
 const {t} = system;
@@ -13,29 +13,29 @@ const {t} = system;
 const response = system.alias(
   'Response',
   t.Object(
-    t.prop(
+    t.Key(
       'collection',
       t.Object(
-        t.prop('id', t.String({ascii: true, noJsonEscape: true})),
-        t.prop('ts', t.num.options({format: 'u64'})),
-        t.prop('cid', t.String({ascii: true, noJsonEscape: true})),
-        t.prop('prid', t.String({ascii: true, noJsonEscape: true})),
-        t.prop('slug', t.String({ascii: true, noJsonEscape: true})),
-        t.propOpt('name', t.str),
-        t.propOpt('src', t.str),
-        t.propOpt('doc', t.str),
-        t.propOpt('longText', t.str),
-        t.prop('active', t.bool),
-        t.prop('views', t.Array(t.num)),
+        t.Key('id', t.String({ascii: true, noJsonEscape: true})),
+        t.Key('ts', t.num.options({format: 'u64'})),
+        t.Key('cid', t.String({ascii: true, noJsonEscape: true})),
+        t.Key('prid', t.String({ascii: true, noJsonEscape: true})),
+        t.Key('slug', t.String({ascii: true, noJsonEscape: true})),
+        t.KeyOpt('name', t.str),
+        t.KeyOpt('src', t.str),
+        t.KeyOpt('doc', t.str),
+        t.KeyOpt('longText', t.str),
+        t.Key('active', t.bool),
+        t.Key('views', t.Array(t.num)),
       ),
     ),
-    t.prop(
+    t.Key(
       'block',
       t.Object(
-        t.prop('id', t.String({ascii: true, noJsonEscape: true})),
-        t.prop('ts', t.num.options({format: 'u64'})),
-        t.prop('cid', t.String({ascii: true, noJsonEscape: true})),
-        t.prop('slug', t.String({ascii: true, noJsonEscape: true})),
+        t.Key('id', t.String({ascii: true, noJsonEscape: true})),
+        t.Key('ts', t.num.options({format: 'u64'})),
+        t.Key('cid', t.String({ascii: true, noJsonEscape: true})),
+        t.Key('slug', t.String({ascii: true, noJsonEscape: true})),
       ),
     ),
   ),

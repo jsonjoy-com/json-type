@@ -1,5 +1,5 @@
-import type {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
 import type {Codegen} from '@jsonjoy.com/codegen';
+import type {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
 import type {
   AnyType,
   ArrType,
@@ -9,6 +9,7 @@ import type {
   MapType,
   NumType,
   ObjType,
+  KeyType,
   OrType,
   RefType,
   StrType,
@@ -27,6 +28,7 @@ export abstract class AbstractCodegen<Fn extends (...deps: any[]) => any = (...d
   protected abstract onBin(path: SchemaPath, r: JsExpression, type: BinType): void;
   protected abstract onArr(path: SchemaPath, r: JsExpression, type: ArrType): void;
   protected abstract onObj(path: SchemaPath, r: JsExpression, type: ObjType): void;
+  protected abstract onKey(path: SchemaPath, r: JsExpression, type: KeyType<any, any>): void;
   protected abstract onMap(path: SchemaPath, r: JsExpression, type: MapType): void;
   protected abstract onRef(path: SchemaPath, r: JsExpression, type: RefType): void;
   protected abstract onOr(path: SchemaPath, r: JsExpression, type: OrType): void;
@@ -61,6 +63,9 @@ export abstract class AbstractCodegen<Fn extends (...deps: any[]) => any = (...d
         break;
       case 'obj':
         this.onObj(path, r, type as ObjType);
+        break;
+      case 'key':
+        this.onKey(path, r, type as KeyType<any, any>);
         break;
       case 'map':
         this.onMap(path, r, type as MapType);

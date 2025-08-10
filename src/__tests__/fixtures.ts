@@ -4,10 +4,14 @@
  * across multiple test modules.
  */
 
-import {s} from '../schema';
-import {t} from '../type';
-import {genRandomExample} from '@jsonjoy.com/json-random/lib/examples';
 import {RandomJson} from '@jsonjoy.com/json-random';
+import {genRandomExample} from '@jsonjoy.com/json-random/lib/examples';
+import {s} from '../schema';
+import {ModuleType} from '../type/classes/ModuleType';
+import type {Type} from '../type';
+
+const mod = new ModuleType();
+export const t = mod.t;
 
 export const randomJson = () => {
   return Math.random() < 0.5 ? genRandomExample() : RandomJson.generate();
@@ -33,32 +37,35 @@ export const primitiveSchemas = {
 export const compositeSchemas = {
   simpleArray: s.Array(s.String()),
   arrayWithBounds: s.Array(s.Number(), {min: 2, max: 5}),
-  simpleObject: s.Object([s.prop('id', s.String()), s.prop('name', s.String()), s.prop('active', s.Boolean())]),
+  simpleObject: s.Object([s.Key('id', s.String()), s.Key('name', s.String()), s.Key('active', s.Boolean())]),
   objectWithOptionalFields: s.Object([
-    s.prop('id', s.String()),
-    s.propOpt('name', s.String()),
-    s.propOpt('count', s.Number()),
+    s.Key('id', s.String()),
+    s.KeyOpt('name', s.String()),
+    s.KeyOpt('count', s.Number()),
   ]),
   nestedObject: s.Object([
-    s.prop(
+    s.Key(
       'user',
       s.Object([
-        s.prop('id', s.Number()),
-        s.prop('profile', s.Object([s.prop('name', s.String()), s.prop('email', s.String())])),
+        s.Key('id', s.Number()),
+        s.Key('profile', s.Object([s.Key('name', s.String()), s.Key('email', s.String())])),
       ]),
     ),
-    s.prop('tags', s.Array(s.String())),
+    s.Key('tags', s.Array(s.String())),
   ]),
   tuple: s.Tuple([s.String(), s.Number(), s.Boolean()]),
   map: s.Map(s.String()),
-  mapWithComplexValue: s.Map(s.Object([s.prop('value', s.Number()), s.prop('label', s.String())])),
+  mapWithComplexValue: s.Map(s.Object([s.Key('value', s.Number()), s.Key('label', s.String())])),
   union: s.Or(s.String(), s.Number(), s.Boolean()),
   complexUnion: s.Or(
     s.String(),
-    s.Object([s.prop('type', s.Const('object' as const)), s.prop('data', s.Any())]),
+    s.Object([s.Key('type', s.Const('object' as const)), s.Key('data', s.Any())]),
     s.Array(s.Number()),
   ),
   binary: s.bin,
+  doubleMap: s.Map(s.Map(s.str)),
+  nestedMaps: s.Map(s.Map(s.Map(s.nil))),
+  nestedArrays: s.Array(s.Array(s.Array(s.str))),
 } as const;
 
 /**
@@ -78,6 +85,24 @@ export const schemaCategories = {
   all: allSchemas,
 } as const;
 
+const primitivesModule = new ModuleType();
+export const primitiveTypes = Object.entries(primitiveSchemas).reduce(
+  (acc, [key, schema]) => {
+    acc[key] = primitivesModule.t.import(schema);
+    return acc;
+  },
+  {} as Record<string, Type>,
+);
+
+const compositesModule = new ModuleType();
+export const compositeTypes = Object.entries(compositeSchemas).reduce(
+  (acc, [key, schema]) => {
+    acc[key] = compositesModule.t.import(schema);
+    return acc;
+  },
+  {} as Record<string, Type>,
+);
+
 /**
  * User profile schema with nested objects and optional fields
  */
@@ -92,34 +117,35 @@ export const User = t
     age: t.Number({gte: 0, lte: 150}),
     verified: t.bool,
   })
-  .opt('avatar', t.String({format: 'ascii'}));
+  .opt('avatar', t.String({format: 'ascii'}))
+  .alias('User').type;
 
 /**
  * Product catalog schema with arrays and formatted numbers
  */
 export const Product = t.Object(
-  t.prop('id', t.String({format: 'ascii'})),
-  t.prop('name', t.String({min: 1, max: 100})),
-  t.prop('price', t.Number({format: 'f64', gte: 0})),
-  t.prop('inStock', t.bool),
-  t.prop('categories', t.Array(t.str, {min: 1})),
-  t.prop('tags', t.Array(t.str)),
-  t.propOpt('description', t.String({max: 1000})),
-  t.propOpt('discount', t.Number({gte: 0, lte: 1})),
+  t.Key('id', t.String({format: 'ascii'})),
+  t.Key('name', t.String({min: 1, max: 100})),
+  t.Key('price', t.Number({format: 'f64', gte: 0})),
+  t.Key('inStock', t.bool),
+  t.Key('categories', t.Array(t.str, {min: 1})),
+  t.Key('tags', t.Array(t.str)),
+  t.KeyOpt('description', t.String({max: 1000})),
+  t.KeyOpt('discount', t.Number({gte: 0, lte: 1})),
 );
 
 /**
  * Blog post schema with timestamps and rich content
  */
 export const BlogPost = t.Object(
-  t.prop('id', t.str),
-  t.prop('title', t.String({min: 1, max: 200})),
-  t.prop('content', t.str),
-  t.prop('author', t.Ref<typeof User>('User')),
-  t.prop('publishedAt', t.Number({format: 'u64'})),
-  t.prop('status', t.enum('draft', 'published', 'archived')),
-  t.propOpt('updatedAt', t.Number({format: 'u64'})),
-  t.propOpt('tags', t.Array(t.str)),
+  t.Key('id', t.str),
+  t.Key('title', t.String({min: 1, max: 200})),
+  t.Key('content', t.str),
+  t.Key('author', t.Ref<typeof User>('User')),
+  t.Key('publishedAt', t.Number({format: 'u64'})),
+  t.Key('status', t.enum('draft', 'published', 'archived')),
+  t.KeyOpt('updatedAt', t.Number({format: 'u64'})),
+  t.KeyOpt('tags', t.Array(t.str)),
 );
 
 /**
@@ -145,21 +171,21 @@ export const ApiResponse = t.Or(
  * File metadata schema with binary data
  */
 export const FileMetadata = t.Object(
-  t.prop('name', t.str),
-  t.prop('size', t.Number({format: 'u64', gte: 0})),
-  t.prop('mimeType', t.str),
-  t.prop('data', t.Binary(t.any)),
-  t.prop('checksum', t.String({format: 'ascii', min: 64, max: 64})),
-  t.prop('uploadedAt', t.Number({format: 'u64'})),
-  t.propOpt('metadata', t.Map(t.str)),
+  t.Key('name', t.str),
+  t.Key('size', t.Number({format: 'u64', gte: 0})),
+  t.Key('mimeType', t.str),
+  t.Key('data', t.Binary(t.any)),
+  t.Key('checksum', t.String({format: 'ascii', min: 64, max: 64})),
+  t.Key('uploadedAt', t.Number({format: 'u64'})),
+  t.KeyOpt('metadata', t.Map(t.str)),
 );
 
 /**
  * Configuration schema with maps and default values
  */
 export const Configuration = t.Object(
-  t.prop('environment', t.enum('development', 'staging', 'production')),
-  t.prop(
+  t.Key('environment', t.enum('development', 'staging', 'production')),
+  t.Key(
     'database',
     t.object({
       host: t.str,
@@ -167,9 +193,9 @@ export const Configuration = t.Object(
       name: t.str,
     }),
   ),
-  t.prop('features', t.Map(t.bool)),
-  t.prop('secrets', t.Map(t.str)),
-  t.propOpt(
+  t.Key('features', t.Map(t.bool)),
+  t.Key('secrets', t.Map(t.str)),
+  t.KeyOpt(
     'logging',
     t.object({
       level: t.enum('debug', 'info', 'warn', 'error'),
@@ -181,30 +207,32 @@ export const Configuration = t.Object(
 /**
  * Event data schema with tuples and coordinates
  */
-export const Event = t.Object(
-  t.prop('id', t.String({format: 'ascii'})),
-  t.prop('type', t.enum('click', 'view', 'purchase', 'signup')),
-  t.prop('timestamp', t.Number({format: 'u64'})),
-  t.prop('userId', t.maybe(t.str)),
-  t.prop('location', t.Tuple([t.Number({format: 'f64'}), t.Number({format: 'f64'})])),
-  t.prop('metadata', t.Map(t.Or(t.str, t.num, t.bool))),
-  t.propOpt('sessionId', t.str),
-);
+export const Event = t
+  .Object(
+    t.Key('id', t.String({format: 'ascii'})),
+    t.Key('type', t.enum('click', 'view', 'purchase', 'signup')),
+    t.Key('timestamp', t.Number({format: 'u64'})),
+    t.Key('userId', t.maybe(t.str)),
+    t.Key('location', t.Tuple([t.Number({format: 'f64'}), t.Number({format: 'f64'})])),
+    t.Key('metadata', t.Map(t.Or(t.str, t.num, t.bool))),
+    t.KeyOpt('sessionId', t.str),
+  )
+  .alias('Event').type;
 
 /**
  * Contact information schema with formatted strings
  */
 export const ContactInfo = t.Object(
-  t.prop(
+  t.Key(
     'name',
     t.object({
       first: t.String({min: 1}),
       last: t.String({min: 1}),
     }),
   ),
-  t.prop('emails', t.Array(t.String({format: 'ascii'}), {min: 1})),
-  t.prop('phones', t.Array(t.tuple(t.enum('home', 'work', 'mobile'), t.str))),
-  t.propOpt(
+  t.Key('emails', t.Array(t.String({format: 'ascii'}), {min: 1})),
+  t.Key('phones', t.Array(t.tuple(t.enum('home', 'work', 'mobile'), t.str))),
+  t.KeyOpt(
     'address',
     t.object({
       street: t.str,
@@ -213,20 +241,20 @@ export const ContactInfo = t.Object(
       postalCode: t.str,
     }),
   ),
-  t.propOpt('socialMedia', t.Map(t.String({format: 'ascii'}))),
+  t.KeyOpt('socialMedia', t.Map(t.String({format: 'ascii'}))),
 );
 
 /**
  * Database record schema with references
  */
 export const DatabaseRecord = t.Object(
-  t.prop('id', t.String({format: 'ascii'})),
-  t.prop('createdAt', t.Number({format: 'u64'})),
-  t.prop('updatedAt', t.Number({format: 'u64'})),
-  t.prop('version', t.Number({format: 'u32', gte: 1})),
-  t.prop('createdBy', t.Ref<typeof User>('User')),
-  t.propOpt('updatedBy', t.Ref<typeof User>('User')),
-  t.propOpt('deletedAt', t.Number({format: 'u64'})),
+  t.Key('id', t.String({format: 'ascii'})),
+  t.Key('createdAt', t.Number({format: 'u64'})),
+  t.Key('updatedAt', t.Number({format: 'u64'})),
+  t.Key('version', t.Number({format: 'u32', gte: 1})),
+  t.Key('createdBy', t.Ref<typeof User>('User')),
+  t.KeyOpt('updatedBy', t.Ref<typeof User>('User')),
+  t.KeyOpt('deletedAt', t.Number({format: 'u64'})),
 );
 
 /**
@@ -260,7 +288,7 @@ export const EventStream = t.Function$(
  * Complex nested schema
  */
 export const ComplexNested = t.Object(
-  t.prop(
+  t.Key(
     'data',
     t.Map(
       t.Or(
@@ -278,7 +306,7 @@ export const ComplexNested = t.Object(
       ),
     ),
   ),
-  t.prop(
+  t.Key(
     'metadata',
     t.object({
       version: t.str,
@@ -287,3 +315,18 @@ export const ComplexNested = t.Object(
     }),
   ),
 );
+
+export const allSerializableTypes = {
+  ...primitiveTypes,
+  ...compositeTypes,
+  User,
+  Product,
+  BlogPost,
+  ApiResponse,
+  FileMetadata,
+  Configuration,
+  Event,
+  ContactInfo,
+  DatabaseRecord,
+  ComplexNested,
+} as const;

@@ -1,11 +1,11 @@
+import {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
+import {normalizeAccessor} from '@jsonjoy.com/codegen/lib/util/normalizeAccessor';
+import {CborEncoder} from '@jsonjoy.com/json-pack/lib/cbor/CborEncoder';
+import {KeyOptType, type KeyType, type ObjType, type Type} from '../../../type';
+import type {CompiledBinaryEncoder, SchemaPath} from '../../types';
+import {lazyKeyedFactory} from '../../util';
 import {AbstractBinaryCodegen} from '../AbstractBinaryCodegen';
 import {writer} from '../writer';
-import {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
-import {CborEncoder} from '@jsonjoy.com/json-pack/lib/cbor/CborEncoder';
-import {lazyKeyedFactory} from '../../util';
-import {ObjKeyOptType, type ObjType, type Type} from '../../../type';
-import type {CompiledBinaryEncoder, SchemaPath} from '../../types';
-import {normalizeAccessor} from '@jsonjoy.com/codegen/lib/util/normalizeAccessor';
 
 export class CborCodegen extends AbstractBinaryCodegen<CborEncoder> {
   public static readonly get = lazyKeyedFactory((type: Type, name?: string) => {
@@ -23,8 +23,8 @@ export class CborCodegen extends AbstractBinaryCodegen<CborEncoder> {
     const r = codegen.r();
     const fields = type.keys;
     const length = fields.length;
-    const requiredFields = fields.filter((field) => !(field instanceof ObjKeyOptType));
-    const optionalFields = fields.filter((field) => field instanceof ObjKeyOptType);
+    const requiredFields = fields.filter((field) => !(field instanceof KeyOptType));
+    const optionalFields = fields.filter((field) => field instanceof KeyOptType);
     const requiredLength = requiredFields.length;
     const optionalLength = optionalFields.length;
     const encodeUnknownFields = !!type.schema.encodeUnknownKeys;
@@ -77,6 +77,10 @@ export class CborCodegen extends AbstractBinaryCodegen<CborEncoder> {
       emitUnknownFields();
       this.blob(this.gen((encoder) => encoder.writeEndObj()));
     }
+  }
+
+  protected onKey(path: SchemaPath, r: JsExpression, type: KeyType<any, any>): void {
+    this.onNode([...path, type.key], r, type.val);
   }
 
   protected genEncoder(type: Type): CompiledBinaryEncoder {

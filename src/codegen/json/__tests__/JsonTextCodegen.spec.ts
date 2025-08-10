@@ -1,7 +1,7 @@
+import {parse} from '@jsonjoy.com/json-pack/lib/json-binary/codec';
 import {t} from '../../../type';
 import {ModuleType} from '../../../type/classes/ModuleType';
 import {JsonTextCodegen} from '../JsonTextCodegen';
-import {parse} from '@jsonjoy.com/json-pack/lib/json-binary/codec';
 
 describe('"any" type', () => {
   test('stringify simple JSON', () => {
@@ -100,7 +100,7 @@ describe('"or" type', () => {
 test('encodes extra fields with "encodeUnknownFields" when referenced by ref', () => {
   const system = new ModuleType();
   const {t} = system;
-  const type = t.Object(t.prop('foo', t.str), t.propOpt('zzz', t.num)).options({encodeUnknownKeys: true});
+  const type = t.Object(t.Key('foo', t.str), t.KeyOpt('zzz', t.num)).options({encodeUnknownKeys: true});
   system.alias('foo', type);
   const type2 = system.t.Ref('foo');
   const encoder = JsonTextCodegen.get(type2);
@@ -110,8 +110,8 @@ test('encodes extra fields with "encodeUnknownFields" when referenced by ref', (
 test('add circular reference test', () => {
   const system = new ModuleType();
   const {t} = system;
-  const user = system.alias('User', t.Object(t.prop('id', t.str), t.propOpt('address', t.Ref('Address'))));
-  const address = system.alias('Address', t.Object(t.prop('id', t.str), t.propOpt('user', t.Ref('User'))));
+  const user = system.alias('User', t.Object(t.Key('id', t.str), t.KeyOpt('address', t.Ref('Address'))));
+  const address = system.alias('Address', t.Object(t.Key('id', t.str), t.KeyOpt('user', t.Ref('User'))));
   const value1 = {
     id: 'user-1',
     address: {
@@ -154,10 +154,10 @@ test('add circular reference test', () => {
 test('add circular reference test with chain of refs', () => {
   const system = new ModuleType();
   const {t} = system;
-  system.alias('User0', t.Object(t.prop('id', t.str), t.propOpt('address', t.Ref('Address'))));
+  system.alias('User0', t.Object(t.Key('id', t.str), t.KeyOpt('address', t.Ref('Address'))));
   system.alias('User1', t.Ref('User0'));
   const user = system.alias('User', t.Ref('User1'));
-  system.alias('Address0', t.Object(t.prop('id', t.str), t.propOpt('user', t.Ref('User'))));
+  system.alias('Address0', t.Object(t.Key('id', t.str), t.KeyOpt('user', t.Ref('User'))));
   system.alias('Address1', t.Ref('Address0'));
   const address = system.alias('Address', t.Ref('Address1'));
   const value1 = {

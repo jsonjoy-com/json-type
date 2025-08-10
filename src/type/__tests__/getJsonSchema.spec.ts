@@ -4,29 +4,29 @@ import {typeToJsonSchema} from '../../json-schema';
 test('can print a type', () => {
   const type = t
     .Object(
-      t.prop('id', t.str).options({
+      t.Key('id', t.str).options({
         description: 'The id of the object',
       }),
-      t.prop('tags', t.Array(t.str).options({title: 'Tags'})).options({title: 'Always use tags'}),
-      t.propOpt('optional', t.any),
-      t.prop('booleanProperty', t.bool),
-      t.prop('numberProperty', t.num.options({format: 'f64', gt: 3.14})),
-      t.prop('binaryProperty', t.bin.options({format: 'cbor'})),
-      t.prop('arrayProperty', t.Array(t.any)),
-      t.prop('objectProperty', t.Object(t.prop('id', t.str.options({ascii: true, min: 3, max: 128})))),
-      t.prop('unionProperty', t.Or(t.str, t.num, t.nil.options({description: ''}))),
-      t.propOpt('enumAsConst', t.Or(t.Const('a' as const), t.Const('b' as const), t.Const('c' as const))),
-      t.propOpt('refField', t.Ref('refId')),
-      t.propOpt('und', t.undef),
-      t.prop(
+      t.Key('tags', t.Array(t.str).options({title: 'Tags'})).options({title: 'Always use tags'}),
+      t.KeyOpt('optional', t.any),
+      t.Key('booleanProperty', t.bool),
+      t.Key('numberProperty', t.num.options({format: 'f64', gt: 3.14})),
+      t.Key('binaryProperty', t.bin.options({format: 'cbor'})),
+      t.Key('arrayProperty', t.Array(t.any)),
+      t.Key('objectProperty', t.Object(t.Key('id', t.str.options({ascii: true, min: 3, max: 128})))),
+      t.Key('unionProperty', t.Or(t.str, t.num, t.nil.options({description: ''}))),
+      t.KeyOpt('enumAsConst', t.Or(t.Const('a' as const), t.Const('b' as const), t.Const('c' as const))),
+      t.KeyOpt('refField', t.Ref('refId')),
+      t.KeyOpt('und', t.undef),
+      t.Key(
         'operation',
         t.Object(
-          t.prop('type', t.Const('replace' as const).options({title: 'Always use replace'})),
-          t.prop('path', t.str),
-          t.prop('value', t.any),
+          t.Key('type', t.Const('replace' as const).options({title: 'Always use replace'})),
+          t.Key('path', t.str),
+          t.Key('value', t.any),
         ),
       ),
-      t.prop(
+      t.Key(
         'binaryOperation',
         t
           .Binary(
@@ -36,7 +36,7 @@ test('can print a type', () => {
           )
           .options({format: 'cbor'}),
       ),
-      t.prop('map', t.Map(t.str)),
+      t.Key('map', t.Map(t.str)),
     )
     .options({decodeUnknownKeys: true});
   // console.log(JSON.stringify(type.toJsonSchema(), null, 2));
@@ -198,7 +198,7 @@ test('can print a type', () => {
 test('exports "ref" type to JSON Schema "$defs"', () => {
   const system = new ModuleType();
   const t = system.t;
-  const type = t.Object(t.prop('id', t.str), t.prop('user', t.Ref('User')));
+  const type = t.Object(t.Key('id', t.str), t.Key('user', t.Ref('User')));
   const schema = typeToJsonSchema(type) as any;
   expect(schema.properties.user.$ref).toBe('#/$defs/User');
 });

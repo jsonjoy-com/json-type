@@ -1,4 +1,4 @@
-import {ObjKeyOptType, type ArrType, type ObjType, type RefType, type Type} from '../type';
+import {type ArrType, KeyOptType, type ObjType, type RefType, type Type} from '../type';
 import type * as jtd from './types';
 
 const NUMS_TYPE_MAPPING = new Map<string, jtd.JtdType>([
@@ -86,7 +86,7 @@ export function toJtdForm(type: Type): jtd.JtdForm {
           if (fieldType) {
             const fieldJtd = toJtdForm(fieldType);
             // Check if field is optional
-            if (field instanceof ObjKeyOptType) {
+            if (field instanceof KeyOptType) {
               form.optionalProperties[fieldName] = fieldJtd;
             } else {
               form.properties[fieldName] = fieldJtd;

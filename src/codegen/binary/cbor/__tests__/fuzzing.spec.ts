@@ -1,9 +1,9 @@
-import {TypeBuilder} from '../../../../type/TypeBuilder';
 import {Writer} from '@jsonjoy.com/buffers/lib/Writer';
-import {CborEncoder} from '@jsonjoy.com/json-pack/lib/cbor/CborEncoder';
 import {CborDecoder} from '@jsonjoy.com/json-pack/lib/cbor/CborDecoder';
-import {CborCodegen} from '../CborCodegen';
+import {CborEncoder} from '@jsonjoy.com/json-pack/lib/cbor/CborEncoder';
 import {randomJson} from '../../../../__tests__/fixtures';
+import {TypeBuilder} from '../../../../type/TypeBuilder';
+import {CborCodegen} from '../CborCodegen';
 
 const encoder = new CborEncoder(new Writer(16));
 const decoder = new CborDecoder();

@@ -1,17 +1,17 @@
 import {printTree} from 'tree-dump/lib/printTree';
 import * as schema from '../../schema';
-import {AbsType} from './AbsType';
-import type {SchemaOf, SchemaOfObjectFields, Type} from '../types';
 import type {ExcludeFromTuple, PickFromTuple} from '../../util/types';
+import type {SchemaOf, SchemaOfObjectFields, Type} from '../types';
+import {AbsType} from './AbsType';
 
-export class ObjKeyType<K extends string, V extends Type> extends AbsType<schema.KeySchema<K, SchemaOf<V>>> {
+export class KeyType<K extends string, V extends Type> extends AbsType<schema.KeySchema<K, SchemaOf<V>>> {
   public readonly optional: boolean = false;
 
   constructor(
     public readonly key: K,
     public readonly val: V,
   ) {
-    super(schema.s.prop(key, schema.s.any) as any);
+    super(schema.s.Key(key, schema.s.any) as any);
   }
 
   public getSchema(): schema.KeySchema<K, SchemaOf<V>> {
@@ -35,7 +35,7 @@ export class ObjKeyType<K extends string, V extends Type> extends AbsType<schema
   }
 }
 
-export class ObjKeyOptType<K extends string, V extends Type> extends ObjKeyType<K, V> {
+export class KeyOptType<K extends string, V extends Type> extends KeyType<K, V> {
   public readonly optional: boolean = true;
 
   constructor(
@@ -43,7 +43,7 @@ export class ObjKeyOptType<K extends string, V extends Type> extends ObjKeyType<
     public readonly val: V,
   ) {
     super(key, val);
-    (this as any).schema = schema.s.propOpt(key, schema.s.any) as any;
+    (this as any).schema = schema.s.KeyOpt(key, schema.s.any) as any;
   }
 
   protected toStringTitle(): string {
@@ -51,14 +51,17 @@ export class ObjKeyOptType<K extends string, V extends Type> extends ObjKeyType<
   }
 }
 
-export class ObjType<F extends ObjKeyType<any, any>[] = ObjKeyType<any, any>[]> extends AbsType<
-  schema.ObjSchema<SchemaOfObjectFields<F>>
-> {
+export class ObjType<
+  F extends (KeyType<any, any> | KeyOptType<any, any>)[] = (KeyType<any, any> | KeyOptType<any, any>)[],
+> extends AbsType<schema.ObjSchema<SchemaOfObjectFields<F>>> {
   constructor(public readonly keys: F) {
     super(schema.s.obj as any);
   }
 
-  private _key(field: ObjKeyType<any, any>, options?: schema.Optional<schema.KeySchema<any, any>>): void {
+  private _key(
+    field: KeyType<any, any> | KeyOptType<any, any>,
+    options?: schema.Optional<schema.KeySchema<any, any>>,
+  ): void {
     if (options) field.options(options);
     field.system = this.system;
     this.keys.push(field as any);
@@ -75,8 +78,8 @@ export class ObjType<F extends ObjKeyType<any, any>[] = ObjKeyType<any, any>[]> 
     key: K,
     value: V,
     options?: schema.Optional<schema.KeySchema<K, SchemaOf<V>>>,
-  ): ObjType<[...F, ObjKeyType<K, V>]> {
-    this._key(new ObjKeyType<K, V>(key, value), options);
+  ): ObjType<[...F, KeyType<K, V>]> {
+    this._key(new KeyType<K, V>(key, value), options);
     return <any>this;
   }
 
@@ -91,8 +94,8 @@ export class ObjType<F extends ObjKeyType<any, any>[] = ObjKeyType<any, any>[]> 
     key: K,
     value: V,
     options?: schema.Optional<schema.KeySchema<K, SchemaOf<V>>>,
-  ): ObjType<[...F, ObjKeyOptType<K, V>]> {
-    this._key(new ObjKeyOptType<K, V>(key, value), options);
+  ): ObjType<[...F, KeyOptType<K, V>]> {
+    this._key(new KeyOptType<K, V>(key, value), options);
     return <any>this;
   }
 
@@ -110,11 +113,11 @@ export class ObjType<F extends ObjKeyType<any, any>[] = ObjKeyType<any, any>[]> 
 
   public getField<K extends keyof schema.TypeOf<schema.ObjSchema<SchemaOfObjectFields<F>>>>(
     key: K,
-  ): ObjKeyType<string, Type> | undefined {
+  ): KeyType<string, Type> | undefined {
     return this.keys.find((f) => f.key === key);
   }
 
-  public extend<F2 extends ObjKeyType<any, any>[]>(o: ObjType<F2>): ObjType<[...F, ...F2]> {
+  public extend<F2 extends KeyType<any, any>[]>(o: ObjType<F2>): ObjType<[...F, ...F2]> {
     const type = new ObjType([...this.keys, ...o.keys]) as ObjType<[...F, ...F2]>;
     type.system = this.system;
     return type;
@@ -122,7 +125,7 @@ export class ObjType<F extends ObjKeyType<any, any>[] = ObjKeyType<any, any>[]> 
 
   public omit<K extends keyof schema.TypeOf<schema.ObjSchema<SchemaOfObjectFields<F>>>>(
     key: K,
-  ): ObjType<ExcludeFromTuple<F, ObjKeyType<K extends string ? K : never, any>>> {
+  ): ObjType<ExcludeFromTuple<F, KeyType<K extends string ? K : never, any>>> {
     const type = new ObjType(this.keys.filter((f) => f.key !== key) as any);
     type.system = this.system;
     return type;
@@ -130,7 +133,7 @@ export class ObjType<F extends ObjKeyType<any, any>[] = ObjKeyType<any, any>[]> 
 
   public pick<K extends keyof schema.TypeOf<schema.ObjSchema<SchemaOfObjectFields<F>>>>(
     key: K,
-  ): ObjType<PickFromTuple<F, ObjKeyType<K extends string ? K : never, any>>> {
+  ): ObjType<PickFromTuple<F, KeyType<K extends string ? K : never, any>>> {
     const field = this.keys.find((f) => f.key === key);
     if (!field) throw new Error('FIELD_NOT_FOUND');
     const type = new ObjType([field] as any);

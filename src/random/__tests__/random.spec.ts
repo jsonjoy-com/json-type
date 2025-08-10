@@ -3,10 +3,10 @@
  * Tests that generated random values conform to their JSON Type schemas.
  */
 
-import {t, type Type} from '../../type';
 import {allSchemas, schemaCategories} from '../../__tests__/fixtures';
-import {Random} from '../Random';
 import {ValidatorCodegen} from '../../codegen/validator/ValidatorCodegen';
+import {type Type, t} from '../../type';
+import {Random} from '../Random';
 
 const validate = (type: Type, value: unknown) => {
   const validator = ValidatorCodegen.get({type, errors: 'object'});
@@ -117,7 +117,7 @@ describe('Random', () => {
       });
 
       test('obj generates valid objects', () => {
-        const type = t.Object(t.prop('id', t.String()), t.prop('count', t.Number()));
+        const type = t.Object(t.Key('id', t.String()), t.Key('count', t.Number()));
         for (let i = 0; i < 10; i++) {
           const value = Random.gen(type);
           expect(typeof value).toBe('object');
@@ -218,21 +218,21 @@ describe('Random', () => {
 
     test('handles nested complex structures', () => {
       const complexType = t.Object(
-        t.prop(
+        t.Key(
           'users',
           t.Array(
             t.Object(
-              t.prop('id', t.Number()),
-              t.prop(
+              t.Key('id', t.Number()),
+              t.Key(
                 'profile',
-                t.Object(t.prop('name', t.String()), t.prop('preferences', t.Map(t.Or(t.String(), t.Boolean())))),
+                t.Object(t.Key('name', t.String()), t.Key('preferences', t.Map(t.Or(t.String(), t.Boolean())))),
               ),
-              t.propOpt('tags', t.Array(t.String())),
+              t.KeyOpt('tags', t.Array(t.String())),
             ),
           ),
         ),
-        t.prop('metadata', t.Map(t.Any())),
-        t.prop('config', t.tuple(t.String(), t.Number(), t.Object(t.prop('enabled', t.Boolean())))),
+        t.Key('metadata', t.Map(t.Any())),
+        t.Key('config', t.tuple(t.String(), t.Number(), t.Object(t.Key('enabled', t.Boolean())))),
       );
 
       for (let i = 0; i < 5; i++) {

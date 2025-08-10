@@ -4,7 +4,7 @@ import {ObjValue} from '../ObjValue';
 test('can retrieve field as Value', () => {
   const system = new ModuleType();
   const {t} = system;
-  const obj = new ObjValue(t.Object(t.prop('foo', t.str)), {foo: 'bar'});
+  const obj = new ObjValue(t.Object(t.Key('foo', t.str)), {foo: 'bar'});
   const foo = obj.get('foo');
   expect(foo.type.kind()).toBe('str');
   expect(foo.data).toBe('bar');
@@ -13,7 +13,7 @@ test('can retrieve field as Value', () => {
 test('can print to string', () => {
   const system = new ModuleType();
   const {t} = system;
-  const obj = new ObjValue(t.Object(t.prop('foo', t.str)), {foo: 'bar'});
+  const obj = new ObjValue(t.Object(t.Key('foo', t.str)), {foo: 'bar'});
   expect(obj + '').toMatchSnapshot();
 });
 

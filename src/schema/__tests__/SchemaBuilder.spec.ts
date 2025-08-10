@@ -34,7 +34,7 @@ describe('object', () => {
   });
 
   test('can specify types', () => {
-    const type = s.Object([s.prop('id', s.String()), s.prop('name', s.str)]);
+    const type = s.Object([s.Key('id', s.String()), s.Key('name', s.str)]);
     expect(type).toEqual({
       kind: 'obj',
       keys: [

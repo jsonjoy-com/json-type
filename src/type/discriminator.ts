@@ -1,4 +1,4 @@
-import {ArrType, BoolType, ConType, NumType, type ObjKeyType, ObjType, StrType} from './classes';
+import {ArrType, BoolType, ConType, NumType, type KeyType, ObjType, StrType} from './classes';
 import type {Expr} from '@jsonjoy.com/json-expression';
 import type {OrType, RefType, Type} from './types';
 
@@ -59,7 +59,7 @@ export class Discriminator {
         if (d) return new Discriminator('/' + i + d.path, d.type);
       }
     } else if (type instanceof ObjType) {
-      const fields = type.keys as ObjKeyType<string, Type>[];
+      const fields = type.keys as KeyType<string, Type>[];
       for (let i = 0; i < fields.length; i++) {
         const f = fields[i];
         const d = Discriminator.findConst(f.val);
@@ -79,7 +79,10 @@ export class Discriminator {
     const length = types.length;
     const expanded: Type[] = [];
     const expand = (type: Type): Type[] => {
-      if (type.kind() === 'ref') type = (type as RefType).resolve();
+      while (type.kind() === 'ref' || type.kind() === 'key') {
+        if (type.kind() === 'ref') type = (type as RefType).resolve();
+        if (type.kind() === 'key') type = (type as KeyType<any, Type>).val;
+      }
       if (type.kind() === 'or') return (type as OrType).types.flatMap((t: Type) => expand(t));
       return [type];
     };
@@ -108,7 +111,8 @@ export class Discriminator {
   ) {}
 
   condition(): Expr {
-    if (this.type instanceof ConType) return ['==', this.type.literal(), ['$', this.path]];
+    if (this.type instanceof ConType)
+      return ['==', this.type.literal(), ['$', this.path, this.type.literal() === null ? '' : null]];
     if (this.type instanceof BoolType) return ['==', ['type', ['$', this.path]], 'boolean'];
     if (this.type instanceof NumType) return ['==', ['type', ['$', this.path]], 'number'];
     if (this.type instanceof StrType) return ['==', ['type', ['$', this.path]], 'string'];

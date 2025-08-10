@@ -1,4 +1,4 @@
-import {type Type, t, ModuleType} from '..';
+import {ModuleType, type Type, t} from '..';
 
 export const validateTestSuite = (validate: (type: Type, value: unknown) => void) => {
   const system = new ModuleType();
@@ -418,7 +418,7 @@ export const validateTestSuite = (validate: (type: Type, value: unknown) => void
     });
 
     test('checks for required fields', () => {
-      const type = t.Object(t.prop('id', t.str), t.propOpt('foo', t.str));
+      const type = t.Object(t.Key('id', t.str), t.KeyOpt('foo', t.str));
       validate(type, {id: 'asdf'});
       validate(type, {id: 'asdf', foo: 'bar'});
       expect(() => validate(type, {foo: 'bar'})).toThrowErrorMatchingInlineSnapshot(`"STR"`);

@@ -1,5 +1,5 @@
 import type {Display} from './common';
-import type {SchemaExample, SchemaBase, Schema, ObjSchema} from './schema';
+import type {ObjSchema, Schema, SchemaBase, SchemaExample} from './schema';
 
 const validateDisplay = ({title, description, intro}: Display): void => {
   if (title !== undefined && typeof title !== 'string') throw new Error('INVALID_TITLE');

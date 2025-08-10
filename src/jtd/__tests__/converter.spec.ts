@@ -47,7 +47,7 @@ describe('JTD converter', () => {
   });
 
   test('object type', () => {
-    const objectType = t.Object(t.prop('name', t.str), t.propOpt('age', t.num));
+    const objectType = t.Object(t.Key('name', t.str), t.KeyOpt('age', t.num));
     const jtdForm = toJtdForm(objectType);
     expect(jtdForm).toEqual({
       properties: {
