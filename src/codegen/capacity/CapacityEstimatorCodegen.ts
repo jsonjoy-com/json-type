@@ -116,7 +116,7 @@ export class CapacityEstimatorCodegen extends AbstractCodegen<CompiledCapacityEs
     if (tailLength > 0) {
       const rr = codegen.var(r.use());
       for (let i = 0; i < tailLength; i++)
-        this.onNode([...path, {r: `${rLen} - ${tailLength - i}`}], new JsExpression(() => /* js */ `${rr}[${rLen} - ${i + 1}]`), _tail![i]);
+        this.onNode([...path, {r: `${rLen} - ${(tailLength - i)}`}], new JsExpression(() => /* js */ `${rr}[${rLen} - ${(tailLength - i)}]`), _tail![i]);
     }
   }
 

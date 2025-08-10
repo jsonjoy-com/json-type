@@ -150,6 +150,94 @@ describe('"arr" type', () => {
     const estimator = CapacityEstimatorCodegen.get(type);
     expect(estimator([1, 'abc', 'xxxxxxxxx'])).toBe(maxEncodingCapacity([1, 'abc', 'xxxxxxxxx']));
   });
+
+  test('named head 2-tuple', () => {
+    const system = new ModuleType();
+    const type = system.t.Tuple([t.Key('first', t.Const('abc')), t.Key('second', t.Const('xxxxxxxxx'))], t.num);
+    const estimator = CapacityEstimatorCodegen.get(type);
+    expect(estimator(['abc', 'xxxxxxxxx', 1])).toBe(maxEncodingCapacity(['abc', 'xxxxxxxxx', 1]));
+  });
+
+  test('mixed head and tail tuple', () => {
+    const system = new ModuleType();
+    const type = system.t.Tuple([t.Const('start')], t.str).tail(t.Const('end'));
+    const estimator = CapacityEstimatorCodegen.get(type);
+    expect(estimator(['start', 'middle1', 'middle2', 'end'])).toBe(maxEncodingCapacity(['start', 'middle1', 'middle2', 'end']));
+  });
+
+  test('complex named tail tuple', () => {
+    const system = new ModuleType();
+    const type = system.t.Array(t.num).tail(
+      t.Key('status', t.str),
+      t.Key('timestamp', t.num),
+      t.Key('metadata', t.bool)
+    );
+    const estimator = CapacityEstimatorCodegen.get(type);
+    expect(estimator([1, 2, 3, 'success', 1234567890, true])).toBe(maxEncodingCapacity([1, 2, 3, 'success', 1234567890, true]));
+  });
+
+  test('empty array with head/tail definition', () => {
+    const system = new ModuleType();
+    const type = system.t.Tuple([t.Const('required')], t.str).tail(t.Const('end'));
+    const estimator = CapacityEstimatorCodegen.get(type);
+    expect(estimator(['required', 'end'])).toBe(maxEncodingCapacity(['required', 'end']));
+  });
+
+  test('head tuple with different types', () => {
+    const system = new ModuleType();
+    const type = system.t.Tuple([
+      t.Key('id', t.num),
+      t.Key('name', t.str),
+      t.Key('active', t.bool)
+    ], t.str);
+    const estimator = CapacityEstimatorCodegen.get(type);
+    expect(estimator([42, 'test', true, 'extra1', 'extra2'])).toBe(maxEncodingCapacity([42, 'test', true, 'extra1', 'extra2']));
+  });
+
+  test('tail tuple with different types', () => {
+    const system = new ModuleType();
+    const type = system.t.Array(t.str).tail(
+      t.Key('count', t.num),
+      t.Key('valid', t.bool)
+    );
+    const estimator = CapacityEstimatorCodegen.get(type);
+    expect(estimator(['item1', 'item2', 'item3', 5, true])).toBe(maxEncodingCapacity(['item1', 'item2', 'item3', 5, true]));
+  });
+
+  test('nested objects in named tuples', () => {
+    const system = new ModuleType();
+    const type = system.t.Array(t.Object(t.Key('value', t.num))).tail(
+      t.Key('summary', t.Object(t.Key('total', t.num), t.Key('average', t.num)))
+    );
+    const estimator = CapacityEstimatorCodegen.get(type);
+    const data = [
+      {value: 10},
+      {value: 20},
+      {total: 30, average: 15} // summary
+    ];
+    expect(estimator(data)).toBe(maxEncodingCapacity(data));
+  });
+
+  test('single element named tail', () => {
+    const system = new ModuleType();
+    const type = system.t.Array(t.num).tail(t.Key('final', t.str));
+    const estimator = CapacityEstimatorCodegen.get(type);
+    expect(estimator([1, 2, 3, 'done'])).toBe(maxEncodingCapacity([1, 2, 3, 'done']));
+  });
+
+  test('single element named head', () => {
+    const system = new ModuleType();
+    const type = system.t.Tuple([t.Key('header', t.str)], t.num);
+    const estimator = CapacityEstimatorCodegen.get(type);
+    expect(estimator(['header', 1, 2, 3])).toBe(maxEncodingCapacity(['header', 1, 2, 3]));
+  });
+
+  test('both head and tail with same type', () => {
+    const system = new ModuleType();
+    const type = system.t.Tuple([t.Key('start', t.str)], t.num).tail(t.Key('end', t.str));
+    const estimator = CapacityEstimatorCodegen.get(type);
+    expect(estimator(['begin', 1, 2, 3, 'finish'])).toBe(maxEncodingCapacity(['begin', 1, 2, 3, 'finish']));
+  });
 });
 
 describe('"obj" type', () => {
