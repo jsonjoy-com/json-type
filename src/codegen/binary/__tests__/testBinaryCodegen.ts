@@ -222,6 +222,52 @@ export const testBinaryCodegen = (transcode: (system: ModuleType, type: Type, va
       const value4: any[] = [];
       expect(() => transcode(system, type, value4)).toThrow();
     });
+
+    test('can encode named tuple with head and tail', () => {
+      const system = new ModuleType();
+      const t = system.t;
+      const type = system.t.Tuple([t.Key('name', t.str)], t.num, [t.Key('status', t.bool)]);
+      const value: any[] = ['John', 42, 100, true];
+      expect(transcode(system, type, value)).toStrictEqual(value);
+    });
+
+    test('can encode named tuple head only', () => {
+      const system = new ModuleType();
+      const t = system.t;
+      const type = system.t.Tuple([t.Key('id', t.num), t.Key('name', t.str)], t.bool);
+      const value: any[] = [123, 'Alice', true, false];
+      expect(transcode(system, type, value)).toStrictEqual(value);
+    });
+
+    test('can encode named tuple tail only', () => {
+      const system = new ModuleType();
+      const t = system.t;
+      const type = system.t.Array(t.str).tail(t.Key('count', t.num), t.Key('valid', t.bool));
+      const value: any[] = ['item1', 'item2', 5, true];
+      expect(transcode(system, type, value)).toStrictEqual(value);
+    });
+
+    test('can encode complex named tuple', () => {
+      const system = new ModuleType();
+      const t = system.t;
+      const type = system.t.Tuple(
+        [t.Key('header', t.str), t.Key('version', t.num)],
+        t.Object(t.Key('data', t.str)),
+        [t.Key('checksum', t.num), t.Key('timestamp', t.num)],
+      );
+      const value: any[] = ['v1', 2, {data: 'test1'}, {data: 'test2'}, 12345, 1234567890];
+      expect(transcode(system, type, value)).toStrictEqual(value);
+    });
+
+    test('can encode nested named tuple', () => {
+      const system = new ModuleType();
+      const t = system.t;
+      const type = system.t.Tuple([
+        t.Key('metadata', t.Tuple([t.Key('type', t.str), t.Key('size', t.num)])),
+      ], t.str);
+      const value: any[] = [['document', 1024], 'content1', 'content2'];
+      expect(transcode(system, type, value)).toStrictEqual(value);
+    });
   });
 
   describe('"obj" type', () => {
