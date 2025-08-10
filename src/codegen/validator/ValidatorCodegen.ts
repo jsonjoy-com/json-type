@@ -11,12 +11,13 @@ import {
   type ConType,
   type MapType,
   type NumType,
-  ObjKeyOptType,
+  KeyOptType,
   type ObjType,
   type OrType,
   type RefType,
   type StrType,
   type Type,
+  KeyType,
 } from '../../type';
 import {floats, ints, uints} from '../../util';
 import {isAscii, isUtf8} from '../../util/stringFormats';
@@ -379,7 +380,7 @@ export class ValidatorCodegen extends AbstractCodegen {
       const accessor = normalizeAccessor(field.key);
       const keyPath = [...path, field.key];
       codegen.js(/* js */ `var ${rv} = ${r.use()}${accessor};`);
-      if (field instanceof ObjKeyOptType) {
+      if (field instanceof KeyOptType) {
         codegen.js(/* js */ `if (${rv} !== undefined) {`);
         this.onNode(keyPath, new JsExpression(() => rv), field.val);
         codegen.js(/* js */ `}`);
@@ -392,6 +393,10 @@ export class ValidatorCodegen extends AbstractCodegen {
         this.onNode(keyPath, new JsExpression(() => rv), field.val);
       }
     }
+  }
+
+  protected onKey(path: SchemaPath, r: JsExpression, type: KeyType<any, any>): void {
+    this.onNode([...path, type.key], r, type.val);
   }
 
   protected onMap(path: SchemaPath, r: JsExpression, type: MapType): void {

@@ -5,7 +5,7 @@ import {normalizeAccessor} from '@jsonjoy.com/codegen/lib/util/normalizeAccessor
 import {stringify} from '@jsonjoy.com/json-pack/lib/json-binary/codec';
 import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
 import {asString} from '@jsonjoy.com/util/lib/strings/asString';
-import {ObjKeyOptType} from '../../type';
+import {KeyOptType} from '../../type';
 import type {ArrType, ConType, MapType, ObjType, OrType, RefType, StrType, Type} from '../../type';
 import {DiscriminatorCodegen} from '../discriminator';
 import {lazyKeyedFactory} from '../util';
@@ -107,8 +107,8 @@ export class JsonTextCodegen {
     if (schema.encodeUnknownKeys) {
       this.js(/* js */ `var ${rKeys} = new Set(Object.keys(${r}));`);
     }
-    const requiredFields = fields.filter((field) => !(field instanceof ObjKeyOptType));
-    const optionalFields = fields.filter((field) => field instanceof ObjKeyOptType) as ObjKeyOptType<string, Type>[];
+    const requiredFields = fields.filter((field) => !(field instanceof KeyOptType));
+    const optionalFields = fields.filter((field) => field instanceof KeyOptType) as KeyOptType<string, Type>[];
     this.writeText('{');
     for (let i = 0; i < requiredFields.length; i++) {
       const field = requiredFields[i];

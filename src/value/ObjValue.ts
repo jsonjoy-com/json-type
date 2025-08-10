@@ -7,8 +7,8 @@ import {Value} from './Value';
 
 export type UnObjType<T> = T extends classes.ObjType<infer U> ? U : never;
 export type UnObjValue<T> = T extends ObjValue<infer U> ? U : never;
-export type UnObjFieldTypeVal<T> = T extends classes.ObjKeyType<any, infer U> ? U : never;
-export type ObjFieldToTuple<F> = F extends classes.ObjKeyType<infer K, infer V> ? [K, V] : never;
+export type UnObjFieldTypeVal<T> = T extends classes.KeyType<any, infer U> ? U : never;
+export type ObjFieldToTuple<F> = F extends classes.KeyType<infer K, infer V> ? [K, V] : never;
 export type ToObject<T> = T extends [string, unknown][] ? {[K in T[number] as K[0]]: K[1]} : never;
 export type ObjValueToTypeMap<F> = ToObject<{
   [K in keyof F]: ObjFieldToTuple<F[K]>;
@@ -27,7 +27,7 @@ export class ObjValue<T extends classes.ObjType<any>> extends Value<T> implement
 
   public keys(): string[] {
     const type = this.type as T;
-    return type.keys.map((field: classes.ObjKeyType<string, any>) => field.key);
+    return type.keys.map((field: classes.KeyType<string, any>) => field.key);
   }
 
   public get<K extends keyof ObjValueToTypeMap<UnObjType<T>>>(
@@ -41,7 +41,7 @@ export class ObjValue<T extends classes.ObjType<any>> extends Value<T> implement
     return new Value(field.val, data) as any;
   }
 
-  public field<F extends classes.ObjKeyType<any, any>>(
+  public field<F extends classes.KeyType<any, any>>(
     field: F | ((t: TypeBuilder) => F),
     data: classes.ResolveType<UnObjFieldTypeVal<F>>,
   ): ObjValue<classes.ObjType<[...UnObjType<T>, F]>> {

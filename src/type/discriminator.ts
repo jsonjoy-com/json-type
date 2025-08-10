@@ -1,5 +1,5 @@
 import type {Expr} from '@jsonjoy.com/json-expression';
-import {ArrType, BoolType, ConType, NumType, type ObjKeyType, ObjType, StrType} from './classes';
+import {ArrType, BoolType, ConType, NumType, type KeyType, ObjType, StrType} from './classes';
 import type {OrType, RefType, Type} from './types';
 
 /**
@@ -59,7 +59,7 @@ export class Discriminator {
         if (d) return new Discriminator('/' + i + d.path, d.type);
       }
     } else if (type instanceof ObjType) {
-      const fields = type.keys as ObjKeyType<string, Type>[];
+      const fields = type.keys as KeyType<string, Type>[];
       for (let i = 0; i < fields.length; i++) {
         const f = fields[i];
         const d = Discriminator.findConst(f.val);

@@ -453,7 +453,7 @@ export type JsonSchema =
   | OptKeySchema
   | MapSchema;
 
-export type Schema = JsonSchema | RefSchema | OrSchema | AnySchema | FnSchema | FnRxSchema | AliasSchema | ModuleSchema;
+export type Schema = JsonSchema | RefSchema | OrSchema | AnySchema | FnSchema | FnRxSchema | AliasSchema | ModuleSchema | KeySchema | OptKeySchema;
 
 export type NoT<T extends SchemaBase> = Omit<T, 'kind'>;
 

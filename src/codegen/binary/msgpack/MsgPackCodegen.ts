@@ -1,7 +1,7 @@
 import {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
 import {normalizeAccessor} from '@jsonjoy.com/codegen/lib/util/normalizeAccessor';
 import {MsgPackEncoder} from '@jsonjoy.com/json-pack/lib/msgpack/MsgPackEncoder';
-import {ObjKeyOptType, type ObjType, type Type} from '../../../type';
+import {KeyOptType, type ObjType, type Type} from '../../../type';
 import type {CompiledBinaryEncoder, SchemaPath} from '../../types';
 import {lazyKeyedFactory} from '../../util';
 import {AbstractBinaryCodegen} from '../AbstractBinaryCodegen';
@@ -23,8 +23,8 @@ export class MsgPackCodegen extends AbstractBinaryCodegen<MsgPackEncoder> {
     const r = codegen.r();
     const fields = type.keys;
     const length = fields.length;
-    const requiredFields = fields.filter((field) => !(field instanceof ObjKeyOptType));
-    const optionalFields = fields.filter((field) => field instanceof ObjKeyOptType);
+    const requiredFields = fields.filter((field) => !(field instanceof KeyOptType));
+    const optionalFields = fields.filter((field) => field instanceof KeyOptType);
     const requiredLength = requiredFields.length;
     const optionalLength = optionalFields.length;
     const totalMaxKnownFields = requiredLength + optionalLength;

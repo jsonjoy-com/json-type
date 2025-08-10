@@ -841,6 +841,24 @@ describe('"arr" type', () => {
     });
   });
 
+  test('named head 2-tuple', () => {
+    const type = s.Tuple([s.Key('num', s.num), s.Key('str', s.str)]);
+    exec(type, [0, ''], null);
+    exec(type, [1, 'x'], null);
+    exec(type, ['', 'x'], {
+      code: 'NUM',
+      errno: ValidationError.NUM,
+      message: 'Not a number.',
+      path: [0, 'num'],
+    });
+    exec(type, [-1, true], {
+      code: 'STR',
+      errno: ValidationError.STR,
+      message: 'Not a string.',
+      path: [1, 'str'],
+    });
+  });
+
   test('head + elements', () => {
     const type = s.Tuple([s.Const<true>(true)], s.num);
     exec(type, [true, 123], null);

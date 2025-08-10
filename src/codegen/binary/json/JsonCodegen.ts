@@ -1,7 +1,7 @@
 import {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
 import {normalizeAccessor} from '@jsonjoy.com/codegen/lib/util/normalizeAccessor';
 import {JsonEncoder} from '@jsonjoy.com/json-pack/lib/json/JsonEncoder';
-import {type ArrType, type MapType, ObjKeyOptType, type ObjType, type Type} from '../../../type';
+import {type ArrType, type MapType, KeyOptType, type ObjType, type Type} from '../../../type';
 import type {CompiledBinaryEncoder, SchemaPath} from '../../types';
 import {lazyKeyedFactory} from '../../util';
 import {AbstractBinaryCodegen} from '../AbstractBinaryCodegen';
@@ -98,8 +98,8 @@ export class JsonCodegen extends AbstractBinaryCodegen<JsonEncoder> {
     const codegen = this.codegen;
     const r = codegen.var(value.use());
     const fields = type.keys;
-    const requiredFields = fields.filter((field) => !(field instanceof ObjKeyOptType));
-    const optionalFields = fields.filter((field) => field instanceof ObjKeyOptType);
+    const requiredFields = fields.filter((field) => !(field instanceof KeyOptType));
+    const optionalFields = fields.filter((field) => field instanceof KeyOptType);
     const requiredLength = requiredFields.length;
     const optionalLength = optionalFields.length;
     const encodeUnknownFields = !!type.schema.encodeUnknownKeys;
