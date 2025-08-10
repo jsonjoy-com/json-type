@@ -3,10 +3,10 @@
  * Tests that generated random values conform to their JSON Type schemas.
  */
 
-import {t, type Type} from '../../type';
 import {allSchemas, schemaCategories} from '../../__tests__/fixtures';
-import {Random} from '../Random';
 import {ValidatorCodegen} from '../../codegen/validator/ValidatorCodegen';
+import {type Type, t} from '../../type';
+import {Random} from '../Random';
 
 const validate = (type: Type, value: unknown) => {
   const validator = ValidatorCodegen.get({type, errors: 'object'});

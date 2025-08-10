@@ -1,49 +1,49 @@
 {
-	"$schema": "https://biomejs.dev/schemas/1.9.3/schema.json",
-	"organizeImports": {
-		"enabled": true
-	},
-	"formatter": {
-		"indentStyle": "space",
-		"lineWidth": 120
-	},
-	"javascript": {
-		"formatter": {
-			"quoteStyle": "single",
-			"trailingCommas": "all",
-			"bracketSpacing": false
-		}
-	},
-	"linter": {
-		"enabled": true,
-		"rules": {
-			"recommended": true,
-			"style": {
-				"noNonNullAssertion": "off",
-				"useNodejsImportProtocol": "off",
-				"useTemplate": "off",
-				"noInferrableTypes": "off",
-				"noUselessElse": "off",
-				"noParameterAssign": "off",
-				"noCommaOperator": "off",
-				"useSingleVarDeclarator": "off",
-				"noUnusedTemplateLiteral": "off",
-				"useDefaultParameterLast": "off",
-				"useEnumInitializers": "off"
-			},
-			"suspicious": {
-				"noExplicitAny": "off",
-				"useIsArray": "off",
-				"noAssignInExpressions": "off",
-				"noConfusingVoidType": "off"
-			},
-			"complexity": {
-				"noStaticOnlyClass": "off",
-				"useOptionalChain": "off"
-			},
-			"security": {
-				"noGlobalEval": "off"
-			}
-		}
-	}
+  "$schema": "https://biomejs.dev/schemas/1.9.3/schema.json",
+  "organizeImports": {
+    "enabled": true
+  },
+  "formatter": {
+    "indentStyle": "space",
+    "lineWidth": 120
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "single",
+      "trailingCommas": "all",
+      "bracketSpacing": false
+    }
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "style": {
+        "noNonNullAssertion": "off",
+        "useNodejsImportProtocol": "off",
+        "useTemplate": "off",
+        "noInferrableTypes": "off",
+        "noUselessElse": "off",
+        "noParameterAssign": "off",
+        "noCommaOperator": "off",
+        "useSingleVarDeclarator": "off",
+        "noUnusedTemplateLiteral": "off",
+        "useDefaultParameterLast": "off",
+        "useEnumInitializers": "off"
+      },
+      "suspicious": {
+        "noExplicitAny": "off",
+        "useIsArray": "off",
+        "noAssignInExpressions": "off",
+        "noConfusingVoidType": "off"
+      },
+      "complexity": {
+        "noStaticOnlyClass": "off",
+        "useOptionalChain": "off"
+      },
+      "security": {
+        "noGlobalEval": "off"
+      }
+    }
+  }
 }

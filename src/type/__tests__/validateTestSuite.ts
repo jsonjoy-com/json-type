@@ -1,4 +1,4 @@
-import {type Type, t, ModuleType} from '..';
+import {ModuleType, type Type, t} from '..';
 
 export const validateTestSuite = (validate: (type: Type, value: unknown) => void) => {
   const system = new ModuleType();

@@ -1,5 +1,5 @@
+import type {Schema, SchemaBase, SchemaExample} from '../schema';
 import {validateSchema, validateTType} from '../validate';
-import type {SchemaExample, SchemaBase, Schema} from '../schema';
 
 describe('validate display', () => {
   test('validates valid display', () => {

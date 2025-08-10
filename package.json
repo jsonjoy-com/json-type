@@ -16,26 +16,14 @@
     "type": "github",
     "url": "https://github.com/sponsors/streamich"
   },
-  "keywords": [
-    "json-type",
-    "type",
-    "schema",
-    "json-schema",
-    "jtd",
-    "json",
-    "pointer",
-    "jit"
-  ],
+  "keywords": ["json-type", "type", "schema", "json-schema", "jtd", "json", "pointer", "jit"],
   "engines": {
     "node": ">=10.0"
   },
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "typings": "lib/index.d.ts",
-  "files": [
-    "LICENSE",
-    "lib/"
-  ],
+  "files": ["LICENSE", "lib/"],
   "license": "Apache-2.0",
   "scripts": {
     "format": "biome format ./src",
@@ -79,16 +67,11 @@
     "typescript": "^5.6.2"
   },
   "jest": {
-    "moduleFileExtensions": [
-      "ts",
-      "js"
-    ],
+    "moduleFileExtensions": ["ts", "js"],
     "transform": {
       "^.+\\.ts$": "ts-jest"
     },
-    "transformIgnorePatterns": [
-      ".*/node_modules/.*"
-    ],
+    "transformIgnorePatterns": [".*/node_modules/.*"],
     "testRegex": ".*/(__tests__|__jest__|demo)/.*\\.(test|spec)\\.ts$"
   }
 }

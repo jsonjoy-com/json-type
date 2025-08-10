@@ -1,24 +1,24 @@
-import {of} from 'rxjs';
 import {RandomJson} from '@jsonjoy.com/json-random';
 import {cloneBinary} from '@jsonjoy.com/util/lib/json-clone';
-import {ObjKeyOptType, type ObjKeyType, type ObjType} from '../type/classes/ObjType';
+import {of} from 'rxjs';
 import type {
+  AbsType,
   AnyType,
-  t,
-  Type,
-  StrType,
   ArrType,
   BinType,
   BoolType,
   ConType,
+  FnRxType,
   FnType,
   MapType,
   NumType,
   OrType,
   RefType,
-  AbsType,
-  FnRxType,
+  StrType,
+  Type,
+  t,
 } from '../type';
+import {ObjKeyOptType, type ObjKeyType, type ObjType} from '../type/classes/ObjType';
 
 export class Random {
   public static readonly gen = <T extends Type>(type: T): t.infer<T> => {

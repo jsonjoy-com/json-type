@@ -1,10 +1,10 @@
-import {testBinaryCodegen} from '../../__tests__/testBinaryCodegen';
-import {JsonEncoder} from '@jsonjoy.com/json-pack/lib/json/JsonEncoder';
 import {Writer} from '@jsonjoy.com/buffers/lib/Writer';
 import {parse} from '@jsonjoy.com/json-pack/lib/json-binary';
-import {JsonCodegen} from '../JsonCodegen';
-import type {ModuleType} from '../../../../type/classes/ModuleType';
+import {JsonEncoder} from '@jsonjoy.com/json-pack/lib/json/JsonEncoder';
 import type {Type} from '../../../../type';
+import type {ModuleType} from '../../../../type/classes/ModuleType';
+import {testBinaryCodegen} from '../../__tests__/testBinaryCodegen';
+import {JsonCodegen} from '../JsonCodegen';
 
 const encoder = new JsonEncoder(new Writer(16));
 

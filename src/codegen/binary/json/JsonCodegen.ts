@@ -1,11 +1,11 @@
+import {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
+import {normalizeAccessor} from '@jsonjoy.com/codegen/lib/util/normalizeAccessor';
+import {JsonEncoder} from '@jsonjoy.com/json-pack/lib/json/JsonEncoder';
+import {type ArrType, type MapType, ObjKeyOptType, type ObjType, type Type} from '../../../type';
+import type {CompiledBinaryEncoder, SchemaPath} from '../../types';
+import {lazyKeyedFactory} from '../../util';
 import {AbstractBinaryCodegen} from '../AbstractBinaryCodegen';
 import {writer} from '../writer';
-import {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
-import {JsonEncoder} from '@jsonjoy.com/json-pack/lib/json/JsonEncoder';
-import {ObjKeyOptType, type ArrType, type MapType, type ObjType, type Type} from '../../../type';
-import {normalizeAccessor} from '@jsonjoy.com/codegen/lib/util/normalizeAccessor';
-import {lazyKeyedFactory} from '../../util';
-import type {CompiledBinaryEncoder, SchemaPath} from '../../types';
 
 export class JsonCodegen extends AbstractBinaryCodegen<JsonEncoder> {
   public static readonly get = lazyKeyedFactory((type: Type, name?: string) => {

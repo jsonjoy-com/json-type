@@ -3,9 +3,9 @@ import {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
 import {normalizeAccessor} from '@jsonjoy.com/codegen/lib/util/normalizeAccessor';
 import {MaxEncodingOverhead, maxEncodingCapacity} from '@jsonjoy.com/util/lib/json-size';
 import {BoolType, ConType, NumType, ObjKeyOptType} from '../../type';
+import type {ArrType, MapType, ObjKeyType, ObjType, OrType, RefType, Type} from '../../type';
 import {DiscriminatorCodegen} from '../discriminator';
 import {lazyKeyedFactory} from '../util';
-import type {ObjKeyType, ArrType, MapType, RefType, Type, OrType, ObjType} from '../../type';
 
 export type CompiledCapacityEstimator = (value: unknown) => number;
 

@@ -1,9 +1,9 @@
-import {testBinaryCodegen} from '../../__tests__/testBinaryCodegen';
 import {Writer} from '@jsonjoy.com/buffers/lib/Writer';
-import {MsgPackEncoder} from '@jsonjoy.com/json-pack/lib/msgpack/MsgPackEncoder';
 import {MsgPackDecoder} from '@jsonjoy.com/json-pack/lib/msgpack/MsgPackDecoder';
-import {MsgPackCodegen} from '../MsgPackCodegen';
+import {MsgPackEncoder} from '@jsonjoy.com/json-pack/lib/msgpack/MsgPackEncoder';
 import type {ModuleType, Type} from '../../../../type';
+import {testBinaryCodegen} from '../../__tests__/testBinaryCodegen';
+import {MsgPackCodegen} from '../MsgPackCodegen';
 
 const encoder = new MsgPackEncoder(new Writer(16));
 const decoder = new MsgPackDecoder();

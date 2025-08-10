@@ -1,10 +1,10 @@
 import {Writer} from '@jsonjoy.com/buffers/lib/Writer';
 import {parse} from '@jsonjoy.com/json-pack/lib/json-binary';
-import {JsonEncoder} from '@jsonjoy.com/json-pack/lib/json/JsonEncoder';
 import {JsonDecoder} from '@jsonjoy.com/json-pack/lib/json/JsonDecoder';
+import {JsonEncoder} from '@jsonjoy.com/json-pack/lib/json/JsonEncoder';
+import {randomJson} from '../../../../__tests__/fixtures';
 import {TypeBuilder} from '../../../../type/TypeBuilder';
 import {JsonCodegen} from '../JsonCodegen';
-import {randomJson} from '../../../../__tests__/fixtures';
 
 const encoder = new JsonEncoder(new Writer(16));
 const decoder = new JsonDecoder();

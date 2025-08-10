@@ -1,5 +1,5 @@
-import {ModuleType} from '../../../type/classes/ModuleType';
 import type {Type} from '../../../type';
+import {ModuleType} from '../../../type/classes/ModuleType';
 
 export const testBinaryCodegen = (transcode: (system: ModuleType, type: Type, value: unknown) => void) => {
   describe('"any" type', () => {

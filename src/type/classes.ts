@@ -1,18 +1,18 @@
 import {AbsType} from './classes/AbsType';
-import {AnyType} from './classes/AnyType';
-import {ConType} from './classes/ConType';
-import {BoolType} from './classes/BoolType';
-import {NumType} from './classes/NumType';
-import {StrType} from './classes/StrType';
-import {BinType} from './classes/BinType';
-import {ArrType} from './classes/ArrType';
-import {ObjType, ObjKeyType, ObjKeyOptType} from './classes/ObjType';
-import {MapType} from './classes/MapType';
-import {RefType} from './classes/RefType';
-import {OrType} from './classes/OrType';
-import {FnType, FnRxType} from './classes/FnType';
 import {AliasType} from './classes/AliasType';
+import {AnyType} from './classes/AnyType';
+import {ArrType} from './classes/ArrType';
+import {BinType} from './classes/BinType';
+import {BoolType} from './classes/BoolType';
+import {ConType} from './classes/ConType';
+import {FnRxType, FnType} from './classes/FnType';
+import {MapType} from './classes/MapType';
 import {ModuleType} from './classes/ModuleType';
+import {NumType} from './classes/NumType';
+import {ObjKeyOptType, ObjKeyType, ObjType} from './classes/ObjType';
+import {OrType} from './classes/OrType';
+import {RefType} from './classes/RefType';
+import {StrType} from './classes/StrType';
 
 export {
   AbsType,

@@ -4,10 +4,10 @@
  * across multiple test modules.
  */
 
+import {RandomJson} from '@jsonjoy.com/json-random';
+import {genRandomExample} from '@jsonjoy.com/json-random/lib/examples';
 import {s} from '../schema';
 import {t} from '../type';
-import {genRandomExample} from '@jsonjoy.com/json-random/lib/examples';
-import {RandomJson} from '@jsonjoy.com/json-random';
 
 export const randomJson = () => {
   return Math.random() < 0.5 ? genRandomExample() : RandomJson.generate();

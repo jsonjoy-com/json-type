@@ -195,7 +195,7 @@ export class TypeBuilder {
     return new classes.ArrType(item, head, tail, options).sys(this.system);
   }
 
-  public Object<F extends classes.ObjKeyType<any, any>[]>(...keys: F) {
+  public Object<F extends (classes.ObjKeyType<any, any> | classes.ObjKeyOptType<any, any>)[]>(...keys: F) {
     return new classes.ObjType<F>(keys).sys(this.system);
   }
 

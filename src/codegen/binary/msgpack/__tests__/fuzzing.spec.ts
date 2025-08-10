@@ -1,8 +1,8 @@
-import {TypeBuilder} from '../../../../type/TypeBuilder';
-import {MsgPackEncoder} from '@jsonjoy.com/json-pack/lib/msgpack/MsgPackEncoder';
 import {MsgPackDecoder} from '@jsonjoy.com/json-pack/lib/msgpack/MsgPackDecoder';
-import {MsgPackCodegen} from '../MsgPackCodegen';
+import {MsgPackEncoder} from '@jsonjoy.com/json-pack/lib/msgpack/MsgPackEncoder';
 import {randomJson} from '../../../../__tests__/fixtures';
+import {TypeBuilder} from '../../../../type/TypeBuilder';
+import {MsgPackCodegen} from '../MsgPackCodegen';
 
 test('can encode random values', () => {
   for (let i = 0; i < 10; i++) {

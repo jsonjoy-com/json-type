@@ -1,8 +1,8 @@
 import {JsonExpressionCodegen} from '@jsonjoy.com/json-expression';
-import {operatorsMap} from '@jsonjoy.com/json-expression/lib/operators';
 import {Vars} from '@jsonjoy.com/json-expression/lib/Vars';
-import {lazyKeyedFactory} from '../util';
+import {operatorsMap} from '@jsonjoy.com/json-expression/lib/operators';
 import type {OrType} from '../../type';
+import {lazyKeyedFactory} from '../util';
 
 export type DiscriminatorFn = (val: unknown) => number;
 

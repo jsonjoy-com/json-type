@@ -1,6 +1,6 @@
-import {ModuleType} from '../ModuleType';
 import type {TypeOf} from '../../../schema';
 import type {SchemaOf, TypeOfAlias} from '../../types';
+import {ModuleType} from '../ModuleType';
 
 test('can infer alias type', () => {
   const system = new ModuleType();

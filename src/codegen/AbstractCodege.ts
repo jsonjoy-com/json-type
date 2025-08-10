@@ -1,5 +1,5 @@
-import type {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
 import type {Codegen} from '@jsonjoy.com/codegen';
+import type {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
 import type {
   AnyType,
   ArrType,

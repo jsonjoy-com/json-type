@@ -1,6 +1,6 @@
 import {t} from '..';
-import {Discriminator} from '../discriminator';
 import {ValidatorCodegen} from '../../codegen/validator/ValidatorCodegen';
+import {Discriminator} from '../discriminator';
 
 describe('Discriminator', () => {
   test('can find const discriminator at root node', () => {

@@ -1,6 +1,6 @@
-import {AbsType} from './AbsType';
 import * as schema from '../../schema';
 import type {SchemaOf, Type} from '../types';
+import {AbsType} from './AbsType';
 
 export class RefType<T extends Type = any> extends AbsType<schema.RefSchema<SchemaOf<T>>> {
   constructor(ref: string) {

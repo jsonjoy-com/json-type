@@ -1,5 +1,5 @@
-import {ArrType, BoolType, ConType, NumType, type ObjKeyType, ObjType, StrType} from './classes';
 import type {Expr} from '@jsonjoy.com/json-expression';
+import {ArrType, BoolType, ConType, NumType, type ObjKeyType, ObjType, StrType} from './classes';
 import type {OrType, RefType, Type} from './types';
 
 /**

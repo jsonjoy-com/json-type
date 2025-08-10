@@ -1,7 +1,7 @@
 import {maxEncodingCapacity} from '@jsonjoy.com/util/lib/json-size';
-import {CapacityEstimatorCodegen} from '../CapacityEstimatorCodegen';
 import {t} from '../../../type';
 import {ModuleType} from '../../../type/classes/ModuleType';
+import {CapacityEstimatorCodegen} from '../CapacityEstimatorCodegen';
 
 describe('"any" type', () => {
   test('returns the same result as maxEncodingCapacity()', () => {

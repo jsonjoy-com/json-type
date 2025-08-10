@@ -1,12 +1,6 @@
-import {Codegen, CodegenStepExecJs} from '@jsonjoy.com/codegen';
 import {concat} from '@jsonjoy.com/buffers/lib/concat';
-import {WriteBlobStep} from './WriteBlobStep';
-import {Value} from '../../value/Value';
-import {CapacityEstimatorCodegen} from '../capacity';
-import {AbstractCodegen} from '../AbstractCodege';
-import {floats, ints, uints} from '../../util';
+import {Codegen, CodegenStepExecJs} from '@jsonjoy.com/codegen';
 import {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
-import {DiscriminatorCodegen} from '../discriminator';
 import type {BinaryJsonEncoder} from '@jsonjoy.com/json-pack/lib/types';
 import type {
   AnyType,
@@ -21,7 +15,13 @@ import type {
   StrType,
   Type,
 } from '../../type';
+import {floats, ints, uints} from '../../util';
+import {Value} from '../../value/Value';
+import {AbstractCodegen} from '../AbstractCodege';
+import {CapacityEstimatorCodegen} from '../capacity';
+import {DiscriminatorCodegen} from '../discriminator';
 import type {CompiledBinaryEncoder, SchemaPath} from '../types';
+import {WriteBlobStep} from './WriteBlobStep';
 
 type Step = WriteBlobStep | CodegenStepExecJs;
 

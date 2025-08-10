@@ -1,5 +1,5 @@
-import {printTree} from 'tree-dump/lib/printTree';
 import type {Printable} from 'tree-dump';
+import {printTree} from 'tree-dump/lib/printTree';
 import type {ResolveType, Type} from '../type/types';
 
 export class Value<T extends Type = Type> implements Printable {

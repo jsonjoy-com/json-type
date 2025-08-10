@@ -1,7 +1,7 @@
-import type {Observable} from 'rxjs';
-import type {Mutable} from '@jsonjoy.com/util/lib/types';
-import type {Display} from './common';
 import type {Expr} from '@jsonjoy.com/json-expression';
+import type {Mutable} from '@jsonjoy.com/util/lib/types';
+import type {Observable} from 'rxjs';
+import type {Display} from './common';
 
 export interface SchemaBase<Value = unknown> extends Display {
   /**

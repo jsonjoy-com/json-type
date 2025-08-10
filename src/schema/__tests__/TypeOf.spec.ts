@@ -1,5 +1,5 @@
 import {EMPTY, map} from 'rxjs';
-import {s, type TypeOf} from '..';
+import {type TypeOf, s} from '..';
 
 test('can infer a simple "any" type', () => {
   const schema1 = s.any;

@@ -1,7 +1,7 @@
-import {ModuleType} from '../../../type/classes/ModuleType';
 import {b} from '@jsonjoy.com/buffers/lib/b';
 import {ValidationError} from '../../../constants';
-import {type OrSchema, s, type Schema} from '../../../schema';
+import {type OrSchema, type Schema, s} from '../../../schema';
+import {ModuleType} from '../../../type/classes/ModuleType';
 import {ValidatorCodegen, type ValidatorCodegenOptions} from '../ValidatorCodegen';
 
 const exec = (schema: Schema, json: unknown, error: any, options: Partial<ValidatorCodegenOptions> = {}) => {

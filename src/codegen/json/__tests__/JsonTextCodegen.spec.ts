@@ -1,7 +1,7 @@
+import {parse} from '@jsonjoy.com/json-pack/lib/json-binary/codec';
 import {t} from '../../../type';
 import {ModuleType} from '../../../type/classes/ModuleType';
 import {JsonTextCodegen} from '../JsonTextCodegen';
-import {parse} from '@jsonjoy.com/json-pack/lib/json-binary/codec';
 
 describe('"any" type', () => {
   test('stringify simple JSON', () => {

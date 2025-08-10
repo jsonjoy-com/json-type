@@ -1,9 +1,9 @@
-import {testBinaryCodegen} from '../../__tests__/testBinaryCodegen';
 import {Writer} from '@jsonjoy.com/buffers/lib/Writer';
-import {CborEncoder} from '@jsonjoy.com/json-pack/lib/cbor/CborEncoder';
 import {CborDecoder} from '@jsonjoy.com/json-pack/lib/cbor/CborDecoder';
-import {CborCodegen} from '../CborCodegen';
+import {CborEncoder} from '@jsonjoy.com/json-pack/lib/cbor/CborEncoder';
 import type {ModuleType, Type} from '../../../../type';
+import {testBinaryCodegen} from '../../__tests__/testBinaryCodegen';
+import {CborCodegen} from '../CborCodegen';
 
 const encoder = new CborEncoder(new Writer(16));
 const decoder = new CborDecoder();

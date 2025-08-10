@@ -1,8 +1,8 @@
 import {printTree} from 'tree-dump/lib/printTree';
 import * as schema from '../../schema';
-import {AbsType} from './AbsType';
-import type {SchemaOf, SchemaOfObjectFields, Type} from '../types';
 import type {ExcludeFromTuple, PickFromTuple} from '../../util/types';
+import type {SchemaOf, SchemaOfObjectFields, Type} from '../types';
+import {AbsType} from './AbsType';
 
 export class ObjKeyType<K extends string, V extends Type> extends AbsType<schema.KeySchema<K, SchemaOf<V>>> {
   public readonly optional: boolean = false;
@@ -51,14 +51,17 @@ export class ObjKeyOptType<K extends string, V extends Type> extends ObjKeyType<
   }
 }
 
-export class ObjType<F extends (ObjKeyType<any, any> | ObjKeyOptType<any, any>)[] = (ObjKeyType<any, any> | ObjKeyOptType<any, any>)[]> extends AbsType<
-  schema.ObjSchema<SchemaOfObjectFields<F>>
-> {
+export class ObjType<
+  F extends (ObjKeyType<any, any> | ObjKeyOptType<any, any>)[] = (ObjKeyType<any, any> | ObjKeyOptType<any, any>)[],
+> extends AbsType<schema.ObjSchema<SchemaOfObjectFields<F>>> {
   constructor(public readonly keys: F) {
     super(schema.s.obj as any);
   }
 
-  private _key(field: ObjKeyType<any, any> | ObjKeyOptType<any, any>, options?: schema.Optional<schema.KeySchema<any, any>>): void {
+  private _key(
+    field: ObjKeyType<any, any> | ObjKeyOptType<any, any>,
+    options?: schema.Optional<schema.KeySchema<any, any>>,
+  ): void {
     if (options) field.options(options);
     field.system = this.system;
     this.keys.push(field as any);
@@ -94,7 +97,7 @@ export class ObjType<F extends (ObjKeyType<any, any> | ObjKeyOptType<any, any>)[
   ): ObjType<[...F, ObjKeyOptType<K, V>]> {
     this._key(new ObjKeyOptType<K, V>(key, value), options);
     return <any>this;
-  }d
+  }
 
   public getSchema(): schema.ObjSchema<SchemaOfObjectFields<F>> {
     return {

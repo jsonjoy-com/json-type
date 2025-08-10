@@ -1,8 +1,8 @@
-import * as schema from '../../schema';
 import {printTree} from 'tree-dump/lib/printTree';
+import * as schema from '../../schema';
 import {Discriminator} from '../discriminator';
-import {AbsType} from './AbsType';
 import type {SchemaOf, Type} from '../types';
+import {AbsType} from './AbsType';
 
 export class OrType<T extends Type[] = any> extends AbsType<schema.OrSchema<{[K in keyof T]: SchemaOf<T[K]>}>> {
   constructor(

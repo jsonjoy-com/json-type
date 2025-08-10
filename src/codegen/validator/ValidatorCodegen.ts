@@ -1,12 +1,9 @@
 import {Codegen} from '@jsonjoy.com/codegen';
 import {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
-import {ValidationError, ValidationErrorMessage} from '../../constants';
+import {normalizeAccessor} from '@jsonjoy.com/codegen/lib/util/normalizeAccessor';
 import {deepEqualCodegen} from '@jsonjoy.com/util/lib/json-equal/deepEqualCodegen';
-import {AbstractCodegen} from '../AbstractCodege';
-import {floats, ints, uints} from '../../util';
-import {isAscii, isUtf8} from '../../util/stringFormats';
+import {ValidationError, ValidationErrorMessage} from '../../constants';
 import {
-  ObjKeyOptType,
   type AnyType,
   type ArrType,
   type BinType,
@@ -14,18 +11,21 @@ import {
   type ConType,
   type MapType,
   type NumType,
+  ObjKeyOptType,
   type ObjType,
   type OrType,
   type RefType,
   type StrType,
   type Type,
 } from '../../type';
-import {normalizeAccessor} from '@jsonjoy.com/codegen/lib/util/normalizeAccessor';
-import {lazyKeyedFactory} from '../util';
+import {floats, ints, uints} from '../../util';
+import {isAscii, isUtf8} from '../../util/stringFormats';
+import {AbstractCodegen} from '../AbstractCodege';
 import {DiscriminatorCodegen} from '../discriminator';
-import {canSkipObjectKeyUndefinedCheck} from './util';
-import type {JsonTypeValidator} from './types';
 import type {SchemaPath} from '../types';
+import {lazyKeyedFactory} from '../util';
+import type {JsonTypeValidator} from './types';
+import {canSkipObjectKeyUndefinedCheck} from './util';
 
 export interface ValidatorCodegenOptions {
   /** Type for which to generate the validator. */

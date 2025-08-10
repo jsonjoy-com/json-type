@@ -1,6 +1,5 @@
-import {TypeExportContext} from '../type/classes/ModuleType/TypeExportContext';
+import type * as schema from '../schema';
 import type {AliasType} from '../type';
-import type {ObjType} from '../type/classes/ObjType';
 import type {AbsType} from '../type/classes/AbsType';
 import type {AnyType} from '../type/classes/AnyType';
 import type {ArrType} from '../type/classes/ArrType';
@@ -8,23 +7,24 @@ import type {BinType} from '../type/classes/BinType';
 import type {BoolType} from '../type/classes/BoolType';
 import type {ConType} from '../type/classes/ConType';
 import type {MapType} from '../type/classes/MapType';
+import {TypeExportContext} from '../type/classes/ModuleType/TypeExportContext';
 import type {NumType} from '../type/classes/NumType';
+import type {ObjType} from '../type/classes/ObjType';
 import type {OrType} from '../type/classes/OrType';
 import type {RefType} from '../type/classes/RefType';
 import type {StrType} from '../type/classes/StrType';
-import type * as schema from '../schema';
 import type {
-  JsonSchemaNode,
-  JsonSchemaGenericKeywords,
   JsonSchemaAny,
   JsonSchemaArray,
   JsonSchemaBinary,
   JsonSchemaBoolean,
-  JsonSchemaString,
+  JsonSchemaGenericKeywords,
+  JsonSchemaNode,
   JsonSchemaNumber,
   JsonSchemaObject,
-  JsonSchemaRef,
   JsonSchemaOr,
+  JsonSchemaRef,
+  JsonSchemaString,
   JsonSchemaValueNode,
 } from './types';
 

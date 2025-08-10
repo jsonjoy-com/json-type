@@ -1,8 +1,8 @@
-import {NumType, ObjType, StrType} from '../classes';
-import {ObjKeyType} from '../classes/ObjType';
 import {type SchemaOf, t} from '..';
 import type {NumSchema, TypeOf} from '../../schema';
 import {validateSchema} from '../../schema/validate';
+import {NumType, ObjType, StrType} from '../classes';
+import {ObjKeyType} from '../classes/ObjType';
 
 test('number', () => {
   const type = t.Number({

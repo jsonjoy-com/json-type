@@ -1,5 +1,5 @@
-import type {TypeOf} from '../../schema';
 import {type SchemaOf, t} from '..';
+import type {TypeOf} from '../../schema';
 
 export const everyType = t.Object(
   // t.prop('id', t.str.options({noJsonEscape: true})),

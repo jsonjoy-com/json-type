@@ -1,6 +1,6 @@
-import {Value} from './Value';
-import {ObjValue} from './ObjValue';
 import type * as classes from '../type';
+import {ObjValue} from './ObjValue';
+import {Value} from './Value';
 
 export const value: {
   <T extends classes.ObjType>(type: T, data: unknown): ObjValue<T>;

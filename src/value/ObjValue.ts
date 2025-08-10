@@ -1,9 +1,9 @@
-import {Value} from './Value';
 import {printTree} from 'tree-dump/lib/printTree';
-import {ModuleType} from '../type/classes/ModuleType';
+import type {Printable} from 'tree-dump/lib/types';
 import type * as classes from '../type';
 import type {TypeBuilder} from '../type/TypeBuilder';
-import type {Printable} from 'tree-dump/lib/types';
+import {ModuleType} from '../type/classes/ModuleType';
+import {Value} from './Value';
 
 export type UnObjType<T> = T extends classes.ObjType<infer U> ? U : never;
 export type UnObjValue<T> = T extends ObjValue<infer U> ? U : never;

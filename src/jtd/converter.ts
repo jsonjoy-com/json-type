@@ -1,4 +1,4 @@
-import {ObjKeyOptType, type ArrType, type ObjType, type RefType, type Type} from '../type';
+import {type ArrType, ObjKeyOptType, type ObjType, type RefType, type Type} from '../type';
 import type * as jtd from './types';
 
 const NUMS_TYPE_MAPPING = new Map<string, jtd.JtdType>([
