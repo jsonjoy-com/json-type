@@ -17,8 +17,6 @@ const toStringTree = (tab: string = '', type: FnType<Type, Type, any> | FnRxType
 export class FnType<Req extends Type, Res extends Type, Ctx = unknown> extends AbsType<
   schema.FnSchema<SchemaOf<Req>, SchemaOf<Res>, Ctx>
 > {
-  public fn: schema.FunctionValue<schema.TypeOf<SchemaOf<Req>>, schema.TypeOf<SchemaOf<Res>>> = fnNotImplemented;
-
   constructor(
     public readonly req: Req,
     public readonly res: Res,
@@ -68,6 +66,11 @@ export class FnType<Req extends Type, Res extends Type, Ctx = unknown> extends A
     };
   }
 
+  public default(value: schema.FunctionValue<schema.TypeOf<SchemaOf<Req>>, schema.TypeOf<SchemaOf<Res>>>): this {
+    this.schema.default = value;
+    return this;
+  }
+
   public toString(tab: string = ''): string {
     return super.toString(tab) + toStringTree(tab, this);
   }
@@ -89,22 +92,34 @@ export class FnRxType<Req extends Type, Res extends Type, Ctx = unknown> extends
     } as any);
   }
 
-  public request<T extends Type>(req: T): FnType<T, Res> {
+  public input<T extends Type>(req: T): FnRxType<T, Res> {
+    return this.inp(req);
+  }
+
+  public inp<T extends Type>(req: T): FnRxType<T, Res> {
     (this as any).req = req;
     return this as any;
   }
 
-  public inp<T extends Type>(req: T): FnType<T, Res> {
-    return this.request(req);
+  public output<T extends Type>(res: T): FnRxType<Req, T> {
+    return this.out(res);
   }
 
-  public response<T extends Type>(res: T): FnType<Req, T> {
+  public out<T extends Type>(res: T): FnRxType<Req, T> {
     (this as any).res = res;
     return this as any;
   }
 
-  public out<T extends Type>(res: T): FnType<Req, T> {
-    return this.response(res);
+  public io<I extends Type, O extends Type>(request: I, response: O): FnRxType<I, O, Ctx> {
+    return this.inp(request).out(response) as FnRxType<I, O, Ctx>;
+  }
+
+  public signature<I extends Type, O extends Type>(request: I, response: O): FnRxType<I, O, Ctx> {
+    return this.io(request, response) as FnRxType<I, O, Ctx>;
+  }
+
+  public ctx<T>(): FnRxType<Req, Res, T> {
+    return this as any;
   }
 
   public getSchema(): schema.FnRxSchema<SchemaOf<Req>, SchemaOf<Res>, Ctx> {
@@ -113,6 +128,11 @@ export class FnRxType<Req extends Type, Res extends Type, Ctx = unknown> extends
       req: this.req.getSchema() as SchemaOf<Req>,
       res: this.res.getSchema() as SchemaOf<Res>,
     };
+  }
+
+  public default(value: schema.FnStreamingValue<schema.TypeOf<SchemaOf<Req>>, schema.TypeOf<SchemaOf<Res>>>): this {
+    this.schema.default = value;
+    return this;
   }
 
   public toString(tab: string = ''): string {

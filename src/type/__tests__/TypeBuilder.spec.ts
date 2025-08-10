@@ -1,3 +1,4 @@
+import {of} from 'rxjs';
 import {type SchemaOf, t} from '..';
 import type {NumSchema, TypeOf} from '../../schema';
 import {validateSchema} from '../../schema/validate';
@@ -27,6 +28,27 @@ describe('"fn" kind', () => {
     const type1 = t.fn$.title('My Function').inp(t.str).out(t.num);
     const type2 = t.Function$(t.str, t.num, {title: 'My Function'});
     expect(type1.getSchema()).toEqual(type2.getSchema());
+  });
+
+  test('can set function implementation', () => {
+    const fn1 = t.fn
+      .input(t.object({id: t.str}))
+      .output(t.num)
+      .title('My Function')
+      .default(async ({id}) => {
+        return 42;
+      })
+      .default(({id}) => 42)
+      .description('This is a function that returns a number based on the input id.');
+    const fn2 = t.fn$
+      .input(t.object({id: t.str}))
+      .output(t.num)
+      .title('My Rx Function')
+      .default(() => {
+        return of(42);
+      });
+    // console.log(fn1 + '');
+    // console.log(fn2 + '');
   });
 });
 
