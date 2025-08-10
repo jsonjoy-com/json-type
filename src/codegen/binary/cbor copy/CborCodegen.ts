@@ -1,7 +1,7 @@
 import {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
 import {normalizeAccessor} from '@jsonjoy.com/codegen/lib/util/normalizeAccessor';
 import {CborEncoder} from '@jsonjoy.com/json-pack/lib/cbor/CborEncoder';
-import {type MapType, KeyOptType, type ObjType, type Type} from '../../../type';
+import {type MapType, KeyOptType, type KeyType, type ObjType, type Type} from '../../../type';
 import type {CompiledBinaryEncoder, SchemaPath} from '../../types';
 import {lazyKeyedFactory} from '../../util';
 import {AbstractBinaryCodegen} from '../AbstractBinaryCodegen';
@@ -77,6 +77,10 @@ export class CborCodegen extends AbstractBinaryCodegen<CborEncoder> {
       emitUnknownFields();
       this.blob(this.gen((encoder) => encoder.writeEndObj()));
     }
+  }
+
+  protected onKey(path: SchemaPath, r: JsExpression, type: KeyType<any, any>): void {
+    this.onNode([...path, type.key], r, type.val);
   }
 
   protected genEncoder(type: Type): CompiledBinaryEncoder {

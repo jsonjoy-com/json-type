@@ -1,7 +1,7 @@
 import {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
 import {normalizeAccessor} from '@jsonjoy.com/codegen/lib/util/normalizeAccessor';
 import {MsgPackEncoder} from '@jsonjoy.com/json-pack/lib/msgpack/MsgPackEncoder';
-import {KeyOptType, type ObjType, type Type} from '../../../type';
+import {KeyOptType, type KeyType, type ObjType, type Type} from '../../../type';
 import type {CompiledBinaryEncoder, SchemaPath} from '../../types';
 import {lazyKeyedFactory} from '../../util';
 import {AbstractBinaryCodegen} from '../AbstractBinaryCodegen';
@@ -86,6 +86,10 @@ export class MsgPackCodegen extends AbstractBinaryCodegen<MsgPackEncoder> {
       emitUnknownFields();
       codegen.js(`view.setUint32(${rHeaderPosition} + 1, ${rFieldCount});`);
     }
+  }
+
+  protected onKey(path: SchemaPath, r: JsExpression, type: KeyType<any, any>): void {
+    this.onNode([...path, type.key], r, type.val);
   }
 
   protected genEncoder(type: Type): CompiledBinaryEncoder {

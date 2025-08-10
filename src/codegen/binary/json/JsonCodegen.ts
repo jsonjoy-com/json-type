@@ -1,7 +1,7 @@
 import {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
 import {normalizeAccessor} from '@jsonjoy.com/codegen/lib/util/normalizeAccessor';
 import {JsonEncoder} from '@jsonjoy.com/json-pack/lib/json/JsonEncoder';
-import {type ArrType, type MapType, KeyOptType, type ObjType, type Type} from '../../../type';
+import {type ArrType, type MapType, KeyOptType, type KeyType, type ObjType, type Type} from '../../../type';
 import type {CompiledBinaryEncoder, SchemaPath} from '../../types';
 import {lazyKeyedFactory} from '../../util';
 import {AbstractBinaryCodegen} from '../AbstractBinaryCodegen';
@@ -216,6 +216,10 @@ export class JsonCodegen extends AbstractBinaryCodegen<JsonEncoder> {
     this.onNode([...path, {r: rKey}], new JsExpression(() => `${r}[${rKey}]`), type._value);
     codegen.js(`}`);
     this.blob(objEndBlob);
+  }
+
+  protected onKey(path: SchemaPath, r: JsExpression, type: KeyType<any, any>): void {
+    this.onNode([...path, type.key], r, type.val);
   }
 
   protected genEncoder(type: Type): CompiledBinaryEncoder {
