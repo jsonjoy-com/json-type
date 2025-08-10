@@ -55,12 +55,7 @@ test('array of any with options', () => {
 });
 
 test('can construct a realistic object', () => {
-  const type = t.Object(
-    t.Key('id', t.str),
-    t.KeyOpt('name', t.str),
-    t.KeyOpt('age', t.num),
-    t.Key('verified', t.bool),
-  );
+  const type = t.Object(t.Key('id', t.str), t.KeyOpt('name', t.str), t.KeyOpt('age', t.num), t.Key('verified', t.bool));
   expect(type.getSchema()).toStrictEqual({
     kind: 'obj',
     keys: [

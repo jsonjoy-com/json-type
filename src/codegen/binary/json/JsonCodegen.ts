@@ -157,7 +157,8 @@ export class JsonCodegen extends AbstractBinaryCodegen<JsonEncoder> {
     };
     const emitEnding = () => {
       const rewriteLastSeparator = () => {
-        for (let i = 0; i < endBlob.length; i++) codegen.js(/* js */ `uint8[writer.x - ${endBlob.length - i}] = ${endBlob[i]};`);
+        for (let i = 0; i < endBlob.length; i++)
+          codegen.js(/* js */ `uint8[writer.x - ${endBlob.length - i}] = ${endBlob[i]};`);
       };
       if (requiredFields.length) {
         rewriteLastSeparator();

@@ -250,11 +250,10 @@ export const testBinaryCodegen = (transcode: (system: ModuleType, type: Type, va
     test('can encode complex named tuple', () => {
       const system = new ModuleType();
       const t = system.t;
-      const type = system.t.Tuple(
-        [t.Key('header', t.str), t.Key('version', t.num)],
-        t.Object(t.Key('data', t.str)),
-        [t.Key('checksum', t.num), t.Key('timestamp', t.num)],
-      );
+      const type = system.t.Tuple([t.Key('header', t.str), t.Key('version', t.num)], t.Object(t.Key('data', t.str)), [
+        t.Key('checksum', t.num),
+        t.Key('timestamp', t.num),
+      ]);
       const value: any[] = ['v1', 2, {data: 'test1'}, {data: 'test2'}, 12345, 1234567890];
       expect(transcode(system, type, value)).toStrictEqual(value);
     });
@@ -262,9 +261,7 @@ export const testBinaryCodegen = (transcode: (system: ModuleType, type: Type, va
     test('can encode nested named tuple', () => {
       const system = new ModuleType();
       const t = system.t;
-      const type = system.t.Tuple([
-        t.Key('metadata', t.Tuple([t.Key('type', t.str), t.Key('size', t.num)])),
-      ], t.str);
+      const type = system.t.Tuple([t.Key('metadata', t.Tuple([t.Key('type', t.str), t.Key('size', t.num)]))], t.str);
       const value: any[] = [['document', 1024], 'content1', 'content2'];
       expect(transcode(system, type, value)).toStrictEqual(value);
     });

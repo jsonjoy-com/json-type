@@ -86,16 +86,22 @@ export const schemaCategories = {
 } as const;
 
 const primitivesModule = new ModuleType();
-export const primitiveTypes = Object.entries(primitiveSchemas).reduce((acc, [key, schema]) => {
-  acc[key] = primitivesModule.t.import(schema);
-  return acc;
-}, {} as Record<string, Type>);
+export const primitiveTypes = Object.entries(primitiveSchemas).reduce(
+  (acc, [key, schema]) => {
+    acc[key] = primitivesModule.t.import(schema);
+    return acc;
+  },
+  {} as Record<string, Type>,
+);
 
 const compositesModule = new ModuleType();
-export const compositeTypes = Object.entries(compositeSchemas).reduce((acc, [key, schema]) => {
-  acc[key] = compositesModule.t.import(schema);
-  return acc;
-}, {} as Record<string, Type>);
+export const compositeTypes = Object.entries(compositeSchemas).reduce(
+  (acc, [key, schema]) => {
+    acc[key] = compositesModule.t.import(schema);
+    return acc;
+  },
+  {} as Record<string, Type>,
+);
 
 /**
  * User profile schema with nested objects and optional fields
@@ -201,15 +207,17 @@ export const Configuration = t.Object(
 /**
  * Event data schema with tuples and coordinates
  */
-export const Event = t.Object(
-  t.Key('id', t.String({format: 'ascii'})),
-  t.Key('type', t.enum('click', 'view', 'purchase', 'signup')),
-  t.Key('timestamp', t.Number({format: 'u64'})),
-  t.Key('userId', t.maybe(t.str)),
-  t.Key('location', t.Tuple([t.Number({format: 'f64'}), t.Number({format: 'f64'})])),
-  t.Key('metadata', t.Map(t.Or(t.str, t.num, t.bool))),
-  t.KeyOpt('sessionId', t.str),
-).alias('Event').type;
+export const Event = t
+  .Object(
+    t.Key('id', t.String({format: 'ascii'})),
+    t.Key('type', t.enum('click', 'view', 'purchase', 'signup')),
+    t.Key('timestamp', t.Number({format: 'u64'})),
+    t.Key('userId', t.maybe(t.str)),
+    t.Key('location', t.Tuple([t.Number({format: 'f64'}), t.Number({format: 'f64'})])),
+    t.Key('metadata', t.Map(t.Or(t.str, t.num, t.bool))),
+    t.KeyOpt('sessionId', t.str),
+  )
+  .alias('Event').type;
 
 /**
  * Contact information schema with formatted strings

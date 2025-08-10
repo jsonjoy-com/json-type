@@ -111,7 +111,8 @@ export class Discriminator {
   ) {}
 
   condition(): Expr {
-    if (this.type instanceof ConType) return ['==', this.type.literal(), ['$', this.path, this.type.literal() === null ? '' : null]];
+    if (this.type instanceof ConType)
+      return ['==', this.type.literal(), ['$', this.path, this.type.literal() === null ? '' : null]];
     if (this.type instanceof BoolType) return ['==', ['type', ['$', this.path]], 'boolean'];
     if (this.type instanceof NumType) return ['==', ['type', ['$', this.path]], 'number'];
     if (this.type instanceof StrType) return ['==', ['type', ['$', this.path]], 'string'];

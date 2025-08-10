@@ -17,7 +17,7 @@ import {
   type RefType,
   type StrType,
   type Type,
-  KeyType,
+  type KeyType,
 } from '../../type';
 import {floats, ints, uints} from '../../util';
 import {isAscii, isUtf8} from '../../util/stringFormats';

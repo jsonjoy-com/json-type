@@ -4,8 +4,8 @@ import {MsgPackCodegen} from '../MsgPackCodegen';
 import {Random} from '../../../../random';
 import {allSerializableTypes} from '../../../../__tests__/fixtures';
 
-    const encoder = new MsgPackEncoder();
-    const decoder = new MsgPackDecoder();
+const encoder = new MsgPackEncoder();
+const decoder = new MsgPackDecoder();
 
 for (const [name, type] of Object.entries(allSerializableTypes)) {
   test(`can encode and decode ${name}`, () => {

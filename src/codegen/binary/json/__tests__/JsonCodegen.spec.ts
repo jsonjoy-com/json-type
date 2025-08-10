@@ -34,8 +34,8 @@ test('fuzzer 1: map in map', () => {
       'T`jb_LZ': null,
       'C)crlQL': null,
       'kw&p(^-': null,
-      'oKkF,u8': null
-    }
+      'oKkF,u8': null,
+    },
   };
   const value2 = {
     'YS9mc}Zb': {
@@ -43,17 +43,17 @@ test('fuzzer 1: map in map', () => {
       'j9?_0': null,
       '@:ODe': null,
       'sS{Sx': null,
-      '4EMz|': null
+      '4EMz|': null,
     },
     "bF@64u'7": {
       'q<_b%}$Q': null,
-      'RäXpXBLü': null,
+      RäXpXBLü: null,
       '$uJx]{ft': null,
       'bX%jLhr{': null,
       'Lr1bY-fY': null,
       'D]ml,C)W': null,
       'eK=DszFO': null,
-      '!RqC^GUz': null
+      '!RqC^GUz': null,
     },
     '9SEDa*#|': {
       ';COK{m%=': null,
@@ -63,7 +63,7 @@ test('fuzzer 1: map in map', () => {
       'k+$es!mO': null,
       'O1(&D_bt': null,
       'cidA#*BD': null,
-      '!ZP5JBFq': null
+      '!ZP5JBFq': null,
     },
     ';6(7#5m:': {},
     'zhGX^&Y3': {
@@ -71,27 +71,27 @@ test('fuzzer 1: map in map', () => {
       '%вqL=': null,
       '5?5{)': null,
       '*2"H4': null,
-      ')&_O4': null
+      ')&_O4': null,
     },
     '?6a1a5Y\\': {
       '5,bCV': null,
       'z[x2s': null,
       'Ad/g9': null,
       'at#84': null,
-      '{@?".': null
+      '{@?".': null,
     },
-    'uaaAwаHb': { VXy: null, 'I(<': null, 'W V': null },
+    uaaAwаHb: {VXy: null, 'I(<': null, 'W V': null},
     '&sH?Bk2E': {
       'M[^ex': null,
       '-ZP$E': null,
       'c*@uR': null,
       '`sy3N': null,
-      'g?DB ': null
-    }
+      'g?DB ': null,
+    },
   };
   const value3 = {
-    '/7': { '|;L': null, '@K<': null, '*x:': null },
-    Zf: { N1: null, 't%': null }
+    '/7': {'|;L': null, '@K<': null, '*x:': null},
+    Zf: {N1: null, 't%': null},
   };
   for (let i = 0; i < 100; i++) {
     const decoded = transcode(system, type, value);

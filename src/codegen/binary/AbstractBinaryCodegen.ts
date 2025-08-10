@@ -146,7 +146,8 @@ var uint8 = writer.uint8, view = writer.view;`,
   }
 
   protected onBool(path: SchemaPath, r: JsExpression, type: BoolType): void {
-    this.codegen.if(`${r.use()}`,
+    this.codegen.if(
+      `${r.use()}`,
       () => {
         this.blob(
           this.gen((encoder) => {
@@ -160,7 +161,8 @@ var uint8 = writer.uint8, view = writer.view;`,
             encoder.writeBoolean(false);
           }),
         );
-      });
+      },
+    );
   }
 
   protected onNum(path: SchemaPath, r: JsExpression, type: NumType): void {
