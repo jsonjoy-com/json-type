@@ -7,7 +7,11 @@
 import {RandomJson} from '@jsonjoy.com/json-random';
 import {genRandomExample} from '@jsonjoy.com/json-random/lib/examples';
 import {s} from '../schema';
-import {t} from '../type';
+import {ModuleType} from '../type/classes/ModuleType';
+import type {Type} from '../type';
+
+const mod = new ModuleType();
+export const t = mod.t;
 
 export const randomJson = () => {
   return Math.random() < 0.5 ? genRandomExample() : RandomJson.generate();
@@ -78,6 +82,18 @@ export const schemaCategories = {
   all: allSchemas,
 } as const;
 
+const primitivesModule = new ModuleType();
+export const primitiveTypes = Object.entries(primitiveSchemas).reduce((acc, [key, schema]) => {
+  acc[key] = primitivesModule.t.import(schema);
+  return acc;
+}, {} as Record<string, Type>);
+
+const compositesModule = new ModuleType();
+export const compositeTypes = Object.entries(compositeSchemas).reduce((acc, [key, schema]) => {
+  acc[key] = compositesModule.t.import(schema);
+  return acc;
+}, {} as Record<string, Type>);
+
 /**
  * User profile schema with nested objects and optional fields
  */
@@ -92,7 +108,8 @@ export const User = t
     age: t.Number({gte: 0, lte: 150}),
     verified: t.bool,
   })
-  .opt('avatar', t.String({format: 'ascii'}));
+  .opt('avatar', t.String({format: 'ascii'}))
+  .alias('User').type;
 
 /**
  * Product catalog schema with arrays and formatted numbers
@@ -189,7 +206,7 @@ export const Event = t.Object(
   t.Key('location', t.Tuple([t.Number({format: 'f64'}), t.Number({format: 'f64'})])),
   t.Key('metadata', t.Map(t.Or(t.str, t.num, t.bool))),
   t.KeyOpt('sessionId', t.str),
-);
+).alias('Event').type;
 
 /**
  * Contact information schema with formatted strings
@@ -287,3 +304,18 @@ export const ComplexNested = t.Object(
     }),
   ),
 );
+
+export const allSerializableTypes = {
+  ...primitiveTypes,
+  ...compositeTypes,
+  User,
+  Product,
+  BlogPost,
+  ApiResponse,
+  FileMetadata,
+  Configuration,
+  Event,
+  ContactInfo,
+  DatabaseRecord,
+  ComplexNested,
+} as const;
