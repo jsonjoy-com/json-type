@@ -1,4 +1,4 @@
-import {RandomJson} from '@jsonjoy.com/json-random';
+import {RandomJson, randomString} from '@jsonjoy.com/json-random';
 import {cloneBinary} from '@jsonjoy.com/util/lib/json-clone';
 import {of} from 'rxjs';
 import type {
@@ -193,11 +193,16 @@ export class Random {
   }
 
   public str(type: StrType): string {
-    let length = Math.round(Math.random() * 10);
     const schema = type.getSchema();
+    const isAscii = schema.format === 'ascii' || schema.ascii;
     const {min, max} = schema;
-    if (min !== undefined && length < min) length = min + length;
-    if (max !== undefined && length > max) length = max;
-    return RandomJson.genString(length);
+    let targetLength = Math.round(Math.random() * 10);
+    if (min !== undefined && targetLength < min) targetLength = min + targetLength;
+    if (max !== undefined && targetLength > max) targetLength = max;
+    let str = isAscii ? randomString(['char', 32, 126, targetLength]) : RandomJson.genString(targetLength);
+    const length = str.length;
+    if (min !== undefined && length < min) str = str.padEnd(min, '.');
+    if (max !== undefined && length > max) str = str.slice(0, max);
+    return str;
   }
 }
