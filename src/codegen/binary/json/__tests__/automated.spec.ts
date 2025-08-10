@@ -20,8 +20,8 @@ for (const [name, type] of Object.entries(allSerializableTypes)) {
         const encoded = encoder.writer.flush();
         const text = Buffer.from(encoded).toString('utf-8');
         // console.log(text);
-        const decoded = parse(text);
-        // const decoded = decoder.decode(encoded);
+        // const decoded = parse(text);
+        const decoded = decoder.decode(encoded);
         expect(decoded).toEqual(json);
       } catch (error) {
         console.log(JSON.stringify(json, null, 2));
