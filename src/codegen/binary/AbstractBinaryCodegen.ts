@@ -8,10 +8,8 @@ import type {
   BinType,
   BoolType,
   ConType,
-  KeyType,
   MapType,
   NumType,
-  ObjType,
   OrType,
   RefType,
   StrType,
@@ -148,7 +146,21 @@ var uint8 = writer.uint8, view = writer.view;`,
   }
 
   protected onBool(path: SchemaPath, r: JsExpression, type: BoolType): void {
-    this.codegen.js(/* js */ `encoder.writeBoolean(${r.use()});`);
+    this.codegen.if(`${r.use()}`,
+      () => {
+        this.blob(
+          this.gen((encoder) => {
+            encoder.writeBoolean(true);
+          }),
+        );
+      },
+      () => {
+        this.blob(
+          this.gen((encoder) => {
+            encoder.writeBoolean(false);
+          }),
+        );
+      });
   }
 
   protected onNum(path: SchemaPath, r: JsExpression, type: NumType): void {

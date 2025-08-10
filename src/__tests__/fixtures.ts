@@ -63,6 +63,9 @@ export const compositeSchemas = {
     s.Array(s.Number()),
   ),
   binary: s.bin,
+  doubleMap: s.Map(s.Map(s.str)),
+  nestedMaps: s.Map(s.Map(s.Map(s.nil))),
+  nestedArrays: s.Array(s.Array(s.Array(s.str))),
 } as const;
 
 /**

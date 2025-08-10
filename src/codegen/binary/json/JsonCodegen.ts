@@ -13,6 +13,8 @@ export class JsonCodegen extends AbstractBinaryCodegen<JsonEncoder> {
     const r = codegen.codegen.options.args[0];
     const expression = new JsExpression(() => r);
     codegen.onNode([], expression, type);
+
+    // console.log(codegen.codegen.generate().js);
     return codegen.compile();
   });
 
@@ -142,26 +144,26 @@ export class JsonCodegen extends AbstractBinaryCodegen<JsonEncoder> {
       const ri = codegen.r();
       const rLength = codegen.r();
       const keys = fields.map((field) => JSON.stringify(field.key));
-      const rKnownFields = codegen.addConstant(`new Set([${keys.join(',')}])`);
-      codegen.js(`var ${rKeys} = Object.keys(${r}), ${rLength} = ${rKeys}.length, ${rKey};`);
-      codegen.js(`for (var ${ri} = 0; ${ri} < ${rLength}; ${ri}++) {`);
-      codegen.js(`${rKey} = ${rKeys}[${ri}];`);
-      codegen.js(`if (${rKnownFields}.has(${rKey})) continue;`);
-      codegen.js(`encoder.writeStr(${rKey});`);
+      const rKnownFields = codegen.addConstant(/* js */ `new Set([${keys.join(',')}])`);
+      codegen.js(/* js */ `var ${rKeys} = Object.keys(${r}), ${rLength} = ${rKeys}.length, ${rKey};`);
+      codegen.js(/* js */ `for (var ${ri} = 0; ${ri} < ${rLength}; ${ri}++) {`);
+      codegen.js(/* js */ `${rKey} = ${rKeys}[${ri}];`);
+      codegen.js(/* js */ `if (${rKnownFields}.has(${rKey})) continue;`);
+      codegen.js(/* js */ `encoder.writeStr(${rKey});`);
       this.blob(keySeparatorBlob);
-      codegen.js(`encoder.writeAny(${r}[${rKey}]);`);
+      codegen.js(/* js */ `encoder.writeAny(${r}[${rKey}]);`);
       this.blob(separatorBlob);
-      codegen.js(`}`);
+      codegen.js(/* js */ `}`);
     };
     const emitEnding = () => {
       const rewriteLastSeparator = () => {
-        for (let i = 0; i < endBlob.length; i++) codegen.js(`uint8[writer.x - ${endBlob.length - i}] = ${endBlob[i]};`);
+        for (let i = 0; i < endBlob.length; i++) codegen.js(/* js */ `uint8[writer.x - ${endBlob.length - i}] = ${endBlob[i]};`);
       };
       if (requiredFields.length) {
         rewriteLastSeparator();
       } else {
         codegen.if(
-          `uint8[writer.x - 1] === ${separatorBlob[separatorBlob.length - 1]}`,
+          /* js */ `uint8[writer.x - 1] === ${separatorBlob[separatorBlob.length - 1]}`,
           () => {
             rewriteLastSeparator();
           },
@@ -192,30 +194,29 @@ export class JsonCodegen extends AbstractBinaryCodegen<JsonEncoder> {
   }
 
   protected onMap(path: SchemaPath, val: JsExpression, type: MapType): void {
-    const objStartBlob = this.gen((encoder) => encoder.writeStartObj());
-    const objEndBlob = this.gen((encoder) => encoder.writeEndObj());
     const separatorBlob = this.gen((encoder) => encoder.writeObjSeparator());
     const keySeparatorBlob = this.gen((encoder) => encoder.writeObjKeySeparator());
     const codegen = this.codegen;
     const r = codegen.var(val.use());
     const rKeys = codegen.var(`Object.keys(${r})`);
     const rKey = codegen.var();
+    const ri = codegen.var();
     const rLength = codegen.var(`${rKeys}.length`);
-    this.blob(objStartBlob);
+    this.blob(this.gen((encoder) => encoder.writeStartObj()));
     codegen.if(`${rLength}`, () => {
       codegen.js(`${rKey} = ${rKeys}[0];`);
       codegen.js(`encoder.writeStr(${rKey});`);
       this.blob(keySeparatorBlob);
       this.onNode([...path, {r: rKey}], new JsExpression(() => `${r}[${rKey}]`), type._value);
     });
-    codegen.js(`for (var i = 1; i < ${rLength}; i++) {`);
-    codegen.js(`${rKey} = ${rKeys}[i];`);
+    codegen.js(`for (var ${ri} = 1; ${ri} < ${rLength}; ${ri}++) {`);
+    codegen.js(`${rKey} = ${rKeys}[${ri}];`);
     this.blob(separatorBlob);
     codegen.js(`encoder.writeStr(${rKey});`);
     this.blob(keySeparatorBlob);
     this.onNode([...path, {r: rKey}], new JsExpression(() => `${r}[${rKey}]`), type._value);
     codegen.js(`}`);
-    this.blob(objEndBlob);
+    this.blob(this.gen((encoder) => encoder.writeEndObj()));
   }
 
   protected onKey(path: SchemaPath, r: JsExpression, type: KeyType<any, any>): void {

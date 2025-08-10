@@ -2,6 +2,7 @@ import {maxEncodingCapacity} from '@jsonjoy.com/util/lib/json-size';
 import {t} from '../../../type';
 import {ModuleType} from '../../../type/classes/ModuleType';
 import {CapacityEstimatorCodegen} from '../CapacityEstimatorCodegen';
+import {Random} from '../../../random';
 
 describe('"any" type', () => {
   test('returns the same result as maxEncodingCapacity()', () => {
@@ -353,4 +354,15 @@ test('add circular reference test', () => {
   };
   const estimator = CapacityEstimatorCodegen.get(user.type);
   expect(estimator(value1)).toBe(maxEncodingCapacity(value1));
+});
+
+test('fuzzer: map in map', () => {
+  const system = new ModuleType();
+  const {t} = system;
+  const type = t.Map(t.Map(t.nil));
+  const estimator = CapacityEstimatorCodegen.get(type);
+  for (let i = 0; i < 100; i++) {
+    const value = Random.gen(type);
+    expect(estimator(value)).toBe(maxEncodingCapacity(value));
+  }
 });
