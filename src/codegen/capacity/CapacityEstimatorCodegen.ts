@@ -174,6 +174,10 @@ export class CapacityEstimatorCodegen {
     );
   }
 
+  protected genKey(r: JsExpression, type: KeyType<any, any>): void {
+    this.onNode(r, type.val);
+  }
+
   protected onNode(value: JsExpression, type: Type): void {
     const kind = type.kind();
     switch (kind) {
@@ -202,6 +206,9 @@ export class CapacityEstimatorCodegen {
         break;
       case 'obj':
         this.genObj(value, type);
+        break;
+      case 'key':
+        this.genKey(value, type as KeyType<any, any>);
         break;
       case 'map':
         this.genMap(value, type as MapType<any>);

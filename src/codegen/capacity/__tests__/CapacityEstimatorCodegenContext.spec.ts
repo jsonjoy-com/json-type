@@ -135,6 +135,13 @@ describe('"arr" type', () => {
     const estimator = CapacityEstimatorCodegen.get(type);
     expect(estimator([1, 'abc', 'xxxxxxxxx'])).toBe(maxEncodingCapacity([1, 'abc', 'xxxxxxxxx']));
   });
+
+  test('named tail 2-tuple', () => {
+    const system = new ModuleType();
+    const type = system.t.Array(t.num).tail(t.Key('very_important', t.str), t.str);
+    const estimator = CapacityEstimatorCodegen.get(type);
+    expect(estimator([1, 'abc', 'xxxxxxxxx'])).toBe(maxEncodingCapacity([1, 'abc', 'xxxxxxxxx']));
+  });
 });
 
 describe('"obj" type', () => {
