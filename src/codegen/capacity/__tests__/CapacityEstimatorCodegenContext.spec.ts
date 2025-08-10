@@ -87,6 +87,14 @@ describe('"arr" type', () => {
     expect(estimator([])).toBe(maxEncodingCapacity([]));
   });
 
+  test('"con" elements', () => {
+    const type = t.Array(t.con('abc'));
+    const estimator = CapacityEstimatorCodegen.get(type);
+    expect(estimator([])).toBe(maxEncodingCapacity([]));
+    expect(estimator(['abc'])).toBe(maxEncodingCapacity(['abc']));
+    expect(estimator(['abc', 'abc'])).toBe(maxEncodingCapacity(['abc', 'abc']));
+  });
+
   test('simple elements', () => {
     const system = new ModuleType();
     const type = system.t.arr;

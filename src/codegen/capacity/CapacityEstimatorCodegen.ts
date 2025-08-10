@@ -3,9 +3,11 @@ import {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
 import {normalizeAccessor} from '@jsonjoy.com/codegen/lib/util/normalizeAccessor';
 import {MaxEncodingOverhead, maxEncodingCapacity} from '@jsonjoy.com/util/lib/json-size';
 import {BoolType, ConType, NumType, KeyOptType} from '../../type';
-import type {ArrType, MapType, KeyType, ObjType, OrType, RefType, Type} from '../../type';
+import type {AnyType, ArrType, BinType, MapType, KeyType, ObjType, OrType, RefType, StrType, Type} from '../../type';
 import {DiscriminatorCodegen} from '../discriminator';
 import {lazyKeyedFactory} from '../util';
+import {AbstractCodegen} from '../AbstractCodege';
+import type {SchemaPath} from '../types';
 
 export type CompiledCapacityEstimator = (value: unknown) => number;
 
@@ -13,12 +15,12 @@ class IncrementSizeStep {
   constructor(public readonly inc: number) {}
 }
 
-export class CapacityEstimatorCodegen {
+export class CapacityEstimatorCodegen extends AbstractCodegen<CompiledCapacityEstimator> {
   public static readonly get = lazyKeyedFactory((type: Type, name?: string) => {
     const codegen = new CapacityEstimatorCodegen(type, name);
     const r = codegen.codegen.options.args[0];
     const expression = new JsExpression(() => r);
-    codegen.onNode(expression, type);
+    codegen.onNode([], expression, type);
     return codegen.compile();
   });
 
@@ -28,6 +30,7 @@ export class CapacityEstimatorCodegen {
     public readonly type: Type,
     name?: string,
   ) {
+    super();
     this.codegen = new Codegen({
       name: 'approxSize' + (name ? '_' + name : ''),
       args: ['r0'],
@@ -48,94 +51,118 @@ export class CapacityEstimatorCodegen {
     this.codegen.linkDependency(maxEncodingCapacity, 'maxEncodingCapacity');
   }
 
-  public inc(inc: number): void {
-    this.codegen.step(new IncrementSizeStep(inc));
+  private inc(amount: number): void {
+    this.codegen.js(/* js */ `size += ${amount};`);
   }
 
-  public compile(): CompiledCapacityEstimator {
-    return this.codegen.compile();
-  }
-
-  protected genAny(value: JsExpression): void {
+  protected onAny(path: SchemaPath, r: JsExpression, type: AnyType): void {
     const codegen = this.codegen;
-    const r = codegen.var(value.use());
-    codegen.js(/* js */ `size += maxEncodingCapacity(${r});`);
+    const rv = codegen.var(r.use());
+    codegen.js(/* js */ `size += maxEncodingCapacity(${rv});`);
   }
 
-  protected genArr(value: JsExpression, type: ArrType<any, any, any>): void {
+  protected onCon(path: SchemaPath, r: JsExpression, type: ConType): void {
+    this.inc(maxEncodingCapacity(type.literal()));
+  }
+
+  protected onBool(path: SchemaPath, r: JsExpression, type: BoolType): void {
+    this.inc(MaxEncodingOverhead.Boolean);
+  }
+
+  protected onNum(path: SchemaPath, r: JsExpression, type: NumType): void {
+    this.inc(MaxEncodingOverhead.Number);
+  }
+
+  protected onStr(path: SchemaPath, r: JsExpression, type: StrType): void {
+    this.inc(MaxEncodingOverhead.String);
+    this.codegen.js(/* js */ `size += ${MaxEncodingOverhead.StringLengthMultiplier} * ${r.use()}.length;`);
+  }
+
+  protected onBin(path: SchemaPath, r: JsExpression, type: BinType): void {
+    this.inc(MaxEncodingOverhead.Binary);
+    this.codegen.js(/* js */ `size += ${MaxEncodingOverhead.BinaryLengthMultiplier} * ${r.use()}.length;`);
+  }
+
+  protected onArr(path: SchemaPath, r: JsExpression, type: ArrType): void {
     const codegen = this.codegen;
     this.inc(MaxEncodingOverhead.Array);
-    const rLen = codegen.var(/* js */ `${value.use()}.length`);
+    const rLen = codegen.var(/* js */ `${r.use()}.length`);
     codegen.js(/* js */ `size += ${MaxEncodingOverhead.ArrayElement} * ${rLen}`);
-    const itemType = type._type as Type | undefined;
-    const headType = type._head as Type[] | undefined;
-    const tailType = type._tail as Type[] | undefined;
-    const headLength = headType ? headType.length : 0;
-    const tailLength = tailType ? tailType.length : 0;
-    if (itemType) {
-      const isConstantSizeType = type instanceof ConType || type instanceof BoolType || type instanceof NumType;
+    const {_head = [], _type, _tail = []} = type;
+    const headLength = _head.length;
+    const tailLength = _tail.length;
+    // const tupleLength = headLength + tailLength;
+    // if (tupleLength) {
+    //   codegen.if(/* js */ `${rLen} < ${tupleLength}`, () => {
+    //     codegen.js(/* js */ `throw new Error('INV_LEN');`);
+    //   });
+    // }
+    if (_type) {
+      const isConstantSizeType = _type instanceof ConType || _type instanceof BoolType || _type instanceof NumType;
       if (isConstantSizeType) {
         const elementSize =
-          type instanceof ConType
-            ? maxEncodingCapacity(type.literal())
-            : type instanceof BoolType
+          _type instanceof ConType
+            ? maxEncodingCapacity(_type.literal())
+            : _type instanceof BoolType
               ? MaxEncodingOverhead.Boolean
               : MaxEncodingOverhead.Number;
         codegen.js(/* js */ `size += ${rLen} * ${elementSize};`);
       } else {
-        const r = codegen.var(value.use());
+        const rv = codegen.var(r.use());
         const ri = codegen.getRegister();
         codegen.js(/* js */ `for(var ${ri} = ${headLength}; ${ri} < ${rLen} - ${tailLength}; ${ri}++) {`);
-        this.onNode(new JsExpression(() => /* js */ `${r}[${ri}]`), itemType);
+        this.onNode([...path, {r: ri}], new JsExpression(() => /* js */ `${rv}[${ri}]`), _type);
         codegen.js(/* js */ `}`);
       }
     }
     if (headLength > 0) {
-      const r = codegen.var(value.use());
-      for (let i = 0; i < headLength; i++) this.onNode(new JsExpression(() => /* js */ `${r}[${i}]`), headType![i]);
+      const rr = codegen.var(r.use());
+      for (let i = 0; i < headLength; i++) this.onNode([...path, i], new JsExpression(() => /* js */ `${rr}[${i}]`), _head![i]);
     }
     if (tailLength > 0) {
-      const r = codegen.var(value.use());
+      const rr = codegen.var(r.use());
       for (let i = 0; i < tailLength; i++)
-        this.onNode(new JsExpression(() => /* js */ `${r}[${rLen} - ${i + 1}]`), tailType![i]);
+        this.onNode([...path, {r: `${rLen} - ${tailLength - i}`}], new JsExpression(() => /* js */ `${rr}[${rLen} - ${i + 1}]`), _tail![i]);
     }
   }
 
-  protected genObj(value: JsExpression, type: Type): void {
+  protected onObj(path: SchemaPath, r: JsExpression, type: ObjType): void {
     const codegen = this.codegen;
-    const r = codegen.var(value.use());
-    const objectType = type as ObjType;
-    const encodeUnknownFields = !!objectType.schema.encodeUnknownKeys;
+    const rv = codegen.var(r.use());
+    const encodeUnknownFields = !!type.schema.encodeUnknownKeys;
     if (encodeUnknownFields) {
-      codegen.js(/* js */ `size += maxEncodingCapacity(${r});`);
+      codegen.js(/* js */ `size += maxEncodingCapacity(${rv});`);
       return;
     }
     this.inc(MaxEncodingOverhead.Object);
-    const fields = objectType.keys;
-    for (const f of fields) {
-      const field = f as KeyType<any, any>;
+    const fields = type.keys;
+    for (const field of fields) {
       const accessor = normalizeAccessor(field.key);
-      const fieldExpression = new JsExpression(() => `${r}${accessor}`);
+      const fieldExpression = new JsExpression(() => `${rv}${accessor}`);
       const isOptional = field instanceof KeyOptType;
       if (isOptional) {
-        codegen.if(/* js */ `${JSON.stringify(field.key)} in ${r}`, () => {
+        codegen.if(/* js */ `${JSON.stringify(field.key)} in ${rv}`, () => {
           this.inc(MaxEncodingOverhead.ObjectElement);
           this.inc(maxEncodingCapacity(field.key));
-          this.onNode(fieldExpression, field.val);
+          this.onNode([...path, field.key], fieldExpression, field.val);
         });
       } else {
         this.inc(MaxEncodingOverhead.ObjectElement);
         this.inc(maxEncodingCapacity(field.key));
-        this.onNode(fieldExpression, field.val);
+        this.onNode([...path, field.key], fieldExpression, field.val);
       }
     }
   }
 
-  protected genMap(value: JsExpression, type: MapType<any>): void {
+  protected onKey(path: SchemaPath, r: JsExpression, type: KeyType<any, any>): void {
+    this.onNode([...path, type.key], r, type.val);
+  }
+
+  protected onMap(path: SchemaPath, r: JsExpression, type: MapType): void {
     const codegen = this.codegen;
     this.inc(MaxEncodingOverhead.Object);
-    const r = codegen.var(value.use());
-    const rKeys = codegen.var(/* js */ `Object.keys(${r})`);
+    const rv = codegen.var(r.use());
+    const rKeys = codegen.var(/* js */ `Object.keys(${rv})`);
     const rKey = codegen.var();
     const rLen = codegen.var(/* js */ `${rKeys}.length`);
     codegen.js(/* js */ `size += ${MaxEncodingOverhead.ObjectElement} * ${rLen}`);
@@ -146,81 +173,31 @@ export class CapacityEstimatorCodegen {
     codegen.js(
       /* js */ `size += ${MaxEncodingOverhead.String} + ${MaxEncodingOverhead.StringLengthMultiplier} * ${rKey}.length;`,
     );
-    this.onNode(new JsExpression(() => /* js */ `${r}[${rKey}]`), valueType);
+    this.onNode([...path, {r: rKey}], new JsExpression(() => /* js */ `${rv}[${rKey}]`), valueType);
     codegen.js(/* js */ `}`);
   }
 
-  protected genRef(value: JsExpression, type: RefType<any>): void {
-    const system = type.system;
-    if (!system) throw new Error('NO_SYSTEM');
-    const estimator = CapacityEstimatorCodegen.get(system.resolve(type.ref()).type);
+  protected onRef(path: SchemaPath, r: JsExpression, type: RefType): void {
+    const system = type.getSystem();
+    const alias = system.resolve(type.ref());
+    const estimator = CapacityEstimatorCodegen.get(alias.type);
     const d = this.codegen.linkDependency(estimator);
-    this.codegen.js(/* js */ `size += ${d}(${value.use()});`);
+    this.codegen.js(/* js */ `size += ${d}(${r.use()});`);
   }
 
-  protected genOr(value: JsExpression, type: OrType<any>): void {
+  protected onOr(path: SchemaPath, r: JsExpression, type: OrType): void {
     const codegen = this.codegen;
     const discriminator = DiscriminatorCodegen.get(type);
     const d = codegen.linkDependency(discriminator);
     const types = type.types;
     codegen.switch(
-      /* js */ `${d}(${value.use()})`,
+      /* js */ `${d}(${r.use()})`,
       types.map((childType: Type, index: number) => [
         index,
         () => {
-          this.onNode(value, childType);
+          this.onNode(path, r, childType);
         },
       ]),
     );
-  }
-
-  protected genKey(r: JsExpression, type: KeyType<any, any>): void {
-    this.onNode(r, type.val);
-  }
-
-  protected onNode(value: JsExpression, type: Type): void {
-    const kind = type.kind();
-    switch (kind) {
-      case 'any':
-        this.genAny(value);
-        break;
-      case 'bool':
-        this.inc(MaxEncodingOverhead.Boolean);
-        break;
-      case 'num':
-        this.inc(MaxEncodingOverhead.Number);
-        break;
-      case 'str':
-        this.inc(MaxEncodingOverhead.String);
-        this.codegen.js(/* js */ `size += ${MaxEncodingOverhead.StringLengthMultiplier} * ${value.use()}.length;`);
-        break;
-      case 'bin':
-        this.inc(MaxEncodingOverhead.Binary);
-        this.codegen.js(/* js */ `size += ${MaxEncodingOverhead.BinaryLengthMultiplier} * ${value.use()}.length;`);
-        break;
-      case 'con':
-        this.inc(maxEncodingCapacity((type as ConType).literal()));
-        break;
-      case 'arr':
-        this.genArr(value, type as ArrType<any, any, any>);
-        break;
-      case 'obj':
-        this.genObj(value, type);
-        break;
-      case 'key':
-        this.genKey(value, type as KeyType<any, any>);
-        break;
-      case 'map':
-        this.genMap(value, type as MapType<any>);
-        break;
-      case 'ref':
-        this.genRef(value, type as RefType<any>);
-        break;
-      case 'or':
-        this.genOr(value, type as OrType<any>);
-        break;
-      default:
-        throw new Error(`"${kind}" type capacity estimation not implemented`);
-    }
   }
 }
