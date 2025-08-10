@@ -147,9 +147,12 @@
 <a name='L82'></a><a href='#L82'>82</a>
 <a name='L83'></a><a href='#L83'>83</a>
 <a name='L84'></a><a href='#L84'>84</a>
-<a name='L85'></a><a href='#L85'>85</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">33x</span>
-<span class="cline-any cline-yes">33x</span>
-<span class="cline-any cline-yes">33x</span>
+<a name='L85'></a><a href='#L85'>85</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">35x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">35x</span>
+<span class="cline-any cline-yes">35x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -160,11 +163,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">33x</span>
-<span class="cline-any cline-yes">33x</span>
+<span class="cline-any cline-yes">35x</span>
+<span class="cline-any cline-yes">35x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
@@ -231,17 +231,17 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import {Value} from './Value';
-import {printTree} from 'tree-dump/lib/printTree';
-import {ModuleType} from '../type/classes/ModuleType';
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import {printTree} from 'tree-dump/lib/printTree';
+import type {Printable} from 'tree-dump/lib/types';
 import type * as classes from '../type';
 import type {TypeBuilder} from '../type/TypeBuilder';
-import type {Printable} from 'tree-dump/lib/types';
+import {ModuleType} from '../type/classes/ModuleType';
+import {Value} from './Value';
 &nbsp;
 export type UnObjType&lt;T&gt; = T extends classes.ObjType&lt;infer U&gt; ? U : never;
 export type UnObjValue&lt;T&gt; = T extends ObjValue&lt;infer U&gt; ? U : never;
-export type UnObjFieldTypeVal&lt;T&gt; = T extends classes.ObjKeyType&lt;any, infer U&gt; ? U : never;
-export type ObjFieldToTuple&lt;F&gt; = F extends classes.ObjKeyType&lt;infer K, infer V&gt; ? [K, V] : never;
+export type UnObjFieldTypeVal&lt;T&gt; = T extends classes.KeyType&lt;any, infer U&gt; ? U : never;
+export type ObjFieldToTuple&lt;F&gt; = F extends classes.KeyType&lt;infer K, infer V&gt; ? [K, V] : never;
 export type ToObject&lt;T&gt; = T extends [string, unknown][] ? {[K in T[number] as K[0]]: K[1]} : never;
 export type ObjValueToTypeMap&lt;F&gt; = ToObject&lt;{
   [K in keyof F]: ObjFieldToTuple&lt;F[K]&gt;;
@@ -260,7 +260,7 @@ export class ObjValue&lt;T extends classes.ObjType&lt;any&gt;&gt; extends Value&
 &nbsp;
   public <span class="fstat-no" title="function not covered" >keys(</span>): string[] {
     const type = <span class="cstat-no" title="statement not covered" >this.type as T;</span>
-<span class="cstat-no" title="statement not covered" >    return type.keys.map(<span class="fstat-no" title="function not covered" >(f</span>ield: classes.ObjKeyType&lt;string, any&gt;) =&gt; <span class="cstat-no" title="statement not covered" >field.key)</span>;</span>
+<span class="cstat-no" title="statement not covered" >    return type.keys.map(<span class="fstat-no" title="function not covered" >(f</span>ield: classes.KeyType&lt;string, any&gt;) =&gt; <span class="cstat-no" title="statement not covered" >field.key)</span>;</span>
   }
 &nbsp;
   public get&lt;K extends keyof ObjValueToTypeMap&lt;UnObjType&lt;T&gt;&gt;&gt;(
@@ -274,7 +274,7 @@ export class ObjValue&lt;T extends classes.ObjType&lt;any&gt;&gt; extends Value&
     return new Value(field.val, data) as any;
   }
 &nbsp;
-  public field&lt;F extends classes.ObjKeyType&lt;any, any&gt;&gt;(
+  public field&lt;F extends classes.KeyType&lt;any, any&gt;&gt;(
     field: F | ((t: TypeBuilder) =&gt; F),
     data: classes.ResolveType&lt;UnObjFieldTypeVal&lt;F&gt;&gt;,
   ): ObjValue&lt;classes.ObjType&lt;[...UnObjType&lt;T&gt;, F]&gt;&gt; {
@@ -295,7 +295,7 @@ export class ObjValue&lt;T extends classes.ObjType&lt;any&gt;&gt; extends Value&
     const system = (this.type as classes.ObjType&lt;any&gt;).getSystem();
     const t = system.t;
     type = typeof type === 'function' ? <span class="branch-0 cbranch-no" title="branch not covered" >type(t) </span>: type;
-    return this.field(t.prop(key, type), data);
+    return this.field(t.Key(key, type), data);
   }
 &nbsp;
   public set&lt;K extends string, V extends classes.Type&gt;(key: K, value: Value&lt;V&gt;) {
@@ -322,7 +322,7 @@ export class ObjValue&lt;T extends classes.ObjType&lt;any&gt;&gt; extends Value&
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-09T20:56:51.405Z
+                at 2025-08-10T12:32:01.071Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
