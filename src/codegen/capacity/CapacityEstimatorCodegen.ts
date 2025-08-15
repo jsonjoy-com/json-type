@@ -8,6 +8,7 @@ import {DiscriminatorCodegen} from '../discriminator';
 import {lazyKeyedFactory} from '../util';
 import {AbstractCodegen} from '../AbstractCodege';
 import type {SchemaPath} from '../types';
+import {Value} from '../../value';
 
 export type CompiledCapacityEstimator = (value: unknown) => number;
 
@@ -36,6 +37,10 @@ export class CapacityEstimatorCodegen extends AbstractCodegen<CompiledCapacityEs
       args: ['r0'],
       prologue: /* js */ `var size = 0;`,
       epilogue: /* js */ `return size;`,
+      linkable: {
+        Value,
+        get: CapacityEstimatorCodegen.get,
+      },
       processSteps: (steps) => {
         const stepsJoined: CodegenStepExecJs[] = [];
         for (let i = 0; i < steps.length; i++) {
@@ -58,7 +63,27 @@ export class CapacityEstimatorCodegen extends AbstractCodegen<CompiledCapacityEs
   protected onAny(path: SchemaPath, r: JsExpression, type: AnyType): void {
     const codegen = this.codegen;
     const rv = codegen.var(r.use());
-    codegen.js(/* js */ `size += maxEncodingCapacity(${rv});`);
+    codegen.link('Value');
+    codegen.link('get');
+    codegen.if(
+      /* js */ `${rv} instanceof Value`,
+      () => {
+        const rType = codegen.var(/* js */ `${rv}.type`);
+        const rData = codegen.var(/* js */ `${rv}.data`);
+        codegen.if(
+          /* js */ `${rType}`,
+          () => {
+            codegen.js(/* js */ `size += get(${rType})(${rData});`);
+          },
+          () => {
+            codegen.js(/* js */ `size += maxEncodingCapacity(${rData});`);
+          },
+        );
+      },
+      () => {
+        codegen.js(/* js */ `size += maxEncodingCapacity(${rv});`);
+      },
+    );
   }
 
   protected onCon(path: SchemaPath, r: JsExpression, type: ConType): void {

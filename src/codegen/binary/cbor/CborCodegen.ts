@@ -2,10 +2,11 @@ import {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
 import {normalizeAccessor} from '@jsonjoy.com/codegen/lib/util/normalizeAccessor';
 import {CborEncoder} from '@jsonjoy.com/json-pack/lib/cbor/CborEncoder';
 import {KeyOptType, type KeyType, type ObjType, type Type} from '../../../type';
-import type {CompiledBinaryEncoder, SchemaPath} from '../../types';
 import {lazyKeyedFactory} from '../../util';
 import {AbstractBinaryCodegen} from '../AbstractBinaryCodegen';
 import {writer} from '../writer';
+import {once} from 'thingies/lib/once';
+import type {CompiledBinaryEncoder, SchemaPath} from '../../types';
 
 export class CborCodegen extends AbstractBinaryCodegen<CborEncoder> {
   public static readonly get = lazyKeyedFactory((type: Type, name?: string) => {
@@ -17,6 +18,11 @@ export class CborCodegen extends AbstractBinaryCodegen<CborEncoder> {
   });
 
   protected encoder = new CborEncoder(writer);
+
+  @once
+  protected linkGet(): void {
+    this.codegen.linkDependency(CborCodegen.get, 'get');
+  }
 
   protected onObj(path: SchemaPath, value: JsExpression, type: ObjType): void {
     const codegen = this.codegen;

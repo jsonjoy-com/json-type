@@ -2,10 +2,11 @@ import {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
 import {normalizeAccessor} from '@jsonjoy.com/codegen/lib/util/normalizeAccessor';
 import {JsonEncoder} from '@jsonjoy.com/json-pack/lib/json/JsonEncoder';
 import {type ArrType, type MapType, KeyOptType, type KeyType, type ObjType, type Type} from '../../../type';
-import type {CompiledBinaryEncoder, SchemaPath} from '../../types';
 import {lazyKeyedFactory} from '../../util';
 import {AbstractBinaryCodegen} from '../AbstractBinaryCodegen';
 import {writer} from '../writer';
+import {once} from 'thingies/lib/once';
+import type {CompiledBinaryEncoder, SchemaPath} from '../../types';
 
 export class JsonCodegen extends AbstractBinaryCodegen<JsonEncoder> {
   public static readonly get = lazyKeyedFactory((type: Type, name?: string) => {
@@ -19,6 +20,11 @@ export class JsonCodegen extends AbstractBinaryCodegen<JsonEncoder> {
   });
 
   protected encoder = new JsonEncoder(writer);
+
+  @once
+  protected linkGet(): void {
+    this.codegen.linkDependency(JsonCodegen.get, 'get');
+  }
 
   protected onArr(path: SchemaPath, r: JsExpression, type: ArrType): void {
     const codegen = this.codegen;

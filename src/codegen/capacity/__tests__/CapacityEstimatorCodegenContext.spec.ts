@@ -3,6 +3,7 @@ import {t} from '../../../type';
 import {ModuleType} from '../../../type/classes/ModuleType';
 import {CapacityEstimatorCodegen} from '../CapacityEstimatorCodegen';
 import {Random} from '../../../random';
+import {unknown, Value} from '../../../value';
 
 describe('"any" type', () => {
   test('returns the same result as maxEncodingCapacity()', () => {
@@ -10,6 +11,26 @@ describe('"any" type', () => {
     const estimator = CapacityEstimatorCodegen.get(any);
     const values = [null, true, false, 1, 123.123, '', 'adsf', [], {}, {foo: 'bar'}, [{a: [{b: null}]}]];
     for (const value of values) expect(estimator(value)).toBe(maxEncodingCapacity(value));
+  });
+
+  test('can encode "any" field', () => {
+    const type = t.object({foo: t.any});
+    const estimator = CapacityEstimatorCodegen.get(type);
+    expect(estimator({foo: true})).toBe(maxEncodingCapacity({foo: true}));
+  });
+
+  test('can encode anon Value<unknown>', () => {
+    const type = t.object({foo: t.any});
+    const value = unknown('test');
+    const estimator = CapacityEstimatorCodegen.get(type);
+    expect(estimator({foo: value})).toBe(maxEncodingCapacity({foo: value.data}));
+  });
+
+  test('can encode typed Value<T>', () => {
+    const type = t.object({foo: t.any});
+    const value = new Value(123, t.con(123));
+    const estimator = CapacityEstimatorCodegen.get(type);
+    expect(estimator({foo: value})).toBe(maxEncodingCapacity({foo: value.data}));
   });
 });
 
