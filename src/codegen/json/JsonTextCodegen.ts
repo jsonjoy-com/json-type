@@ -3,12 +3,13 @@ import {Codegen, CodegenStepExecJs} from '@jsonjoy.com/codegen';
 import {JsExpression} from '@jsonjoy.com/codegen/lib/util/JsExpression';
 import {normalizeAccessor} from '@jsonjoy.com/codegen/lib/util/normalizeAccessor';
 import {stringify} from '@jsonjoy.com/json-pack/lib/json-binary/codec';
-import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
 import {asString} from '@jsonjoy.com/util/lib/strings/asString';
 import {KeyOptType} from '../../type';
-import type {ArrType, ConType, MapType, ObjType, OrType, RefType, StrType, Type} from '../../type';
 import {DiscriminatorCodegen} from '../discriminator';
 import {lazyKeyedFactory} from '../util';
+import {Value} from '../../value';
+import type {json_string} from '@jsonjoy.com/util/lib/json-brand';
+import type {ArrType, ConType, MapType, ObjType, OrType, RefType, StrType, Type} from '../../type';
 
 export type JsonEncoderFn = <T>(value: T) => json_string<T>;
 
@@ -39,6 +40,8 @@ export class JsonTextCodegen {
       epilogue: `return s;`,
       linkable: {
         toBase64,
+        Value,
+        getEncoder: JsonTextCodegen.get,
       },
       processSteps: (steps) => {
         const stepsJoined: Step[] = [];
@@ -205,7 +208,19 @@ if (${rLength}) {
     switch (kind) {
       case 'any': {
         const r = codegen.var(value.use());
-        codegen.js(`s += stringify(${r});`);
+        codegen.link('Value');
+        codegen.link('getEncoder');
+        codegen.if(/* js */ `${r} instanceof Value`, () => {
+          const rType = codegen.var(/* js */ `${r}.type`);
+          const rData = codegen.var(/* js */ `${r}.data`);
+          codegen.if(/* js */ `${rType}`, () => {
+            codegen.js(/* js */ `s += getEncoder(${rType})(${rData});`);
+          }, () => {
+            codegen.js(`s += stringify(${rData});`);
+          });
+        }, () => {
+          codegen.js(`s += stringify(${r});`);
+        });
         break;
       }
       case 'bool': {

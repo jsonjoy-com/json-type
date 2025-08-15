@@ -2,6 +2,7 @@ import {parse} from '@jsonjoy.com/json-pack/lib/json-binary/codec';
 import {t} from '../../../type';
 import {ModuleType} from '../../../type/classes/ModuleType';
 import {JsonTextCodegen} from '../JsonTextCodegen';
+import {unknown, Value} from '../../../value';
 
 describe('"any" type', () => {
   test('stringify simple JSON', () => {
@@ -19,6 +20,26 @@ describe('"any" type', () => {
   test('stringify a number', () => {
     const encoder = JsonTextCodegen.get(t.any);
     expect(encoder(-1)).toBe('-1');
+  });
+
+  test('can encode "any" field', () => {
+    const type = t.object({foo: t.any});
+    const encoder = JsonTextCodegen.get(type);
+    expect(encoder({foo: true})).toBe('{"foo":true}');
+  });
+
+  test('can encode anon Value<unknown>', () => {
+    const type = t.object({foo: t.any});
+    const value = unknown('test');
+    const encoder = JsonTextCodegen.get(type);
+    expect(encoder({foo: value})).toBe('{"foo":"test"}');
+  });
+
+  test('can encode typed Value<T>', () => {
+    const type = t.object({foo: t.any});
+    const value = new Value(123, t.con(123));
+    const encoder = JsonTextCodegen.get(type);
+    expect(encoder({foo: value})).toBe('{"foo":123}');
   });
 });
 
