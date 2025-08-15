@@ -28,7 +28,7 @@ export abstract class AbsType<S extends schema.Schema> implements BaseType<S>, P
   }
 
   public value(data: schema.TypeOf<S>) {
-    return new Value<this>(this, data as any);
+    return new Value<this>(data as any, this);
   }
 
   /**
