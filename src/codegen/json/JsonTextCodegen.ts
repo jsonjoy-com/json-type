@@ -210,17 +210,25 @@ if (${rLength}) {
         const r = codegen.var(value.use());
         codegen.link('Value');
         codegen.link('getEncoder');
-        codegen.if(/* js */ `${r} instanceof Value`, () => {
-          const rType = codegen.var(/* js */ `${r}.type`);
-          const rData = codegen.var(/* js */ `${r}.data`);
-          codegen.if(/* js */ `${rType}`, () => {
-            codegen.js(/* js */ `s += getEncoder(${rType})(${rData});`);
-          }, () => {
-            codegen.js(`s += stringify(${rData});`);
-          });
-        }, () => {
-          codegen.js(`s += stringify(${r});`);
-        });
+        codegen.if(
+          /* js */ `${r} instanceof Value`,
+          () => {
+            const rType = codegen.var(/* js */ `${r}.type`);
+            const rData = codegen.var(/* js */ `${r}.data`);
+            codegen.if(
+              /* js */ `${rType}`,
+              () => {
+                codegen.js(/* js */ `s += getEncoder(${rType})(${rData});`);
+              },
+              () => {
+                codegen.js(`s += stringify(${rData});`);
+              },
+            );
+          },
+          () => {
+            codegen.js(`s += stringify(${r});`);
+          },
+        );
         break;
       }
       case 'bool': {

@@ -65,17 +65,25 @@ export class CapacityEstimatorCodegen extends AbstractCodegen<CompiledCapacityEs
     const rv = codegen.var(r.use());
     codegen.link('Value');
     codegen.link('get');
-    codegen.if(/* js */ `${rv} instanceof Value`, () => {
-      const rType = codegen.var(/* js */ `${rv}.type`);
-      const rData = codegen.var(/* js */ `${rv}.data`);
-      codegen.if(/* js */ `${rType}`, () => {
-        codegen.js(/* js */ `size += get(${rType})(${rData});`);
-      }, () => {
-        codegen.js(/* js */ `size += maxEncodingCapacity(${rData});`);
-      });
-    }, () => {
-      codegen.js(/* js */ `size += maxEncodingCapacity(${rv});`);
-    });
+    codegen.if(
+      /* js */ `${rv} instanceof Value`,
+      () => {
+        const rType = codegen.var(/* js */ `${rv}.type`);
+        const rData = codegen.var(/* js */ `${rv}.data`);
+        codegen.if(
+          /* js */ `${rType}`,
+          () => {
+            codegen.js(/* js */ `size += get(${rType})(${rData});`);
+          },
+          () => {
+            codegen.js(/* js */ `size += maxEncodingCapacity(${rData});`);
+          },
+        );
+      },
+      () => {
+        codegen.js(/* js */ `size += maxEncodingCapacity(${rv});`);
+      },
+    );
   }
 
   protected onCon(path: SchemaPath, r: JsExpression, type: ConType): void {

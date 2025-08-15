@@ -140,17 +140,25 @@ var uint8 = writer.uint8, view = writer.view;`,
     const rv = codegen.var(r.use());
     codegen.link('Value');
     this.linkGet();
-    codegen.if(/* js */ `${rv} instanceof Value`, () => {
-      const rType = codegen.var(/* js */ `${rv}.type`);
-      const rData = codegen.var(/* js */ `${rv}.data`);
-      codegen.if(/* js */ `${rType}`, () => {
-        codegen.js(/* js */ `get(${rType})(${rData},encoder);`);
-      }, () => {
-        this.codegen.js(`encoder.writeAny(${rData});`);
-      });
-    }, () => {
-      this.codegen.js(`encoder.writeAny(${rv});`);
-    });
+    codegen.if(
+      /* js */ `${rv} instanceof Value`,
+      () => {
+        const rType = codegen.var(/* js */ `${rv}.type`);
+        const rData = codegen.var(/* js */ `${rv}.data`);
+        codegen.if(
+          /* js */ `${rType}`,
+          () => {
+            codegen.js(/* js */ `get(${rType})(${rData},encoder);`);
+          },
+          () => {
+            this.codegen.js(`encoder.writeAny(${rData});`);
+          },
+        );
+      },
+      () => {
+        this.codegen.js(`encoder.writeAny(${rv});`);
+      },
+    );
   }
 
   protected onCon(path: SchemaPath, r: JsExpression, type: ConType): void {

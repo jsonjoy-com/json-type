@@ -1,7 +1,7 @@
 import {Writer} from '@jsonjoy.com/buffers/lib/Writer';
 import {MsgPackDecoder} from '@jsonjoy.com/json-pack/lib/msgpack/MsgPackDecoder';
 import {MsgPackEncoder} from '@jsonjoy.com/json-pack/lib/msgpack/MsgPackEncoder';
-import {ModuleType, Type} from '../../../../type';
+import {ModuleType, type Type} from '../../../../type';
 import {testBinaryCodegen} from '../../__tests__/testBinaryCodegen';
 import {MsgPackCodegen} from '../MsgPackCodegen';
 import {unknown, Value} from '../../../../value';
