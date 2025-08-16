@@ -35,15 +35,14 @@ export class KeyType<K extends string, V extends Type> extends AbsType<schema.Ke
   }
 }
 
-export class KeyOptType<K extends string, V extends Type> extends KeyType<K, V> {
+export class KeyOptType<K extends string, V extends Type> extends AbsType<schema.OptKeySchema<K, SchemaOf<V>>> {
   public readonly optional: boolean = true;
 
   constructor(
     public readonly key: K,
     public readonly val: V,
   ) {
-    super(key, val);
-    (this as any).schema = schema.s.KeyOpt(key, schema.s.any) as any;
+    super(schema.s.KeyOpt(key, schema.s.any) as any);
   }
 
   protected toStringTitle(): string {
@@ -113,7 +112,7 @@ export class ObjType<
 
   public getField<K extends keyof schema.TypeOf<schema.ObjSchema<SchemaOfObjectFields<F>>>>(
     key: K,
-  ): KeyType<string, Type> | undefined {
+  ): KeyType<string, Type> | KeyOptType<string, Type> | undefined {
     return this.keys.find((f) => f.key === key);
   }
 
