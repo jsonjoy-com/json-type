@@ -56,12 +56,11 @@ export class ObjValue<T extends classes.ObjType<any>> extends Value<T> implement
 
   public add<K extends string, V extends classes.Type>(
     key: K,
-    type: V | ((t: TypeBuilder) => V),
+    type: V,
     data: classes.ResolveType<V>,
   ) {
     const system = (this.type as classes.ObjType<any>).getSystem();
     const t = system.t;
-    type = typeof type === 'function' ? type(t) : type;
     return this.field(t.Key(key, type), data);
   }
 

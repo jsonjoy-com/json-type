@@ -45,8 +45,24 @@ export class KeyOptType<K extends string, V extends Type> extends AbsType<schema
     super(schema.s.KeyOpt(key, schema.s.any) as any);
   }
 
+  public getSchema(): schema.OptKeySchema<K, SchemaOf<V>> {
+    return {
+      ...this.schema,
+      value: this.val.getSchema() as any,
+    };
+  }
+
+  public getOptions(): schema.Optional<schema.KeySchema<K, SchemaOf<V>>> {
+    const {kind, key, value, optional, ...options} = this.schema;
+    return options as any;
+  }
+
   protected toStringTitle(): string {
     return JSON.stringify(this.key) + '?';
+  }
+
+  public toString(tab: string = ''): string {
+    return super.toString(tab) + printTree(tab + ' ', [(tab) => this.val.toString(tab)]);
   }
 }
 
