@@ -1,6 +1,6 @@
 import * as schema from '../schema';
 import * as classes from './classes';
-import type {Type, TypeOfAlias} from './types';
+import type {TypeRef, TypeRefToType, Type, TypeOfAlias} from './types';
 
 const {s} = schema;
 
@@ -76,7 +76,7 @@ export class TypeBuilder {
 
   // --------------------------------------------------------------- shorthands
 
-  public readonly or = <F extends Type[]>(...types: F) => this.Or(...types);
+  public readonly or = <F extends TypeRef<any>[]>(...types: F) => this.Or(...types);
   public readonly undefined = () => this.undef;
   public readonly null = () => this.nil;
   public readonly boolean = () => this.bool;
@@ -94,7 +94,11 @@ export class TypeBuilder {
       options,
     );
 
-  public readonly tuple = <F extends Type[]>(...types: F) => this.Tuple(types);
+  public readonly tuple = <F extends TypeRef<any>[]>(...types: F) => this.Tuple(types);
+
+  protected typeRefToType = <T extends Type>(type: TypeRef<T>): TypeRefToType<T> => {
+    return typeof type === 'function' ? (type() as TypeRefToType<T>) : (type as TypeRefToType<T>);
+  };
 
   /**
    * Creates an object type with the specified properties. This is a shorthand for
@@ -117,10 +121,10 @@ export class TypeBuilder {
    * @param record A mapping of property names to types.
    * @returns An object type.
    */
-  public readonly object = <R extends Record<string, Type>>(record: R): classes.ObjType<RecordToFields<R>> => {
+  public readonly object = <R extends Record<string, TypeRef<any>>>(record: R): classes.ObjType<RecordToFields<{[K in keyof R]: TypeRefToType<R[K]>}>> => {
     const keys: classes.KeyType<any, any>[] = [];
-    for (const [key, value] of Object.entries(record)) keys.push(this.Key(key, value));
-    return new classes.ObjType<RecordToFields<R>>(keys as any).sys(this.system);
+    for (const [key, value] of Object.entries(record)) keys.push(this.Key(key, this.typeRefToType(value)));
+    return new classes.ObjType<RecordToFields<{[K in keyof R]: TypeRefToType<R[K]>}>>(keys as any).sys(this.system);
   };
 
   /**

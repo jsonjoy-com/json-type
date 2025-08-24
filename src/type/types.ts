@@ -24,6 +24,9 @@ export type Type =
   | classes.FnType<any, any, any>
   | classes.FnRxType<any, any, any>;
 
+export type TypeRef<T extends Type> = T | (() => AliasType<any, T>)
+export type TypeRefToType<T extends TypeRef<Type>> = T extends () => infer U ? U : T;
+
 export type SchemaOf<T extends Type | Type[]> = T extends BaseType<infer U> ? U : never;
 export type SchemaOfMap<M extends Record<string, Type>> = {
   [K in keyof M]: SchemaOf<M[K]>;
