@@ -1,4 +1,5 @@
 import {printTree} from 'tree-dump/lib/printTree';
+import {printJson} from 'tree-dump/lib/printJson';
 import type {Printable} from 'tree-dump';
 import type {ResolveType, Type} from '../type/types';
 
@@ -27,7 +28,7 @@ export class Value<T extends Type = Type> implements Printable {
     const type = this.type;
     return this.name() + (type ? printTree(tab, [
       (tab) => type.toString(tab),
-      (tab) => (JSON.stringify(copyForPrint(this.data), null, 2) || 'und').replace(/"__fN---"/g, 'fn()').split('\n').join('\n' + tab),
+      (tab) => printJson(tab, copyForPrint(this.data)).replace(/"__fN---"/g, 'fn()'),
     ]) : '');
   }
 }
