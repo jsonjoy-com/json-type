@@ -68,7 +68,10 @@ export class FnType<Req extends Type, Res extends Type, Ctx = unknown> extends A
   }
 
   public exec(input: schema.TypeOf<SchemaOf<Req>>) {
-    const func = this.schema.default as schema.FunctionValue<schema.TypeOf<SchemaOf<Req>>, schema.TypeOf<SchemaOf<Res>>>;
+    const func = this.schema.default as schema.FunctionValue<
+      schema.TypeOf<SchemaOf<Req>>,
+      schema.TypeOf<SchemaOf<Res>>
+    >;
     return func(input);
   }
 

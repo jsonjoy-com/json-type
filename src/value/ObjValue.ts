@@ -46,7 +46,10 @@ export class ObjValue<T extends classes.ObjType<any>> extends Value<T> implement
   public fn<K extends keyof ObjValueToTypeMap<UnObjType<T>>>(
     key: K,
   ): FnValue<
-    Ensure<ObjValueToTypeMap<UnObjType<T>>[K] extends classes.Type ? ObjValueToTypeMap<UnObjType<T>>[K] : classes.Type, classes.FnType<any, any, any>>
+    Ensure<
+      ObjValueToTypeMap<UnObjType<T>>[K] extends classes.Type ? ObjValueToTypeMap<UnObjType<T>>[K] : classes.Type,
+      classes.FnType<any, any, any>
+    >
   > {
     const val = this.get(key);
     return new FnValue(val.data, val.type as any);

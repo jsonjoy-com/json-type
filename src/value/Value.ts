@@ -26,10 +26,15 @@ export class Value<T extends Type = Type> implements Printable {
 
   public toString(tab: string = ''): string {
     const type = this.type;
-    return this.name() + (type ? printTree(tab, [
-      (tab) => type.toString(tab),
-      (tab) => printJson(tab, copyForPrint(this.data)).replace(/"__fN---"/g, 'fn()'),
-    ]) : '');
+    return (
+      this.name() +
+      (type
+        ? printTree(tab, [
+            (tab) => type.toString(tab),
+            (tab) => printJson(tab, copyForPrint(this.data)).replace(/"__fN---"/g, 'fn()'),
+          ])
+        : '')
+    );
   }
 }
 
