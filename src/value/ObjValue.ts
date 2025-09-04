@@ -1,9 +1,9 @@
-import {printTree} from 'tree-dump/lib/printTree';
+import {ModuleType} from '../type/classes/ModuleType';
+import {Value} from './Value';
+import {FnValue} from './FnValue';
 import type {Printable} from 'tree-dump/lib/types';
 import type * as classes from '../type';
 import type {TypeBuilder} from '../type/TypeBuilder';
-import {ModuleType} from '../type/classes/ModuleType';
-import {Value} from './Value';
 
 export type UnObjType<T> = T extends classes.ObjType<infer U> ? U : never;
 export type UnObjValue<T> = T extends ObjValue<infer U> ? U : never;
@@ -13,6 +13,8 @@ export type ToObject<T> = T extends [string, unknown][] ? {[K in T[number] as K[
 export type ObjValueToTypeMap<F> = ToObject<{
   [K in keyof F]: ObjFieldToTuple<F[K]>;
 }>;
+
+export type Ensure<T, X> = T extends X ? T : X;
 
 export class ObjValue<T extends classes.ObjType<any>> extends Value<T> implements Printable {
   public static new = (system: ModuleType = new ModuleType()) => new ObjValue({}, system.t.obj);
@@ -39,6 +41,18 @@ export class ObjValue<T extends classes.ObjType<any>> extends Value<T> implement
     if (!field) throw new Error('NO_FIELD');
     const data = (this.data as Record<string, unknown>)[<string>key];
     return new Value(data, field.val) as any;
+  }
+
+  public fn<K extends keyof ObjValueToTypeMap<UnObjType<T>>>(
+    key: K,
+  ): FnValue<
+    Ensure<
+      ObjValueToTypeMap<UnObjType<T>>[K] extends classes.Type ? ObjValueToTypeMap<UnObjType<T>>[K] : classes.Type,
+      classes.FnType<any, any, any>
+    >
+  > {
+    const val = this.get(key);
+    return new FnValue(val.data, val.type as any);
   }
 
   public field<F extends classes.KeyType<any, any>>(
@@ -78,7 +92,7 @@ export class ObjValue<T extends classes.ObjType<any>> extends Value<T> implement
     return this as any;
   }
 
-  public toString(tab: string = ''): string {
-    return 'ObjValue' + printTree(tab, [(tab) => this.type!.toString(tab)]);
+  public name(): string {
+    return 'ObjValue';
   }
 }

@@ -2,7 +2,10 @@
 
 exports[`can print to string 1`] = `
 "ObjValue
-└─ obj
-   └─ "foo"
-       └─ str"
+├─ obj
+│  └─ "foo"
+│      └─ str
+└─ {
+     "foo": "bar"
+   }"
 `;

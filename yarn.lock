@@ -889,7 +889,7 @@ __metadata:
     rxjs: "npm:^7.8.2"
     sonic-forest: "npm:^1.2.1"
     thingies: "npm:^2.5.0"
-    tree-dump: "npm:^1.0.3"
+    tree-dump: "npm:^1.1.0"
     ts-jest: "npm:^29.1.2"
     tslib: "npm:^2.7.0"
     typescript: "npm:^5.6.2"
@@ -3530,12 +3530,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tree-dump@npm:^1.0.0, tree-dump@npm:^1.0.3":
+"tree-dump@npm:^1.0.0":
   version: 1.0.3
   resolution: "tree-dump@npm:1.0.3"
   peerDependencies:
     tslib: 2
   checksum: 10c0/05d8138f43c48589475f1cac516dcc93b1b6123474a9e1c2ddcaefe0c75105aa5fabee5874a2458c4ab78bde9f01a8d54ff560c4e04089b5325de5ff7f57b2ee
+  languageName: node
+  linkType: hard
+
+"tree-dump@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "tree-dump@npm:1.1.0"
+  peerDependencies:
+    tslib: 2
+  checksum: 10c0/079f0f0163b68ee2eedc65cab1de6fb121487eba9ae135c106a8bc5e4ab7906ae0b57d86016e4a7da8c0ee906da1eae8c6a1490cd6e2a5e5ccbca321e1f959ca
   languageName: node
   linkType: hard
 

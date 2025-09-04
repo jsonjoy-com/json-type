@@ -1,11 +1,7 @@
 import {printTree} from 'tree-dump/lib/printTree';
 import * as schema from '../../schema';
-import type {SchemaOf, Type} from '../types';
 import {AbsType} from './AbsType';
-
-const fnNotImplemented: schema.FunctionValue<any, any> = async () => {
-  throw new Error('NOT_IMPLEMENTED');
-};
+import type {SchemaOf, Type} from '../types';
 
 const toStringTree = (tab: string = '', type: FnType<Type, Type, any> | FnRxType<Type, Type, any>) => {
   return printTree(tab, [
@@ -69,6 +65,14 @@ export class FnType<Req extends Type, Res extends Type, Ctx = unknown> extends A
   public default(value: schema.FunctionValue<schema.TypeOf<SchemaOf<Req>>, schema.TypeOf<SchemaOf<Res>>>): this {
     this.schema.default = value;
     return this;
+  }
+
+  public exec(input: schema.TypeOf<SchemaOf<Req>>) {
+    const func = this.schema.default as schema.FunctionValue<
+      schema.TypeOf<SchemaOf<Req>>,
+      schema.TypeOf<SchemaOf<Res>>
+    >;
+    return func(input);
   }
 
   public toString(tab: string = ''): string {
